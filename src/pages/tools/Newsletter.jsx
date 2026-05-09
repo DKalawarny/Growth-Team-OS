@@ -7,6 +7,8 @@ import { isCapExceeded } from '../../lib/usage'
 import { classifyAll, todayYmd } from '../../lib/milestoneProgress'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
+import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import { summarizeContext } from '../../lib/toolContextSummary'
 
 /**
  * Team Newsletter — /tools/newsletter
@@ -39,6 +41,9 @@ export default function Newsletter() {
   const [saving,   setSaving]   = useState(false)
   const [error,    setError]    = useState(null)
   const [capError, setCapError] = useState(null)
+  // Snapshot of inputs the newsletter saw at generation time. Persisted on
+  // the saved document so reopening from the library still shows what fed it.
+  const [contextSummary, setContextSummary] = useState(null)
 
   const [milestones, setMilestones] = useState([])
   const [checkins,   setCheckins]   = useState([])
@@ -109,6 +114,10 @@ export default function Newsletter() {
     setStage('loading')
     setError(null)
     setCapError(null)
+    setContextSummary(summarizeContext({
+      business: company?.name ? { name: company.name } : null,
+      roadmap:  { total: milestones.length },
+    }))
 
     try {
       const toneDesc = tone === 'warm'
@@ -202,7 +211,7 @@ Return JSON only:
         tool_id:     'team-newsletter',
         title:       `Team Newsletter — ${period}`,
         tags:        ['newsletter', 'team'],
-        input_data:  { period, tone, note },
+        input_data:  { period, tone, note, context_summary: contextSummary },
         output_data: result,
       })
       if (err) throw err
@@ -288,6 +297,8 @@ Return JSON only:
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
           )}
+
+          <ContextUsedLine summary={contextSummary} />
 
           {/* Editable newsletter card */}
           <div className="bg-white border border-ink-100 rounded-2xl shadow-sm overflow-hidden">

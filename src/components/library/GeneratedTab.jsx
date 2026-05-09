@@ -12,6 +12,7 @@ import CashFlowPlan from '../tools/CashFlowPlan'
 import CFODashboardView from '../tools/CFODashboardView'
 import RocksPlan from '../tools/RocksPlan'
 import GBPAudit from '../tools/GBPAudit'
+import NewsletterView from '../tools/NewsletterView'
 import ContextUsedLine from '../tools/ContextUsedLine'
 
 /**
@@ -237,6 +238,7 @@ function renderToolBody(doc) {
   if (doc.tool_id === 'cfo-dashboard')    return <CFODashboardView data={doc.output_data} />
   if (doc.tool_id === 'rocks-tracker')    return <RocksPlan data={doc.output_data} />
   if (doc.tool_id === 'gbp-optimizer')    return <GBPAudit data={doc.output_data} />
+  if (doc.tool_id === 'team-newsletter')  return <NewsletterView data={doc.output_data} />
   return (
     <pre className="text-xs text-ink-700 bg-ink-50 border border-ink-100 rounded p-3 overflow-x-auto">
       {JSON.stringify(doc.output_data, null, 2)}

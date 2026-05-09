@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, HAIKU } from '../../lib/anthropic'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
+import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import { summarizeContext } from '../../lib/toolContextSummary'
 import {
   uploadKnowledgeFile,
   listKnowledgeFiles,
@@ -122,6 +124,15 @@ export default function Safety() {
     setRenewalDate(companyId, docId, iso)
     setRenewalsBump(n => n + 1)
   }
+  // What fed the answer: the location/industry context the owner set, plus
+  // any uploaded compliance docs the prompt searches first.
+  const contextSummary = useMemo(() => summarizeContext({
+    business: industry ? { industry } : null,
+    knowledge_files: docs.length > 0
+      ? { included: docs.map(d => ({ title: d.title, kind: 'legal' })) }
+      : null,
+  }), [industry, docs])
+
   // Derived alerts list (overdue + within 30 days), oldest-due first.
   const alerts = useMemo(() => {
     if (!companyId) return []
@@ -398,6 +409,7 @@ export default function Safety() {
         {/* ── Answer thread ────────────────────────────────────────────────── */}
         {answers.length > 0 && (
           <div className="space-y-4" ref={answerRef}>
+            <ContextUsedLine summary={contextSummary} />
             {answers.map((a, i) => (
               <AnswerCard key={i} question={a.question} answer={a.answer} docsSearched={a.docsSearched} />
             ))}

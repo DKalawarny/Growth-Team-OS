@@ -47,9 +47,6 @@ export const TOOL_DISCLAIMERS = {
 
   'team-newsletter':
     'A drafted newsletter from your context. Read it, edit the voice to match yours, then send.',
-
-  'l10-meeting':
-    'Meeting structure — not a substitute for the real conversation. Use it as a frame, ditch what doesn\'t fit your team.',
 }
 
 /**
