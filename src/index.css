@@ -1,111 +1,181 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@theme {
+  /* ── Brand: rich gold/amber ─────────────────────────────────────────────
+     Gold communicates achievement, wealth, and growth — the exact reward
+     signal we want every milestone completion and KPI tick to carry. */
+  --color-brand-50:  #fffbeb;
+  --color-brand-100: #fef3c7;
+  --color-brand-200: #fde68a;
+  --color-brand-300: #fcd34d;
+  --color-brand-400: #fbbf24;   /* pops on dark surfaces */
+  --color-brand-500: #f59e0b;   /* main gold */
+  --color-brand-600: #d97706;   /* primary brand */
+  --color-brand-700: #b45309;   /* hover / pressed */
+  --color-brand-800: #92400e;
+  --color-brand-900: #78350f;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* ── Ink: deep navy for dark surfaces ──────────────────────────────────
+     Sidebar, dashboard hero, any "command center" zone. */
+  --color-ink-950: #08101e;
+  --color-ink-900: #0d1728;
+  --color-ink-800: #162038;
+  --color-ink-700: #1e2d4a;
+  --color-ink-600: #2d4060;
+  --color-ink-500: #4a5e7a;
+  --color-ink-400: #7a90aa;
+  --color-ink-300: #a8b8cc;
+  --color-ink-200: #d0dae6;
+  --color-ink-100: #e8edf4;
+  --color-ink-50:  #f4f6fa;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    background-color: #f4f6fa;
+    color: #0d1728;
+    font-family: var(--font-sans);
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  /* ── Form defaults ───────────────────────────────────────────────────────
+     Every text-input and textarea in the app inherits these. Premium focus
+     state with a soft gold ring + warming border, subtle default shadow so
+     fields feel elevated rather than sunken. Pages that want a custom look
+     still win — utility classes beat @layer base. But the default is no
+     longer "ugly gray box." */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="week"],
+  input[type="time"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #0d1728;                     /* ink-900 */
+    background-color: #ffffff;
+    border: 1px solid #d0dae6;          /* ink-200 */
+    border-radius: 0.625rem;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+    box-shadow: 0 1px 2px rgba(13, 23, 40, 0.04);
+  }
+
+  input:hover:not(:disabled),
+  textarea:hover:not(:disabled),
+  select:hover:not(:disabled) {
+    border-color: #a8b8cc;              /* ink-300 */
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #f59e0b;              /* brand-500 */
+    box-shadow:
+      0 0 0 4px rgba(245, 158, 11, 0.15),
+      0 1px 2px rgba(13, 23, 40, 0.04);
+    background-color: #fffef9;          /* barely-perceptible warm tint */
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #7a90aa;                      /* ink-400 */
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: #f4f6fa;
+  }
+
+  /* Invalid state — kicks in after a failed submit, not on every keystroke. */
+  input:user-invalid,
+  textarea:user-invalid {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+  }
+
+  /* Checkbox + radio — match the gold system */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: auto;
+    accent-color: #d97706;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+@layer utilities {
+  /* Gold glow — primary CTAs, active milestone indicators. */
+  .glow-gold {
+    box-shadow: 0 4px 24px rgba(217, 119, 6, 0.35);
+  }
+  .glow-gold-sm {
+    box-shadow: 0 2px 12px rgba(217, 119, 6, 0.28);
+  }
+  .glow-gold-ambient {
+    box-shadow: 0 0 80px 20px rgba(245, 158, 11, 0.08);
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  /* Gold gradient background — premium CTA treatment */
+  .bg-gold-gradient {
+    background-image: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   }
-}
-
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  .bg-gold-gradient:hover {
+    background-image: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+  /* Dark premium gradient — hero backgrounds */
+  .bg-ink-gradient {
+    background-image: linear-gradient(135deg, #0d1728 0%, #162038 50%, #1e2d4a 100%);
   }
-}
-p {
-  margin: 0;
-}
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+  /* Fade-in — onboarding left panel content swaps between steps */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.35s ease both;
+  }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  /* Fade-in-up — landing page chat bubbles animate in */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Hide scrollbar visually while keeping scroll behaviour intact */
+  .scrollbar-hide {
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE / Edge */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;                  /* Chrome / Safari / Opera */
+  }
 }
