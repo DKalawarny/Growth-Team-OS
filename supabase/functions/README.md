@@ -114,12 +114,12 @@ supabase functions list
 
 1. Start the app locally: `npm run dev`
 2. Sign in as a user with `owner` / `admin` / `cfo` role
-3. Go to `/settings` → scroll to **Integrations**
+3. Go to `/settings/integrations`
 4. Click **Connect QuickBooks**
 5. You'll bounce to Intuit → sign in with a **sandbox** account
    (create at https://developer.intuit.com/app/developer/sandbox)
 6. Choose your sandbox company → **Connect**
-7. Intuit redirects back to `/settings?qbo=connected`
+7. Intuit redirects back to `/settings/integrations?qbo=connected`
 8. Click **Sync now** — should complete in 2–5s
 9. Check the **Integrations** card — it should list 2 snapshot chips
    (P&L, BS) with the period label

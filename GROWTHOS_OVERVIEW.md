@@ -8,7 +8,7 @@ Use this document to give any AI assistant full context about what GrowthOS is, 
 
 GrowthOS is a SaaS platform built for small service-business owners (tradespeople, contractors, agencies). It replaces the scattered collection of consultants, spreadsheets, and tools most owners use by putting an AI advisor, financial dashboards, hiring tools, marketing tools, compliance tracking, and a growth planner all in one connected platform.
 
-**Pricing:** $97/month or $970/year (2 months free). 7-day free trial, no credit card required.  
+**Pricing:** $97/month or $970/year (2 months free). 14-day free trial, no credit card required.  
 **Target customer:** Owner-operators of service businesses — plumbers, HVAC, landscaping, cleaning, construction, agencies — typically $300k–$5M revenue, 1–20 employees.
 
 ---
@@ -22,7 +22,7 @@ GrowthOS is a SaaS platform built for small service-business owners (tradespeopl
 | AI | Anthropic Claude (claude-sonnet + claude-haiku via Anthropic SDK) |
 | Payments | Stripe (subscriptions + one-time payments) — *not yet live, setup pending* |
 | Deployment | Vite build → static hosting (e.g. Netlify/Vercel) + Supabase Edge Functions |
-| Search/RAG | Voyage AI embeddings (optional, for document search) |
+| Search/RAG | OpenAI text-embedding-3-small (1536-dim, optional — for document search) |
 
 ---
 
@@ -35,18 +35,20 @@ Browser (React SPA)
   ├── Supabase Postgres      (all app data)
   ├── Supabase Storage       (file uploads — financials, proposals)
   │
-  ├── Anthropic Claude API   (called directly from browser via VITE_ env vars)
-  │   ├── runToolCall()      — structured JSON output for tool pages
-  │   └── streamToolCall()   — streaming for Solomon advisor chat
-  │
   └── Supabase Edge Functions (Deno/TypeScript)
+      ├── claude             — proxies all Anthropic calls (text + vision +
+      │                        streaming); enforces caps & logs usage
       ├── stripe-checkout    — creates Stripe checkout session
       ├── stripe-webhook     — handles subscription + top-up events
       ├── stripe-topup       — one-time $5/$10 credit purchases
       └── gbp-fetch          — proxies Google Places API calls
+                                │
+                                ▼
+                       Anthropic Claude API
+                       (key lives only on the server)
 ```
 
-**Note:** The Anthropic API key is currently browser-exposed via `VITE_ANTHROPIC_API_KEY`. This is a known security issue to fix before scaling to real customers — the fix is to move Claude calls into Supabase Edge Functions.
+**Note:** All Anthropic calls now route through the `claude` Edge Function. The API key is held server-side as `ANTHROPIC_API_KEY` and never enters the browser bundle. Spend / tool caps and usage_events are enforced inside the function so a client can't bypass them.
 
 ---
 
@@ -190,7 +192,7 @@ Every tool page follows the same pattern:
 - Supabase Auth (email + password)
 - Every user belongs to one `company`
 - All data is scoped by `company_id` — users within the same company share roadmap, documents, check-ins
-- Trial period: 7 days from signup (`companies.trial_ends_at`)
+- Trial period: 14 days from signup (`companies.trial_ends_at`)
 - After trial: subscription required to access tool routes (paywall component swaps in)
 - Subscription status derived from `subscriptions` table + `trial_ends_at`
 
@@ -245,7 +247,6 @@ Supabase supports database webhooks — you could trigger events on your existin
 | Item | Notes |
 |------|-------|
 | Stripe live setup | Account, products, webhook, secrets all need to be created |
-| Claude calls server-side | API key is browser-exposed — should move to Edge Functions before scaling |
 | QuickBooks production | Currently sandbox only; requires Intuit app review for real books |
 | Mobile app | Web-only, mobile-responsive but not a native app |
 | Team/multi-user | Data is shared per company but no role-based permissions yet |
