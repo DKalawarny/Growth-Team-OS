@@ -176,14 +176,14 @@ export function getJurisdictionLinks(location) {
   // ---- Canada: try province match (full name first, then 2-letter code) ----
   for (const tok of tokens) {
     if (CA_NAME_TO_CODE[tok]) {
-      return makeEntry(CA_PROVINCES[CA_NAME_TO_CODE[tok]])
+      return makeEntry(CA_PROVINCES[CA_NAME_TO_CODE[tok]], CA_NAME_TO_CODE[tok])
     }
   }
   // 2-letter code — match against last token typically
   for (const tok of tokens) {
     const code = tok.toUpperCase()
     if (CA_CODES.has(code)) {
-      return makeEntry(CA_PROVINCES[code])
+      return makeEntry(CA_PROVINCES[code], code)
     }
   }
 
@@ -204,10 +204,19 @@ export function getJurisdictionLinks(location) {
   return null
 }
 
-function makeEntry(record) {
+// `code` field on the returned entry is the jurisdiction code used by the
+// regulatory_sources table (migration 022) — e.g. "CA-BC", "US-OSHA". This
+// lets other modules look up canonical regulation URLs without re-parsing
+// the location string. Format is `<country>-<scope>`:
+//   Canada: scope = province code (BC, AB, ON, ...)
+//   US:     scope = "OSHA" for federal-default. State-plan states keep
+//           "OSHA" until we seed state-specific OHS regs in migration 022;
+//           the state_search_hint field still drives the redirect.
+function makeEntry(record, provinceCode) {
   return {
     jurisdiction_label:   record.label,
     country:              'CA',
+    code:                 `CA-${provinceCode}`,
     employment_standards: record.employment_standards,
     workplace_safety:     record.workplace_safety,
     tax:                  record.tax,
@@ -221,6 +230,7 @@ function makeUsEntry(stateNameOrCode) {
   return {
     jurisdiction_label:   `${prettyState(stateNameOrCode)}, United States`,
     country:              'US',
+    code:                 'US-OSHA',
     employment_standards: US_FEDERAL.employment_standards,
     workplace_safety:     US_FEDERAL.workplace_safety,
     tax:                  US_FEDERAL.tax,

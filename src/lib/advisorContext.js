@@ -9,7 +9,19 @@ import { getLibraryAnalysis } from './libraryAnalysis'
 import { getTodaysPulse }     from './dailyPulse'
 import { searchKnowledge, formatRagResults } from './rag/search'
 import { searchChatHistory, formatChatHistory } from './rag/chatSearch'
+import { compressSafetyContext } from './rag/compress'
+import { embed as embedQuery } from './rag/embeddings'
 import { getJurisdictionLinks } from './jurisdictionLinks'
+import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
+
+// Safety vault — char budget for direct loading (no embeddings path).
+// Owner uploads SOPs, SDS sheets, permits. We load the most recent
+// `is_current=true` docs up to this byte ceiling, hand them to the
+// Haiku compressor along with the regulatory_sources rows, and let
+// Solomon answer from the compressed brief. Budget chosen so even
+// a 5-doc vault of long SOPs (~6k chars each) fits comfortably.
+const SAFETY_VAULT_LIMIT       = 12
+const SAFETY_VAULT_CHAR_BUDGET = 60_000
 
 /**
  * Build the structured BUSINESS_CONTEXT block appended to every Advisor turn.
@@ -105,7 +117,39 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : Promise.resolve([])
   if (!companyId) return null
 
-  const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats] = await Promise.all([
+  // ── Safety topic detection (free — pure regex) ─────────────────────
+  // We run this BEFORE any retrieval so the safety-vault search only
+  // fires when the question looks safety-related. False negatives are
+  // cheap (no citation); false positives are not (Solomon cites the
+  // wrong reg). See regulatorySources.js for the patterns.
+  const safetyTopics = query ? detectSafetyTopics(query) : []
+
+  // Broader "is this safety-ish at all?" check — used to gate the
+  // safety vault RPC call when topic detection is empty. We don't want
+  // to skip the RPC entirely on empty topics (the vault might have
+  // non-topic docs like "site-specific evacuation plan"), but we DO
+  // want to skip it when the question is clearly off-topic
+  // ("what's our cash position?"). This is cheap insurance against
+  // burning a RPC + cosine search on every conversational turn.
+  const looksSafetyish = query && (
+    safetyTopics.length > 0 ||
+    /\b(SOP|safety|hazard|PPE|SDS|FLHA|toolbox|near[-\s]?miss|incident|injury|exposure|respirator|barrier|protect(ion|ive)?)\b/i.test(query)
+  )
+
+  // Embed the query ONCE and reuse for the general knowledge search.
+  // The safety vault path does NOT use embeddings — we load recent docs
+  // directly and let the Haiku compressor pick what's relevant. This
+  // keeps the stack Claude-only without a third-party embedding API.
+  // If/when an OpenAI key is added and the vault grows past ~30 docs,
+  // swap this back to searchSafetyDocs() — the RPC is still in place.
+  const queryEmbeddingPromise = query
+    ? embedQuery(query).catch(err => {
+        console.warn('[advisorContext] query embedding failed:', err)
+        return null
+      })
+    : Promise.resolve(null)
+
+  const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -144,20 +188,68 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .limit(MAX_SNAPSHOTS),
     // Library intelligence — synthesised cross-file analysis.
     getLibraryAnalysis(companyId).catch(() => null),
-    // RAG semantic search — only runs when a query is provided.
-    // Returns the most relevant chunks across the ENTIRE library.
-    // Falls back to [] silently if OpenAI key is missing or RPC fails.
+    // RAG semantic search — only runs when a query is provided. Waits
+    // for the shared query embedding so we don't double-embed.
     query
-      ? searchKnowledge(companyId, query, { limit: 10, threshold: 0.28 })
+      ? queryEmbeddingPromise.then(vec =>
+          vec ? searchKnowledge(companyId, query, { queryEmbedding: vec, limit: 10, threshold: 0.28 }) : []
+        )
       : Promise.resolve([]),
     // Chat history search — already kicked off above before the Promise.all.
     chatHistoryPromise,
+    // Safety vault — direct load (no embeddings). Gated on `looksSafetyish`
+    // so off-topic turns skip the query entirely. We pull the most recent
+    // is_current docs and hand them to the Haiku compressor downstream,
+    // which is the path that does the "find the relevant section" work
+    // that vector search would otherwise do.
+    looksSafetyish
+      ? supabase
+          .from('safety_documents')
+          .select('id, title, doc_type, content, created_at')
+          .eq('company_id', companyId)
+          .eq('is_current', true)
+          .not('content', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(SAFETY_VAULT_LIMIT)
+      : Promise.resolve({ data: [] }),
   ])
 
   const bp        = bpRes.data ?? {}
   const allMiles  = msRes.data ?? []
   const checkins  = ciRes.data ?? []
   const knowledge = kfRes.data ?? []
+
+  // Pack safety vault rows into the shape compressSafetyContext expects:
+  //   { title, doc_type, content, similarity }
+  //
+  // similarity is 1.0 for all rows — these are direct loads, not cosine
+  // matches, but the compressor's UI/log uses similarity for display.
+  // 100% reflects "owner uploaded this; it's authoritative for them."
+  //
+  // Char budget: newest doc first, take rows until we hit the ceiling.
+  // Each row gets its content truncated so a single 50k-char SOP can't
+  // crowd out the rest of the vault.
+  let usedChars = 0
+  const safetyChunks = []
+  for (const row of safetyChunksRes.data ?? []) {
+    if (usedChars >= SAFETY_VAULT_CHAR_BUDGET) break
+    const remaining = SAFETY_VAULT_CHAR_BUDGET - usedChars
+    // Cap any single doc at 1/3 of the total budget — leaves room for at
+    // least three docs even when one is huge.
+    const perDocCap = Math.min(remaining, Math.floor(SAFETY_VAULT_CHAR_BUDGET / 3))
+    const raw       = row.content ?? ''
+    const excerpt   = raw.length > perDocCap
+      ? `${raw.slice(0, perDocCap)}\n[… truncated]`
+      : raw
+    safetyChunks.push({
+      id:         row.id,
+      title:      row.title,
+      doc_type:   row.doc_type,
+      content:    excerpt,
+      similarity: 1.0,
+    })
+    usedChars += excerpt.length
+  }
   const snapshots = fsRes.data ?? []
   // RAG: format semantic search results using file metadata for titles/kinds.
   // If empty (no query, no key, or no relevant chunks), falls through to naive.
@@ -210,6 +302,80 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
   // different advice than one working from a month-old intake form.
   const todaysPulse = userId ? getTodaysPulse(userId) : null
 
+  // ── Build safety_context for Solomon ───────────────────────────────
+  //
+  // Three inputs feed the safety brief Solomon sees:
+  //   1. safetyChunks       — cosine hits from the owner's vault
+  //   2. regulatorySources  — URLs/summaries from migration 022's reference table
+  //   3. (general ragChunks already separately fed into knowledge_files)
+  //
+  // If we have substantial input, run the Haiku compressor to distill it
+  // into a focused brief — the cost lever. Otherwise pass raw chunks and
+  // let Solomon read them himself.
+  //
+  // We only do regulatory lookup when:
+  //   - query was provided (no point otherwise)
+  //   - jurisdiction code resolved (otherwise we'd guess regs)
+  //   - safetyTopics matched at least one pattern (otherwise it's not a safety question)
+  const jurisdictionLinks  = getJurisdictionLinks(bp.location)
+  const jurisdictionCode   = jurisdictionLinks?.code ?? null
+  const regulatorySources  = (query && jurisdictionCode && safetyTopics.length)
+    ? await loadRegulatorySources(jurisdictionCode, safetyTopics)
+    : []
+
+  // Compression — only worth running if there's meaningful retrieved
+  // content. compressSafetyContext applies its own minimum-size gate and
+  // returns { brief: null } when below threshold, so we can call it
+  // unconditionally and let it decide. But to skip the import-time
+  // cost path when there's nothing at all, short-circuit when empty.
+  const hasSafetyContent = safetyChunks.length || regulatorySources.length
+  const safetyCompressed = hasSafetyContent
+    ? await compressSafetyContext({
+        query,
+        safetyChunks,
+        knowledgeChunks:   [],  // general RAG already goes into knowledge_files
+        regulatorySources,
+      })
+    : { brief: null, compressed: false, raw_chars: 0, brief_chars: 0 }
+
+  // Build the safety_context payload Solomon's prompt will read.
+  // Three shapes:
+  //   - null         → no safety-relevant retrieval; Solomon falls back
+  //                    to the redirect behaviour for safety questions.
+  //   - {brief: ...} → Haiku compressed; Solomon quotes from the brief.
+  //   - {raw: ...}   → too small to compress; Solomon reads raw chunks.
+  let safetyContext = null
+  if (hasSafetyContent) {
+    if (safetyCompressed.brief) {
+      safetyContext = {
+        mode:  'compressed',
+        brief: safetyCompressed.brief,
+        topics:           safetyTopics,
+        vault_doc_count:  safetyChunks.length,
+        regulation_count: regulatorySources.length,
+      }
+    } else {
+      // Raw passthrough — usually because total chars were below the
+      // compression threshold (small vault) or Haiku failed.
+      safetyContext = {
+        mode: 'raw',
+        topics:            safetyTopics,
+        vault_excerpts:    safetyChunks.map(c => ({
+          title:      c.title,
+          doc_type:   c.doc_type,
+          excerpt:    c.content,
+          similarity: c.similarity,
+        })),
+        regulations:       regulatorySources.map(r => ({
+          authority:       r.authority_name,
+          regulation_name: r.regulation_name,
+          url:             r.canonical_url,
+          summary:         r.summary,
+        })),
+      }
+    }
+  }
+
   return {
     today_pulse: todaysPulse ?? null,
     business: {
@@ -233,7 +399,14 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // workplace-safety / tax questions. Null when location is missing or
     // unknown — Solomon then asks where the owner is based instead of
     // guessing a URL. See lib/jurisdictionLinks.js for the source of truth.
-    jurisdiction_authorities: getJurisdictionLinks(bp.location),
+    jurisdiction_authorities: jurisdictionLinks,
+    // Safety retrieval — when the question matched a safety topic AND we
+    // found something in the owner's vault and/or the regulatory registry,
+    // this is the focused brief Solomon should quote from instead of
+    // redirecting. Null when no safety signal — Solomon's safety redirect
+    // (in ADVISOR_SYSTEM_PROMPT) still applies. See lib/regulatorySources.js
+    // for topic detection and migration 022 for the data tables.
+    safety_context: safetyContext,
     // Credit & liquidity — set once in Settings, always included so every tool
     // and the Advisor can reason about the owner's true available capital without
     // them having to re-enter it each time.
