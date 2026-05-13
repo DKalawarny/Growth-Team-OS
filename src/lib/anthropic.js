@@ -1,13 +1,33 @@
-import Anthropic from '@anthropic-ai/sdk'
+/**
+ * Claude — the browser-side client.
+ *
+ * Previously this file imported `@anthropic-ai/sdk` with
+ * `dangerouslyAllowBrowser: true` and called Anthropic directly with
+ * `VITE_ANTHROPIC_API_KEY`. That key shipped in every customer's bundle —
+ * one DevTools Network tab away from being lifted and run up to the
+ * Anthropic monthly limit.
+ *
+ * Now every call routes through the `claude` Supabase Edge Function:
+ *
+ *   Browser → POST /functions/v1/claude → Anthropic
+ *                 (with user JWT)         (with secret key, server-side only)
+ *
+ * The Edge Function holds the Anthropic key, verifies the caller's JWT,
+ * enforces caps server-side, and writes usage_events authoritatively.
+ *
+ * Public surface kept identical so existing tool pages don't need
+ * touching: `callClaude`, `streamClaude`, `runToolCall`, `streamToolCall`,
+ * plus the `SONNET` / `HAIKU` model constants.
+ *
+ * Setup checklist:
+ *   1. Drop VITE_ANTHROPIC_API_KEY from .env.local — no longer needed.
+ *   2. In Supabase → Edge Functions → Secrets, set ANTHROPIC_API_KEY.
+ *   3. Deploy: `supabase functions deploy claude`.
+ */
+
+import { supabase } from './supabase'
 import { assertWithinToolCap, assertWithinSpendCap, trackClaudeUsage } from './usage'
 import { getCachedResponse, setCachedResponse } from './responseCache'
-
-const client = new Anthropic({
-  apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY,
-  // NOTE: move API calls to a Supabase Edge Function before going to production
-  // to avoid exposing your API key in the browser bundle.
-  dangerouslyAllowBrowser: true,
-})
 
 // ── Model constants ───────────────────────────────────────────────────────────
 //
@@ -24,33 +44,63 @@ const client = new Anthropic({
 export const SONNET = 'claude-sonnet-4-6'
 export const HAIKU  = 'claude-haiku-4-5'
 
-// ── Prompt caching ────────────────────────────────────────────────────────────
+// ── Prompt caching helper ─────────────────────────────────────────────────────
 //
-// Anthropic charges 90% less for tokens that hit the prompt cache (the same
-// system prompt re-sent within 5 minutes). We activate caching automatically
-// for any system prompt over MIN_CACHE_CHARS — short greetings don't qualify
-// (Anthropic's minimum cacheable block is 1024 tokens for Sonnet / 2048 for
-// Haiku, so caching a 3-sentence greeting would just be ignored anyway).
+// Anthropic charges 90% less for tokens served from the prompt cache (same
+// system prompt within 5 minutes). We mark long system prompts with
+// `cache_control: { type: 'ephemeral' }` and ship them as a structured
+// block array; short prompts are passed as plain strings (Anthropic's
+// minimum cacheable block is large enough that caching a greeting would
+// be ignored anyway).
 //
-// How it works: instead of passing `system` as a string, we pass an array with
-// a `cache_control: { type: "ephemeral" }` marker. Anthropic then stores the
-// tokenised system prompt and reuses it on matching requests within 5 minutes.
-//
-// Biggest wins: Advisor chat (same system prompt on every turn), tool generate
-// + refine (same tool prompt sent twice per session).
+// The Edge Function accepts either shape on its `systemPrompt` /
+// `systemBlocks` body fields, so the wire format mirrors what the SDK
+// used to receive.
 
-const MIN_CACHE_CHARS = 500  // only cache prompts longer than this
+const MIN_CACHE_CHARS = 500
 
-function buildSystem(text) {
-  if (text.length < MIN_CACHE_CHARS) return text
-  return [{ type: 'text', text, cache_control: { type: 'ephemeral' } }]
+function buildSystemPayload(text) {
+  if (!text || text.length < MIN_CACHE_CHARS) {
+    return { systemPrompt: text || '' }
+  }
+  return {
+    systemBlocks: [
+      { type: 'text', text, cache_control: { type: 'ephemeral' } },
+    ],
+  }
+}
+
+// ── Edge Function URL builder ─────────────────────────────────────────────────
+//
+// We can't use supabase.functions.invoke() for the streaming case (it
+// awaits the full body), so we always go through a hand-rolled fetch
+// for symmetry. The token is read from the live session, not a one-time
+// snapshot, so a token refresh between calls keeps working.
+
+const SUPABASE_URL      = import.meta.env.VITE_SUPABASE_URL ?? ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ''
+
+async function authHeaders() {
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token ?? ''
+  return {
+    'Authorization': `Bearer ${token}`,
+    'apikey':        SUPABASE_ANON_KEY,
+    'content-type':  'application/json',
+  }
+}
+
+function claudeFunctionUrl() {
+  return `${SUPABASE_URL}/functions/v1/claude`
 }
 
 // ── Low-level call ────────────────────────────────────────────────────────────
 
 /**
- * Low-level Claude call. Does NOT enforce caps or log usage — use
- * `runToolCall()` below for anything the owner pays for.
+ * Low-level Claude call. Does NOT enforce caps or log usage client-side —
+ * the Edge Function handles both server-side. Use `runToolCall()` below for
+ * anything the owner pays for; that adds an optimistic browser-side cap
+ * check before the round-trip (faster failure UX).
  *
  * @param {object}  opts
  * @param {string}  opts.systemPrompt
@@ -58,6 +108,11 @@ function buildSystem(text) {
  * @param {number}  [opts.maxTokens=1024]
  * @param {boolean} [opts.json=false]
  * @param {string}  [opts.model=SONNET]
+ * @param {boolean} [opts.skipCaps=true]   default true here because the call
+ *                                         is "low-level" — caller hasn't
+ *                                         declared a toolId. The Edge
+ *                                         Function won't decrement caps
+ *                                         when skipCaps=true.
  */
 export async function callClaude({
   systemPrompt,
@@ -65,23 +120,53 @@ export async function callClaude({
   maxTokens = 1024,
   json      = false,
   model     = SONNET,
+  skipCaps  = true,
 }) {
-  const { text } = await rawClaudeCall({ systemPrompt, messages, maxTokens, json, model })
-  return text
+  const sys     = buildSystemPayload(systemPrompt)
+  const headers = await authHeaders()
+
+  const res = await fetch(claudeFunctionUrl(), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...sys,
+      messages,
+      maxTokens,
+      model,
+      json,
+      stream: false,
+      skipCaps,
+    }),
+  })
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '')
+    throw new Error(`Claude function error ${res.status}: ${errText.slice(0, 200)}`)
+  }
+
+  const data = await res.json()
+  const raw  = data.text ?? ''
+  return json ? unwrapJson(raw) : raw
 }
 
 /**
  * Streaming Claude call — yields text chunks in real time via onChunk.
- * Use for the Advisor chat so responses appear word-by-word.
- * Does NOT enforce caps or track usage (use streamToolCall for billable calls).
+ * Used for the Advisor chat so responses appear word-by-word.
+ *
+ * The Edge Function emits a normalized SSE stream:
+ *   data: {"type":"chunk","text":"..."}
+ *   ...
+ *   data: {"type":"done","usage":{...}}
+ *
+ * We parse line-by-line and call onChunk for each `chunk` event.
  *
  * @param {object}   opts
  * @param {string}   opts.systemPrompt
  * @param {Array}    opts.messages
  * @param {number}   [opts.maxTokens=2000]
  * @param {string}   [opts.model=SONNET]
- * @param {Function} opts.onChunk   (chunk: string, fullText: string) => void
- * @returns {Promise<string>}  The complete response text
+ * @param {Function} opts.onChunk
+ * @returns {Promise<string>} full response text
  */
 export async function streamClaude({
   systemPrompt,
@@ -90,31 +175,35 @@ export async function streamClaude({
   model     = SONNET,
   onChunk,
 }) {
-  const system = buildSystem(systemPrompt)
-  let fullText = ''
-
-  const stream = client.messages.stream({
-    model,
-    max_tokens: maxTokens,
-    system,
+  // Streaming calls used to be considered "low-level" (no caps, no usage
+  // tracking). The new Edge Function makes the call go through the same
+  // gateway, so skipCaps=true preserves the old semantics — Advisor
+  // streams use streamToolCall instead when they want caps + tracking.
+  return streamClaudeRaw({
+    systemPrompt,
     messages,
+    maxTokens,
+    model,
+    onChunk,
+    skipCaps: true,
   })
-
-  for await (const event of stream) {
-    if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
-      fullText += event.delta.text
-      onChunk?.(event.delta.text, fullText)
-    }
-  }
-
-  return fullText
 }
 
 // ── Gated billable call ───────────────────────────────────────────────────────
 
 /**
- * Gated Claude call for tool generates + refines. Cap check and usage tracking
- * always happen together here — no tool call can skip either.
+ * Gated Claude call for tool generates + refines. Cap check happens twice:
+ *
+ *   1. Browser-side (this function) — for fast failure UX. If the cap is
+ *      already known to be hit, we throw before the round-trip so the
+ *      user sees the modal in <100ms instead of waiting on a request.
+ *
+ *   2. Edge Function — authoritative. The browser check could be stale or
+ *      bypassed. The server is the source of truth.
+ *
+ * Usage tracking happens only server-side now (browser-side trackClaudeUsage
+ * was bypassable by a malicious client and is no longer the source of
+ * truth).
  *
  * @param {object}  opts
  * @param {string}  opts.companyId
@@ -126,7 +215,8 @@ export async function streamClaude({
  * @param {number}  [opts.maxTokens=1024]
  * @param {boolean} [opts.json=false]
  * @param {string}  [opts.model=SONNET]
- * @throws {CapExceededError}
+ * @param {boolean} [opts.noCache=false]
+ * @throws {CapExceededError | SpendCapExceededError}
  */
 export async function runToolCall({
   companyId,
@@ -138,36 +228,68 @@ export async function runToolCall({
   maxTokens  = 1024,
   json       = false,
   model      = SONNET,
-  noCache    = false,   // set true for refine calls where personalised edits shouldn't be cached
+  noCache    = false,
 }) {
+  // Browser-side optimistic cap check. Fail fast on a known-over cap;
+  // the Edge Function repeats the check authoritatively.
   await Promise.all([
     assertWithinToolCap(companyId, toolId),
     assertWithinSpendCap(companyId),
   ])
 
-  // ── Cache check ─────────────────────────────────────────────────────────────
-  // Only cache 'generate' calls (refines are personalised follow-up edits).
-  // On a hit we return immediately — no Claude call, no token spend, no cap decrement.
+  // Response cache check — same shape and behaviour as before. The cache
+  // lives in localStorage (see responseCache.js) so this happens entirely
+  // in the browser.
   if (!noCache && kind === 'generate') {
     const cached = await getCachedResponse({ companyId, toolId, kind, systemPrompt, messages })
     if (cached) return cached
   }
 
-  const { text, usage } = await rawClaudeCall({ systemPrompt, messages, maxTokens, json, model })
+  const sys     = buildSystemPayload(systemPrompt)
+  const headers = await authHeaders()
 
-  await trackClaudeUsage({
-    companyId,
-    userId,
-    toolId,
-    kind,
-    tokensIn:  usage?.input_tokens  ?? 0,
-    tokensOut: usage?.output_tokens ?? 0,
+  const res = await fetch(claudeFunctionUrl(), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...sys,
+      messages,
+      maxTokens,
+      model,
+      json,
+      stream:    false,
+      toolId,
+      kind,
+      skipCaps:  false,
+    }),
   })
 
-  // ── Cache store ──────────────────────────────────────────────────────────────
+  if (!res.ok) {
+    // 429 means a cap was hit server-side — surface a structured error
+    // so the existing isCapExceeded() / isSpendCapExceeded() guards in
+    // tool pages still light up the right modal.
+    if (res.status === 429) {
+      const body = await res.json().catch(() => ({}))
+      const err  = new Error(body.error ?? 'Cap exceeded')
+      err.code   = body.code ?? 'cap_exceeded'
+      err.name   = body.code === 'spend_cap_exceeded' ? 'SpendCapExceededError' : 'CapExceededError'
+      throw err
+    }
+    const errText = await res.text().catch(() => '')
+    throw new Error(`Claude function error ${res.status}: ${errText.slice(0, 200)}`)
+  }
+
+  const data = await res.json()
+  const text = json ? unwrapJson(data.text ?? '') : (data.text ?? '')
+
+  // Usage is now logged inside the Edge Function — no second client call.
+  // We deliberately keep `trackClaudeUsage` exported so any non-Claude
+  // callsite (Places, future providers) can still use it directly.
+  void trackClaudeUsage // intentionally referenced to avoid dead-code import elimination
+
   if (!noCache && kind === 'generate') {
     setCachedResponse({ companyId, toolId, kind, systemPrompt, messages, response: text })
-      .then(() => {}) // fire-and-forget
+      .then(() => {})
   }
 
   return text
@@ -176,8 +298,8 @@ export async function runToolCall({
 // ── Streaming gated call ──────────────────────────────────────────────────────
 
 /**
- * Streaming gated call. Same cap check + usage tracking as runToolCall but
- * yields text as it arrives via onChunk(chunk, fullTextSoFar).
+ * Streaming gated call. Same cap check as runToolCall but yields text as it
+ * arrives via onChunk(chunk, fullTextSoFar). Usage tracking is server-side.
  *
  * @param {object}   opts
  * @param {string}   opts.companyId
@@ -208,62 +330,122 @@ export async function streamToolCall({
     assertWithinSpendCap(companyId),
   ])
 
-  const rawSystem = json
-    ? `${systemPrompt}\n\nRespond with valid JSON only. Do not include any text outside the JSON. Do not wrap the JSON in markdown code fences.`
-    : systemPrompt
-
-  const system   = buildSystem(rawSystem)
-  let fullText   = ''
-  let tokensIn   = 0
-  let tokensOut  = 0
-
-  const stream = client.messages.stream({
-    model,
-    max_tokens: maxTokens,
-    system,
+  const fullText = await streamClaudeRaw({
+    systemPrompt,
     messages,
+    maxTokens,
+    model,
+    onChunk,
+    toolId,
+    kind,
+    json,
+    skipCaps: false,
   })
-
-  for await (const event of stream) {
-    if (event.type === 'message_start') {
-      tokensIn = event.message?.usage?.input_tokens ?? 0
-    }
-    if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
-      fullText += event.delta.text
-      onChunk?.(event.delta.text, fullText)
-    }
-    if (event.type === 'message_delta') {
-      tokensOut = event.usage?.output_tokens ?? tokensOut
-    }
-  }
-
-  await trackClaudeUsage({ companyId, userId, toolId, kind, tokensIn, tokensOut })
 
   return json ? unwrapJson(fullText) : fullText
 }
 
-// ── Shared API call ───────────────────────────────────────────────────────────
+// ── Internal: streaming fetch + SSE parser ────────────────────────────────────
+//
+// Shared by streamClaude (no caps) and streamToolCall (caps + tracking).
+// The Edge Function does all the work; this just consumes its normalized
+// SSE format.
+//
+// Wire format we expect, one event per `\n\n`-delimited block:
+//   data: {"type":"chunk","text":"..."}
+//   data: {"type":"error","message":"..."}
+//   data: {"type":"done","usage":{...}}
 
-async function rawClaudeCall({ systemPrompt, messages, maxTokens, json, model = SONNET }) {
-  const rawSystem = json
-    ? `${systemPrompt}\n\nRespond with valid JSON only. Do not include any text outside the JSON. Do not wrap the JSON in markdown code fences.`
-    : systemPrompt
+async function streamClaudeRaw({
+  systemPrompt,
+  messages,
+  maxTokens,
+  model,
+  onChunk,
+  toolId,
+  kind,
+  json    = false,
+  skipCaps,
+}) {
+  const sys     = buildSystemPayload(systemPrompt)
+  const headers = await authHeaders()
 
-  const system = buildSystem(rawSystem)
-
-  const response = await client.messages.create({
-    model,
-    max_tokens: maxTokens,
-    system,
-    messages,
+  const res = await fetch(claudeFunctionUrl(), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...sys,
+      messages,
+      maxTokens,
+      model,
+      stream:   true,
+      toolId,
+      kind,
+      json,
+      skipCaps,
+    }),
   })
 
-  const raw  = response.content[0].text
-  const text = json ? unwrapJson(raw) : raw
-  return { text, usage: response.usage }
+  if (!res.ok) {
+    if (res.status === 429) {
+      const body = await res.json().catch(() => ({}))
+      const err  = new Error(body.error ?? 'Cap exceeded')
+      err.code   = body.code ?? 'cap_exceeded'
+      err.name   = body.code === 'spend_cap_exceeded' ? 'SpendCapExceededError' : 'CapExceededError'
+      throw err
+    }
+    const errText = await res.text().catch(() => '')
+    throw new Error(`Claude function error ${res.status}: ${errText.slice(0, 200)}`)
+  }
+  if (!res.body) {
+    throw new Error('Claude function returned no stream body')
+  }
+
+  const reader  = res.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer    = ''
+  let fullText  = ''
+
+  // Iterate SSE events. We accumulate decoded bytes into `buffer`, split
+  // on `\n\n`, and parse each event's `data:` line. `chunk` events drive
+  // onChunk; `error` events throw; `done` is the natural terminator.
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+
+    const events = buffer.split('\n\n')
+    buffer = events.pop() ?? ''
+    for (const ev of events) {
+      for (const line of ev.split('\n')) {
+        if (!line.startsWith('data:')) continue
+        const payload = line.slice(5).trim()
+        if (!payload) continue
+        try {
+          const data = JSON.parse(payload)
+          if (data.type === 'chunk' && typeof data.text === 'string') {
+            fullText += data.text
+            onChunk?.(data.text, fullText)
+          } else if (data.type === 'error') {
+            throw new Error(data.message || 'Stream error')
+          }
+          // `done` is informational — we end naturally when the reader closes
+        } catch (e) {
+          if (e instanceof SyntaxError) continue   // skip malformed line
+          throw e
+        }
+      }
+    }
+  }
+
+  return fullText
 }
 
 // ── JSON fence cleanup ────────────────────────────────────────────────────────
+//
+// Claude occasionally wraps JSON output in ``` fences even when told not
+// to. We strip them defensively so JSON.parse() at callsites doesn't
+// have to know about it. Mirrors the original implementation.
 
 function unwrapJson(text) {
   if (typeof text !== 'string') return text

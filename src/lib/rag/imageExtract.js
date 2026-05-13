@@ -13,8 +13,8 @@
  *      is dominated by images or was scanned.
  *   2. Render each visual page to a canvas using PDF.js at medium resolution.
  *   3. Skip blank pages (all-white canvases — cover pages, intentional blanks).
- *   4. Send the rendered image to Claude Vision (claude-3-haiku — cheapest
- *      vision model, ~$0.0002 per image at typical chart size).
+ *   4. Send the rendered image through the `claude` Edge Function (Vision-
+ *      capable — Anthropic accepts image content blocks on any text model).
  *   5. Ask Claude to describe the visual content in terms useful to a business
  *      advisor: data values, trends, axis labels, process steps, etc.
  *   6. Return the descriptions as text. The indexer embeds them alongside
@@ -27,7 +27,13 @@
  *   This caps cost for decks that are entirely image slides (e.g. 80-slide
  *   pitch deck). The first MAX_IMG_PAGES visual pages are indexed; the rest
  *   are silently skipped (text search still works on their text if any).
+ *
+ * Note: this file used to fetch the Anthropic API directly using a browser-
+ * exposed `VITE_ANTHROPIC_API_KEY`. That key has been retired; we now go
+ * through the same Edge Function as every other Claude call.
  */
+
+import { callClaude, HAIKU } from '../anthropic'
 
 const RENDER_SCALE  = 1.5      // PDF→canvas scale: quality vs. base64 payload size
 const JPEG_QUALITY  = 0.80     // JPEG compression level
@@ -37,18 +43,16 @@ const MAX_IMG_PAGES = 20       // hard cap on visual pages processed per file
 /**
  * Scan a PDF file for visual pages and return Claude Vision descriptions.
  *
- * @param {File}     pdfFile         The original PDF File object (from the upload)
- * @param {string[]} pageTexts       Per-page text already extracted (from extractPdf).
- *                                   Index 0 = page 1. Used to identify visual pages.
- * @param {string}   anthropicApiKey VITE_ANTHROPIC_API_KEY — for Claude Vision calls
+ * @param {File}     pdfFile    The original PDF File object (from the upload)
+ * @param {string[]} pageTexts  Per-page text already extracted (from extractPdf).
+ *                              Index 0 = page 1. Used to identify visual pages.
  *
  * @returns {Array<{ pageNumber: number, description: string }>}
  *          One entry per visual page successfully described. Empty if none found
- *          or if extraction fails.
+ *          or if extraction fails. (Auth happens server-side via the Edge
+ *          Function — no API key parameter required from the caller.)
  */
-export async function extractPdfImages(pdfFile, pageTexts, anthropicApiKey) {
-  if (!anthropicApiKey) return []
-
+export async function extractPdfImages(pdfFile, pageTexts) {
   let pdfjs
   try {
     pdfjs = await loadPdfjs()
@@ -74,7 +78,7 @@ export async function extractPdfImages(pdfFile, pageTexts, anthropicApiKey) {
       const base64 = await renderPageToBase64(doc, pageNum)
       if (!base64) continue  // blank page — skip
 
-      const description = await describeWithClaudeVision(base64, pageNum, anthropicApiKey)
+      const description = await describeWithClaudeVision(base64, pageNum)
       if (description?.trim()) {
         results.push({ pageNumber: pageNum, description: description.trim() })
         visualPagesFound++
@@ -129,17 +133,16 @@ function isBlankCanvas(ctx, width, height) {
 
 // ── Claude Vision ─────────────────────────────────────────────────────────────
 
-async function describeWithClaudeVision(base64, pageNum, apiKey) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method:  'POST',
-    headers: {
-      'x-api-key':         apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type':      'application/json',
-    },
-    body: JSON.stringify({
-      model:      'claude-haiku-4-5',   // cheapest vision model — adequate for charts
-      max_tokens: 450,
+async function describeWithClaudeVision(base64, pageNum) {
+  // Goes through the `claude` Edge Function — the function passes
+  // `messages` through to Anthropic untouched, so image content blocks
+  // work the same as they did when this file called Anthropic directly.
+  let text = ''
+  try {
+    text = await callClaude({
+      model:     HAIKU,    // cheapest vision-capable model — adequate for charts
+      maxTokens: 450,
+      systemPrompt: '',    // no system role on a one-shot vision call
       messages: [{
         role: 'user',
         content: [
@@ -166,17 +169,11 @@ Be specific and complete. Max 400 words. If the page is not a meaningful busines
           },
         ],
       }],
-    }),
-  })
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    console.warn(`[RAG] Vision API error ${res.status}:`, body.slice(0, 200))
+    })
+  } catch (err) {
+    console.warn(`[RAG] Vision call failed for page ${pageNum}:`, err.message)
     return null
   }
-
-  const data = await res.json()
-  const text = data.content?.[0]?.text ?? ''
 
   // Discard decorative pages — no signal for the advisor
   if (text.toLowerCase().includes('decorative page')) return null
