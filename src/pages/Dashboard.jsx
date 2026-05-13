@@ -87,20 +87,21 @@ export default function Dashboard() {
     () => classifyAll(state.milestones ?? [], todayYmd()),
     [state.milestones],
   )
+  // Build toolDocs: latest doc per tool_id — fed into ToolPulseStrip.
+  // Must be declared BEFORE the early return below so hook order stays
+  // stable between the loading and loaded renders (Rules of Hooks).
+  const toolDocs = useMemo(() => {
+    const map = {}
+    for (const doc of state.documents ?? []) {
+      if (!map[doc.tool_id]) map[doc.tool_id] = doc
+    }
+    return map
+  }, [state.documents])
 
   if (state.loading) return <LoadingSkeleton />
 
   const { businessProfile, milestones, checkins, documents, latestPnl, qboStatus, analysis } = state
   const stage = detectStage(businessProfile?.current_revenue)
-
-  // Build toolDocs: latest doc per tool_id — fed into ToolPulseStrip
-  const toolDocs = useMemo(() => {
-    const map = {}
-    for (const doc of documents ?? []) {
-      if (!map[doc.tool_id]) map[doc.tool_id] = doc
-    }
-    return map
-  }, [documents])
 
   const firstName          = profile?.name?.split(' ')[0] ?? null
   const milestonesComplete = milestones.filter(m => m.completed).length

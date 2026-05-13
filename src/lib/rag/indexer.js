@@ -28,7 +28,9 @@ import { chunkText }        from './chunker'
 import { embedBatch }       from './embeddings'
 import { extractPdfImages } from './imageExtract'
 
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY
+// Vision calls now route through the `claude` Edge Function, which holds
+// the Anthropic key server-side. Indexing is always available; no client-
+// side env check needed.
 
 /**
  * Index a knowledge file that has already been saved to the database.
@@ -63,17 +65,13 @@ export async function indexKnowledgeFile(knowledgeFile, originalFile, onProgress
   const isPdf = (mimeType || '').includes('pdf')
     || (originalFile?.name || '').toLowerCase().endsWith('.pdf')
 
-  if (isPdf && originalFile && ANTHROPIC_KEY) {
+  if (isPdf && originalFile) {
     try {
       // Split extracted text by double newlines as a rough page-per-paragraph
       // approximation — good enough for the "is this page visual?" heuristic.
       const pageTexts = (extractedText || '').split('\n\n')
 
-      const imageDescs = await extractPdfImages(
-        originalFile,
-        pageTexts,
-        ANTHROPIC_KEY,
-      )
+      const imageDescs = await extractPdfImages(originalFile, pageTexts)
 
       for (const { pageNumber, description } of imageDescs) {
         if (description?.trim()) {

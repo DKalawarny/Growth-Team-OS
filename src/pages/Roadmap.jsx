@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { uploadKnowledgeFile, validateFile, listFilesForMilestone } from '../lib/knowledgeFiles'
+import { sendTaskAssigned } from '../lib/email'
+import Tooltip from '../components/ui/Tooltip'
 import { getBookLink, AFFILIATE_DISCLOSURE } from '../lib/affiliateLinks'
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { ROADMAP_SYSTEM_PROMPT } from '../lib/prompts'
@@ -86,6 +88,31 @@ const CATEGORY_BAR = {
   _default:   { base: '#F3F4F6', fill: '#4B5563' },
 }
 
+// Human-readable name + one-liner for each category, used in tooltips
+// and the Roadmap legend pill. Keep these short — they appear inside a
+// small dark bubble at hover time.
+const CATEGORY_LABELS = {
+  foundation: { label: 'Foundation', desc: 'Legal, structure, basics' },
+  systems:    { label: 'Systems',    desc: 'Tools, processes, software' },
+  team:       { label: 'Team',       desc: 'Hiring, org chart, people' },
+  revenue:    { label: 'Revenue',    desc: 'Sales, marketing, growth' },
+  exit:       { label: 'Exit',       desc: 'Long-term salability moves' },
+  trajectory: { label: 'Trajectory', desc: 'Strategic direction' },
+}
+
+// Status colors for the left-edge bar. Mirrors the inline logic in
+// MilestoneRow so the legend pill can render dots that match exactly.
+// (Inline logic still wins — this is documentation, not the source of
+// truth — keep the two in sync if either changes.)
+const STATUS_BAR_COLORS = {
+  bottleneck:  { color: '#f87171', label: 'Bottleneck',     desc: 'Blocking other milestones'   },
+  done:        { color: '#4ade80', label: 'Done',           desc: 'Completed'                    },
+  inProgress:  { color: '#6366f1', label: 'In progress',    desc: 'Started, not finished yet'    },
+  overdue:     { color: '#fbbf24', label: 'Behind',         desc: 'Past target date'             },
+  blocked:     { color: '#d1d5db', label: 'Waiting',        desc: 'Waiting on a dependency'      },
+  ready:       { color: '#e2e8f0', label: 'Ready to start', desc: 'Available to work on'         },
+}
+
 /** Colored chip for each row's status. Copy-first, no jargon. */
 const STATUS_STYLES = {
   done:          { label: 'Done',            tone: 'bg-green-100 text-green-800 border-green-200' },
@@ -138,7 +165,23 @@ export default function Roadmap() {
   const [milestones, setMilestones] = useState([])
   const [loading, setLoading]       = useState(true)
   const [assigneesByMilestone, setAssigneesByMilestone] = useState(new Map())
+  // Per-action-step assignees: key = `${milestone_id}::${action_step_text}` → person
+  // Keyed off the work order's `title` column (which is set to the action step
+  // text when a work order is created from the inline "+ Work order" button).
+  const [actionAssigneesByKey, setActionAssigneesByKey] = useState(new Map())
+  // Companion map: same key → work_order id. Lets the modal UPDATE the
+  // existing row when an action is reassigned, instead of inserting a
+  // duplicate work order every time the owner picks a new person.
+  const [actionWorkOrderIdByKey, setActionWorkOrderIdByKey] = useState(new Map())
+  // Bumped after a successful modal save so the orders loader re-runs and
+  // the per-action map reflects the new assignment immediately (no full
+  // page reload required).
+  const [ordersRefreshTick, setOrdersRefreshTick] = useState(0)
   const [teamMembers, setTeamMembers]           = useState([])    // profiles + staff for assignment picker
+  // Active playbooks for the "Start from playbook" picker in the quick WO modal.
+  // Each row carries its items inline so we can spawn the checklist in one
+  // round-trip after the WO inserts. Empty array if migration 020 isn't applied.
+  const [templates,   setTemplates]             = useState([])
   const [assignColMissing, setAssignColMissing] = useState(false) // true if assignee_cid column missing
   const [workOrderDraft, setWorkOrderDraft]     = useState(null)  // { milestoneId, milestoneTitle, taskTitle }
   const [expandedId, setExpandedId] = useState(null)
@@ -244,9 +287,13 @@ export default function Roadmap() {
       const [ordersRes, profilesRes, staffRes] = await Promise.all([
         supabase
           .from('work_orders')
-          .select('milestone_id, assigned_to, staff_member_id')
+          .select('id, milestone_id, title, assigned_to, staff_member_id, created_at')
           .eq('company_id', profile.company_id)
-          .not('milestone_id', 'is', null),
+          .not('milestone_id', 'is', null)
+          // Order by created_at ascending so the latest row overwrites
+          // earlier ones in the per-action map — when a duplicate exists
+          // from before this fix, the newest assignment is the one shown.
+          .order('created_at', { ascending: true }),
         supabase.from('profiles').select('id, name, email').eq('company_id', profile.company_id),
         supabase.from('staff_members').select('id, name, email').eq('company_id', profile.company_id),
       ])
@@ -257,21 +304,41 @@ export default function Roadmap() {
       const profileMap = Object.fromEntries((profilesRes.data ?? []).map(p => [p.id, p]))
       const staffMap   = Object.fromEntries((staffRes.data   ?? []).map(s => [s.id, s]))
 
-      const map = new Map()
+      const map        = new Map() // milestone_id -> [person, ...]
+      const actionMap  = new Map() // `${milestone_id}::${title}` -> person (latest wins)
+      const woIdMap    = new Map() // `${milestone_id}::${title}` -> work_order id (latest wins)
       for (const o of (ordersRes.data ?? [])) {
         if (!o.milestone_id) continue
         const person = o.assigned_to     ? { ...profileMap[o.assigned_to],    _t: 'profile' }
                      : o.staff_member_id ? { ...staffMap[o.staff_member_id],   _t: 'staff'   }
                      : null
+
+        // Per-action-step index — uses the work order's title, which the
+        // inline "+ Work order" button sets to the exact action step text.
+        // We record the id even if there's no person assigned yet, so a
+        // reassignment of an existing-but-unassigned work order also takes
+        // the UPDATE path.
+        if (o.title) {
+          woIdMap.set(`${o.milestone_id}::${o.title}`, o.id)
+        }
+
         if (!person?.id) continue
+
+        // Per-milestone roll-up (unchanged)
         if (!map.has(o.milestone_id)) map.set(o.milestone_id, [])
         const arr = map.get(o.milestone_id)
         if (!arr.find(a => a.id === person.id)) arr.push(person)
+
+        if (o.title) {
+          actionMap.set(`${o.milestone_id}::${o.title}`, person)
+        }
       }
       setAssigneesByMilestone(map)
+      setActionAssigneesByKey(actionMap)
+      setActionWorkOrderIdByKey(woIdMap)
     })()
     return () => { cancelled = true }
-  }, [profile?.company_id])
+  }, [profile?.company_id, ordersRefreshTick])
 
   // Load all team members (app profiles + staff) for the inline assignment picker
   useEffect(() => {
@@ -288,6 +355,34 @@ export default function Roadmap() {
         ...(staffRes.data   ?? []).map(s => ({ ...s, _cid: `s:${s.id}`, _t: 'staff'   })),
       ]
       setTeamMembers(members)
+    })()
+    return () => { cancelled = true }
+  }, [profile?.company_id])
+
+  // Load playbooks (with their steps nested) so the QuickWorkOrderModal can
+  // offer "Start from playbook" and spawn the checklist on insert. Silent
+  // failure on missing table — the picker just won't appear until migration
+  // 020 is applied.
+  useEffect(() => {
+    if (!profile?.company_id) return
+    let cancelled = false
+    ;(async () => {
+      const { data, error } = await supabase
+        .from('work_order_templates')
+        .select(`
+          id, name,
+          items:work_order_template_items(id, position, text, notes, required)
+        `)
+        .eq('company_id', profile.company_id)
+        .is('archived_at', null)
+        .order('updated_at', { ascending: false })
+      if (cancelled) return
+      if (error) { setTemplates([]); return }
+      const sorted = (data ?? []).map(t => ({
+        ...t,
+        items: (t.items || []).slice().sort((a, b) => a.position - b.position),
+      }))
+      setTemplates(sorted)
     })()
     return () => { cancelled = true }
   }, [profile?.company_id])
@@ -490,7 +585,24 @@ export default function Roadmap() {
 
   // Open the quick work-order popup from a roadmap row
   function handleOpenWorkOrder(milestoneId, milestoneTitle, taskTitle = '') {
-    setWorkOrderDraft({ milestoneId, milestoneTitle, taskTitle })
+    // If a work order already exists for this exact action step, pass its
+    // id into the draft — the modal will UPDATE instead of inserting a
+    // duplicate. The key matches what the orders loader builds.
+    const key = `${milestoneId}::${taskTitle || milestoneTitle}`
+    const existingWorkOrderId  = actionWorkOrderIdByKey.get(key) ?? null
+    const existingAssigneePerson = actionAssigneesByKey.get(key) ?? null
+    // Pre-populate the dropdown with the current assignee (if any) so
+    // "Reassign" opens showing who's there now, not blank.
+    const existingAssigneeCid = existingAssigneePerson
+      ? `${existingAssigneePerson._t === 'staff' ? 's' : 'p'}:${existingAssigneePerson.id}`
+      : ''
+    setWorkOrderDraft({
+      milestoneId,
+      milestoneTitle,
+      taskTitle,
+      existingWorkOrderId,
+      existingAssigneeCid,
+    })
   }
 
   // Assign a team member to a milestone (optimistic, with column-missing guard)
@@ -922,6 +1034,11 @@ Suggest a single new milestone that addresses what they've described. Make it sp
           <ViewToggle value={view} onChange={setView} />
         </div>
 
+        {/* Legend — collapsed by default. Once an owner has used the page
+            a few times they don't need this expanded; it sits as a single
+            small pill at the top until they click it. */}
+        <RoadmapLegend />
+
         {view === 'timeline' ? (
           <GanttView
             milestones={scaledMilestones}
@@ -943,6 +1060,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
             dependentCountById={dependentCountById}
             sharePctById={sharePctById}
             assigneesByMilestone={assigneesByMilestone}
+            actionAssigneesByKey={actionAssigneesByKey}
             teamMembers={teamMembers}
             featuredId={nextMilestone?.id ?? null}
             onToggleExpand={id => setExpandedId(expandedId === id ? null : id)}
@@ -975,9 +1093,131 @@ Suggest a single new milestone that addresses what they've described. Make it sp
         <QuickWorkOrderModal
           draft={workOrderDraft}
           teamMembers={teamMembers}
+          templates={templates}
           profile={profile}
-          onClose={() => setWorkOrderDraft(null)}
+          company={company}
+          onClose={(didSave) => {
+            setWorkOrderDraft(null)
+            // Re-run the orders loader so the assignee pill appears (or
+            // updates) on the action step immediately, without waiting
+            // for a full page reload.
+            if (didSave) setOrdersRefreshTick(t => t + 1)
+          }}
         />
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
+// Roadmap legend — collapsible pill explaining the colors and chips
+// ============================================================================
+/**
+ * Anchored at the top of the milestone list. Collapsed by default so the
+ * row of pills below it is the visual focus; one click expands a compact
+ * panel listing every dot, bar, and chip with their meaning.
+ *
+ * Pulls from the same CATEGORY_LABELS and STATUS_BAR_COLORS maps that the
+ * row uses, so a future color/label change to the row updates the legend
+ * automatically.
+ *
+ * Persisted "open" state would be nice (so an owner who wants it open
+ * always doesn't have to re-click on every page load), but starting with
+ * in-memory state — we can promote to localStorage if anyone asks.
+ */
+function RoadmapLegend() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="mb-4">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+          open
+            ? 'bg-ink-100 text-ink-800 border-ink-200'
+            : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'
+        }`}
+        aria-expanded={open}
+      >
+        <span aria-hidden>{open ? '▾' : '▸'}</span>
+        What do these colors mean?
+      </button>
+
+      {open && (
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white border border-ink-150 rounded-xl p-4 shadow-sm">
+
+          {/* Status — left-edge bar */}
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">
+              Left-edge bar · status
+            </p>
+            <ul className="space-y-1.5">
+              {Object.values(STATUS_BAR_COLORS).map(s => (
+                <li key={s.label} className="flex items-start gap-2 text-xs text-ink-700">
+                  <span
+                    className="mt-1 w-3 h-3 rounded-sm flex-shrink-0"
+                    style={{ backgroundColor: s.color }}
+                  />
+                  <span>
+                    <span className="font-semibold">{s.label}</span>
+                    <span className="block text-ink-500">{s.desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Category — right-side dot */}
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">
+              Right-side dot · category
+            </p>
+            <ul className="space-y-1.5">
+              {Object.entries(CATEGORY_LABELS).map(([key, info]) => (
+                <li key={key} className="flex items-start gap-2 text-xs text-ink-700">
+                  <span
+                    className="mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: CATEGORY_BAR[key]?.fill ?? CATEGORY_BAR._default.fill }}
+                  />
+                  <span>
+                    <span className="font-semibold">{info.label}</span>
+                    <span className="block text-ink-500">{info.desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Assignee chips */}
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">
+              Name pills · who's on it
+            </p>
+            <ul className="space-y-2 text-xs text-ink-700">
+              <li className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  Name
+                </span>
+                <span className="text-ink-600">Team staff — got the email</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold bg-ink-100 text-ink-700 border border-ink-200 px-2 py-0.5 rounded-full">
+                  Name
+                </span>
+                <span className="text-ink-600">App user — sees in dashboard</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold bg-ink-50 text-ink-600 border border-ink-200 px-1.5 py-0.5 rounded-full">
+                  +2
+                </span>
+                <span className="text-ink-600">More people — hover for names</span>
+              </li>
+            </ul>
+            <p className="text-[10px] text-ink-400 mt-3 leading-relaxed">
+              Tip: hover any dot or pill anywhere on the Roadmap for a quick reminder.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -1817,6 +2057,7 @@ function GanttLegend() {
 function ListView({
   grouped, expandedId, updatingId, bottlenecks, statusById, milestonesById,
   dependentCountById, sharePctById, assigneesByMilestone = new Map(),
+  actionAssigneesByKey = new Map(),
   teamMembers = [], featuredId,
   onToggleExpand, onToggleComplete, onSetProgress, onAssignMilestone, onOpenWorkOrder,
 }) {
@@ -1863,6 +2104,7 @@ function ListView({
                   dependents={dependentCountById.get(m.id) ?? 0}
                   sharePct={sharePctById.get(m.id) ?? 0}
                   assignees={assigneesByMilestone.get(m.id) ?? []}
+                  actionAssigneesByKey={actionAssigneesByKey}
                   teamMembers={teamMembers}
                   milestonesById={milestonesById}
                   onToggleExpand={() => onToggleExpand(m.id)}
@@ -1882,7 +2124,7 @@ function ListView({
 
 function MilestoneRow({
   milestone, status, expanded, updating, bottleneckBlocks, dependents, sharePct,
-  assignees = [], teamMembers = [],
+  assignees = [], actionAssigneesByKey = new Map(), teamMembers = [],
   milestonesById, onToggleExpand, onToggleComplete, onSetProgress, onAssignMilestone, onOpenWorkOrder,
 }) {
   const { title, description, category, actions, books, completed, depends_on } = milestone
@@ -1908,7 +2150,7 @@ function MilestoneRow({
 
   return (
     <div
-      className="group/row bg-white rounded-xl border border-ink-150 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+      className="group/row bg-white rounded-xl border border-ink-150 shadow-sm hover:shadow-md transition-shadow"
       style={{ borderLeft: `3px solid ${accentColor}` }}
     >
       <div className="flex items-center gap-3 px-4 py-3.5">
@@ -1954,12 +2196,58 @@ function MilestoneRow({
           </span>
         )}
 
-        {/* Assignee — display only */}
-        {assigneePerson && (
-          <span className="text-[11px] font-semibold text-ink-500 whitespace-nowrap flex-shrink-0">
-            {assigneePerson.name?.split(' ')[0] || assigneePerson.email}
-          </span>
-        )}
+        {/*
+          Assignees — display only. Two sources stacked in this order:
+            1. work_orders rows on this milestone (`assignees` prop, built
+               from work_orders.assigned_to / staff_member_id). This is the
+               common case — "+ Work order" puts people here.
+            2. The legacy milestone-level `assignee_cid` (one person per
+               milestone, set via a different UI). Shown only when there
+               are no work-order assignees, so we don't duplicate names.
+
+          Cap visible chips at 2 to avoid blowing out the row on a
+          milestone with many actions assigned to different people; the
+          rest collapse into "+N" with a tooltip listing all names.
+        */}
+        {assignees.length > 0 ? (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {assignees.slice(0, 2).map(p => (
+              <Tooltip
+                key={p.id}
+                label={p.name || p.email}
+                sublabel={p._t === 'staff' ? 'Team staff · gets email' : 'App user · sees in dashboard'}
+                position="top-right"
+              >
+                <span
+                  className={`text-[10px] font-semibold whitespace-nowrap px-2 py-0.5 rounded-full border ${
+                    p._t === 'staff'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-ink-100 text-ink-700 border-ink-200'
+                  }`}
+                >
+                  {p.name?.split(' ')[0] || p.email}
+                </span>
+              </Tooltip>
+            ))}
+            {assignees.length > 2 && (
+              <Tooltip
+                label={`+${assignees.length - 2} more`}
+                sublabel={assignees.slice(2).map(p => p.name || p.email).join(', ')}
+                position="top-right"
+              >
+                <span className="text-[10px] font-semibold text-ink-600 bg-ink-50 border border-ink-200 px-1.5 py-0.5 rounded-full">
+                  +{assignees.length - 2}
+                </span>
+              </Tooltip>
+            )}
+          </div>
+        ) : assigneePerson ? (
+          <Tooltip label={assigneePerson.name || assigneePerson.email}>
+            <span className="text-[11px] font-semibold text-ink-500 whitespace-nowrap flex-shrink-0">
+              {assigneePerson.name?.split(' ')[0] || assigneePerson.email}
+            </span>
+          </Tooltip>
+        ) : null}
 
         {/* Work order — on hover */}
         <button
@@ -1974,13 +2262,21 @@ function MilestoneRow({
           </svg>
         </button>
 
-        {/* Category dot */}
+        {/* Category dot — colored marker so the owner can scan the list
+            and group milestones by area of the business at a glance.
+            Tooltip on hover decodes the color without forcing a trip to
+            the legend pill at top of the page. */}
         {category && (
-          <span
-            title={category}
-            className="w-2 h-2 rounded-full flex-shrink-0"
-            style={{ backgroundColor: CATEGORY_BAR[category]?.fill ?? CATEGORY_BAR._default.fill }}
-          />
+          <Tooltip
+            label={CATEGORY_LABELS[category]?.label || category}
+            sublabel={CATEGORY_LABELS[category]?.desc}
+            position="bottom-right"
+          >
+            <span
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: CATEGORY_BAR[category]?.fill ?? CATEGORY_BAR._default.fill }}
+            />
+          </Tooltip>
         )}
 
         {/* Expand toggle */}
@@ -2036,22 +2332,44 @@ function MilestoneRow({
             <div>
               <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-2">How to tackle this</div>
               <ol className="space-y-2">
-                {actions.map((a, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-ink-800 group/action">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-ink-100 text-ink-700 text-[11px] font-bold flex items-center justify-center">
-                      {i + 1}
-                    </span>
-                    <span className="leading-relaxed pt-px flex-1">{a}</span>
-                    <button
-                      type="button"
-                      onClick={e => { e.stopPropagation(); onOpenWorkOrder?.(milestone.id, milestone.title, a) }}
-                      className="flex-shrink-0 opacity-0 group-hover/action:opacity-100 transition-opacity text-[10px] font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5"
-                      title="Create a work order for this action"
-                    >
-                      + Work order
-                    </button>
-                  </li>
-                ))}
+                {actions.map((a, i) => {
+                  // Look up who (if anyone) has a work order on this exact
+                  // action step. Falls through to null when the action hasn't
+                  // been turned into a work order yet — most steps start unassigned.
+                  const actionAssignee = actionAssigneesByKey.get(`${milestone.id}::${a}`) ?? null
+                  return (
+                    <li key={i} className="flex items-start gap-2.5 text-ink-800 group/action">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-ink-100 text-ink-700 text-[11px] font-bold flex items-center justify-center">
+                        {i + 1}
+                      </span>
+                      <span className="leading-relaxed pt-px flex-1">{a}</span>
+                      {actionAssignee && (
+                        <span
+                          className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5 ${
+                            actionAssignee._t === 'staff'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-ink-100 text-ink-700 border border-ink-200'
+                          }`}
+                          title={
+                            actionAssignee._t === 'staff'
+                              ? `Assigned to ${actionAssignee.name || actionAssignee.email} (team staff)`
+                              : `Assigned to ${actionAssignee.name || actionAssignee.email}`
+                          }
+                        >
+                          {actionAssignee.name?.split(' ')[0] || actionAssignee.email}
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); onOpenWorkOrder?.(milestone.id, milestone.title, a) }}
+                        className="flex-shrink-0 opacity-0 group-hover/action:opacity-100 transition-opacity text-[10px] font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5"
+                        title="Create a work order for this action"
+                      >
+                        {actionAssignee ? 'Reassign' : '+ Work order'}
+                      </button>
+                    </li>
+                  )
+                })}
               </ol>
             </div>
           )}
@@ -2100,14 +2418,21 @@ function MilestoneRow({
 // ============================================================================
 // Quick work-order popup — opens inline on Roadmap, no page navigation
 // ============================================================================
-function QuickWorkOrderModal({ draft, teamMembers, profile, onClose }) {
-  const [assignee_cid, setAssigneeCid] = useState('')
+function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, company, onClose }) {
+  // Pre-fill the dropdown if reassigning. Lets the owner see who's currently
+  // on this action step instead of "No one yet" when they reopen the modal.
+  const [assignee_cid, setAssigneeCid] = useState(draft.existingAssigneeCid || '')
   const [due_date,     setDueDate]     = useState('')
+  // template_id is only meaningful on the INSERT path (the picker is hidden
+  // on reassign). When set, the chosen playbook's steps copy onto the new
+  // WO as checklist items.
+  const [template_id,  setTemplateId]  = useState('')
   const [saving, setSaving] = useState(false)
   const [err,    setErr]    = useState(null)
 
   // The task label — action step text if available, otherwise the milestone title
   const taskLabel = draft.taskTitle || draft.milestoneTitle
+  const isReassign = !!draft.existingWorkOrderId
 
   async function handleSave(e) {
     e.preventDefault()
@@ -2118,27 +2443,124 @@ function QuickWorkOrderModal({ draft, teamMembers, profile, onClose }) {
     if (assignee_cid?.startsWith('p:')) assigned_to    = assignee_cid.slice(2)
     if (assignee_cid?.startsWith('s:')) staff_member_id = assignee_cid.slice(2)
 
-    const base = {
-      company_id:   profile.company_id,
-      created_by:   profile.id,
-      title:        taskLabel,
-      assigned_to,
-      due_date:     due_date || null,
-      priority:     'medium',
-      status:       'backlog',
-      milestone_id: draft.milestoneId,
-    }
+    // Track whether this person is "new to the action" — only then do we
+    // fire the staff email. Reassigning to the SAME staff member shouldn't
+    // re-spam their inbox, and clearing the assignee shouldn't send anything.
+    const previousAssigneeCid = draft.existingAssigneeCid || ''
+    const assigneeChanged     = assignee_cid !== previousAssigneeCid
 
-    let { error } = await supabase.from('work_orders')
-      .insert({ ...base, ...(staff_member_id ? { staff_member_id } : {}) })
+    let error = null
+    let staffColumnMissing = false
 
-    if (error?.code === '42703' && staff_member_id) {
-      ;({ error } = await supabase.from('work_orders').insert(base))
+    if (isReassign) {
+      // ---- UPDATE path: existing work order, owner is reassigning ----
+      // Set both columns explicitly so switching between profile and staff
+      // assignees clears the other one. Don't touch due_date unless the
+      // owner typed something new — the form opens blank on reassign and
+      // we don't want a blank submit to wipe a previously-set due date.
+      const updatePayload = {
+        title: taskLabel,
+        assigned_to,
+      }
+      if (due_date) updatePayload.due_date = due_date
+
+      let res = await supabase.from('work_orders')
+        .update({ ...updatePayload, staff_member_id })
+        .eq('id', draft.existingWorkOrderId)
+      // Fallback for the (legacy) case where staff_member_id column doesn't
+      // exist — retry without it. Email won't fire on this branch since
+      // there's no column to attach the assignment to.
+      if (res.error?.code === '42703' && staff_member_id) {
+        staffColumnMissing = true
+        res = await supabase.from('work_orders')
+          .update(updatePayload)
+          .eq('id', draft.existingWorkOrderId)
+      }
+      error = res.error
+    } else {
+      // ---- INSERT path: brand new work order for this action ----
+      const base = {
+        company_id:   profile.company_id,
+        created_by:   profile.id,
+        title:        taskLabel,
+        assigned_to,
+        due_date:     due_date || null,
+        priority:     'medium',
+        status:       'backlog',
+        milestone_id: draft.milestoneId,
+        // template_id is set when the owner picked a playbook below; nullable
+        // column, harmless when empty.
+        ...(template_id ? { template_id } : {}),
+      }
+
+      // We need the inserted row's id to spawn checklist items, so use
+      // .select().single() — costs nothing extra and keeps the spawn path
+      // self-contained below.
+      let res = await supabase.from('work_orders')
+        .insert({ ...base, ...(staff_member_id ? { staff_member_id } : {}) })
+        .select()
+        .single()
+
+      if (res.error?.code === '42703' && staff_member_id) {
+        staffColumnMissing = true
+        res = await supabase.from('work_orders')
+          .insert(base)
+          .select()
+          .single()
+      }
+      error = res.error
+
+      // Spawn checklist items from the chosen playbook. Fire-and-forget on
+      // failure — the WO itself is the user's primary action, and the items
+      // can be re-spawned manually if needed.
+      if (!error && template_id && res.data?.id) {
+        const tpl = templates.find(t => t.id === template_id)
+        if (tpl?.items?.length) {
+          const rows = tpl.items.map(item => ({
+            work_order_id:    res.data.id,
+            template_item_id: item.id,
+            position:         item.position,
+            text:             item.text,
+            notes:            item.notes,
+            required:         item.required,
+          }))
+          const { error: spawnErr } = await supabase
+            .from('work_order_checklist_items')
+            .insert(rows)
+          if (spawnErr) console.warn('Failed to spawn checklist items:', spawnErr.message)
+        }
+      }
     }
 
     setSaving(false)
     if (error) { setErr(error.message); return }
-    onClose()
+
+    // Fire-and-forget: notify the staff assignee with a magic-link to /staff/{token}.
+    // Conditions stacked so we don't email on every save:
+    //   - assignment landed in the staff_member_id column (not profile, not nothing)
+    //   - column exists (skip on legacy-fallback branches)
+    //   - assignee actually CHANGED from what was there before (no re-spam on
+    //     "I opened the modal and saved without changing anyone")
+    if (staff_member_id && !staffColumnMissing && assigneeChanged) {
+      const staff = teamMembers.find(tm => tm._cid === `s:${staff_member_id}`)
+      if (staff?.email) {
+        const ownerName   = profile?.name || profile?.email?.split('@')[0] || 'Your manager'
+        const companyName = company?.name || 'the team'
+        sendTaskAssigned({
+          to:              staff.email,
+          staffId:         staff_member_id,
+          staffName:       staff.name || staff.email,
+          ownerName,
+          companyName,
+          taskTitle:       taskLabel,
+          taskDescription: null,
+          priority:        'medium',
+          dueDate:         due_date || null,
+        })
+      }
+    }
+
+    onClose(true)
   }
 
   return (
@@ -2147,8 +2569,10 @@ function QuickWorkOrderModal({ draft, teamMembers, profile, onClose }) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">Work order</p>
-          <button type="button" onClick={onClose}
+          <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">
+            {isReassign ? 'Reassign work order' : 'Work order'}
+          </p>
+          <button type="button" onClick={() => onClose(false)}
             className="text-ink-400 hover:text-ink-700 text-lg leading-none">✕</button>
         </div>
 
@@ -2169,9 +2593,27 @@ function QuickWorkOrderModal({ draft, teamMembers, profile, onClose }) {
               <select value={assignee_cid} onChange={e => setAssigneeCid(e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
                 <option value="">No one yet</option>
-                {teamMembers.map(tm => (
-                  <option key={tm._cid} value={tm._cid}>{tm.name || tm.email}</option>
-                ))}
+                {/*
+                  Split into two groups so the owner can tell an App user (Danny
+                  with a login) apart from a Team staff member (Danny with a
+                  magic-link email). Same name across both buckets is common —
+                  this layout prevents the "wrong Danny" mis-assignment that
+                  silently sends no email.
+                */}
+                {teamMembers.some(tm => tm._t === 'profile') && (
+                  <optgroup label="App users">
+                    {teamMembers.filter(tm => tm._t === 'profile').map(tm => (
+                      <option key={tm._cid} value={tm._cid}>{tm.name || tm.email}</option>
+                    ))}
+                  </optgroup>
+                )}
+                {teamMembers.some(tm => tm._t === 'staff') && (
+                  <optgroup label="Team staff (gets email)">
+                    {teamMembers.filter(tm => tm._t === 'staff').map(tm => (
+                      <option key={tm._cid} value={tm._cid}>{tm.name || tm.email}</option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             ) : (
               <p className="text-xs text-ink-400 italic">Add team members in Settings to assign tasks.</p>
@@ -2185,16 +2627,45 @@ function QuickWorkOrderModal({ draft, teamMembers, profile, onClose }) {
               className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
           </div>
 
+          {/* Playbook picker — create-only. Reassign doesn't re-spawn items;
+              the existing checklist stays put. Hidden entirely if no active
+              playbooks exist (or migration 020 isn't applied). */}
+          {!isReassign && templates.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold text-ink-600 mb-1.5">
+                Start from a playbook <span className="text-ink-400 font-normal">(optional)</span>
+              </label>
+              <select value={template_id} onChange={e => setTemplateId(e.target.value)}
+                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                <option value="">No playbook — blank work order</option>
+                {templates.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}{t.items?.length ? ` (${t.items.length} steps)` : ''}
+                  </option>
+                ))}
+              </select>
+              {template_id && (() => {
+                const tpl = templates.find(t => t.id === template_id)
+                const n   = tpl?.items?.length ?? 0
+                return (
+                  <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
+                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this work order.
+                  </p>
+                )
+              })()}
+            </div>
+          )}
+
           {err && <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{err}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={onClose}
+            <button type="button" onClick={() => onClose(false)}
               className="px-4 py-2 text-sm text-ink-600 hover:text-ink-900 font-medium">
               Cancel
             </button>
             <button type="submit" disabled={saving}
               className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold disabled:opacity-60 transition-colors">
-              {saving ? 'Saving…' : 'Add to board'}
+              {saving ? 'Saving…' : isReassign ? 'Update' : 'Add to board'}
             </button>
           </div>
         </form>

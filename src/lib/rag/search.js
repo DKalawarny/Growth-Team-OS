@@ -43,18 +43,19 @@ const MAX_CHARS_PER_RESULT = 1_200  // cap per chunk in the formatted output
  * }>>}
  */
 export async function searchKnowledge(companyId, query, {
-  limit     = DEFAULT_LIMIT,
-  threshold = DEFAULT_THRESHOLD,
+  limit          = DEFAULT_LIMIT,
+  threshold      = DEFAULT_THRESHOLD,
+  queryEmbedding = null,   // pass a pre-computed vector to skip the embed call
 } = {}) {
   if (!query?.trim() || !companyId) return []
 
   try {
-    const queryEmbedding = await embed(query)
-    if (!queryEmbedding) return []  // no API key — graceful empty
+    const vec = queryEmbedding ?? await embed(query)
+    if (!vec) return []   // no API key — graceful empty
 
     const { data, error } = await supabase.rpc('search_knowledge_chunks', {
       p_company_id: companyId,
-      p_embedding:  queryEmbedding,
+      p_embedding:  vec,
       p_limit:      limit,
       p_threshold:  threshold,
     })
@@ -70,6 +71,67 @@ export async function searchKnowledge(companyId, query, {
     return []
   }
 }
+
+/**
+ * Find the most relevant SAFETY VAULT chunks for a query.
+ *
+ * Mirrors searchKnowledge() above but hits the safety_documents table (the
+ * compliance vault) via the search_safety_documents RPC added in migration
+ * 022. Same embedding model (OpenAI text-embedding-3-small, 1536-dim) so
+ * the cost of the query embedding is identical — if both searches run for
+ * one question, we embed once and call both RPCs with the same vector.
+ *
+ * The threshold is set lower than the general knowledge search (0.25 vs
+ * 0.30) because safety vault docs are short and topical — owners upload
+ * an SOP, a permit, a checklist. We'd rather surface a moderately relevant
+ * SOP excerpt than miss a citation Solomon should have made.
+ *
+ * @param {string} companyId  Scopes search to this company's vault
+ * @param {string} query      The user's question (natural language)
+ * @param {object} [opts]
+ * @param {number} [opts.limit=6]        Max chunks (smaller default than knowledge — vault docs are shorter)
+ * @param {number} [opts.threshold=0.25] Cosine floor — looser than general search
+ * @param {Array}  [opts.queryEmbedding] Reuse an already-embedded query vector to avoid double-embed
+ *
+ * @returns {Promise<Array<{
+ *   id: string,
+ *   title: string,
+ *   doc_type: string|null,
+ *   content: string,
+ *   chunk_index: number,
+ *   similarity: number
+ * }>>}
+ */
+export async function searchSafetyDocs(companyId, query, {
+  limit          = 6,
+  threshold      = 0.25,
+  queryEmbedding = null,
+} = {}) {
+  if (!query?.trim() || !companyId) return []
+
+  try {
+    const vec = queryEmbedding ?? await embed(query)
+    if (!vec) return []
+
+    const { data, error } = await supabase.rpc('search_safety_documents', {
+      p_company_id: companyId,
+      p_embedding:  vec,
+      p_limit:      limit,
+      p_threshold:  threshold,
+    })
+
+    if (error) {
+      console.warn('[RAG][safety] Search RPC error:', error.message)
+      return []
+    }
+
+    return data ?? []
+  } catch (err) {
+    console.warn('[RAG][safety] Search failed — returning empty:', err)
+    return []
+  }
+}
+
 
 /**
  * Format RAG search results into the knowledge_files prompt shape used by

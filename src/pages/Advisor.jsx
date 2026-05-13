@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, streamClaude, SONNET, HAIKU } from '../lib/anthropic'
+import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
 import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../lib/prompts'
@@ -244,8 +245,18 @@ export default function Advisor() {
       const systemPrompt = `${ADVISOR_SYSTEM_PROMPT}${contextBlock}`
 
       // 4. Stream the reply — update the placeholder bubble on every chunk.
+      //
+      // Model choice: cascade router picks Haiku for retrieval-grounded
+      // factual lookups (safety_context populated + lookup-style question),
+      // Sonnet for everything else. Default bias is Sonnet — strategy
+      // questions never get downgraded. See lib/advisorCascade.js.
+      const choice = explainModelChoice(text, context)
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.log(`[advisor] model=${choice.model.split('-')[1]} reason=${choice.reason}`)
+      }
       const reply = await streamClaude({
-        model:     SONNET,
+        model:     choice.model,
         systemPrompt,
         messages:  historySlice,
         maxTokens: 2000,

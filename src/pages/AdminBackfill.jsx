@@ -115,7 +115,7 @@ export default function AdminBackfill() {
             <p className="text-sm font-semibold text-red-800">Something went wrong</p>
             <p className="text-sm text-red-600 mt-1 font-mono break-all">{error}</p>
             <p className="text-xs text-red-500 mt-2">
-              Most likely cause: VITE_VOYAGE_API_KEY is missing or invalid in .env.local
+              Most likely cause: VITE_OPENAI_API_KEY is missing or invalid in .env.local
             </p>
           </div>
         )}
