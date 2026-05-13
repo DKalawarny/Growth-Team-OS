@@ -5,8 +5,7 @@ import { getToolById } from '../../lib/tools'
 
 /**
  * UsageSection — sits in Settings. Shows this month's per-tool run counts
- * vs. the configured cap, plus the aggregate USD cost across all providers
- * (Claude + Places) for transparency.
+ * vs. the configured cap.
  *
  * One query, one render. No live polling — owners don't stare at this page,
  * they hit it when the cap modal sends them here. Re-fetching on mount is
@@ -17,8 +16,13 @@ import { getToolById } from '../../lib/tools'
  *
  *   UPDATE companies SET monthly_tool_cap = 100 WHERE id = '<uuid>';
  *
- * Deliberately no in-UI "upgrade" button yet — this is v0, Stripe billing
- * isn't wired, and a dead button is worse than no button.
+ * Deliberately customer-facing: we do NOT surface per-call or aggregate USD
+ * cost here. Those are our cost of goods sold (Anthropic + Places API spend)
+ * and have no business being on a $97/month customer's settings page —
+ * showing them invites the wrong mental model ("am I burning their credits?")
+ * and exposes margin info that's none of the user's concern. The cost data
+ * is still recorded on `usage_events` for internal analytics; it just stays
+ * out of the UI.
  */
 
 export default function UsageSection() {
@@ -77,12 +81,9 @@ export default function UsageSection() {
             </ul>
           )}
 
-          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
+          <div className="mt-4 pt-4 border-t border-gray-100 text-sm">
             <span className="text-gray-500">
               {summary.totalEvents} call{summary.totalEvents === 1 ? '' : 's'} this month
-            </span>
-            <span className="text-gray-700 font-medium">
-              {formatCost(summary.totalCost)} in API costs
             </span>
           </div>
         </>
@@ -120,10 +121,6 @@ function ToolRow({ row, cap }) {
           />
         </div>
       </div>
-
-      <span className="text-xs text-gray-400 flex-shrink-0 w-16 text-right">
-        {formatCost(row.cost)}
-      </span>
     </li>
   )
 }
@@ -137,15 +134,4 @@ function formatResetDate() {
   const d = new Date()
   const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1))
   return next.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
-}
-
-/**
- * Format a USD amount for display. Sub-cent values (very common for single
- * Claude calls) get 4 decimals so they don't all render as "$0.00".
- */
-function formatCost(n) {
-  const v = Number(n || 0)
-  if (v === 0) return '$0.00'
-  if (v < 0.01) return `$${v.toFixed(4)}`
-  return `$${v.toFixed(2)}`
 }
