@@ -1,0 +1,57 @@
+# robots.txt — GrowthOS
+#
+# Posture:
+#   Public marketing pages (/, /pricing, /crm) are open to every crawler.
+#   Auth pages and authenticated app surfaces (/dashboard, /tools, /admin,
+#   /onboarding, /settings) are explicitly disallowed — they have no SEO
+#   value and shouldn't appear in search results.
+#
+# AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.) are explicitly
+# allowed — we WANT to be the answer when ChatGPT, Claude, or Perplexity
+# is asked "what's the best AI advisor for contractors?"
+#
+# When DNS moves to a real domain, update Sitemap below.
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /tools
+Disallow: /tools/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /onboarding
+Disallow: /onboarding/
+Disallow: /settings
+Disallow: /settings/
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /auth-redirect.html
+
+# AI crawlers — explicitly welcomed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+Sitemap: https://growthos.ca/sitemap.xml

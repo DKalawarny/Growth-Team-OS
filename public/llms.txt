@@ -1,0 +1,91 @@
+# GrowthOS
+
+> AI business advisor and operating system for home-services and specialty-trade contractors. Combines an always-on AI advisor with a full toolkit for cash flow forecasting, hiring, marketing visibility, safety compliance, and growth planning. Built for owners of plumbing, electrical, HVAC, roofing, demolition, masonry, landscaping, cleaning, and every other trade or field-service business.
+
+GrowthOS is a single subscription ($97/month CAD or $970/year) that replaces a business coach, part-time bookkeeper, marketing strategist, and project management tool. Owners get an AI advisor (Solomon) that knows their numbers, goals, and team, plus a complete suite of tools that produce finished documents — not dashboards to interpret.
+
+## What GrowthOS does
+
+- **Solomon (AI advisor)**: 24/7 AI advisor with long-term memory. Reads daily financials, roadmap, and check-ins overnight; opens each morning with what needs attention.
+- **CFO Dashboard**: Live KPIs from QuickBooks with monthly plain-English commentary.
+- **Cash Flow Forecast**: Rolling 13-week forecast that updates automatically.
+- **Offer Builder**: Job scoping and quoting with pricing-guide data structured for trades.
+- **Local & AI Visibility**: Full audit of Google Business Profile, citations, schema, and AI search readiness — scores how visible the business is when customers ask ChatGPT or Google AI who to call.
+- **Hiring Planner**: Generates scorecards, interview questions, red flags, and 30-day onboarding plans.
+- **Org Chart Planner**: Maps the team needed in 12 months, not the one stuck in today.
+- **Safety & Compliance**: Tracks every licence, WCB registration, and compliance document.
+- **Growth Roadmap**: Milestone-by-milestone plan with progress tracking.
+- **Work Board, Check-ins, Document Library**: Operating cadence for the whole business.
+
+## Who GrowthOS is for
+
+GrowthOS is built for owner-operators of:
+
+- Demolition, abatement, asbestos, hazmat contractors
+- Masonry, concrete, framing, carpentry contractors
+- Roofing, siding, painting, drywall, flooring, tile contractors
+- Electrical contractors, electricians
+- Plumbing contractors, plumbers
+- HVAC, heating and cooling, mechanical, sheet metal contractors
+- General contractors, home builders, residential and remodeling contractors
+- Kitchen, bath, and handyman businesses
+- Landscaping, lawn care, tree services, arborists
+- Pool and spa, fence, deck contractors
+- Pest control, cleaning, janitorial, window cleaning, pressure washing services
+- Gutter, locksmith, garage door, appliance repair, septic services
+- Restoration contractors (water damage, fire damage, mold remediation)
+- Environmental contractors, paving, excavation, foundation, waterproofing, insulation, solar, security system installers
+
+Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottleneck on financial decisions and growth planning.
+
+## Pricing
+
+- **$97/month** (monthly billing) or **$81/month** (annual billing — $970/year, 2 months free).
+- 7-day free trial, no credit card required.
+- Cancel anytime. No contracts.
+- Includes every tool. No tiers. No upsells.
+
+## Common questions
+
+**Is there a free trial?** Yes — 7 days of full access, no credit card required.
+
+**Do I need QuickBooks?** No — QuickBooks unlocks the CFO dashboard automatically, but every other tool works without it. You can connect later or enter financial data manually.
+
+**Is my data private?** Yes. Each business gets an isolated workspace. Data is never used to train AI models or shared with anyone.
+
+**Can I cancel anytime?** Yes. Monthly plans stop at the end of the billing period. Annual plans can cancel renewal any time.
+
+**What counts as a "report"?** One finished AI output — a Google Business Profile audit, cash flow forecast, hiring scorecard, etc. Most owners run 3–5 a month.
+
+## Key pages
+
+- [Homepage](https://growthos.ca/): Product overview, hero, problem framing, full feature list, supported trades.
+- [Pricing](https://growthos.ca/pricing): Detailed pricing, FAQ, value comparison vs. hiring a coach + bookkeeper + marketer separately.
+- [CRM](https://growthos.ca/crm): The companion operations CRM that pairs with GrowthOS for quote-to-cash, project tracking, and revenue forecasting.
+- [About](https://growthos.ca/about): Founder story — built by the team behind Deconstructors, a working specialty-trade contracting business.
+- [Security](https://growthos.ca/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what's still being built.
+- [Privacy policy](https://growthos.ca/privacy): Plain-language privacy policy compliant with PIPEDA.
+
+## Comparison pages (head-to-head with competitors)
+
+- [GrowthOS vs Knowify](https://growthos.ca/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds the AI advisor and growth tools.
+- [GrowthOS vs Jobber](https://growthos.ca/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the strategic layer Jobber doesn't build.
+- [GrowthOS vs Housecall Pro](https://growthos.ca/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the advisory and growth layer.
+- [GrowthOS vs Buildertrend](https://growthos.ca/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; GrowthOS is sized for owner-operators.
+
+## Trade-specific pages
+
+- [For plumbers](https://growthos.ca/for/plumbers)
+- [For electricians](https://growthos.ca/for/electricians)
+- [For HVAC contractors](https://growthos.ca/for/hvac)
+- [For roofers](https://growthos.ca/for/roofing)
+- [For demolition contractors](https://growthos.ca/for/demolition)
+- [For landscaping contractors](https://growthos.ca/for/landscaping)
+
+## Free tools
+
+- [Free Google Business Profile audit](https://growthos.ca/free-gbp-audit): Free GBP + AI search readiness audit for any contractor or home-services business. Delivered by email, no commitment.
+
+## Contact
+
+Email: dkalawarny@hotmail.com

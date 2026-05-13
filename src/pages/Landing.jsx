@@ -1,13 +1,37 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../components/layout/PublicHeader'
+import {
+  buildPageMeta,
+  organizationSchema,
+  softwareApplicationSchema,
+  jsonLd,
+} from '../lib/seo'
 
 /**
  * / — public marketing landing page.
  *
  * Structured to convert service-business owners:
- *   Hero → Problem → Solomon showcase → Tools → How it works → Price anchor → CTA
+ *   Hero → Problem → Solomon showcase → Tools → Built-for trades → How it works → Price anchor → CTA
+ *
+ * SEO posture (see src/lib/seo.js for the canonical config):
+ *   - Per-page <Helmet> with rich meta + canonical + og/twitter
+ *   - Two JSON-LD schemas: Organization (who we are) + SoftwareApplication
+ *     (what category we're in + price). These power Google rich results
+ *     and let AI assistants answer "what is GrowthOS?" / "how much does
+ *     it cost?" without crawling the visible page.
+ *   - Keyword breadth handled by the visible TradesSection — every
+ *     plausible specialty trade and home-service vertical is enumerated
+ *     once on the page so we rank for "AI advisor for [trade]" queries
+ *     without making the hero copy a keyword-stuffed mess.
  */
+
+const LANDING_META = buildPageMeta({
+  title:       'GrowthOS — AI advisor + business tools for home-services contractors',
+  description: 'AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 7-day free trial.',
+  path:        '/',
+})
 
 // ── Tool showcase data ────────────────────────────────────────────────────────
 
@@ -92,16 +116,235 @@ const STEPS = [
 export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>{LANDING_META.title}</title>
+        <link rel="canonical" href={LANDING_META.canonical} />
+        {LANDING_META.meta.map((m, i) => {
+          // Helmet needs either name=… or property=… — preserve whichever was set
+          if (m.property) return <meta key={i} property={m.property} content={m.content} />
+          return <meta key={i} name={m.name} content={m.content} />
+        })}
+
+        {/* JSON-LD — two schemas: who we are + what category we're in.
+            Google's Rich Results Test will validate these. AI assistants
+            (ChatGPT, Claude, Perplexity) parse these directly to answer
+            factual questions about the product without needing to read
+            the rendered page. */}
+        <script type="application/ld+json">{jsonLd(organizationSchema())}</script>
+        <script type="application/ld+json">{jsonLd(softwareApplicationSchema())}</script>
+      </Helmet>
+
       <PublicHeader />
 
       <HeroSection />
+      <VideoSection />
       <ProblemSection />
       <SolomonSection />
       <ToolsSection />
+      <CostGuideSection />
+      <TestimonialsSection />
+      <TradesSection />
       <HowItWorksSection />
       <PriceSection />
       <ClosingCTA />
       <PageFooter />
+    </div>
+  )
+}
+
+// ── Demo video ────────────────────────────────────────────────────────────────
+//
+// Right now this is a PLACEHOLDER. Record a 60-90 second Loom showing a
+// real query against Solomon — kitchen-table tone, no slick edits — then
+// drop the share URL into VIDEO_URL below. Loom embeds work as iframes.
+// Until then, the placeholder card teases the same content + a CTA so
+// the slot still earns its place above the fold.
+
+const VIDEO_URL = null // Loom share URL or YouTube embed URL — set to enable real video
+
+function VideoSection() {
+  return (
+    <section className="bg-white py-16 border-b border-gray-100">
+      <div className="max-w-3xl mx-auto px-6">
+        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
+          See it in action
+        </p>
+        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-3 tracking-tight">
+          90 seconds. Real questions.
+        </h2>
+        <p className="text-gray-500 text-center max-w-xl mx-auto mb-10">
+          Watch Solomon read a real business's numbers and answer a question
+          the owner actually asked. Not a marketing reel.
+        </p>
+
+        {VIDEO_URL ? (
+          <div className="relative rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              src={VIDEO_URL}
+              className="absolute inset-0 w-full h-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              title="GrowthOS demo"
+            />
+          </div>
+        ) : (
+          // Placeholder — keeps the slot in the page flow before a real video lands
+          <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 aspect-video flex items-center justify-center">
+            <div className="text-center px-6">
+              <div className="text-5xl mb-3">▶︎</div>
+              <p className="font-bold text-gray-700">Video demo coming soon</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Want to see it before then? <Link to="/signup" className="text-amber-600 hover:underline">Start a free trial</Link>.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ── Cost guide ────────────────────────────────────────────────────────────────
+//
+// This is the moat. Nobody else in the bundle space has a structured
+// pricing/cost-guide layer the way we do (the RS-Means-equivalent set up
+// for our platform's quoting flow). Surface it on the landing page so
+// people get the wedge — not just "AI advisor" but "AI advisor + the
+// only quoting tool that knows what materials actually cost in your
+// market."
+
+function CostGuideSection() {
+  return (
+    <section className="bg-gradient-to-br from-amber-50 to-white py-20 border-b border-amber-100">
+      <div className="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <p className="text-amber-700 text-xs font-bold uppercase tracking-widest mb-3">
+            What nobody else has
+          </p>
+          <h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight mb-5">
+            The cost guide<br/>built into your quoting.
+          </h2>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            Most quoting tools hand you an empty template and say "good luck." Ours
+            ships with structured cost data — material rates, labour benchmarks,
+            disposal and tipping figures — organized the way your trade actually
+            quotes work.
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-6">
+            Combined with Solomon, you're not just generating a quote — you're getting
+            an AI second-opinion on whether your numbers are tight, whether you missed
+            a line item, and whether your margin holds at this price.
+          </p>
+          <ul className="space-y-2 mb-7">
+            <li className="flex gap-3 text-gray-800">
+              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span>Real cost data — not generic templates</span>
+            </li>
+            <li className="flex gap-3 text-gray-800">
+              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span>Structured for AI — Solomon reads your quote and sanity-checks it</span>
+            </li>
+            <li className="flex gap-3 text-gray-800">
+              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span>Updates as the data does — your numbers don't go stale</span>
+            </li>
+          </ul>
+          <Link
+            to="/pricing"
+            className="inline-block px-6 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors"
+          >
+            See full pricing →
+          </Link>
+        </div>
+
+        {/* Visual mock — no real screenshot yet, but the slot is ready */}
+        <div className="bg-white rounded-2xl border border-amber-200 shadow-xl p-6">
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Quote — Kitchen demo</div>
+          <div className="space-y-2.5">
+            {[
+              ['Selective demolition (kitchen)', '$2,400'],
+              ['Disposal + tipping (4 yd)',     '$680'],
+              ['Asbestos pre-survey',           '$420'],
+              ['Labour — 2 crew, 1.5 days',     '$2,160'],
+              ['Materials + dust containment',  '$310'],
+            ].map(([label, value]) => (
+              <div key={label} className="flex justify-between text-sm py-2 border-b border-gray-100">
+                <span className="text-gray-700">{label}</span>
+                <span className="font-bold text-gray-900 tabular-nums">{value}</span>
+              </div>
+            ))}
+            <div className="flex justify-between pt-2 text-sm">
+              <span className="font-black text-gray-900">Total</span>
+              <span className="font-black text-amber-600 tabular-nums">$5,970</span>
+            </div>
+          </div>
+          <div className="mt-5 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-gray-700 leading-relaxed">
+            <span className="font-bold text-amber-700">Solomon: </span>
+            Margin at 28% — within your target range. Disposal looks light if the cabinets
+            are MDF — confirm before sending.
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Testimonials ──────────────────────────────────────────────────────────────
+//
+// PLACEHOLDER — replace with real customer quotes (with permission, real
+// names + company names) the moment we have them. Beta trialers from the
+// Deconstructors network are the obvious first source. Until they exist,
+// we ship a deliberately understated "early operators" frame rather than
+// faking testimonials. Faking is a dead-on-arrival decision for a trades
+// audience that has been burned by every SaaS that did it.
+
+function TestimonialsSection() {
+  return (
+    <section className="bg-gray-50 py-20 border-b border-gray-100">
+      <div className="max-w-4xl mx-auto px-6">
+        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
+          Early operators
+        </p>
+        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-3 tracking-tight">
+          Built with the people running the work.
+        </h2>
+        <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
+          GrowthOS is in early-access with a small group of specialty-trade owners
+          who are shaping it as we build. Once they go on record, their quotes
+          live here. Until then — here's what they care about.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {/* Three concern cards — replace each with a real testimonial when available */}
+          <ConcernCard
+            quote="It can't add work to my plate. My day is already full."
+            note="Solomon briefs you in 30 seconds — no dashboards to interpret."
+          />
+          <ConcernCard
+            quote="It has to know my numbers. Generic advice is useless."
+            note="QuickBooks sync, your goals, your team — context Solomon actually uses."
+          />
+          <ConcernCard
+            quote="If I cancel, my data better come with me."
+            note="Full export from /settings, any time. No hostage-taking."
+          />
+        </div>
+
+        <p className="text-center text-xs text-gray-400 mt-10 italic">
+          We don't fake testimonials. Real owner quotes will replace these as our
+          early-access group goes on record.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function ConcernCard({ quote, note }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 p-6">
+      <p className="text-gray-900 font-bold leading-snug mb-3">"{quote}"</p>
+      <p className="text-sm text-gray-500 leading-relaxed">{note}</p>
     </div>
   )
 }
@@ -128,9 +371,11 @@ function HeroSection() {
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
-          Solomon, your AI advisor, knows your goals, your numbers, and your team.
-          Backed by tools for your finances, local SEO, cash flow, hiring, compliance,
-          team management, and growth planning — all connected, all AI-powered.
+          GrowthOS is the AI business advisor and operating system for plumbers,
+          electricians, HVAC, roofing, demolition, landscaping, cleaning, and
+          every other home-services contractor. Solomon knows your goals, your
+          numbers, and your team — and connects to tools for cash flow, hiring,
+          local SEO, compliance, and growth.
         </p>
 
         {/* Feature pill row */}
@@ -344,6 +589,116 @@ function ToolsSection() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Trades / built-for ────────────────────────────────────────────────────────
+/**
+ * Visible-copy keyword coverage. Two jobs:
+ *
+ *   1. Tell a real human owner "yes, this is for me" by enumerating
+ *      their specific trade — readers scan for their own category.
+ *   2. Give Google + AI crawlers explicit text matches for queries like
+ *      "AI advisor for HVAC contractors" or "business software for
+ *      demolition contractors." Without this, the page targets
+ *      "home-services" generically and misses high-intent long-tail.
+ *
+ * Grouped by category so it reads as helpful taxonomy (not keyword stuffing).
+ * Adding a trade here is purely additive — no other code changes needed.
+ */
+const TRADE_CATEGORIES = [
+  {
+    label: 'Construction specialty trades',
+    trades: [
+      'Demolition', 'Abatement & hazmat', 'Asbestos abatement',
+      'Masonry', 'Concrete', 'Framing & carpentry',
+      'Drywall', 'Flooring & tile', 'Insulation',
+      'Foundation & waterproofing', 'Excavation', 'Paving',
+    ],
+  },
+  {
+    label: 'Mechanical, electrical, plumbing',
+    trades: [
+      'Electrical contractors', 'Plumbers', 'HVAC contractors',
+      'Heating & cooling', 'Mechanical contractors', 'Sheet metal',
+      'Solar installers', 'Security system installers',
+    ],
+  },
+  {
+    label: 'Roofing, siding & exterior',
+    trades: [
+      'Roofing contractors', 'Siding contractors', 'Gutter services',
+      'Window & door installers', 'Painting contractors',
+      'Pressure washing', 'Deck builders', 'Fence contractors',
+    ],
+  },
+  {
+    label: 'Home services & field service',
+    trades: [
+      'General contractors', 'Home builders', 'Remodeling contractors',
+      'Kitchen & bath', 'Handyman businesses', 'Appliance repair',
+      'Garage door services', 'Locksmith services', 'Septic services',
+    ],
+  },
+  {
+    label: 'Outdoor & seasonal',
+    trades: [
+      'Landscaping contractors', 'Lawn care services', 'Tree services',
+      'Arborists', 'Pool & spa services', 'Pest control',
+      'Snow removal', 'Irrigation contractors',
+    ],
+  },
+  {
+    label: 'Cleaning, restoration & environmental',
+    trades: [
+      'Cleaning services', 'Janitorial services', 'Window cleaning',
+      'Water damage restoration', 'Fire damage restoration',
+      'Mold remediation', 'Environmental contractors',
+    ],
+  },
+]
+
+function TradesSection() {
+  return (
+    <section className="bg-white border-y border-gray-100 py-20">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Built for every trade and home-services business.
+          </h2>
+          <p className="text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            GrowthOS works the same way whether you run a plumbing company, an
+            HVAC shop, a roofing crew, a demolition outfit, a landscaping
+            business, or any other contractor or service business. The advisor
+            adapts to your numbers, your trade, and the way you actually work.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {TRADE_CATEGORIES.map(group => (
+            <div key={group.label} className="border border-gray-200 rounded-xl p-5 bg-gray-50/40">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-3">
+                {group.label}
+              </h3>
+              <ul className="space-y-1.5 text-sm text-gray-600">
+                {group.trades.map(t => (
+                  <li key={t} className="flex items-start gap-2">
+                    <span className="text-amber-500 font-bold flex-shrink-0">·</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-sm text-gray-400 mt-10 max-w-xl mx-auto">
+          Don't see your trade? GrowthOS works for any service business that
+          quotes work, runs jobs, hires people, and watches its cash flow —
+          which is essentially all of them.
+        </p>
       </div>
     </section>
   )
