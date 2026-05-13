@@ -1,8 +1,39 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { useAuth } from '../hooks/useAuth'
 import { getSubscription, startCheckout } from '../lib/subscriptions'
 import PublicHeader from '../components/layout/PublicHeader'
+import {
+  buildPageMeta,
+  productSchema,
+  faqPageSchema,
+  jsonLd,
+} from '../lib/seo'
+
+/**
+ * /pricing — public pricing page.
+ *
+ * SEO posture:
+ *   - Per-page Helmet with pricing-specific meta (signals "this is the
+ *     pricing page" not "this is the home page")
+ *   - Product schema → Google may render the $97 price directly in
+ *     search results as a rich snippet
+ *   - FAQPage schema wraps the existing FAQS array → ChatGPT, Claude,
+ *     Perplexity, and Google AI can answer specific questions ("does
+ *     GrowthOS need a credit card?", "can I cancel?") without crawling
+ *     the visible page
+ *
+ * Why FAQPage schema is high-leverage for AI: when an LLM hits a page
+ * with FAQPage JSON-LD, it can extract the Q/A pairs as structured
+ * facts. That's how AI answer snippets cite sources accurately. The
+ * existing 6 FAQs are well-written for this — minor wording, big lift.
+ */
+const PRICING_META = buildPageMeta({
+  title:       'Pricing — GrowthOS · $97/month for the AI advisor and every tool',
+  description: 'GrowthOS pricing: $97/month or $970/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. 7-day free trial, no credit card required.',
+  path:        '/pricing',
+})
 
 const MONTHLY = 'monthly'
 const ANNUAL  = 'annual'
@@ -136,6 +167,27 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>{PRICING_META.title}</title>
+        <link rel="canonical" href={PRICING_META.canonical} />
+        {PRICING_META.meta.map((m, i) => {
+          // Helmet needs either name=… or property=… — preserve whichever was set
+          if (m.property) return <meta key={i} property={m.property} content={m.content} />
+          return <meta key={i} name={m.name} content={m.content} />
+        })}
+
+        {/* JSON-LD — Product schema (lets Google show $97 price as a rich
+            snippet directly in search results) + FAQPage schema (so AI
+            assistants can answer specific GrowthOS questions verbatim
+            from the structured Q&A list, not by inferring from the page). */}
+        <script type="application/ld+json">{jsonLd(productSchema({
+          name:        'GrowthOS — AI advisor + business tools',
+          description: 'AI business advisor and full operating system for home-services contractors, specialty trades, and field-service companies. CFO dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, growth roadmap, and more — for one monthly subscription.',
+          price:       '97',
+        }))}</script>
+        <script type="application/ld+json">{jsonLd(faqPageSchema(FAQS))}</script>
+      </Helmet>
+
       <PublicHeader />
 
       {banner && (

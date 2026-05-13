@@ -84,8 +84,8 @@ Deno.serve(async (req) => {
         type:       'spend_topup',
         topup_usd:  String(amount),
       },
-      success_url: `${appUrl}/settings?topup=success`,
-      cancel_url:  `${appUrl}/settings`,
+      success_url: `${appUrl}/settings/billing?topup=success`,
+      cancel_url:  `${appUrl}/settings/billing`,
     })
 
     if (!session.url) return json({ error: 'Stripe did not return a checkout URL' }, 500)

@@ -123,7 +123,7 @@ export function describeSubscription({ subscription, trialEndsAt }) {
 /**
  * Kick off Stripe Checkout for a paid plan. Creates the session server-side
  * (stripe-checkout Edge Function) and hard-redirects the browser to Stripe's
- * hosted page. On success Stripe sends the user to /settings?checkout=success;
+ * hosted page. On success Stripe sends the user to /settings/billing?checkout=success;
  * on cancel, back to /pricing?checkout=canceled.
  *
  * Throws if the caller isn't signed in or the Edge Function errors. Callers
@@ -145,7 +145,7 @@ export async function startCheckout(plan = 'owner') {
 /**
  * Purchase a one-time AI budget top-up ($5 or $10). Creates a Stripe Checkout
  * session server-side and redirects the browser to it. On success Stripe sends
- * the user to /settings?topup=success and fires checkout.session.completed,
+ * the user to /settings/billing?topup=success and fires checkout.session.completed,
  * which the webhook handles by incrementing companies.monthly_spend_cap.
  */
 export async function startTopUp(amount) {

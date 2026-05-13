@@ -126,10 +126,13 @@ Deno.serve(async (req) => {
           plan,
         },
       },
-      // Where Stripe sends the user back to. Success lands on Settings
-      // (so they can see the subscription took effect). Cancel returns
-      // them to Pricing so the page they left from is where they resume.
-      success_url: `${appUrl}/settings?checkout=success`,
+      // Where Stripe sends the user back to. Success lands on the Billing
+      // tab inside Settings (so they can see the subscription took effect
+      // and the banner renders — /settings without a sub-route redirects
+      // to /settings/business and would lose the query param). Cancel
+      // returns them to Pricing so the page they left from is where they
+      // resume.
+      success_url: `${appUrl}/settings/billing?checkout=success`,
       cancel_url:  `${appUrl}/pricing?checkout=canceled`,
     })
 

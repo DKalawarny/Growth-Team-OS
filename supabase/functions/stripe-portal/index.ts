@@ -64,10 +64,10 @@ Deno.serve(async (req) => {
 
     const session = await stripe.billingPortal.sessions.create({
       customer:   customerId,
-      // Return to Settings — they'll see the refreshed subscription state
-      // (the webhook will have fired for any change they made in the portal
-      // by the time they click "Return to GrowthOS" back).
-      return_url: `${appUrl}/settings`,
+      // Return to the Billing tab — they'll see the refreshed subscription
+      // state (the webhook will have fired for any change they made in the
+      // portal by the time they click "Return to GrowthOS").
+      return_url: `${appUrl}/settings/billing`,
     })
 
     if (!session.url) {
