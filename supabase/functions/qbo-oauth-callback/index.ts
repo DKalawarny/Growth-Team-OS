@@ -104,7 +104,10 @@ Deno.serve(async (req) => {
 
 // ----------------------------------------------------------------------------
 function redirectToApp(appUrl: string, params: Record<string, string>): Response {
-  const dest = new URL('/settings', appUrl)
+  // After OAuth, drop the user on the Integrations tab — that's where
+  // they kicked off the connect flow and where they'll see the new
+  // QuickBooks status row.
+  const dest = new URL('/settings/integrations', appUrl)
   for (const [k, v] of Object.entries(params)) dest.searchParams.set(k, v)
   return Response.redirect(dest.toString(), 302)
 }
