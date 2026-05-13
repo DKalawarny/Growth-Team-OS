@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import { SITE_URL, SITE_NAME } from '../lib/seo'
 
 /**
  * Login — premium split-screen treatment. Left side is the dark brand zone
@@ -9,6 +11,10 @@ import { supabase } from '../lib/supabase'
  *
  * The brand side does more than decoration — it sets the emotional tone
  * before the user has even typed anything. Serious operators sign in here.
+ *
+ * SEO posture: noindex. Login pages should never be indexed — they have
+ * no value in search results, dilute brand SERP real estate, and can
+ * leak into "site:growthos.ca" listings instead of marketing pages.
  */
 export default function Login() {
   const navigate = useNavigate()
@@ -45,6 +51,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      <Helmet>
+        <title>Sign in — {SITE_NAME}</title>
+        <link rel="canonical" href={`${SITE_URL}/login`} />
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="description" content="Sign in to your GrowthOS account." />
+      </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
       <div className="relative md:w-1/2 bg-ink-900 overflow-hidden flex items-center justify-center px-8 py-12 md:py-16">

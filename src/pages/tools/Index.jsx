@@ -60,29 +60,46 @@ export default function ToolsIndex() {
 }
 
 function ToolCard({ tool }) {
-  const available = tool.status === 'available'
+  // Three states:
+  //   'available' → clickable, green Live badge
+  //   'preview'   → clickable, amber Needs CRM badge (cross-system tools)
+  //   'coming-soon' → not clickable, dimmed
+  const clickable = tool.status === 'available' || tool.status === 'preview'
 
-  // Card body is the same in both cases; only the wrapper element differs
-  // (Link when available, div when not). Extracted so we don't duplicate.
+  const badge = (() => {
+    if (tool.status === 'available') {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          Live
+        </span>
+      )
+    }
+    if (tool.status === 'preview') {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          Needs CRM
+        </span>
+      )
+    }
+    return (
+      <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+        Coming soon
+      </span>
+    )
+  })()
+
   const body = (
     <>
       <div className="flex items-start justify-between mb-2">
         <span className="text-2xl" aria-hidden>{tool.icon}</span>
-        {available ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Live
-          </span>
-        ) : (
-          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-            Coming soon
-          </span>
-        )}
+        {badge}
       </div>
-      <h3 className={`text-base font-semibold mb-1 ${available ? 'text-gray-900' : 'text-gray-700'}`}>
+      <h3 className={`text-base font-semibold mb-1 ${clickable ? 'text-gray-900' : 'text-gray-700'}`}>
         {tool.name}
       </h3>
-      <p className={`text-sm leading-relaxed ${available ? 'text-gray-600' : 'text-gray-500'}`}>
+      <p className={`text-sm leading-relaxed ${clickable ? 'text-gray-600' : 'text-gray-500'}`}>
         {tool.tagline}
       </p>
     </>
@@ -90,7 +107,7 @@ function ToolCard({ tool }) {
 
   const baseClass = 'block rounded-xl border p-5 transition-all'
 
-  if (available) {
+  if (tool.status === 'available') {
     return (
       <Link
         to={tool.route}
@@ -99,6 +116,20 @@ function ToolCard({ tool }) {
         {body}
         <div className="mt-3 text-xs text-brand-700 font-medium">
           Open tool →
+        </div>
+      </Link>
+    )
+  }
+
+  if (tool.status === 'preview') {
+    return (
+      <Link
+        to={tool.route}
+        className={`${baseClass} border-amber-200 bg-amber-50/40 hover:border-amber-300 hover:shadow-sm`}
+      >
+        {body}
+        <div className="mt-3 text-xs text-amber-800 font-medium">
+          See preview →
         </div>
       </Link>
     )

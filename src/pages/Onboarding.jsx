@@ -227,6 +227,11 @@ export default function Onboarding() {
 
       const parsed = safeParseMilestones(raw)
       if (!parsed || !Array.isArray(parsed.milestones) || parsed.milestones.length === 0) {
+        // Log the raw response so engineers can diagnose bad output even
+        // though the user only sees the generic "try again" message.
+        // Useful when Claude returns prose instead of JSON, an empty array,
+        // or a different schema after a prompt change.
+        console.error('[Onboarding] AI_PARSE_FAILED — raw response:', raw)
         throw new Error('AI_PARSE_FAILED')
       }
 
@@ -252,9 +257,17 @@ export default function Onboarding() {
 
       const depUpdates = buildDependencyUpdates(parsed.milestones, insertedRows ?? [])
       if (depUpdates.length > 0) {
-        await Promise.all(depUpdates.map(u =>
+        // depends_on is metadata used by the Roadmap UI to grey out blocked
+        // milestones. If it fails to save the roadmap still works — the user
+        // just sees every milestone as immediately startable. Don't fail the
+        // whole onboarding over it, but DO log so we can spot a regression.
+        const depResults = await Promise.all(depUpdates.map(u =>
           supabase.from('milestones').update({ depends_on: u.depends_on }).eq('id', u.id)
         ))
+        const depErrors = depResults.filter(r => r.error)
+        if (depErrors.length > 0) {
+          console.warn('[Onboarding] Some milestone dependencies failed to save:', depErrors.map(r => r.error.message))
+        }
       }
 
       // ── First-session wow moment ─────────────────────────────────────────
@@ -292,14 +305,22 @@ export default function Onboarding() {
             } catch { /* storage blocked — non-fatal */ }
           }
         }
-      } catch {
+      } catch (openerErr) {
         // Non-fatal — owner still lands on a working advisor, just without the
         // pre-generated opener. The Advisor will fall back to its own.
+        // Logged so a persistent failure (e.g. cap exceeded, model change) is
+        // visible during dev rather than silently degrading the wow moment.
+        console.warn('[Onboarding] First-session opener failed (non-fatal):', openerErr)
       }
 
       await refresh()
       navigate('/advisor')
     } catch (err) {
+      // Always log the underlying error so a failed onboarding is debuggable.
+      // The user-facing message stays plain English — but engineers reading
+      // the console get the stack + any wrapped Supabase / Anthropic detail.
+      console.error('[Onboarding] Roadmap generation failed:', err)
+
       const msg = err.message === 'AI_PARSE_FAILED'
         ? "We couldn't read the AI's response. Try again — it usually works on the next try."
         : (err.message ?? 'Something went wrong. Please try again.')

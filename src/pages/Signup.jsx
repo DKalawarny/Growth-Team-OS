@@ -1,10 +1,16 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import { SITE_URL, SITE_NAME } from '../lib/seo'
 
 /**
  * Signup — mirror of Login's split-screen, but the brand-side copy flips
  * to future-orientation. Login is "welcome back," signup is "the start."
+ *
+ * SEO posture: noindex. The conversion path is Landing/Pricing → Signup,
+ * not direct search. Indexing the signup form adds nothing and dilutes
+ * the marketing pages' SERP authority.
  */
 export default function Signup() {
   const navigate = useNavigate()
@@ -25,6 +31,12 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      <Helmet>
+        <title>Start your free trial — {SITE_NAME}</title>
+        <link rel="canonical" href={`${SITE_URL}/signup`} />
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="description" content="Start your 14-day free trial of GrowthOS — the AI advisor and operating system for home-services contractors. No credit card required." />
+      </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
       <div className="relative md:w-1/2 bg-ink-900 overflow-hidden flex items-center justify-center px-8 py-12 md:py-16">

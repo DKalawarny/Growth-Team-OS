@@ -100,6 +100,52 @@ export const TOOLS = [
     status:      'available',
     icon:        '📰',
   },
+  // ── CRM-powered diagnostic tools ──────────────────────────────────────────
+  // These read operational data (quotes, projects, time entries, invoices)
+  // from the CRM and produce diagnostic intelligence the owner can't get
+  // from either product alone. Until the CRM connector ships, every page
+  // renders <CRMUpsellCard>. status='preview' so the Index card is clickable
+  // (unlike 'coming-soon' which is non-interactive) and shows the upsell.
+  {
+    id:          'pipeline-to-hire',
+    route:       '/tools/pipeline-to-hire',
+    name:        'Pipeline-to-Hire',
+    tagline:     'Hire the right person, the right week — based on the work you\'ve already won.',
+    category:    'team',
+    status:      'preview',
+    icon:        '📅',
+    requiresCRM: true,
+  },
+  {
+    id:          'estimator-scorecard',
+    route:       '/tools/estimator-scorecard',
+    name:        'Estimator Scorecard',
+    tagline:     'Win rate, bid accuracy, and what each estimator is sharpest at.',
+    category:    'team',
+    status:      'preview',
+    icon:        '🎯',
+    requiresCRM: true,
+  },
+  {
+    id:          'foreman-scorecard',
+    route:       '/tools/foreman-scorecard',
+    name:        'Foreman Scorecard',
+    tagline:     'Labour variance and on-time delivery, by foreman.',
+    category:    'team',
+    status:      'preview',
+    icon:        '👷',
+    requiresCRM: true,
+  },
+  {
+    id:          'job-autopsy',
+    route:       '/tools/job-autopsy',
+    name:        'Job Autopsy',
+    tagline:     'Why this job\'s margin came in below quote — line by line.',
+    category:    'foundation',
+    status:      'preview',
+    icon:        '🔍',
+    requiresCRM: true,
+  },
   // ── Hidden (route alive, not advertised) ───────────────────────────────────
   {
     id:          'l10-meeting',
@@ -153,6 +199,15 @@ export function getToolByRoute(route) {
 /** All tools currently live and usable (includes hidden ones — they run fine). */
 export function availableTools() {
   return TOOLS.filter(t => t.status === 'available')
+}
+
+/**
+ * Tools whose route resolves to a real (clickable) page — `available` tools
+ * AND `preview` tools (CRM-required upsell pages). Excludes `coming-soon`
+ * because those have no route component yet.
+ */
+export function reachableTools() {
+  return TOOLS.filter(t => t.status === 'available' || t.status === 'preview')
 }
 
 /**
