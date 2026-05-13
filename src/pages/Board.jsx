@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { sendTaskAssigned } from '../lib/email'
 
 /**
  * Work Board — /board
@@ -70,7 +71,7 @@ function isOverdue(d) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Board() {
-  const { profile }  = useAuth()
+  const { profile, company } = useAuth()
   const companyId    = profile?.company_id
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -78,6 +79,10 @@ export default function Board() {
   const [staff,            setStaff]            = useState([])   // external staff_members
   const [workOrders,       setWorkOrders]        = useState([])
   const [milestones,       setMilestones]        = useState([])
+  // Active playbooks for the "Start from playbook" picker in the create modal.
+  // Each row carries its items inline so we can spawn the checklist in one
+  // round-trip after the WO is inserted — no second fetch needed.
+  const [templates,        setTemplates]         = useState([])
   const [loading,          setLoading]           = useState(true)
   const [setupNeeded,      setSetupNeeded]       = useState(false)
   const [staffSetupNeeded, setStaffSetupNeeded]  = useState(false)
@@ -85,6 +90,17 @@ export default function Board() {
   const [showModal,        setShowModal]         = useState(false)
   const [editingOrder,     setEditingOrder]      = useState(null)
   const [dragId,           setDragId]            = useState(null)
+
+  // ── Field flags (the crew's "Flag for office" stream) ──────────────────────
+  // Lightweight inbox over work_order_step_comments where prompt_type =
+  // 'near_miss' — the things the crew tagged for owner attention. Loaded
+  // lazily when the drawer is first opened so the kanban load isn't slowed
+  // by a query 95% of users won't open on a given visit. We keep the COUNT
+  // up-to-date on a slower poll, though, so the header badge is honest.
+  const [flags,            setFlags]            = useState([])
+  const [flagsLoading,     setFlagsLoading]     = useState(false)
+  const [flagsOpen,        setFlagsOpen]        = useState(false)
+  const [flagCount,        setFlagCount]        = useState(0)
   // Unified member list — each tagged with _type and _cid (prefixed ID string)
   const allMembers = [
     ...appUsers.map(p => ({ ...p, _type: 'profile', _cid: `p:${p.id}` })),
@@ -104,20 +120,32 @@ export default function Board() {
     loadAll()
   }, [companyId])
 
-  // When the page is opened from a Roadmap "Work order" link, auto-open the
-  // new-order modal pre-filled with the milestone and optional action step.
-  // Wait until loading is done so milestones are in the dropdown.
+  // When the page is opened from a Roadmap "Work order" link OR from the
+  // Playbooks page's "Use this playbook" CTA, auto-open the new-order modal
+  // pre-filled. Wait until loading is done so milestones + templates are in
+  // the dropdowns.
   useEffect(() => {
     if (loading) return
-    const msId    = searchParams.get('ms_id')
-    const msTitle = searchParams.get('ms_title')
-    const task    = searchParams.get('task')
-    if (!msId && !msTitle && !task) return
+    const msId       = searchParams.get('ms_id')
+    const msTitle    = searchParams.get('ms_title')
+    const task       = searchParams.get('task')
+    const playbookId = searchParams.get('playbook_id')
+    if (!msId && !msTitle && !task && !playbookId) return
+
+    // Pre-fill the title from the playbook name when arriving from Playbooks
+    // and there's no explicit task hint — saves the owner one input. The user
+    // can overwrite it before saving.
+    let titleHint = task ?? ''
+    if (!titleHint && playbookId) {
+      const tpl = templates.find(t => t.id === playbookId)
+      if (tpl?.name && tpl.name !== 'Untitled playbook') titleHint = tpl.name
+    }
 
     setEditingOrder({
       status:       'backlog',
-      title:        task        ? task    : '',
+      title:        titleHint,
       milestone_id: msId        ? msId    : '',
+      template_id:  playbookId  ? playbookId : '',
       // Store the milestone title as a hint even if it isn't the task title
       _ms_hint:     msTitle     ?? '',
     })
@@ -128,11 +156,24 @@ export default function Board() {
 
   async function loadAll() {
     setLoading(true)
-    const [usersRes, staffRes, ordersRes, msRes] = await Promise.all([
+    const [usersRes, staffRes, ordersRes, msRes, tplRes] = await Promise.all([
       supabase.from('profiles').select('id, name, email, avatar_url').eq('company_id', companyId),
       supabase.from('staff_members').select('*').eq('company_id', companyId).order('name'),
       supabase.from('work_orders').select('*').eq('company_id', companyId).order('created_at', { ascending: false }),
       supabase.from('milestones').select('id, title, source').eq('company_id', companyId).eq('completed', false).order('sort_order', { ascending: true }),
+      // Playbooks — load with items nested so we can spawn the checklist
+      // in one go on WO create. Failing silently (e.g. before migration 020
+      // is applied) means the picker just won't appear — the rest of the
+      // page keeps working.
+      supabase
+        .from('work_order_templates')
+        .select(`
+          id, name,
+          items:work_order_template_items(id, position, text, notes, required)
+        `)
+        .eq('company_id', companyId)
+        .is('archived_at', null)
+        .order('updated_at', { ascending: false }),
     ])
     // Detect missing table via both the Postgres "undefined_table" code (42P01)
     // and the PostgREST schema-cache miss code (PGRST200 / "schema cache" message).
@@ -147,6 +188,17 @@ export default function Board() {
     setStaff(staffRes.data    ?? [])
     setWorkOrders(ordersRes.data ?? [])
     setMilestones(msRes.data   ?? [])
+    // Templates may not exist yet (migration 020 unapplied) — fall back to []
+    // so the picker is just hidden, no error UI.
+    if (!tableMissing(tplRes.error)) {
+      const sorted = (tplRes.data ?? []).map(t => ({
+        ...t,
+        items: (t.items || []).slice().sort((a, b) => a.position - b.position),
+      }))
+      setTemplates(sorted)
+    } else {
+      setTemplates([])
+    }
     setLoading(false)
   }
 
@@ -169,7 +221,20 @@ export default function Board() {
       milestone_id: data.milestone_id || null,
       status:       data.status,
       ...(staff_member_id && !staffSetupNeeded ? { staff_member_id } : {}),
+      // template_id is set when the user picked a playbook in the create modal.
+      // It's a back-reference for reporting ("what % of WOs use a playbook?")
+      // and lets us style the WO card differently if we want to flag it.
+      ...(data.template_id ? { template_id: data.template_id } : {}),
     }
+
+    // Capture the previous assignee BEFORE the write so we can tell if the
+    // staff_member changed on edit. Only used to decide whether to fire the
+    // task-assigned email — we don't want to re-spam someone every time a
+    // title or due-date gets tweaked.
+    const previousStaffId = data.id
+      ? workOrders.find(o => o.id === data.id)?.staff_member_id ?? null
+      : null
+    const assigneeChanged = previousStaffId !== staff_member_id
 
     if (data.id) {
       const { error } = await supabase.from('work_orders').update(payload).eq('id', data.id)
@@ -177,6 +242,9 @@ export default function Board() {
         setWorkOrders(prev => prev.map(o =>
           o.id === data.id ? { ...o, ...payload } : o
         ))
+        if (staff_member_id && assigneeChanged) {
+          notifyStaffAssignee({ staff_member_id, payload })
+        }
       }
       setShowModal(false); setEditingOrder(null)
       return error?.message ?? null
@@ -190,10 +258,69 @@ export default function Board() {
       }).select().single()
       if (!error && row) {
         setWorkOrders(prev => [row, ...prev])
+        // ── Spawn checklist items from the chosen playbook ────────────────
+        // The copy is deliberate (see migration 020): editing the template
+        // later mustn't change in-flight checklists. We fire-and-forget on
+        // failure here — the WO is the user's primary action, and the items
+        // can always be re-spawned manually if this somehow fails.
+        if (data.template_id) {
+          await spawnChecklistFromTemplate(row.id, data.template_id)
+        }
         setShowModal(false); setEditingOrder(null)
+        if (staff_member_id) {
+          notifyStaffAssignee({ staff_member_id, payload })
+        }
       }
       return error?.message ?? null
     }
+  }
+
+  /**
+   * Copy every step of a playbook template onto a freshly-created work
+   * order as checklist_items. Pulled from the in-memory `templates` array
+   * so we don't double-fetch.
+   *
+   * Each instance carries template_item_id back-reference (for reporting),
+   * plus its own copy of text/notes/required/position so future edits to
+   * the source template don't bleed into in-flight work.
+   */
+  async function spawnChecklistFromTemplate(workOrderId, templateId) {
+    const tpl = templates.find(t => t.id === templateId)
+    if (!tpl?.items?.length) return
+    const rows = tpl.items.map(item => ({
+      work_order_id:    workOrderId,
+      template_item_id: item.id,
+      position:         item.position,
+      text:             item.text,
+      notes:            item.notes,
+      required:         item.required,
+    }))
+    const { error } = await supabase.from('work_order_checklist_items').insert(rows)
+    if (error) console.warn('Failed to spawn checklist items:', error.message)
+  }
+
+  /**
+   * Fire-and-forget task-assigned email to a staff member. Looks up the
+   * staff row from the in-memory list (already loaded by loadAll), skips
+   * silently if no email is on file. Errors are logged but don't surface
+   * — the work order save is the user's primary action.
+   */
+  function notifyStaffAssignee({ staff_member_id, payload }) {
+    const staffRow = staff.find(s => s.id === staff_member_id)
+    if (!staffRow?.email) return
+    const ownerName   = profile?.full_name || profile?.name || profile?.email?.split('@')[0] || 'Your manager'
+    const companyName = company?.name || 'the team'
+    sendTaskAssigned({
+      to:              staffRow.email,
+      staffId:         staff_member_id,
+      staffName:       staffRow.name,
+      ownerName,
+      companyName,
+      taskTitle:       payload.title,
+      taskDescription: payload.description,
+      priority:        payload.priority,
+      dueDate:         payload.due_date,
+    })
   }
 
   async function handleMove(orderId, newStatus) {
@@ -226,8 +353,142 @@ export default function Board() {
     window.location.href = `mailto:${member.email}?subject=${subject}&body=${encodeURIComponent(lines.join('\n'))}`
   }
 
-  function openNew(status = 'backlog')  { setEditingOrder({ status }); setShowModal(true) }
-  function openEdit(order)              { setEditingOrder({ ...order, assignee_cid: getAssigneeCid(order) }); setShowModal(true) }
+  function openNew(status = 'backlog')  { setEditingOrder({ status }); setChecklistItems([]); setShowModal(true) }
+  function openEdit(order)              {
+    setEditingOrder({ ...order, assignee_cid: getAssigneeCid(order) })
+    setChecklistItems([])              // clear stale items from a previous edit
+    setShowModal(true)
+    loadChecklistItems(order.id)
+  }
+
+  // ── Checklist items (for the WO currently in the edit modal) ──────────────
+  // Stored at page level so handleToggleChecklistItem can update both the
+  // child modal's view and the parent's state in one place. Cleared each
+  // time the modal opens to avoid flashing the previous WO's list.
+  const [checklistItems, setChecklistItems] = useState([])
+
+  async function loadChecklistItems(workOrderId) {
+    const { data, error } = await supabase
+      .from('work_order_checklist_items')
+      .select('id, position, text, notes, required, done, done_at, done_by_user_id, done_by_staff_member_id')
+      .eq('work_order_id', workOrderId)
+      .order('position', { ascending: true })
+    // Silent failure — if migration 020 isn't applied the table won't exist
+    // and the modal just shows no checklist. We don't want to error-banner
+    // the whole edit flow over a missing optional feature.
+    if (error) return
+
+    // ── Pull step comments for this WO and group by item ─────────────────
+    // This is the field-level write-back stream: crew leaving notes against
+    // specific steps from the staff portal. Owner reads them here in the
+    // edit modal to close the loop ("crew flagged the dust barrier step
+    // was missing tape — let me add that to the playbook").
+    //
+    // We resolve author names client-side from the lists we already have
+    // in memory (staff + appUsers in the parent component pass through
+    // separately for rendering), so this stays a single network call.
+    // Silent-fail if migration 021 isn't applied — items just show with
+    // no comments attached.
+    let commentsByItem = new Map()
+    const itemIds = (data ?? []).map(d => d.id)
+    if (itemIds.length) {
+      const { data: comments, error: cErr } = await supabase
+        .from('work_order_step_comments')
+        .select('id, checklist_item_id, staff_member_id, user_id, text, is_voice, prompt_type, created_at')
+        .in('checklist_item_id', itemIds)
+        .order('created_at', { ascending: false })
+      if (!cErr) {
+        for (const c of comments ?? []) {
+          const arr = commentsByItem.get(c.checklist_item_id) ?? []
+          arr.push(c)
+          commentsByItem.set(c.checklist_item_id, arr)
+        }
+      }
+    }
+
+    setChecklistItems((data ?? []).map(item => ({
+      ...item,
+      comments: commentsByItem.get(item.id) ?? [],
+    })))
+  }
+
+  // ── Field-flag count (cheap header badge) ──────────────────────────────────
+  // Runs once on page load + after the drawer closes (someone might have
+  // flagged things in another tab). Just a count(*) — no comment text — so
+  // it's fast and we don't pay for the full list when the drawer is closed.
+  async function loadFlagCount() {
+    const { count, error: err } = await supabase
+      .from('work_order_step_comments')
+      .select('id', { count: 'exact', head: true })
+      .eq('company_id', companyId)
+      .eq('prompt_type', 'near_miss')
+    // Silent fail — if migration 021 isn't applied yet, just show no badge.
+    if (err) return
+    setFlagCount(count ?? 0)
+  }
+
+  // ── Full field-flag list (loaded on drawer open) ──────────────────────────
+  // Pulls every 'near_miss' comment + the WO title for jump-to-job context.
+  // Newest first, no pagination yet (we cap implicitly via the prompt_type
+  // filter being narrow — if a single company starts hitting hundreds we add
+  // a 50-row limit + "load more"). Author names resolved client-side from
+  // the staff + appUsers we already have in state.
+  async function loadFlags() {
+    setFlagsLoading(true)
+    const { data, error: err } = await supabase
+      .from('work_order_step_comments')
+      .select(`
+        id, checklist_item_id, work_order_id, staff_member_id, user_id,
+        text, is_voice, prompt_type, created_at,
+        work_orders!inner(id, title)
+      `)
+      .eq('company_id', companyId)
+      .eq('prompt_type', 'near_miss')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setFlagsLoading(false)
+    if (err) {
+      // Silent fail like the rest — the drawer just shows "no flags yet".
+      setFlags([])
+      return
+    }
+    setFlags(data ?? [])
+  }
+
+  // Initial badge load — kicks off alongside loadAll so the header shows the
+  // right count from the first render.
+  useEffect(() => {
+    if (!companyId) return
+    loadFlagCount()
+  }, [companyId])
+
+  /**
+   * Tick / untick a checklist item. Optimistic — flips local state first,
+   * persists in the background. Reverts on error.
+   *
+   * Records done_by_user_id so we can later show "checked by Daniel · 2h ago"
+   * if we want; the staff portal sets done_by_staff_member_id on its side.
+   */
+  async function handleToggleChecklistItem(itemId, nextDone) {
+    setChecklistItems(prev => prev.map(i =>
+      i.id === itemId
+        ? { ...i, done: nextDone, done_at: nextDone ? new Date().toISOString() : null,
+            done_by_user_id: nextDone ? profile.id : null }
+        : i
+    ))
+    const payload = nextDone
+      ? { done: true,  done_at: new Date().toISOString(), done_by_user_id: profile.id, done_by_staff_member_id: null }
+      : { done: false, done_at: null,                       done_by_user_id: null,        done_by_staff_member_id: null }
+    const { error } = await supabase
+      .from('work_order_checklist_items')
+      .update(payload)
+      .eq('id', itemId)
+    if (error) {
+      // Roll back: reload from server so we don't have to remember the previous state
+      const currentOrder = editingOrder?.id
+      if (currentOrder) loadChecklistItems(currentOrder)
+    }
+  }
   function onDrop(status)               { if (dragId) { handleMove(dragId, status); setDragId(null) } }
 
   const filtered     = filterCid
@@ -241,8 +502,11 @@ export default function Board() {
     return (
       <div className="min-h-screen bg-ink-50">
         <div className="bg-ink-900 h-20 animate-pulse" />
-        <div className="max-w-7xl mx-auto px-8 py-6 grid grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-96 bg-white rounded-xl animate-pulse shadow-sm" />)}
+        {/* Match the real board's responsive layout: one column on mobile so the
+            skeleton doesn't introduce a 4-column overflow that the real board
+            avoids via overflow-x-auto. */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => <div key={i} className="h-48 sm:h-96 bg-white rounded-xl animate-pulse shadow-sm" />)}
         </div>
       </div>
     )
@@ -253,11 +517,11 @@ export default function Board() {
   if (setupNeeded) {
     return (
       <div className="min-h-screen bg-ink-50">
-        <div className="bg-ink-900 border-b border-ink-800 px-8 py-6">
+        <div className="bg-ink-900 border-b border-ink-800 px-4 sm:px-8 py-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">Work Board</div>
           <h1 className="text-xl font-bold text-white">Work Board</h1>
         </div>
-        <div className="max-w-2xl mx-auto px-8 py-12">
+        <div className="max-w-2xl mx-auto px-4 sm:px-8 py-12">
           <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-8 text-center">
             <div className="text-4xl mb-4">🛠️</div>
             <h2 className="text-lg font-bold text-ink-900 mb-2">One-time setup required</h2>
@@ -333,33 +597,57 @@ alter table public.work_orders
 
       {/* Dark header */}
       <div className="bg-ink-900 border-b border-ink-800">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
-          <div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">Work Board</div>
             <h1 className="text-xl font-bold text-white leading-tight">Work Board</h1>
           </div>
-          <div className="flex items-center gap-3">
+          {/* Action cluster — collapses gracefully on mobile:
+              - Field flags + Manage team hide their text labels (icon-only)
+              - New work order shows a "+" only on the smallest screens
+              The flag count badge stays visible on every breakpoint since
+              it's the whole point of the button. */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFlagsOpen(true)
+                loadFlags()
+              }}
+              aria-label="Field flags"
+              className="relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 hover:text-white text-sm font-semibold transition-colors border border-ink-700"
+            >
+              <span aria-hidden>🚩</span>
+              <span className="hidden sm:inline">Field flags</span>
+              {flagCount > 0 && (
+                <span className="ml-0.5 sm:ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500 text-ink-900">
+                  {flagCount > 99 ? '99+' : flagCount}
+                </span>
+              )}
+            </button>
             <Link to="/settings"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 hover:text-white text-sm font-semibold transition-colors border border-ink-700">
+              aria-label="Manage team"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 hover:text-white text-sm font-semibold transition-colors border border-ink-700">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="7" cy="7" r="3"/><path d="M1 18c0-3.3 2.7-6 6-6h.5"/>
                 <circle cx="14" cy="12" r="3"/><path d="M11 18c0-1.7 1.3-3 3-3s3 1.3 3 3"/>
               </svg>
-              Manage team
+              <span className="hidden sm:inline">Manage team</span>
             </Link>
             <button type="button" onClick={() => openNew()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors">
+              aria-label="New work order"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
                 <path d="M8 3v10M3 8h10" strokeLinecap="round" />
               </svg>
-              New work order
+              <span className="hidden sm:inline">New work order</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Member filter strip */}
-      <div className="max-w-7xl mx-auto px-8 pt-4 pb-2 flex items-center gap-2 flex-wrap">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-2 flex items-center gap-2 flex-wrap">
         <button type="button" onClick={() => setFilterCid(null)}
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
             filterCid === null
@@ -388,9 +676,11 @@ alter table public.work_orders
         </span>
       </div>
 
-      {/* Kanban grid */}
-      <div className="max-w-7xl mx-auto px-8 pb-10 overflow-x-auto">
-        <div className="grid grid-cols-4 gap-4 min-w-[780px] pt-2">
+      {/* Kanban grid — horizontally scrolls on screens narrower than ~780px.
+          The 4-column kanban is the standard pattern (Linear/Trello/Asana all
+          do this on mobile); column min-width of ~180px keeps cards readable. */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-10 overflow-x-auto">
+        <div className="grid grid-cols-4 gap-3 sm:gap-4 min-w-[780px] pt-2">
           {COLUMNS.map(col => {
             const cards = filtered.filter(o => o.status === col.key)
             return (
@@ -452,8 +742,36 @@ alter table public.work_orders
           appUsers={appUsers}
           staff={staff}
           milestones={milestones}
+          templates={templates}
+          checklistItems={checklistItems}
+          onToggleChecklistItem={handleToggleChecklistItem}
           onSave={handleSave}
-          onClose={() => { setShowModal(false); setEditingOrder(null) }}
+          onClose={() => { setShowModal(false); setEditingOrder(null); setChecklistItems([]) }}
+        />
+      )}
+
+      {/* Field-flags drawer */}
+      {flagsOpen && (
+        <FlagsDrawer
+          flags={flags}
+          loading={flagsLoading}
+          workOrders={workOrders}
+          staff={staff}
+          appUsers={appUsers}
+          onClose={() => {
+            setFlagsOpen(false)
+            // Refresh badge count on close — someone might've flagged
+            // things in another tab.
+            loadFlagCount()
+          }}
+          onOpenWorkOrder={(woId) => {
+            const wo = workOrders.find(w => w.id === woId)
+            if (!wo) return
+            setFlagsOpen(false)
+            setEditingOrder(wo)
+            loadChecklistItems(woId)
+            setShowModal(true)
+          }}
         />
       )}
 
@@ -574,8 +892,9 @@ function WorkOrderCard({ order, member, milestone, onEdit, onMove, onDelete, onD
 
 // ── Work order modal ──────────────────────────────────────────────────────────
 
-function WorkOrderModal({ order, appUsers, staff, milestones, onSave, onClose }) {
+function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose }) {
   const fromRoadmap = !!(order?._ms_hint || order?.milestone_id) && !order?.id
+  const isCreate    = !order?.id
   const [form, setForm] = useState({
     id:           order?.id           ?? null,
     title:        order?.title        ?? '',
@@ -585,6 +904,11 @@ function WorkOrderModal({ order, appUsers, staff, milestones, onSave, onClose })
     priority:     order?.priority     ?? 'medium',
     milestone_id: order?.milestone_id ?? '',
     status:       order?.status       ?? 'backlog',
+    // template_id is only meaningful on create; we hide the picker on edit.
+    // Setting one and submitting will spawn its steps as checklist items on
+    // the new WO (see spawnChecklistFromTemplate in the parent). Honoured
+    // when prefilled via ?playbook_id=<id> from the Playbooks page CTA.
+    template_id:  order?.template_id ?? '',
   })
   const [saving,   setSaving]   = useState(false)
   const [saveErr,  setSaveErr]  = useState(null)
@@ -645,6 +969,34 @@ function WorkOrderModal({ order, appUsers, staff, milestones, onSave, onClose })
               placeholder="Add context, steps, or notes…" rows={3}
               className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none" />
           </div>
+
+          {/* Playbook picker — only on create, only if any active playbooks exist.
+              Picking one spawns its steps as a checklist on the new WO. */}
+          {isCreate && templates.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold text-ink-600 mb-1.5">
+                Start from a playbook <span className="text-ink-400 font-normal">(optional)</span>
+              </label>
+              <select value={form.template_id} onChange={e => set('template_id', e.target.value)}
+                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                <option value="">No playbook — blank work order</option>
+                {templates.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} {t.items?.length ? `(${t.items.length} steps)` : ''}
+                  </option>
+                ))}
+              </select>
+              {form.template_id && (() => {
+                const tpl = templates.find(t => t.id === form.template_id)
+                const n   = tpl?.items?.length ?? 0
+                return (
+                  <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
+                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this work order. The crew can tick them off from the board or the staff portal.
+                  </p>
+                )
+              })()}
+            </div>
+          )}
 
           {/* Assign to — shows both app users and staff */}
           <div className="grid grid-cols-2 gap-3">
@@ -723,6 +1075,97 @@ function WorkOrderModal({ order, appUsers, staff, milestones, onSave, onClose })
             </div>
           )}
 
+          {/* Checklist — only on edit, only if items exist on this WO.
+              Crew can tick from the staff portal; office can tick here. */}
+          {form.id && checklistItems.length > 0 && (
+            <div>
+              {(() => {
+                const doneCount = checklistItems.filter(i => i.done).length
+                const total     = checklistItems.length
+                const pct       = total ? Math.round((doneCount / total) * 100) : 0
+                return (
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-ink-600">
+                      Checklist <span className="text-ink-400 font-normal">· {doneCount} of {total}</span>
+                    </label>
+                    <span className="text-[10px] font-bold text-ink-500">{pct}%</span>
+                  </div>
+                )
+              })()}
+              {/* Progress bar */}
+              <div className="h-1 bg-ink-100 rounded-full overflow-hidden mb-2">
+                <div
+                  className="h-full bg-emerald-500 transition-all duration-300"
+                  style={{ width: `${checklistItems.length ? (checklistItems.filter(i => i.done).length / checklistItems.length) * 100 : 0}%` }}
+                />
+              </div>
+              <ul className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+                {checklistItems.map(item => {
+                  const comments = item.comments ?? []
+                  return (
+                    <li key={item.id} className="bg-ink-50 border border-ink-100 rounded-lg px-2.5 py-2">
+                      <div className="flex items-start gap-2">
+                        <input
+                          type="checkbox"
+                          checked={item.done}
+                          onChange={e => onToggleChecklistItem?.(item.id, e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded text-brand-600 focus:ring-brand-400 border-ink-300 cursor-pointer"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-xs leading-snug ${item.done ? 'line-through text-ink-400' : 'text-ink-800'}`}>
+                            {item.text}
+                          </p>
+                          {item.notes && (
+                            <p className="text-[11px] text-ink-500 mt-0.5 leading-relaxed">{item.notes}</p>
+                          )}
+                        </div>
+                        {item.required && !item.done && (
+                          <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0">
+                            Req
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Field notes from the crew — the loop-closing read.
+                          These are what the crew posted from the staff portal
+                          against this specific step. Owner reads them here
+                          and can decide whether the underlying playbook
+                          should learn from what they're saying. */}
+                      {comments.length > 0 && (
+                        <ul className="mt-2 ml-6 space-y-1 border-l-2 border-brand-200 pl-2">
+                          {comments.map(c => {
+                            const author = c.staff_member_id
+                              ? (staff.find(s => s.id === c.staff_member_id)?.name ?? 'Crew')
+                              : c.user_id
+                                ? (appUsers.find(u => u.id === c.user_id)?.name ?? 'Office')
+                                : 'Crew'
+                            const promptLabel = BOARD_PROMPT_LABEL[c.prompt_type]
+                            return (
+                              <li key={c.id} className="bg-white border border-ink-200 rounded-md px-2 py-1.5">
+                                <div className="flex items-center gap-1.5 text-[10px] text-ink-500 mb-0.5 flex-wrap">
+                                  <span className="font-semibold text-ink-700">{author}</span>
+                                  <span>·</span>
+                                  <span>{boardFormatRelativeTime(c.created_at)}</span>
+                                  {c.is_voice && <span title="Voice note" aria-label="Voice note">🎤</span>}
+                                  {promptLabel && (
+                                    <span className="text-[9px] uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 rounded-full px-1.5">
+                                      {promptLabel}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[12px] text-ink-800 leading-snug whitespace-pre-wrap">{c.text}</p>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
+
           {saveErr && (
             <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">
               ⚠ {saveErr}
@@ -743,5 +1186,146 @@ function WorkOrderModal({ order, appUsers, staff, milestones, onSave, onClose })
       </div>
     </div>
   )
+}
+
+/**
+ * FlagsDrawer — the owner's read of the crew's "Flag for office" stream.
+ *
+ * Slides in from the right. Lists every comment with prompt_type='near_miss'
+ * for this company, newest first. Each row shows author + WO context + the
+ * flagged note, with a one-click jump back to the work order's edit modal.
+ *
+ * What this is: an inbox of things the crew thought the office should
+ * know about — tool gaps, surprise hazards, scope creep, near-misses,
+ * customer comments. The point is the owner doesn't have to open every
+ * WO to find them; they're collected here.
+ *
+ * What this is NOT: the FLHA / incident report register. Those are
+ * compliance artifacts and live in the CRM. See migration 021's
+ * "what this is NOT" block for the boundary.
+ */
+function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onOpenWorkOrder }) {
+  // Build a quick lookup so we don't .find() per flag during render
+  const woById = useMemo(
+    () => Object.fromEntries(workOrders.map(w => [w.id, w])),
+    [workOrders],
+  )
+
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      {/* Backdrop */}
+      <div
+        className="flex-1 bg-ink-900/40 backdrop-blur-sm"
+        onClick={onClose}
+        aria-label="Close field flags"
+      />
+      {/* Drawer */}
+      <div className="w-full max-w-md bg-white shadow-2xl flex flex-col">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-ink-100 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-0.5">From the field</p>
+            <h2 className="text-lg font-bold text-ink-900">Flags for the office</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-ink-400 hover:text-ink-700 text-sm font-semibold"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          {loading ? (
+            <p className="text-sm text-ink-500 text-center py-8">Loading flags...</p>
+          ) : flags.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-3xl mb-2">🚩</div>
+              <p className="text-sm font-semibold text-ink-900 mb-1">Nothing flagged yet</p>
+              <p className="text-xs text-ink-500 max-w-xs mx-auto leading-relaxed">
+                When the crew taps "Flag for office" on a step from the staff
+                portal, the note shows up here so it doesn't get buried in a
+                specific work order.
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {flags.map(f => {
+                const wo = woById[f.work_order_id] ?? f.work_orders ?? null
+                const author = f.staff_member_id
+                  ? (staff.find(s => s.id === f.staff_member_id)?.name ?? 'Crew')
+                  : f.user_id
+                    ? (appUsers.find(u => u.id === f.user_id)?.name ?? 'Office')
+                    : 'Crew'
+                return (
+                  <li key={f.id} className="bg-amber-50/40 border border-amber-200 rounded-lg p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] text-ink-600 mb-1 flex-wrap">
+                      <span className="font-bold text-ink-800">{author}</span>
+                      <span>·</span>
+                      <span>{boardFormatRelativeTime(f.created_at)}</span>
+                      {f.is_voice && <span title="Voice note" aria-label="Voice note">🎤</span>}
+                      <span>·</span>
+                      <button
+                        type="button"
+                        onClick={() => onOpenWorkOrder(f.work_order_id)}
+                        className="font-semibold text-brand-700 hover:text-brand-800 underline-offset-2 hover:underline"
+                      >
+                        {wo?.title || 'Open work order'}
+                      </button>
+                    </div>
+                    <p className="text-sm text-ink-900 leading-snug whitespace-pre-wrap">{f.text}</p>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+
+        {/* Footer — small reminder of the boundary, so an owner reading
+            this drawer for the first time doesn't assume it's compliance. */}
+        <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/40">
+          <p className="text-[10px] text-ink-500 leading-snug">
+            Field flags are an insight stream for SOP improvement — not a
+            safety-compliance log. FLHA, toolbox talks, and incident reports
+            live in the CRM's safety module.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Mirrors PROMPT_LABEL in StaffPortal.jsx — kept in sync by hand because
+// these two files have no shared module yet and copying a small map is
+// cheaper than wiring an import. If we add a third reader, factor out.
+//
+// 'near_miss' is labelled "Flag for office" rather than "Near miss" —
+// the schema value clusters near-miss-style flags for Solomon, but the
+// owner-facing copy avoids implying this is a compliance record. FLHA
+// and formal incident reporting live in the CRM. See migration 021.
+const BOARD_PROMPT_LABEL = {
+  free:          null,
+  start_walk:    'Start walk',
+  shift_end:     'Shift end',
+  step_complete: 'Step done',
+  job_close:     'Job close',
+  near_miss:     'Flag for office',
+}
+
+// Compact relative-time formatter for the comment byline. Same logic as
+// the StaffPortal helper; kept local to avoid pulling that file into
+// the Board's module graph.
+function boardFormatRelativeTime(iso) {
+  if (!iso) return ''
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return ''
+  const diffSec = Math.floor((Date.now() - t) / 1000)
+  if (diffSec < 30)   return 'just now'
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`
+  if (diffSec < 86_400) return `${Math.floor(diffSec / 3600)}h ago`
+  if (diffSec < 86_400 * 2) return 'yesterday'
+  return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
