@@ -81,6 +81,13 @@ function Icon({ name, className = 'w-[18px] h-[18px]' }) {
         <circle cx="8"  cy="18" r="2" fill="currentColor" stroke="none"/>
       </svg>
     )
+    case 'help': return (
+      <svg className={base} {...props}>
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2 2-2.5 3.5"/>
+        <line x1="12" y1="17" x2="12" y2="17.01" strokeWidth="2.5"/>
+      </svg>
+    )
     case 'trajectories': return (
       <svg className={base} {...props}>
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
@@ -91,6 +98,16 @@ function Icon({ name, className = 'w-[18px] h-[18px]' }) {
         <rect x="3" y="3" width="5" height="18" rx="1.5"/>
         <rect x="9.5" y="3" width="5" height="12" rx="1.5"/>
         <rect x="16" y="3" width="5" height="15" rx="1.5"/>
+      </svg>
+    )
+    case 'playbooks': return (
+      <svg className={base} {...props}>
+        {/* Clipboard with checklist lines — reads as "process / SOP" at small size */}
+        <rect x="5" y="4" width="14" height="17" rx="2"/>
+        <rect x="9" y="2.5" width="6" height="3.5" rx="1"/>
+        <line x1="8.5" y1="11" x2="15.5" y2="11"/>
+        <line x1="8.5" y1="14.5" x2="15.5" y2="14.5"/>
+        <line x1="8.5" y1="18" x2="13" y2="18"/>
       </svg>
     )
     case 'analytics': return (
@@ -134,6 +151,7 @@ const mainNav = [
   { to: '/tools/safety', label: 'Safety & Compliance', icon: 'safety'       },
   { to: '/trajectories', label: 'Growth Trajectories',  icon: 'trajectories' },
   { to: '/board',        label: 'Work Board',          icon: 'board'        },
+  { to: '/playbooks',    label: 'Playbooks',           sublabel: 'Reusable checklists', icon: 'playbooks'    },
   { to: '/analytics',   label: 'Analytics',           icon: 'analytics'    },
 ]
 
@@ -248,8 +266,29 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Settings — pinned above user section */}
-      <div className="px-3 pb-1">
+      {/* Help + Settings — pinned above user section */}
+      <div className="px-3 pb-1 space-y-0.5">
+        <NavLink
+          to="/help"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+              isActive
+                ? 'bg-white/8 text-white'
+                : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
+            }`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <span className={isActive ? 'text-brand-400' : 'text-ink-500'}>
+                <Icon name="help" />
+              </span>
+              <span className="flex-1">Help</span>
+              {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />}
+            </>
+          )}
+        </NavLink>
+
         <NavLink
           to="/settings"
           className={({ isActive }) =>

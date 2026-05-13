@@ -74,6 +74,7 @@ const MAIN_NAV = [
   { to: '/documents',    label: 'Library'              },
   { to: '/trajectories', label: 'Growth Trajectories'  },
   { to: '/board',        label: 'Work Board'           },
+  { to: '/playbooks',    label: 'Playbooks'            },
   { to: '/tools/cfo',    label: 'CFO Dashboard'        },
   { to: '/tools/safety', label: 'Safety & Compliance'  },
   { to: '/analytics',    label: 'Analytics'            },
@@ -263,6 +264,16 @@ export default function MobileNav() {
               </div>
             </div>
           )}
+          <NavLink
+            to="/help"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive ? 'bg-white/8 text-white' : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
+              }`
+            }
+          >
+            Help
+          </NavLink>
           <NavLink
             to="/settings"
             className={({ isActive }) =>
