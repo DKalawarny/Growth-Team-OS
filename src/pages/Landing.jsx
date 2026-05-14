@@ -29,7 +29,7 @@ import {
 
 const LANDING_META = buildPageMeta({
   title:       'GrowthOS — AI advisor + business tools for home-services contractors',
-  description: 'AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 7-day free trial.',
+  description: 'AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 14-day free trial.',
   path:        '/',
 })
 
@@ -360,22 +360,26 @@ function HeroSection() {
       }} />
 
       <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-          7-day free trial — no credit card required
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-semibold px-4 py-1.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            14-day free trial — no credit card required
+          </div>
+          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-1.5 rounded-full">
+            🔒 Founding rate — $97 locked in for life
+          </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
-          Your whole business.<br />
-          <span className="text-amber-400">Finally in one place.</span>
+          Stop running a million-dollar operation<br />
+          <span className="text-amber-400">on gut feel and spreadsheets.</span>
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
-          GrowthOS is the AI business advisor and operating system for plumbers,
-          electricians, HVAC, roofing, demolition, landscaping, cleaning, and
-          every other home-services contractor. Solomon knows your goals, your
-          numbers, and your team — and connects to tools for cash flow, hiring,
-          local SEO, compliance, and growth.
+          GrowthOS gives you an AI advisor that knows your numbers, a live CFO dashboard
+          connected to your books, and 10+ tools built for contractors — cash flow,
+          hiring, local SEO, compliance, and growth. Everything a $5,000/month consultant
+          gives you, for $97 a month.
         </p>
 
         {/* Feature pill row */}
@@ -392,7 +396,7 @@ function HeroSection() {
             to="/signup"
             className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
-            Start your free trial
+            Claim your 14-day free trial
           </Link>
           <Link
             to="/pricing"
@@ -403,7 +407,7 @@ function HeroSection() {
         </div>
 
         <p className="text-white/30 text-sm">
-          No credit card · 7 days free · Cancel anytime · $97/month after trial
+          No credit card · 14 days free · Cancel anytime · $97/month after trial
         </p>
       </div>
     </section>
@@ -426,10 +430,10 @@ function ProblemSection() {
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Sound familiar?
+            This is costing you money right now.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
-            Most service-business owners are running great operations with terrible back-office infrastructure. That's the gap GrowthOS closes.
+            Most contractors are running great operations with terrible back-office infrastructure. Every week without the right systems is revenue left on the table.
           </p>
         </div>
 
@@ -566,12 +570,12 @@ function ToolsSection() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Every area of your business. Covered.
+            The complete arsenal for contractors who play to win.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
             From your Google ranking to your next hire to your 13-week cash runway —
-            each tool asks a few questions and gives you a finished plan you can act on today.
-            No templates. No dashboards to stare at.
+            each tool asks a few questions and hands you a finished plan you can act on today.
+            No templates. No dashboards to interpret. Just answers.
           </p>
         </div>
 
@@ -776,10 +780,13 @@ function PriceSection() {
             <span className="text-6xl font-black text-white">
               {annual ? '$81' : '$97'}
             </span>
-            <span className="text-white/40 text-lg">/ month</span>
+            <div className="text-left">
+              <p className="text-white/40 text-lg leading-tight">USD / mo</p>
+              <p className="text-white/25 text-xs leading-tight">{annual ? '~$111 CAD' : '~$133 CAD'}</p>
+            </div>
           </div>
           {annual ? (
-            <p className="text-amber-400 font-semibold mb-8">Billed as $970/year — you save $194</p>
+            <p className="text-amber-400 font-semibold mb-8">Billed as $970 USD (~$1,329 CAD)/year — you save $194</p>
           ) : (
             <p className="text-white/30 mb-8">Switch to annual and save $194/year</p>
           )}
@@ -806,7 +813,7 @@ function PriceSection() {
             to="/signup"
             className="inline-block px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors"
           >
-            Start 7-day free trial
+            Start 14-day free trial
           </Link>
           <p className="mt-4 text-white/25 text-xs">No credit card required · Cancel anytime</p>
         </div>
@@ -826,17 +833,17 @@ function ClosingCTA() {
     <section className="bg-amber-500 py-16">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4">
-          Strategy. Financials. Hiring. Marketing. Operations.<br />One platform. $97 a month.
+          Your competitors are getting smarter.<br />Are you going to let them pull ahead?
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
-          Try GrowthOS free for 7 days. Connect your books, run your first tool, and ask Solomon anything. If it's not the best $97 you've spent on your business, cancel — no questions, no charge.
+          14 days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best $97 you've ever put into your business — cancel. No questions. No charge. No risk.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             to="/signup"
             className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gray-950 text-white font-black text-base hover:bg-gray-800 transition-colors"
           >
-            Start free — no credit card
+            Claim your edge — start free
           </Link>
           <a
             href="mailto:dkalawarny@hotmail.com"

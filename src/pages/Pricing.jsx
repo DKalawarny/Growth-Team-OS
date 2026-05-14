@@ -31,7 +31,7 @@ import {
  */
 const PRICING_META = buildPageMeta({
   title:       'Pricing — GrowthOS · $97/month for the AI advisor and every tool',
-  description: 'GrowthOS pricing: $97/month or $970/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. 7-day free trial, no credit card required.',
+  description: 'GrowthOS pricing: $97/month or $970/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. 14-day free trial, no credit card required.',
   path:        '/pricing',
 })
 
@@ -207,7 +207,7 @@ export default function Pricing() {
         <div className="relative max-w-3xl mx-auto px-6">
           <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            7-day free trial — no credit card
+            14-day free trial — no credit card
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
             One subscription.<br />
@@ -270,12 +270,12 @@ export default function Pricing() {
                   {billing === ANNUAL ? '$81' : '$97'}
                 </span>
                 <div className="text-left">
-                  <p className="text-white/40 text-sm leading-tight">per</p>
-                  <p className="text-white/40 text-sm leading-tight">month</p>
+                  <p className="text-white/40 text-sm leading-tight">USD / mo</p>
+                  <p className="text-white/25 text-xs leading-tight">{billing === ANNUAL ? '~$111 CAD' : '~$133 CAD'}</p>
                 </div>
               </div>
               {billing === ANNUAL ? (
-                <p className="text-amber-400 font-bold mt-2">Billed annually at $970 — 2 months completely free</p>
+                <p className="text-amber-400 font-bold mt-2">Billed annually at $970 USD (~$1,329 CAD) — 2 months completely free</p>
               ) : (
                 <p className="text-white/25 text-sm mt-2">Pay annually and pocket $194 — that's 2 months free</p>
               )}
@@ -284,7 +284,7 @@ export default function Pricing() {
             <div className="my-6 border-t border-white/8" />
 
             <OwnerCta billing={billing} authState={authState} />
-            <p className="text-white/20 text-xs mt-4">7-day free trial · No credit card · Cancel anytime</p>
+            <p className="text-white/20 text-xs mt-4">14-day free trial · No credit card · Cancel anytime</p>
           </div>
         </section>
 
@@ -400,7 +400,7 @@ export default function Pricing() {
           <div className="relative">
             <p className="text-amber-400 text-sm font-bold uppercase tracking-widest mb-3">Start today</p>
             <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              7 days free. No card. No risk.
+              14 days free. No card. No risk.
             </h2>
             <p className="text-white/50 max-w-md mx-auto mb-8 leading-relaxed">
               Get your first AI report in under an hour. Ask Solomon anything about your business. See your financials clearly — maybe for the first time.
@@ -481,7 +481,7 @@ function OwnerCta({ billing, authState }) {
       to={`/signup?plan=${plan}`}
       className="block w-full text-center rounded-xl px-4 py-4 text-base font-black bg-amber-500 hover:bg-amber-400 text-gray-950 transition-colors shadow-lg"
     >
-      Start 7-day free trial — free
+      Start 14-day free trial — free
     </Link>
   )
 }

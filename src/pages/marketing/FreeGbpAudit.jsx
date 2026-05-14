@@ -175,7 +175,7 @@ export default function FreeGbpAudit() {
                 to="/signup"
                 className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold hover:border-gray-400 transition-colors"
               >
-                Start a 7-day free trial
+                Start a 14-day free trial
               </Link>
             </div>
           </div>

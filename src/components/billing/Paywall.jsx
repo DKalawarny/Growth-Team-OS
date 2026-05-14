@@ -134,7 +134,7 @@ function pickContent(status) {
   return {
     tone:         'warn',
     title:        'Your free trial has ended',
-    body:         "You've had a full week to kick the tires — time to pick a plan. The Owner plan is $97/month, includes every tool, and you can cancel any time.",
+    body:         "You've had two full weeks to kick the tires — time to pick a plan. The Owner plan is $97/month, includes every tool, and you can cancel any time.",
     primary:      'checkout',
     primaryLabel: 'Upgrade now — $97 / month',
   }

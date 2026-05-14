@@ -136,7 +136,7 @@ export default function About() {
               to="/signup"
               className="px-8 py-3.5 rounded-xl border border-gray-300 text-gray-700 hover:border-gray-400 font-semibold transition-colors"
             >
-              Start a 7-day free trial
+              Start a 14-day free trial
             </Link>
           </div>
         </section>

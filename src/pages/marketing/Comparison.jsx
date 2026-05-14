@@ -271,7 +271,7 @@ export default function Comparison() {
               to="/signup"
               className="inline-block mt-4 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-gray-950 text-sm font-bold transition-colors"
             >
-              Start a 7-day free trial →
+              Start a 14-day free trial →
             </Link>
           </div>
         </section>

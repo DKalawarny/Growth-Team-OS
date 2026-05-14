@@ -150,7 +150,7 @@ export default function TradePage() {
 
   const meta = buildPageMeta({
     title:       `GrowthOS for ${data.label} — AI advisor + business tools for ${data.h1Trade}`,
-    description: `AI business advisor and full operating system built for ${data.label}. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 7-day free trial.`,
+    description: `AI business advisor and full operating system built for ${data.label}. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 14-day free trial.`,
     path:        `/for/${trade}`,
   })
 
@@ -290,7 +290,7 @@ export default function TradePage() {
             backgroundImage: 'radial-gradient(ellipse 60% 50% at 50% 100%, rgba(245,158,11,0.12) 0%, transparent 70%)',
           }} />
           <div className="relative">
-            <h2 className="text-3xl font-black mb-4">7 days free. No card. No risk.</h2>
+            <h2 className="text-3xl font-black mb-4">14 days free. No card. No risk.</h2>
             <p className="text-white/60 max-w-md mx-auto mb-8">
               Plug in your numbers, run a tool, see if Solomon actually knows your business.
               If it doesn't change how you run things, walk away.
