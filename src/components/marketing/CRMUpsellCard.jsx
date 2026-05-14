@@ -44,7 +44,7 @@ export default function CRMUpsellCard({
         </div>
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full whitespace-nowrap">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          Needs the CRM
+          Needs ProSuite
         </span>
       </div>
 
@@ -76,25 +76,25 @@ export default function CRMUpsellCard({
       {/* CTA card */}
       <div className="bg-gradient-to-br from-brand-50 to-white border border-brand-200 rounded-xl p-6">
         <h2 className="text-base font-semibold text-ink-900 mb-2">
-          This tool reads from the CRM
+          This tool requires ProSuite
         </h2>
         <p className="text-sm text-ink-700 leading-relaxed mb-4 max-w-xl">
-          The CRM is where quotes, projects, AR, and crew hours live. Without
-          that data, there's nothing here for the AI to analyze. Connect the
-          CRM (or buy it as a bundle with GrowthOS) and this tool starts
-          producing real, decision-ready output.
+          ProSuite is where your jobs, quotes, and crew hours live. Without
+          that data, there's nothing here for the AI to analyze. Add ProSuite
+          to your GrowthOS plan and this tool starts producing real,
+          decision-ready output.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Link
-            to="/crm"
+          <a
+            href="mailto:dkalawarny@hotmail.com?subject=Interested%20in%20ProSuite"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 px-4 py-2 rounded-lg transition-colors"
           >
-            Learn about the CRM →
-          </Link>
+            Get ProSuite →
+          </a>
           <button
             type="button"
             disabled
-            title="Coming soon — connector ships when the CRM is linked to GrowthOS."
+            title="Coming soon — connector ships when ProSuite is linked to GrowthOS."
             className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-600 bg-white border border-ink-200 px-4 py-2 rounded-lg cursor-not-allowed opacity-60"
           >
             I already have it — connect

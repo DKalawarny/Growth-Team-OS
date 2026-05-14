@@ -70,8 +70,9 @@ export const TOOLS = [
     name:        'Offer Builder',
     tagline:     'Build a scoped offer and a price that doesn\'t leave money on the table.',
     category:    'revenue',
-    status:      'available',
+    status:      'preview',
     icon:        '💰',
+    requiresProSuite: true,
   },
   {
     id:          'hiring-scorecard',
@@ -79,8 +80,9 @@ export const TOOLS = [
     name:        'Hiring Planner',
     tagline:     'Turn "I need to hire someone" into a role scorecard you can actually interview against.',
     category:    'team',
-    status:      'available',
+    status:      'preview',
     icon:        '🎯',
+    requiresProSuite: true,
   },
   {
     id:          'org-chart',

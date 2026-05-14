@@ -1,3 +1,4 @@
+import CRMUpsellCard from '../../components/marketing/CRMUpsellCard'
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
@@ -42,6 +43,24 @@ const INITIAL_FORM = {
 }
 
 export default function Hiring() {
+  return (
+    <CRMUpsellCard
+      toolId="hiring-scorecard"
+      toolName="Hiring Planner"
+      toolIcon="🎯"
+      tagline="Know exactly who to hire and when — based on the jobs you've already won in ProSuite."
+      whatItDoes={[
+        'Reads your awarded pipeline and crew capacity from ProSuite',
+        'Tells you the exact week you\'ll need a new hire to keep jobs on track',
+        'Generates a role scorecard, interview questions, and 30-day ramp plan',
+        'Re-runs as your pipeline changes so your hiring stays ahead of the work',
+      ]}
+      sampleOutput="You have $380k in awarded work starting August. At your current crew of 4, you'll hit capacity by July 28. To onboard a new labourer by then, you need to start interviewing by July 7 — that's 3 weeks from now. Here's the scorecard and interview guide."
+    />
+  )
+
+  // ProSuite gate — remove the early return above once ProSuite is connected.
+  // eslint-disable-next-line no-unreachable
   const { profile }        = useAuth()
   const navigate           = useNavigate()
   const [stage, setStage]  = useState('form')    // form | loading | result | saving
