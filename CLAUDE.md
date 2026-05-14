@@ -27,7 +27,7 @@ Target buyer: owner-operators, $500k–$15M revenue, 3–50 people.
 
 - **$97/mo** ([`price_1TWhaTAiDwj4YybG6xnspbRl`](https://dashboard.stripe.com/test/prices/price_1TWhaTAiDwj4YybG6xnspbRl))
 - **$970/yr** (`price_1TWhaTAiDwj4YybGHNJic1hY`), positioned as "2 months free"
-- 7-day free trial, no credit card required
+- 14-day free trial, no credit card required
 - Hardcoded as `$97/month` in ~8 places: [Landing.jsx:32](src/pages/Landing.jsx),
   [Pricing.jsx](src/pages/Pricing.jsx), [Comparison.jsx](src/pages/marketing/Comparison.jsx),
   [Paywall.jsx:137](src/components/billing/Paywall.jsx),
@@ -164,7 +164,14 @@ In rough order of priority:
    key has been live a few days and nothing's broken. The old key was
    shipped to the browser pre-rewrite — assume it's leaked.
 
-6. **(After traction)** Bump $97 → $147/mo. Recommended $147 at launch
+6. **Offer Builder + Hiring Planner as partner add-on** — these two tools
+   are removed from GrowthOS marketing but kept in the app. Once the
+   partner's job-management system is built, gate them behind a second
+   subscription tier that requires both GrowthOS + the partner product.
+   Hiring Planner needs incoming job data from that system to be fully
+   useful; Offer Builder is a natural upsell from their quoting flow.
+
+7. **(After traction)** Bump $97 → $147/mo. Recommended $147 at launch
    based on buyer profile (owner-operators with $500k–$15M revenue
    already spend $500–3k/mo on accountants and ServiceTitan). Trigger to
    revisit: 50+ paying customers, OR named case studies on the landing

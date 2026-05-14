@@ -57,16 +57,6 @@ const TOOLS = [
     outcome: 'Show up on Google Maps, in organic search, and when customers ask ChatGPT or Google AI who to call. Full audit with an AI search readiness score.',
   },
   {
-    icon: '💰',
-    name: 'Offer Builder',
-    outcome: 'Scope your services and price them properly. Stop leaving money on the table with vague quotes.',
-  },
-  {
-    icon: '🎯',
-    name: 'Hiring Planner',
-    outcome: 'Tell us the role. Get a scorecard, interview questions, and a 30-day ramp plan. Stop hiring on gut feel.',
-  },
-  {
     icon: '🦺',
     name: 'Safety & Compliance',
     outcome: 'Track every licence, WCB registration, and compliance document your business needs to stay legal and insurable.',
@@ -96,18 +86,18 @@ const CHAT_LINES = [
 const STEPS = [
   {
     n: '01',
-    title: 'Answer a few questions',
-    body: 'Tell us about your business once. Your goals, your team, your numbers. Takes 10 minutes and unlocks everything.',
+    title: 'Tell us about your business',
+    body: '10 minutes. Unlocks everything.',
   },
   {
     n: '02',
-    title: 'Your advisor gets to work',
-    body: 'Solomon reads your context every day. Opens each morning with what actually matters — not a generic check-in.',
+    title: 'Solomon goes to work',
+    body: 'Briefs you every morning on what actually matters.',
   },
   {
     n: '03',
-    title: 'Run the tools, get the documents',
-    body: 'Pick a tool, answer a few questions, get a finished document you can act on. No templates. No dashboards to interpret.',
+    title: 'Run a tool. Get an answer.',
+    body: 'Finished documents you can act on — not dashboards to interpret.',
   },
 ]
 
@@ -141,8 +131,6 @@ export default function Landing() {
       <ProblemSection />
       <SolomonSection />
       <ToolsSection />
-      <CostGuideSection />
-      <TestimonialsSection />
       <TradesSection />
       <HowItWorksSection />
       <PriceSection />
@@ -376,10 +364,8 @@ function HeroSection() {
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
-          GrowthOS gives you an AI advisor that knows your numbers, a live CFO dashboard
-          connected to your books, and 10+ tools built for contractors — cash flow,
-          hiring, local SEO, compliance, and growth. Everything a $5,000/month consultant
-          gives you, for $97 a month.
+          Everything a $5,000/month consultant gives you — AI advisor, live CFO dashboard,
+          cash flow, hiring, local SEO, compliance — for $97 a month.
         </p>
 
         {/* Feature pill row */}
@@ -391,18 +377,12 @@ function HeroSection() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+        <div className="flex items-center justify-center mb-8">
           <Link
             to="/signup"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+            className="px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
             Claim your 14-day free trial
-          </Link>
-          <Link
-            to="/pricing"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/15 text-white/70 hover:text-white hover:border-white/30 font-semibold text-base transition-colors"
-          >
-            See pricing →
           </Link>
         </div>
 
@@ -418,11 +398,11 @@ function HeroSection() {
 
 function ProblemSection() {
   const pains = [
-    'Making big decisions based on gut feel and last month\'s bank balance',
-    'Paying a bookkeeper for reports you barely have time to read',
-    'Googling "how to hire a foreman" at 11pm on a Tuesday',
-    'Knowing you need to grow your Google reviews — but never doing it',
-    'Running your business from five apps that don\'t talk to each other',
+    'Making $100k decisions on last month\'s bank balance and a gut feeling',
+    'Paying a bookkeeper $800/month for reports you don\'t have time to read',
+    'Googling "how to hire a foreman" at 11pm because nobody told you how',
+    'Watching your competitor rank #1 on Google while you\'re still on page 3',
+    'Running five apps that don\'t talk to each other and still missing things',
   ]
 
   return (
@@ -567,29 +547,24 @@ function SolomonSection() {
 function ToolsSection() {
   return (
     <section className="bg-white py-20">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="text-center mb-14">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             The complete arsenal for contractors who play to win.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
-            From your Google ranking to your next hire to your 13-week cash runway —
-            each tool asks a few questions and hands you a finished plan you can act on today.
-            No templates. No dashboards to interpret. Just answers.
+            Ask a few questions. Get a finished plan. Act on it today.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
           {TOOLS.map((tool, i) => (
-            <div
-              key={i}
-              className="group border border-gray-200 rounded-2xl p-5 hover:border-amber-200 hover:bg-amber-50/30 transition-all"
-            >
-              <div className="text-2xl mb-3">{tool.icon}</div>
-              <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-amber-800 transition-colors">
-                {tool.name}
-              </h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{tool.outcome}</p>
+            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50">
+              <span className="text-xl flex-shrink-0">{tool.icon}</span>
+              <div>
+                <p className="font-bold text-gray-900 text-sm">{tool.name}</p>
+                <p className="text-xs text-gray-500 leading-snug">{tool.outcome.split('.')[0]}.</p>
+              </div>
             </div>
           ))}
         </div>
@@ -666,45 +641,42 @@ const TRADE_CATEGORIES = [
 
 function TradesSection() {
   return (
-    <section className="bg-white border-y border-gray-100 py-20">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Built for every trade and home-services business.
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            GrowthOS works the same way whether you run a plumbing company, an
-            HVAC shop, a roofing crew, a demolition outfit, a landscaping
-            business, or any other contractor or service business. The advisor
-            adapts to your numbers, your trade, and the way you actually work.
+    <>
+      {/* Integrations strip — visible */}
+      <section className="bg-white border-y border-gray-100 py-14">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8">
+            Solomon connects to the tools you already use
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {[
+              { name: 'QuickBooks Online', logo: '/logos/quickbooks.svg', note: 'Live financials' },
+              { name: 'Google Drive', logo: '/logos/google-drive.svg', note: 'Your documents' },
+              { name: 'OneDrive', logo: '/logos/onedrive.svg', note: 'Your files' },
+              { name: 'Google Business Profile', logo: '/logos/google.svg', note: 'Your local presence' },
+              { name: 'Your answers', icon: '💬', note: 'Goals, team, challenges' },
+            ].map(({ name, logo, icon, note }) => (
+              <div key={name} className="flex flex-col items-center gap-1.5 px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50 min-w-[120px]">
+                {logo
+                  ? <img src={logo} alt={name} className="w-7 h-7 object-contain" />
+                  : <span className="text-2xl">{icon}</span>
+                }
+                <p className="text-xs font-bold text-gray-800">{name}</p>
+                <p className="text-xs text-gray-400">{note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-gray-500 mt-8 max-w-lg mx-auto">
+            Connect once. Solomon reads your real numbers, your documents, and your goals — so every answer is specific to <em>your</em> business, not a generic template.
           </p>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TRADE_CATEGORIES.map(group => (
-            <div key={group.label} className="border border-gray-200 rounded-xl p-5 bg-gray-50/40">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-3">
-                {group.label}
-              </h3>
-              <ul className="space-y-1.5 text-sm text-gray-600">
-                {group.trades.map(t => (
-                  <li key={t} className="flex items-start gap-2">
-                    <span className="text-amber-500 font-bold flex-shrink-0">·</span>
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-center text-sm text-gray-400 mt-10 max-w-xl mx-auto">
-          Don't see your trade? GrowthOS works for any service business that
-          quotes work, runs jobs, hires people, and watches its cash flow —
-          which is essentially all of them.
-        </p>
+      {/* SEO keyword coverage — hidden from view, readable by crawlers */}
+      <div className="sr-only" aria-hidden="true">
+        {TRADE_CATEGORIES.flatMap(g => g.trades).join(', ')}
       </div>
-    </section>
+    </>
   )
 }
 
