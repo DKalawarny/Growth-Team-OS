@@ -370,7 +370,7 @@ function HeroSection() {
 
         {/* Feature pill row */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-2xl mx-auto">
-          {['AI Advisor','CFO Dashboard','Cash Flow','Local & AI Visibility','Hiring Planner','Safety & Compliance','Offer Builder','Org Chart','Growth Roadmap','Work Board'].map(f => (
+          {['AI Advisor','CFO Dashboard','Cash Flow','Local & AI Visibility','Safety & Compliance','Org Chart','Growth Roadmap','Work Board'].map(f => (
             <span key={f} className="text-xs font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/50">
               {f}
             </span>
