@@ -151,10 +151,8 @@ In rough order of priority:
    $970/yr prices, create live webhook endpoint, update the 4 `STRIPE_*`
    Supabase secrets to live values, do a real $1 charge + refund.
 
-3. **Set `APP_URL` Supabase secret to production domain** — blocked on
-   confirming/purchasing the domain (leados.com? growthos.com?). Once
-   domain is live, run: `supabase secrets set APP_URL=https://<domain>`.
-   Stripe checkout has a localhost fallback so test mode still works.
+3. ~~**Set `APP_URL` Supabase secret**~~ — **DONE (2026-05-16).** Set to
+   `https://leadeos.com`. Site is live and deployed on Netlify.
 
 4. ~~**Add `supabase/.temp/` to `.gitignore`**~~ — **DONE (2026-05-14).**
    Untracked and ignored.
