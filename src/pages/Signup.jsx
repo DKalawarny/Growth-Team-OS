@@ -14,18 +14,25 @@ import { SITE_URL, SITE_NAME } from '../lib/seo'
  */
 export default function Signup() {
   const navigate = useNavigate()
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState(null)
-  const [loading, setLoading]   = useState(false)
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [error, setError]           = useState(null)
+  const [loading, setLoading]       = useState(false)
+  const [confirmSent, setConfirmSent] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) setError(error.message)
-    else navigate('/onboarding')
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error) {
+      setError(error.message)
+    } else if (data.session) {
+      navigate('/onboarding')
+    } else {
+      // Email confirmation required — show "check your email" state
+      setConfirmSent(true)
+    }
     setLoading(false)
   }
 
@@ -128,12 +135,23 @@ export default function Signup() {
               </p>
             </div>
 
-            {error && (
+            {confirmSent && (
+              <div className="rounded-xl bg-green-50 border border-green-200 px-5 py-5 text-center">
+                <p className="text-2xl mb-2">✉️</p>
+                <p className="text-sm font-semibold text-green-800 mb-1">Check your email</p>
+                <p className="text-xs text-green-700 leading-relaxed">
+                  We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then come back and sign in.
+                </p>
+              </div>
+            )}
+
+            {!confirmSent && error && (
               <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
+            {!confirmSent && (
             <button
               type="submit"
               disabled={loading}
@@ -141,6 +159,7 @@ export default function Signup() {
             >
               {loading ? 'Creating your account…' : 'Start my free trial →'}
             </button>
+            )}
 
             <p className="text-[11px] text-ink-400 text-center leading-relaxed">
               By creating an account you agree to our terms. Your trial auto-converts after 14 days — cancel from settings anytime.
