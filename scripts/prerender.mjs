@@ -124,11 +124,16 @@ async function main() {
       executablePath = SYSTEM_CHROME_PATHS.find(p => existsSync(p))
     }
     if (executablePath) console.log(`[prerender] Chrome: ${executablePath}`)
-    browser = await puppeteer.launch({
-      headless: 'new',
-      ...(executablePath ? { executablePath } : {}),
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    })
+    try {
+      browser = await puppeteer.launch({
+        headless: 'new',
+        ...(executablePath ? { executablePath } : {}),
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      })
+    } catch (launchErr) {
+      console.warn('[prerender] Could not launch Chrome — skipping prerender (SEO snapshots will be stale):', launchErr.message)
+      return
+    }
 
     for (const { path: route, titleContains } of ROUTES) {
       console.log(`[prerender] ${route}`)
