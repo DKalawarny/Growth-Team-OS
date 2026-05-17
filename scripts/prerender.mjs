@@ -109,8 +109,24 @@ async function main() {
     await waitForServer(HOST)
 
     console.log('[prerender] launching headless Chrome…')
+    // Prefer env override, then puppeteer's own downloaded Chrome, then system Chrome.
+    const SYSTEM_CHROME_PATHS = [
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/google-chrome',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium',
+    ]
+    let executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+    if (!executablePath) {
+      try { executablePath = puppeteer.executablePath() } catch {}
+    }
+    if (!executablePath) {
+      executablePath = SYSTEM_CHROME_PATHS.find(p => existsSync(p))
+    }
+    if (executablePath) console.log(`[prerender] Chrome: ${executablePath}`)
     browser = await puppeteer.launch({
       headless: 'new',
+      ...(executablePath ? { executablePath } : {}),
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
 
