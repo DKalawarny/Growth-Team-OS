@@ -9,13 +9,18 @@
  */
 
 export const INDUSTRY_OPTIONS = [
-  'Construction / Trades',
-  'Professional Services',
-  'Retail / E-commerce',
-  'Food & Beverage',
-  'Health & Wellness',
-  'Manufacturing',
-  'Other',
+  'Plumbing',
+  'Electrical',
+  'HVAC',
+  'Roofing',
+  'Demolition',
+  'Masonry',
+  'Landscaping',
+  'General Contracting',
+  'Painting',
+  'Flooring',
+  'Concrete',
+  'Other Trades',
 ]
 
 export const TEAM_SIZE_OPTIONS = ['Just me', '2–5', '6–15', '16–50', '51+']
