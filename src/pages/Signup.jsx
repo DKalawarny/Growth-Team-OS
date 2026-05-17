@@ -19,6 +19,7 @@ export default function Signup() {
   const [error, setError]           = useState(null)
   const [loading, setLoading]       = useState(false)
   const [confirmSent, setConfirmSent] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -121,15 +122,25 @@ export default function Signup() {
               <label className="block text-xs font-semibold uppercase tracking-widest text-ink-500 mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Min. 8 characters"
-                autoComplete="new-password"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Min. 8 characters"
+                  autoComplete="new-password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-600 text-xs font-medium"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               <p className="text-[11px] text-ink-400 mt-1.5">
                 Use at least 8 characters. Mix letters + numbers for extra strength.
               </p>
