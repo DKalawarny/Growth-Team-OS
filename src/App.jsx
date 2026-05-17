@@ -23,6 +23,7 @@ const TradePage     = lazy(() => import('./pages/marketing/TradePage'))
 const FreeGbpAudit  = lazy(() => import('./pages/marketing/FreeGbpAudit'))
 const Login         = lazy(() => import('./pages/Login'))
 const Signup        = lazy(() => import('./pages/Signup'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 
 // ── Lazy: authed app shell + chrome ────────────────────────────────────────
 // Sidebar, MobileNav, AdvisorBanner, TrialBanner all only matter inside the
@@ -172,8 +173,9 @@ export default function App() {
         <Route path="/free-gbp-audit" element={<LazyRoute><FreeGbpAudit /></LazyRoute>} />
 
         {/* Public auth routes */}
-        <Route path="/login"  element={<LazyRoute><RedirectIfAuthed><Login /></RedirectIfAuthed></LazyRoute>} />
-        <Route path="/signup" element={<LazyRoute><RedirectIfAuthed><Signup /></RedirectIfAuthed></LazyRoute>} />
+        <Route path="/login"          element={<LazyRoute><RedirectIfAuthed><Login /></RedirectIfAuthed></LazyRoute>} />
+        <Route path="/signup"         element={<LazyRoute><RedirectIfAuthed><Signup /></RedirectIfAuthed></LazyRoute>} />
+        <Route path="/reset-password" element={<LazyRoute><ResetPassword /></LazyRoute>} />
 
         {/* Advisor invite — public (auth is handled inline on the page) */}
         <Route path="/invite/:token" element={<LazyRoute><Invite /></LazyRoute>} />

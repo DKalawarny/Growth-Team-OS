@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, streamClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
-import { assertWithinSpendCap, isSpendCapExceeded } from '../lib/usage'
+import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
 import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../lib/prompts'
 import { buildAdvisorContext } from '../lib/advisorContext'
@@ -84,9 +84,19 @@ export default function Advisor() {
   const [sending,         setSending]         = useState(false)
   const [generatingOpen,  setGeneratingOpen]  = useState(false) // morning opener in flight
   const [error,           setError]           = useState(null)
+  const [spendInfo,       setSpendInfo]       = useState(null)  // { used, cap }
 
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
+
+  // ── Fetch monthly spend for the header budget indicator ──────────────────
+
+  useEffect(() => {
+    if (!profile?.company_id) return
+    getMonthlyUsageSummary(profile.company_id).then(summary => {
+      setSpendInfo({ used: summary.totalCost, cap: summary.cap ?? DEFAULT_SPEND_CAP_USD })
+    }).catch(() => {})
+  }, [profile?.company_id])
 
   // ── Generate and save the morning opener ──────────────────────────────────
 
@@ -317,7 +327,7 @@ export default function Advisor() {
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0f1117' }}>
-      <Header companyName={company?.name} />
+      <Header companyName={company?.name} spendInfo={spendInfo} />
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-6 py-6">
@@ -354,8 +364,28 @@ export default function Advisor() {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function Header({ companyName }) {
+function Header({ companyName, spendInfo }) {
   const dayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long' })
+
+  // Budget pill — only show once data is loaded and there's meaningful spend
+  const budgetPill = spendInfo ? (() => {
+    const pct     = Math.min(spendInfo.used / spendInfo.cap, 1)
+    const remaining = Math.max(spendInfo.cap - spendInfo.used, 0)
+    const isNearCap = pct >= 0.8
+    const color = isNearCap ? 'rgba(251,191,36,0.7)' : 'rgba(255,255,255,0.25)'
+    return (
+      <div
+        className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color }}
+        title={`$${spendInfo.used.toFixed(2)} of $${spendInfo.cap.toFixed(0)} monthly budget used`}
+      >
+        <span style={{ color }}>
+          ${remaining.toFixed(2)} left
+        </span>
+      </div>
+    )
+  })() : null
+
   return (
     <header className="px-4 sm:px-6 py-3 sm:py-3.5 flex-shrink-0" style={{ background: '#161b22', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
@@ -372,6 +402,7 @@ function Header({ companyName }) {
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          {budgetPill}
           <Link
             to="/checkins"
             aria-label="Log check-in"
@@ -417,12 +448,21 @@ function LoadingHistory() {
 
 function WelcomeBlock({ profile, onPick }) {
   const firstName = profile?.name?.split(' ')[0] ?? 'there'
-  const starters = [
+  const allStarters = [
     "What's the single biggest lever I can pull this quarter?",
     "Walk me through my most important milestone in detail.",
     "Is my pricing leaving money on the table?",
     "What's a risk in my plan I'm probably not seeing?",
+    "How do I know if I'm ready to hire another tech?",
+    "Where is my cash flow most exposed right now?",
+    "What would you cut first if I needed to drop overhead by 15%?",
+    "Am I growing fast enough, or just staying busy?",
+    "How should I be thinking about my slow season?",
+    "What does a $2M version of my business look like?",
   ]
+  // Pick 4 fresh starters per session using the day as a seed for variety
+  const dayIndex = new Date().getDate() % allStarters.length
+  const starters = [...allStarters.slice(dayIndex), ...allStarters.slice(0, dayIndex)].slice(0, 4)
   return (
     <div className="pt-10">
       <div className="text-center mb-8">

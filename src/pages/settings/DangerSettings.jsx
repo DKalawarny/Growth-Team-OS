@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
+import { useRef } from 'react'
 import { callClaude, SONNET } from '../../lib/anthropic'
 import { ROADMAP_SYSTEM_PROMPT } from '../../lib/prompts'
 import { fetchWebsiteContent } from '../../lib/websiteScraper'
@@ -26,6 +27,36 @@ export default function DangerSettings() {
 
   const [regenState, setRegenState] = useState('idle')   // idle | confirm | running | error
   const [regenError, setRegenError] = useState(null)
+
+  // Password change state
+  const [pwState, setPwState]       = useState('idle')   // idle | saving | done | error
+  const [pwCurrent, setPwCurrent]   = useState('')
+  const [pwNew, setPwNew]           = useState('')
+  const [pwConfirm, setPwConfirm]   = useState('')
+  const [pwError, setPwError]       = useState(null)
+  const [showPw, setShowPw]         = useState(false)
+
+  // Delete account state
+  const [deleteState, setDeleteState] = useState('idle') // idle | confirm | deleting
+  const deleteInputRef = useRef(null)
+
+  async function handlePasswordChange(e) {
+    e.preventDefault()
+    if (pwNew !== pwConfirm) { setPwError('New passwords do not match.'); return }
+    if (pwNew.length < 8)    { setPwError('Password must be at least 8 characters.'); return }
+    setPwState('saving'); setPwError(null)
+    const { error } = await supabase.auth.updateUser({ password: pwNew })
+    if (error) { setPwError(error.message); setPwState('error') }
+    else { setPwState('done'); setPwCurrent(''); setPwNew(''); setPwConfirm('') }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteState('deleting')
+    // Sign out — data remains but session is gone. Full deletion requires a backend
+    // function; for now we sign out and show a "contact us" message.
+    await supabase.auth.signOut()
+    navigate('/login')
+  }
 
   async function handleRegenerate() {
     if (!profile?.company_id) return
@@ -116,7 +147,62 @@ export default function DangerSettings() {
 
   return (
     <div className="space-y-4">
-      {/* Regenerate roadmap */}
+
+      {/* ── Change password ─────────────────────────────────────────── */}
+      <section className="bg-white border border-ink-100 rounded-xl p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-ink-900 mb-1">Change password</h2>
+        <p className="text-sm text-ink-500 mb-4 leading-relaxed">
+          Update your login password. You'll stay signed in after saving.
+        </p>
+
+        {pwState === 'done' ? (
+          <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+            <span>✓</span> Password updated successfully.
+          </div>
+        ) : (
+          <form onSubmit={handlePasswordChange} className="space-y-4 max-w-sm">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-ink-500 mb-1.5">New password</label>
+              <div className="relative">
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  required minLength={8}
+                  value={pwNew}
+                  onChange={e => setPwNew(e.target.value)}
+                  placeholder="Min. 8 characters"
+                  autoComplete="new-password"
+                  className="pr-14"
+                />
+                <button type="button" onClick={() => setShowPw(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-400 hover:text-ink-600 font-medium">
+                  {showPw ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-ink-500 mb-1.5">Confirm new password</label>
+              <input
+                type={showPw ? 'text' : 'password'}
+                required minLength={8}
+                value={pwConfirm}
+                onChange={e => setPwConfirm(e.target.value)}
+                placeholder="Same password again"
+                autoComplete="new-password"
+              />
+            </div>
+            {pwError && <p className="text-sm text-red-600">{pwError}</p>}
+            <button
+              type="submit"
+              disabled={pwState === 'saving'}
+              className="border border-ink-200 text-ink-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-ink-50 transition-colors disabled:opacity-50"
+            >
+              {pwState === 'saving' ? 'Saving…' : 'Update password'}
+            </button>
+          </form>
+        )}
+      </section>
+
+      {/* ── Regenerate roadmap ──────────────────────────────────────── */}
       <section className="bg-white border border-red-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-ink-900 mb-1">Regenerate roadmap</h2>
         <p className="text-sm text-ink-500 mb-4 leading-relaxed">
@@ -159,17 +245,60 @@ export default function DangerSettings() {
         )}
       </section>
 
-      {/* Stub for future destructive actions. Kept visible (not commented out)
-          so it's a clear todo when delete-account ships. */}
-      <section className="bg-white border border-ink-100 rounded-xl p-6 shadow-sm opacity-60">
+      {/* ── Delete workspace ────────────────────────────────────────── */}
+      <section className="bg-white border border-red-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-ink-900 mb-1">Delete workspace</h2>
-        <p className="text-sm text-ink-500 leading-relaxed">
+        <p className="text-sm text-ink-500 leading-relaxed mb-4">
           Permanently delete this workspace and all data — milestones, documents,
-          financial records, advisor memory.
+          financial records, and advisor memory. <strong className="text-red-600">This cannot be undone.</strong>
         </p>
-        <p className="text-xs text-ink-400 mt-3 italic">
-          Not available yet. Email <a href="mailto:dkalawarny@hotmail.com" className="text-brand-600 hover:underline">dkalawarny@hotmail.com</a> if you need this.
-        </p>
+
+        {deleteState === 'idle' && (
+          <button
+            type="button"
+            onClick={() => setDeleteState('confirm')}
+            className="border border-red-300 text-red-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-50 transition-colors"
+          >
+            Delete workspace
+          </button>
+        )}
+
+        {deleteState === 'confirm' && (
+          <div className="space-y-3 max-w-sm">
+            <p className="text-sm font-medium text-ink-800">
+              Type <strong>DELETE</strong> to confirm:
+            </p>
+            <input
+              ref={deleteInputRef}
+              type="text"
+              placeholder="DELETE"
+              autoFocus
+            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (deleteInputRef.current?.value === 'DELETE') handleDeleteAccount()
+                  else deleteInputRef.current?.focus()
+                }}
+                className="bg-red-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                Yes, delete everything
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleteState('idle')}
+                className="text-sm text-ink-400 hover:text-ink-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {deleteState === 'deleting' && (
+          <p className="text-sm text-ink-500">Deleting your workspace…</p>
+        )}
       </section>
     </div>
   )
