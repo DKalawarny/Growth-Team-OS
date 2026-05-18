@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
+import { PRICE_MONTHLY_USD } from '../../lib/pricing'
 
 /**
  * TrialBanner — sticky top banner shown to users in the last stretch of
@@ -73,7 +74,7 @@ export default function TrialBanner() {
           <Link to="/settings/billing" className="underline hover:no-underline font-semibold">
             Upgrade now
           </Link>{' '}
-          to keep access — or save $194 with the{' '}
+          to keep access — or save ${PRICE_MONTHLY_USD * 2} with the{' '}
           <Link to="/settings/billing" className="underline hover:no-underline">
             annual plan
           </Link>.

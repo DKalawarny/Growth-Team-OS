@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
 import { startCheckout, openPortal } from '../../lib/subscriptions'
-import { PRICE_MONTHLY_USD } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
 
 /**
  * Paywall — full-card screen shown when a user without active access
@@ -84,7 +84,7 @@ export default function Paywall() {
 
         {/* Trust signals */}
         <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
-          {['Cancel any time — no lock-in', '14-day money-back guarantee', 'Your data stays yours'].map(t => (
+          {['Cancel any time — no lock-in', `${TRIAL_DAYS}-day money-back guarantee`, 'Your data stays yours'].map(t => (
             <span key={t} className="flex items-center gap-1.5 text-xs text-gray-500">
               <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor"><path d="M13.28 4.22a.75.75 0 010 1.06l-6.5 6.5a.75.75 0 01-1.06 0l-3-3a.75.75 0 011.06-1.06l2.47 2.47 5.97-5.97a.75.75 0 011.06 0z"/></svg>
               {t}
