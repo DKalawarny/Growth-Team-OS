@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, softwareApplicationSchema, SITE_URL } from '../../lib/seo'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
 
 /**
  * /for/:trade — trade-specific landing pages.
@@ -150,7 +151,7 @@ export default function TradePage() {
 
   const meta = buildPageMeta({
     title:       `GrowthOS for ${data.label} — AI advisor + business tools for ${data.h1Trade}`,
-    description: `AI business advisor and full operating system built for ${data.label}. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 14-day free trial.`,
+    description: `AI business advisor and full operating system built for ${data.label}. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
     path:        `/for/${trade}`,
   })
 
@@ -170,7 +171,7 @@ export default function TradePage() {
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        `GrowthOS for ${data.label}`,
           description: `AI business advisor and operating system for ${data.label}. CFO dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit.`,
-          price:       '97',
+          price:       String(PRICE_MONTHLY_USD),
         }))}</script>
       </Helmet>
 
@@ -193,7 +194,7 @@ export default function TradePage() {
           <p className="text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
             Built around how {data.h1Trade} businesses actually run. Cash flow,
             hiring, marketing visibility, compliance — all in one place, all
-            connected, all for $97/month.
+            connected, all for ${PRICE_MONTHLY_USD}/month.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -256,7 +257,7 @@ export default function TradePage() {
         {/* ── Tools list ───────────────────────────────────────────────────── */}
         <section className="mb-16">
           <h2 className="text-3xl font-black text-gray-900 mb-3 text-center">
-            Everything you get — for $97/month
+            Everything you get — for ${PRICE_MONTHLY_USD}/month
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-center mb-10">
             One subscription, every tool. No tiers, no upsells, no per-seat fees.
@@ -290,7 +291,7 @@ export default function TradePage() {
             backgroundImage: 'radial-gradient(ellipse 60% 50% at 50% 100%, rgba(245,158,11,0.12) 0%, transparent 70%)',
           }} />
           <div className="relative">
-            <h2 className="text-3xl font-black mb-4">14 days free. No card. No risk.</h2>
+            <h2 className="text-3xl font-black mb-4">{TRIAL_DAYS} days free. No card. No risk.</h2>
             <p className="text-white/60 max-w-md mx-auto mb-8">
               Plug in your numbers, run a tool, see if Solomon actually knows your business.
               If it doesn't change how you run things, walk away.
@@ -301,7 +302,7 @@ export default function TradePage() {
             >
               Start free trial
             </Link>
-            <p className="mt-5 text-white/30 text-xs">$97/month after trial · Cancel anytime · No contracts</p>
+            <p className="mt-5 text-white/30 text-xs">${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts</p>
           </div>
         </section>
 

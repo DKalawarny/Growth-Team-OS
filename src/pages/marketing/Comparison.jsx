@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, SITE_URL } from '../../lib/seo'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
 
 /**
  * /vs/:competitor — head-to-head comparison page.
@@ -50,7 +51,7 @@ const COMPETITORS = {
       'Solomon (AI advisor) — pulls your numbers and tells you what to do, not just what happened',
       'Local & AI Visibility audit — Knowify has nothing like this',
       'Hiring Planner with scorecards — Knowify is operations-only',
-      '$97/month flat — no per-seat math, no add-ons',
+      `$${PRICE_MONTHLY_USD}/month flat — no per-seat math, no add-ons`,
     ],
     competitorWins: [
       'Deeper job-costing detail if you live in the field every day',
@@ -84,7 +85,7 @@ const COMPETITORS = {
       'AI advisor that knows your business — Jobber has no equivalent',
       'CFO dashboard, cash flow forecasting, hiring planner — strategic tools Jobber doesn\'t build',
       'Local & AI Visibility audit',
-      'Flat $97/month for everything',
+      `Flat $${PRICE_MONTHLY_USD}/month for everything`,
     ],
     competitorWins: [
       'Mature scheduling, dispatching, and customer-facing workflows',
@@ -153,7 +154,7 @@ const COMPETITORS = {
     growthOSWins: [
       'Built for owner-operators, not project managers',
       'AI advisor that thinks about strategy, not just project tracking',
-      'A fraction of the price ($97/month vs. $400-1,100/month)',
+      `A fraction of the price ($${PRICE_MONTHLY_USD}/month vs. $400-1,100/month)`,
       'No 2-week onboarding required',
       'Hiring, marketing, growth tools built in',
     ],
@@ -197,7 +198,7 @@ export default function Comparison() {
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        `GrowthOS — alternative to ${data.name}`,
           description: `AI advisor and operating system for home-services contractors and specialty trades. An alternative to ${data.name} for owner-operators who need strategic guidance alongside operations.`,
-          price:       '97',
+          price:       String(PRICE_MONTHLY_USD),
         }))}</script>
       </Helmet>
 
@@ -226,7 +227,7 @@ export default function Comparison() {
           </div>
           <Row label="What it is" growth="AI advisor + business OS for owner-operators" them={data.tagline} />
           <Row label="Best for" growth="Specialty-trade owners, $500k–$15M revenue, 3–50 people" them={data.bestFor} />
-          <Row label="Pricing" growth="$97/month flat, all features, all users" them={data.pricing} />
+          <Row label="Pricing" growth={`$${PRICE_MONTHLY_USD}/month flat, all features, all users`} them={data.pricing} />
           <Row label="AI advisor" growth="Yes — Solomon, with long-term memory" them="No" />
           <Row label="CFO dashboard + cash flow forecast" growth="Yes" them={
             data.name === 'Knowify' ? 'Partial (job-costing only)' : 'No'
@@ -271,7 +272,7 @@ export default function Comparison() {
               to="/signup"
               className="inline-block mt-4 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-gray-950 text-sm font-bold transition-colors"
             >
-              Start a 14-day free trial →
+              Start a {TRIAL_DAYS}-day free trial →
             </Link>
           </div>
         </section>

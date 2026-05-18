@@ -31,8 +31,8 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV } from '../li
  * existing 6 FAQs are well-written for this — minor wording, big lift.
  */
 const PRICING_META = buildPageMeta({
-  title:       'Pricing — GrowthOS · $97/month for the AI advisor and every tool',
-  description: 'GrowthOS pricing: $97/month or $970/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. 14-day free trial, no credit card required.',
+  title:       `Pricing — GrowthOS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`,
+  description: `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. 14-day free trial, no credit card required.`,
   path:        '/pricing',
 })
 
@@ -216,7 +216,7 @@ export default function Pricing() {
           </h1>
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
             An AI advisor who knows your numbers. A live CFO dashboard. A hiring coach. A marketing analyst. A compliance tracker. A growth planner.
-            All connected. All for <span className="text-white font-semibold">$97 a month.</span>
+            All connected. All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span>
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/35">
             <span className="flex items-center gap-1.5"><Tick />No contracts</span>
@@ -374,7 +374,7 @@ export default function Pricing() {
                 <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
               </div>
               <div className="text-right">
-                <p className="text-amber-400 font-black text-2xl">$97<span className="text-sm font-normal text-amber-400/60">/mo</span></p>
+                <p className="text-amber-400 font-black text-2xl">${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-amber-400/60">/mo</span></p>
                 <p className="text-white/30 text-xs mt-0.5">vs. $1,480–$4,650/mo separately</p>
               </div>
             </div>
@@ -421,7 +421,7 @@ export default function Pricing() {
                 Have a question? Email us
               </a>
             </div>
-            <p className="mt-6 text-white/20 text-xs">$97/month after trial · Cancel anytime · No contracts</p>
+            <p className="mt-6 text-white/20 text-xs">${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts</p>
           </div>
         </section>
 

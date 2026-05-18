@@ -30,7 +30,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
 
 const LANDING_META = buildPageMeta({
   title:       'GrowthOS — AI advisor + business tools for home-services contractors',
-  description: 'AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $97/month, 14-day free trial.',
+  description: `AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, 14-day free trial.`,
   path:        '/',
 })
 
