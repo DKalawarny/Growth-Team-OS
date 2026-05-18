@@ -618,7 +618,7 @@ export default function CFO() {
             </form>
 
             <p className="text-[11px] text-ink-300 leading-relaxed">
-              We send your period, business profile, and uploaded financial docs to Claude.
+              We send your period, business profile, and uploaded financial docs to Solomon.
               The dashboard isn't saved until you hit "Save to library".
             </p>
           </div>

@@ -427,7 +427,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
         </form>
 
         <p className="text-xs text-ink-400 text-center pb-4">
-          Your answers + business profile are sent to Claude. Nothing is saved until you click "Save to library".
+          Your answers + business profile are sent to Solomon. Nothing is saved until you click "Save to library".
         </p>
       </div>
     </div>

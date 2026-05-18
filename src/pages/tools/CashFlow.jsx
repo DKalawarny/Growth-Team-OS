@@ -346,7 +346,7 @@ export default function CashFlow() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-blue-600 mt-3">Claude will read these files for your balance, revenue, and expense figures — and tell you which document each number came from.</p>
+              <p className="text-xs text-blue-600 mt-3">Solomon will read these files for your balance, revenue, and expense figures — and tell you which document each number came from.</p>
             </div>
             <SmartConcernsForm concerns={concerns} setConcerns={setConcerns} onGenerate={handleGenerate} buttonLabel="Generate from uploaded docs →" />
           </div>
@@ -369,7 +369,7 @@ export default function CashFlow() {
                   <span className="text-xl flex-shrink-0">📂</span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-ink-800">Upload a P&amp;L or bank export</p>
-                    <p className="text-xs text-ink-500 mt-0.5">Claude reads the file so you don't have to retype it.</p>
+                    <p className="text-xs text-ink-500 mt-0.5">Solomon reads the file so you don't have to retype it.</p>
                   </div>
                   <span className="text-ink-400 self-center group-hover:translate-x-0.5 transition-transform ml-auto">→</span>
                 </Link>

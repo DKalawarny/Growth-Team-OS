@@ -164,7 +164,7 @@ export default function Analytics() {
         {/* ── Cost trend ────────────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-ink-100 shadow-sm p-6">
           <h2 className="text-sm font-bold text-ink-900 mb-1">API spend — last 6 months</h2>
-          <p className="text-xs text-ink-400 mb-6">Claude + Google Places costs in USD</p>
+          <p className="text-xs text-ink-400 mb-6">Solomon + Google Places costs in USD</p>
           <BarChart
             data={history.map(m => ({ label: shortMonth(m.month), value: m.cost }))}
             formatValue={v => v < 0.01 && v > 0 ? `$${v.toFixed(4)}` : `$${v.toFixed(2)}`}

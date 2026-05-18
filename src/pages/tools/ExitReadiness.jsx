@@ -277,7 +277,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
           <div className="text-3xl flex-shrink-0">📂</div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold text-brand-900">Upload your financials or SOPs first for a sharper score</div>
-            <p className="text-xs text-brand-800 mt-0.5">Claude will read them directly — cite your actual margins, contract terms, and documented processes — instead of working from a profile alone.</p>
+            <p className="text-xs text-brand-800 mt-0.5">Solomon will read them directly — cite your actual margins, contract terms, and documented processes — instead of working from a profile alone.</p>
           </div>
           <div className="text-brand-600 text-xl flex-shrink-0 self-center group-hover:translate-x-0.5 transition-transform">→</div>
         </Link>
@@ -333,7 +333,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
         </form>
 
         <p className="text-xs text-ink-400 text-center pb-4">
-          We send your answers + business profile + uploaded knowledge files to Claude. The report isn't saved until you hit "Save to library".
+          We send your answers + business profile + uploaded knowledge files to Solomon. The report isn't saved until you hit "Save to library".
         </p>
       </div>
     </div>

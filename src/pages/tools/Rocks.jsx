@@ -300,7 +300,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
         </form>
 
         <p className="text-xs text-ink-400 text-center pb-4">
-          We send your inputs + your full roadmap + recent check-ins to Claude. The plan isn't saved until you hit "Save to library".
+          We send your inputs + your full roadmap + recent check-ins to Solomon. The plan isn't saved until you hit "Save to library".
         </p>
       </div>
     </div>

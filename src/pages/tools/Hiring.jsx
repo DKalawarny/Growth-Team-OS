@@ -350,7 +350,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
         </form>
 
         <p className="text-xs text-ink-400 text-center pb-4">
-          We send your answers + your business profile to Claude. The scorecard isn't saved until you hit "Save to library".
+          We send your answers + your business profile to Solomon. The scorecard isn't saved until you hit "Save to library".
         </p>
       </div>
     </div>
