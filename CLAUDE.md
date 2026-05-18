@@ -115,6 +115,33 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## What just shipped (2026-05-17 session)
+
+- **Pricing constants fully centralized** — `src/lib/pricing.js` is now the
+  single source of truth for all prices and trial duration. Every page
+  (Landing, Pricing, Comparison, TradePage, Help, Signup, Paywall, BillingSection,
+  TrialBanner, About, FreeGbpAudit) imports from it. One file change = everywhere updates.
+- **Solomon branding pass** — replaced all user-facing "Claude" with "Solomon"
+  across 15+ files (tools, library components, Roadmap, Onboarding, settings).
+  Intentional exceptions: About.jsx founder story, Security/Privacy tech-stack
+  disclosures, competitor comparisons ("ChatGPT, Claude, Perplexity").
+- **Advisory saves** (Advisor.jsx) — hover-reveal "Save" button on advisor messages
+  writes to `documents` table (tool_id: 'solomon'). Solomon entries render in
+  Documents Library → Generated tab via new `SolomonSave` renderer.
+- **Budget indicator** (Advisor.jsx Header) — monthly spend pill shows remaining
+  budget, turns amber at ≥80% usage.
+- **Annual billing toggle** (BillingSection) — `BillingToggle` component shows
+  monthly/annual choice in trial/expired states.
+- **Trial banner** — link fixed to `/settings/billing`, mentions annual savings.
+- **PWA support** — `public/manifest.json` added, linked from `index.html`.
+- **Welcome email** — `user-welcome` template in `send-email` Edge Function,
+  triggered fire-and-forget from Onboarding on completion.
+- **Brand cleanup** — `leadeos.com` + `support@leadeos.com` everywhere; old
+  `growthos.ca` and `dkalawarny@hotmail.com` removed sitewide.
+- **Integrations section** — Google Drive and OneDrive cloud-source cards added
+  at bottom of Settings → Integrations.
+- **ResetPassword page** — new `/reset-password` route for Supabase email flow.
+
 ## What just shipped (2026-05-13 session)
 
 - Wrote [`.env.example`](.env.example) documenting required + optional VITE
