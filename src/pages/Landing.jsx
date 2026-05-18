@@ -8,6 +8,7 @@ import {
   softwareApplicationSchema,
   jsonLd,
 } from '../lib/seo'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST } from '../lib/pricing'
 
 /**
  * / — public marketing landing page.
@@ -354,7 +355,7 @@ function HeroSection() {
             14-day free trial — no credit card required
           </div>
           <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-1.5 rounded-full">
-            🔒 Founding rate — $97 locked in for life
+            🔒 Founding rate — ${PRICE_MONTHLY_USD} locked in for life
           </div>
         </div>
 
@@ -365,7 +366,7 @@ function HeroSection() {
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
           Everything a $5,000/month consultant gives you — AI advisor, live CFO dashboard,
-          cash flow, hiring, local SEO, compliance — for $97 a month.
+          cash flow, hiring, local SEO, compliance — for ${PRICE_MONTHLY_USD}/month.
         </p>
 
         {/* Feature pill row */}
@@ -387,7 +388,7 @@ function HeroSection() {
         </div>
 
         <p className="text-white/30 text-sm">
-          No credit card · 14 days free · Cancel anytime · $97/month after trial
+          No credit card · 14 days free · Cancel anytime · ${PRICE_MONTHLY_USD}/month after trial
         </p>
       </div>
     </section>
@@ -723,7 +724,7 @@ function PriceSection() {
     <section className="bg-white py-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          An advisor, a CFO, a hiring coach, and a growth planner. $97 a month.
+          An advisor, a CFO, a hiring coach, and a growth planner. ${PRICE_MONTHLY_USD} a month.
         </h2>
         <p className="text-gray-500 mb-10 max-w-lg mx-auto">
           Hiring those people separately would cost you $3,000–$6,000 a month. GrowthOS gives you all of it — plus the tools to execute — for less than a single consulting hour.
@@ -750,17 +751,17 @@ function PriceSection() {
         <div className="bg-gray-950 rounded-2xl p-10 text-white mb-6">
           <div className="flex items-baseline justify-center gap-2 mb-2">
             <span className="text-6xl font-black text-white">
-              {annual ? '$81' : '$97'}
+              {annual ? `$${ANNUAL_MONTHLY_EQUIV}` : `$${PRICE_MONTHLY_USD}`}
             </span>
             <div className="text-left">
               <p className="text-white/40 text-lg leading-tight">USD / mo</p>
-              <p className="text-white/25 text-xs leading-tight">{annual ? '~$111 CAD' : '~$133 CAD'}</p>
+              <p className="text-white/25 text-xs leading-tight">{annual ? `~$${Math.round(PRICE_ANNUAL_CAD_EST / 12)} CAD` : `~$${PRICE_MONTHLY_CAD_EST} CAD`}</p>
             </div>
           </div>
           {annual ? (
-            <p className="text-amber-400 font-semibold mb-8">Billed as $970 USD (~$1,329 CAD)/year — you save $194</p>
+            <p className="text-amber-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${PRICE_MONTHLY_USD * 2}</p>
           ) : (
-            <p className="text-white/30 mb-8">Switch to annual and save $194/year</p>
+            <p className="text-white/30 mb-8">Switch to annual and save ${PRICE_MONTHLY_USD * 2}/year</p>
           )}
 
           <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">
@@ -808,7 +809,7 @@ function ClosingCTA() {
           Your competitors are getting smarter.<br />Are you going to let them pull ahead?
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
-          14 days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best $97 you've ever put into your business — cancel. No questions. No charge. No risk.
+          14 days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best ${PRICE_MONTHLY_USD}/month you've ever spent on your business — cancel. No questions. No charge. No risk.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
