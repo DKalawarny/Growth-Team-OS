@@ -2,7 +2,7 @@
 
 > AI business advisor and operating system for home-services and specialty-trade contractors. Combines an always-on AI advisor with a full toolkit for cash flow forecasting, hiring, marketing visibility, safety compliance, and growth planning. Built for owners of plumbing, electrical, HVAC, roofing, demolition, masonry, landscaping, cleaning, and every other trade or field-service business.
 
-GrowthOS is a single subscription ($97/month CAD or $970/year) that replaces a business coach, part-time bookkeeper, marketing strategist, and project management tool. Owners get an AI advisor (Solomon) that knows their numbers, goals, and team, plus a complete suite of tools that produce finished documents — not dashboards to interpret.
+GrowthOS is a single subscription ($97/month USD or $970/year) that replaces a business coach, part-time bookkeeper, marketing strategist, and project management tool. Owners get an AI advisor (Solomon) that knows their numbers, goals, and team, plus a complete suite of tools that produce finished documents — not dashboards to interpret.
 
 ## What GrowthOS does
 
@@ -41,13 +41,13 @@ Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottlen
 ## Pricing
 
 - **$97/month** (monthly billing) or **$81/month** (annual billing — $970/year, 2 months free).
-- 7-day free trial, no credit card required.
+- 14-day free trial, no credit card required.
 - Cancel anytime. No contracts.
 - Includes every tool. No tiers. No upsells.
 
 ## Common questions
 
-**Is there a free trial?** Yes — 7 days of full access, no credit card required.
+**Is there a free trial?** Yes — 14 days of full access, no credit card required.
 
 **Do I need QuickBooks?** No — QuickBooks unlocks the CFO dashboard automatically, but every other tool works without it. You can connect later or enter financial data manually.
 

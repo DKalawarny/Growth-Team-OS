@@ -115,6 +115,14 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## What just shipped (2026-05-17 session — continued)
+
+- **GBP audit form wired** — `FreeGbpAudit.jsx` now inserts into `gbp_audit_requests`
+  (migration 025, applied to cloud). Previously logged to console and lost all leads.
+  Next step: add a Supabase DB webhook → `send-email` to ping Daniel on each request.
+- **llms.txt fixed** — trial was "7 days" in two places (now 14), price said "CAD" (now USD).
+- **Sitemap lastmod updated** — all entries bumped to 2026-05-17.
+
 ## What just shipped (2026-05-17 session)
 
 - **Pricing constants fully centralized** — `src/lib/pricing.js` is now the

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, CONTACT_EMAIL } from '../../lib/seo'
 import { TRIAL_DAYS } from '../../lib/pricing'
+import { supabase } from '../../lib/supabase'
 
 /**
  * /free-gbp-audit — lead magnet.
@@ -17,16 +18,10 @@ import { TRIAL_DAYS } from '../../lib/pricing'
  *     deliver it credibly. Email capture, then we run the audit and
  *     send a manual report (or, eventually, an automated lite version).
  *
- * IMPORTANT: this page promises a real deliverable. Don't ship until
- * there's a process to actually run a free audit when an email comes in.
- * For now: form submits to /api or to a Supabase table, founder reviews
- * and runs the audit manually, sends the report.
- *
- * Wiring TODO (separate task — not blocking this page going live):
- *   1. Add a `gbp_audit_requests` table in Supabase
- *   2. Wire the form below to insert into that table
- *   3. Set up an email notification so Daniel gets pinged on each request
- *   4. Founder runs the audit using existing GBP tool, sends PDF back
+ * Flow: form inserts a row into `gbp_audit_requests` (migration 025).
+ * Daniel reviews the table in the Supabase dashboard, runs the audit using
+ * the GBP tool, and sends the report manually.
+ * Next step: add a DB webhook → send-email to notify Daniel on each insert.
  */
 
 const META = buildPageMeta({
@@ -49,12 +44,10 @@ export default function FreeGbpAudit() {
     setError(null)
     setSubmitting(true)
     try {
-      // TODO: wire to Supabase table `gbp_audit_requests` once it exists.
-      // Until then, we log to console + simulate success so the page is
-      // shippable and the form copy / flow can be validated.
-      // eslint-disable-next-line no-console
-      console.log('[GBP audit request]', { email, businessName, website, city, ts: new Date().toISOString() })
-      await new Promise(r => setTimeout(r, 600))
+      const { error: insertErr } = await supabase
+        .from('gbp_audit_requests')
+        .insert({ business_name: businessName, email, website: website || null, city: city || null })
+      if (insertErr) throw new Error(insertErr.message)
       setSubmitted(true)
     } catch (err) {
       setError(err.message || 'Something went wrong — try again or email us.')
