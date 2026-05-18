@@ -21,6 +21,7 @@
  * Templates registered today:
  *   - staff-welcome   : sent when an owner adds a new staff_members row
  *   - task-assigned   : sent when a work_order gets an assignee (future)
+ *   - user-welcome    : sent to the owner after they finish onboarding
  *
  * Request body:
  *   {
@@ -60,6 +61,7 @@ import { signStaffToken }                from '../_shared/staff_token.ts'
 
 interface TemplateContext {
   companyId: string
+  userId:    string
   appUrl:    string
   admin:     ReturnType<typeof serviceClient>
 }
@@ -352,12 +354,138 @@ const taskAssigned: Template<TaskAssignedData> = {
   },
 }
 
+// ---- user-welcome ----------------------------------------------------------
+//
+// Sent to the owner immediately after they finish onboarding. Triggered
+// from Onboarding.jsx (best-effort, non-fatal). The guard verifies `to`
+// matches the authenticated user's own email — prevents relay abuse while
+// letting owners email themselves without needing a staff_members row.
+
+interface UserWelcomeData {
+  ownerName:   string
+  companyName: string
+}
+
+const userWelcome: Template<UserWelcomeData> = {
+  validate(raw) {
+    const d = (raw ?? {}) as Record<string, unknown>
+    const ownerName   = String(d.ownerName   ?? '').trim()
+    const companyName = String(d.companyName ?? '').trim()
+    if (!ownerName)   throw new Error('ownerName required')
+    if (!companyName) throw new Error('companyName required')
+    return { ownerName, companyName }
+  },
+
+  async guardRecipient(to, { userId, admin }) {
+    // `to` must match the authenticated user's email in auth.users.
+    const { data, error } = await admin.auth.admin.getUserById(userId)
+    if (error) throw new Error(`recipient guard: ${error.message}`)
+    const userEmail = data?.user?.email?.toLowerCase() ?? ''
+    if (userEmail !== to) throw new Error('recipient must be the authenticated user\'s own email')
+  },
+
+  render({ ownerName, companyName }, { appUrl }) {
+    const firstName = ownerName.split(' ')[0] ?? ownerName
+    const subject   = `You're set up — here's what to do first`
+
+    const text = [
+      `Hey ${firstName},`,
+      ``,
+      `Your GrowthOS workspace is live. Here's what to do in your first session:`,
+      ``,
+      `1. Open Solomon — your AI advisor is ready with a personalised message.`,
+      `   ${appUrl}/advisor`,
+      ``,
+      `2. Review your roadmap — we've built 8-12 milestones based on your goals.`,
+      `   ${appUrl}/roadmap`,
+      ``,
+      `3. Connect QuickBooks (optional) — unlock the CFO Dashboard with live numbers.`,
+      `   ${appUrl}/settings/integrations`,
+      ``,
+      `Questions? Just reply to this email.`,
+      ``,
+      `— The GrowthOS team`,
+    ].join('\n')
+
+    const html = `
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f4f0;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <tr>
+              <td style="background:#0f1419;padding:24px 32px;">
+                <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">
+                  Growth<span style="color:#d4a843;">OS</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:32px;">
+                <h1 style="margin:0 0 16px 0;font-size:22px;font-weight:700;color:#1a1a1a;line-height:1.3;">
+                  You're all set, ${escapeHtml(firstName)}.
+                </h1>
+                <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#3a3a3a;">
+                  Your GrowthOS workspace for <strong>${escapeHtml(companyName)}</strong> is live. Solomon has read your business profile and built your first roadmap. Here's where to start:
+                </p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                  ${[
+                    { n: '1', label: 'Talk to Solomon', sub: 'Your AI advisor has a personalised message waiting.', href: `${appUrl}/advisor` },
+                    { n: '2', label: 'Review your roadmap', sub: '8–12 milestones tailored to your goals and timeline.', href: `${appUrl}/roadmap` },
+                    { n: '3', label: 'Connect QuickBooks', sub: 'Optional — unlocks live CFO numbers automatically.', href: `${appUrl}/settings/integrations` },
+                  ].map(s => `
+                  <tr>
+                    <td style="padding:10px 0;border-bottom:1px solid #f0eeea;">
+                      <table role="presentation" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td style="width:28px;vertical-align:top;padding-top:2px;">
+                            <div style="width:22px;height:22px;border-radius:50%;background:#0f1419;color:#d4a843;font-size:11px;font-weight:700;text-align:center;line-height:22px;">${s.n}</div>
+                          </td>
+                          <td style="padding-left:12px;">
+                            <a href="${s.href}" style="color:#1a1a1a;font-size:14px;font-weight:600;text-decoration:none;">${s.label} →</a>
+                            <div style="font-size:13px;color:#6b6b6b;margin-top:2px;">${s.sub}</div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>`).join('')}
+                </table>
+
+                <a href="${appUrl}/advisor" style="display:inline-block;padding:13px 28px;background:#d4a843;color:#1a1a1a;font-weight:700;font-size:14px;border-radius:8px;text-decoration:none;">
+                  Open GrowthOS →
+                </a>
+
+                <div style="margin:32px 0 0 0;padding-top:24px;border-top:1px solid #e5e3dd;">
+                  <p style="margin:0;font-size:13px;line-height:1.5;color:#6b6b6b;">
+                    Questions? Just reply — we read every email. Your 14-day free trial started today.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div style="margin-top:24px;font-size:12px;color:#9a9a9a;">
+            GrowthOS · <a href="${appUrl}" style="color:#9a9a9a;">leadeos.com</a>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`.trim()
+
+    return { subject, html, text }
+  },
+}
+
 // ---- registry --------------------------------------------------------------
 
 // deno-lint-ignore no-explicit-any
 const TEMPLATES: Record<string, Template<any>> = {
   'staff-welcome': staffWelcome,
   'task-assigned': taskAssigned,
+  'user-welcome':  userWelcome,
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -393,7 +521,7 @@ Deno.serve(async (req) => {
 
     const admin  = serviceClient()
     const appUrl = Deno.env.get('APP_URL') ?? 'http://localhost:5173'
-    const ctx: TemplateContext = { companyId: user.companyId, appUrl, admin }
+    const ctx: TemplateContext = { companyId: user.companyId, userId: user.userId, appUrl, admin }
 
     const data = tmpl.validate(body.data)
     await tmpl.guardRecipient(to, ctx)

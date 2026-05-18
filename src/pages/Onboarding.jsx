@@ -314,6 +314,25 @@ export default function Onboarding() {
       }
 
       await refresh()
+
+      // Fire-and-forget welcome email. Non-fatal — navigate regardless.
+      // Requires the send-email Edge Function to be deployed and Resend
+      // domain verified (leadeos.com). Silently skips if either is missing.
+      ;(async () => {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser()
+          if (authUser?.email) {
+            await supabase.functions.invoke('send-email', {
+              body: {
+                template: 'user-welcome',
+                to:       authUser.email,
+                data:     { ownerName: form.full_name, companyName: form.business_name },
+              },
+            })
+          }
+        } catch { /* non-fatal — email is a nice-to-have, not a blocker */ }
+      })()
+
       navigate('/advisor')
     } catch (err) {
       // Always log the underlying error so a failed onboarding is debuggable.
