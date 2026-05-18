@@ -270,7 +270,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
               rows={4} className="w-full" />
           </Field>
 
-          <Field label="What should be true at your horizon?" hint="Optional — what do you want to have built by then? Claude will read your roadmap too.">
+          <Field label="What should be true at your horizon?" hint="Optional — what do you want to have built by then? Solomon will read your roadmap too.">
             <textarea value={form.goal} onChange={onChange('goal')}
               placeholder="Off the tools. Operations running without me. Enough of a team to handle a 30% revenue increase."
               rows={2} className="w-full" />

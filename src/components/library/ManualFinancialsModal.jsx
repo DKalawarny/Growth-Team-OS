@@ -236,7 +236,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
         {/* Subheader */}
         <div className="px-5 py-3 bg-ink-50 border-b border-ink-100 flex-shrink-0">
           <p className="text-xs text-ink-500 leading-relaxed">
-            No files or accounting software needed. Fill in what you know — even rough numbers help Claude give much more specific advice. Your entries are saved to your private library.
+            No files or accounting software needed. Fill in what you know — even rough numbers help Solomon give much more specific advice. Your entries are saved to your private library.
           </p>
         </div>
 
@@ -289,7 +289,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
           <div>
             <SectionTitle optional>Overdraft / credit facility (optional)</SectionTitle>
             <p className="text-xs text-ink-400 mb-3">
-              If you have a business overdraft or line of credit, enter the details. Claude uses this to calculate your true working capital.
+              If you have a business overdraft or line of credit, enter the details. Solomon uses this to calculate your true working capital.
             </p>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Facility limit" hint="Total overdraft or credit line approved">
@@ -305,7 +305,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
           <div>
             <SectionTitle optional>Business credit cards (optional)</SectionTitle>
             <p className="text-xs text-ink-400 mb-3">
-              Combined across all business cards. Helps Claude see your full available credit when assessing cash position.
+              Combined across all business cards. Helps Solomon see your full available credit when assessing cash position.
             </p>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Total credit card limit" hint="Sum of all business card limits">
@@ -358,7 +358,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
           <div>
             <SectionTitle optional>Revenue breakdown (optional)</SectionTitle>
             <p className="text-xs text-ink-400 mb-3">
-              Where does your revenue come from? Claude uses this to spot which streams are worth growing.
+              Where does your revenue come from? Solomon uses this to spot which streams are worth growing.
             </p>
             <div className="space-y-2">
               {streams.map((s, i) => (
@@ -378,7 +378,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
           <div>
             <SectionTitle optional>Top expense categories (optional)</SectionTitle>
             <p className="text-xs text-ink-400 mb-3">
-              Where does most of the money go? Helps Claude give specific cost and efficiency advice.
+              Where does most of the money go? Helps Solomon give specific cost and efficiency advice.
             </p>
             <div className="space-y-2">
               {topExpenses.map((e, i) => (

@@ -843,7 +843,7 @@ function DoneScreen({ results, onClose }) {
         )}
         {failed === 0 && (
           <p className="text-sm text-ink-500">
-            Your library has been updated. Claude will use these documents the next time you ask for advice.
+            Your library has been updated. Solomon will use these documents the next time you ask for advice.
           </p>
         )}
       </div>

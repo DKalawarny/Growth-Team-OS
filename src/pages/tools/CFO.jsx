@@ -585,7 +585,7 @@ export default function CFO() {
                 </select>
               </Field>
 
-              <Field label="Notes or context" hint="Anything Claude can't see — lost a customer, one-time expense, bonus month, etc.">
+              <Field label="Notes or context" hint="Anything Solomon can't see — lost a customer, one-time expense, bonus month, etc.">
                 <textarea
                   value={form.notes}
                   onChange={e => setForm({ ...form, notes: e.target.value })}

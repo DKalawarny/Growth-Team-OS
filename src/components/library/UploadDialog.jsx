@@ -138,7 +138,7 @@ export default function UploadDialog({ onClose, onUploaded }) {
               ))}
             </div>
             <p className="text-[11px] text-ink-400 mt-2.5 leading-relaxed">
-              Claude reads everything together — the more context you give it, the more specific its advice becomes.
+              Solomon reads everything together — the more context you give it, the more specific its advice becomes.
             </p>
           </div>
         )}

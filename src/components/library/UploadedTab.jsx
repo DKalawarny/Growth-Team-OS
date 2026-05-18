@@ -140,7 +140,7 @@ export default function UploadedTab({ onCountChange }) {
   }
 
   const onDelete = async (file) => {
-    if (!confirm(`Delete "${file.title}"? This removes it from the library and Claude's context.`)) return
+    if (!confirm(`Delete "${file.title}"? This removes it from the library and Solomon's context.`)) return
     try {
       await deleteKnowledgeFile(file.id, file.file_path)
       setFiles(prev => prev.filter(f => f.id !== file.id))
@@ -392,7 +392,7 @@ function LibraryIntelligencePanel({
           {!isRunning && !hasAnalysis && analyzePhase !== 'error' && (
             <div className="py-1">
               <p className="text-sm text-ink-500 leading-relaxed mb-4">
-                Claude will read all {readyCount} document{readyCount !== 1 ? 's' : ''} together — not one by one — and build a live
+                Solomon will read all {readyCount} document{readyCount !== 1 ? 's' : ''} together — not one by one — and build a live
                 intelligence picture of your business: what's strong, what's missing,
                 and what new roadmap milestones to add.
               </p>
@@ -518,7 +518,7 @@ const UPLOAD_CATEGORIES = [
   {
     icon:     '📊',
     label:    'Financials',
-    why:      'Gives Claude real numbers — not just what you entered at onboarding.',
+    why:      'Gives Solomon real numbers — not just what you entered at onboarding.',
     examples: [
       'Profit & loss statement (last 12 months)',
       'Balance sheet',
@@ -533,7 +533,7 @@ const UPLOAD_CATEGORIES = [
           icon:  '📄',
           pros: [
             'Works with any accounting software',
-            "You control exactly what Claude sees",
+            "You control exactly what Solomon sees",
             'Nothing is connected, nothing auto-syncs',
           ],
           platforms: [
@@ -607,7 +607,7 @@ const UPLOAD_CATEGORIES = [
   {
     icon:     '🎯',
     label:    'Strategy',
-    why:      'Gives Claude the longer-term context behind your decisions.',
+    why:      'Gives Solomon the longer-term context behind your decisions.',
     examples: [
       'Business plan or growth plan',
       'Competitor research or notes',
@@ -707,7 +707,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
             What should I upload?
           </span>
           <span className="text-[10px] text-ink-500">
-            · the more context, the sharper Claude's advice
+            · the more context, the sharper Solomon's advice
           </span>
         </div>
         <span className="text-ink-400 text-xs flex-shrink-0">
@@ -718,7 +718,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
       {open && (
         <div className="p-5">
           <p className="text-sm text-ink-500 leading-relaxed mb-5">
-            Claude reads everything together as one picture of your business — not file by file.
+            Solomon reads everything together as one picture of your business — not file by file.
             Upload whatever you have; even partial docs help.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -903,10 +903,10 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
         <div className="p-8 text-center">
           <div className="text-4xl mb-3" aria-hidden>📚</div>
           <h2 className="text-xl font-bold text-ink-900 mb-2 tracking-tight">
-            Teach Claude about your business
+            Teach Solomon about your business
           </h2>
           <p className="text-sm text-ink-500 max-w-lg mx-auto mb-6 leading-relaxed">
-            Upload your documents and Claude reads them all together to build a live intelligence picture of your business.
+            Upload your documents and Solomon reads them all together to build a live intelligence picture of your business.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button

@@ -324,7 +324,7 @@ export default function CashFlow() {
                 <p className="text-xs text-green-700 mt-0.5">
                   Using <span className="font-semibold">{latestSnapshot?.period_label}</span>
                   {latestSnapshot?.synced_at && ` · synced ${formatRelative(latestSnapshot.synced_at)}`}.
-                  Claude will pull your balance, revenue, and expenses directly from your books.
+                  Solomon will pull your balance, revenue, and expenses directly from your books.
                 </p>
               </div>
             </div>

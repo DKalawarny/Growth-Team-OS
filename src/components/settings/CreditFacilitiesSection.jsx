@@ -64,7 +64,7 @@ export default function CreditFacilitiesSection({ companyId }) {
         .eq('company_id', companyId)
       if (error) throw new Error(error.message)
       setInitial(fields)
-      setMsg({ tone: 'ok', text: 'Saved — Claude will factor this in from now on.' })
+      setMsg({ tone: 'ok', text: 'Saved — Solomon will factor this in from now on.' })
     } catch (err) {
       setMsg({ tone: 'err', text: err.message ?? 'Could not save.' })
     } finally {
@@ -77,7 +77,7 @@ export default function CreditFacilitiesSection({ companyId }) {
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-ink-900">Credit &amp; liquidity</h2>
         <p className="text-sm text-ink-400 mt-0.5">
-          Stored once — Claude factors this into cash flow, financial advice, and planning automatically.
+          Stored once — Solomon factors this into cash flow, financial advice, and planning automatically.
         </p>
       </div>
 

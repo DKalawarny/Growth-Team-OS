@@ -108,7 +108,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'A roadmap built\nfor your goals.',
-      sub: 'Claude sequences 8–12 milestones across your timeline — nothing generic.',
+      sub: 'Solomon sequences 8–12 milestones across your timeline — nothing generic.',
       bullets: [
         'Prioritised by what moves the needle most',
         'Balanced across your chosen goals',
@@ -589,7 +589,7 @@ const GEN_STEPS = [
   'Creating your workspace',
   'Reading your website',
   'Saving your profile',
-  'Building your roadmap with Claude',
+  'Building your roadmap with Solomon',
   'Wiring your milestones',
   'Solomon is reading your setup',
 ]
@@ -616,7 +616,7 @@ function GeneratingScreen({ status, genStep }) {
             Almost there.
           </h2>
           <p className="text-ink-300 text-sm leading-relaxed">
-            Claude is sequencing your milestones, setting dates, and wiring dependencies. Your personalised roadmap will be ready in seconds.
+            Solomon is sequencing your milestones, setting dates, and wiring dependencies. Your personalised roadmap will be ready in seconds.
           </p>
         </div>
       </div>

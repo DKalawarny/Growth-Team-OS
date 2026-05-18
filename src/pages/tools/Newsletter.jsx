@@ -451,7 +451,7 @@ Return JSON only:
                 <span className="font-normal normal-case tracking-normal text-ink-400">(optional)</span>
               </label>
               <p className="text-[11px] text-ink-400 mb-2">
-                A shoutout, heads-up, or thank-you — Claude will weave it in naturally.
+                A shoutout, heads-up, or thank-you — Solomon will weave it in naturally.
               </p>
               <textarea
                 value={note}

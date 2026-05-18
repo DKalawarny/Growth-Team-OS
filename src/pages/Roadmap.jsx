@@ -887,7 +887,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
           <p className="text-[11px] font-semibold uppercase tracking-widest text-brand-400 mb-3">Chapter complete</p>
           <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">Building your next chapter…</h2>
           <p className="text-ink-400 text-sm max-w-xs mx-auto leading-relaxed">
-            Claude is mapping out your next 24 months. This takes 10–20 seconds.
+            Solomon is mapping out your next 24 months. This takes 10–20 seconds.
           </p>
         </div>
       </div>
@@ -2804,7 +2804,7 @@ function MilestoneAttachments({ milestoneId, milestoneTitle, milestoneCategory }
               Attach the deliverable from this milestone
             </div>
             <div className="text-[10px] text-green-600 mt-0.5 opacity-70">
-              The SOP, report, contract, or document you produced — Claude will read it and learn from it.
+              The SOP, report, contract, or document you produced — Solomon will read it and learn from it.
             </div>
             <div className="text-[10px] text-ink-400 mt-1">PDF, Excel, CSV, TXT, Markdown · up to 10 MB</div>
           </button>
@@ -3200,7 +3200,7 @@ function ChatPanel({ chatInput, setChatInput, chatPhase, chatSuggestion, inputRe
         </div>
         <div>
           <h2 className="text-sm font-bold text-ink-900">Something come up?</h2>
-          <p className="text-xs text-ink-400">Describe it — Claude will figure out where it fits in your plan.</p>
+          <p className="text-xs text-ink-400">Describe it — Solomon will figure out where it fits in your plan.</p>
         </div>
       </div>
 
