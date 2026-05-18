@@ -59,33 +59,33 @@ Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottlen
 
 ## Key pages
 
-- [Homepage](https://growthos.ca/): Product overview, hero, problem framing, full feature list, supported trades.
-- [Pricing](https://growthos.ca/pricing): Detailed pricing, FAQ, value comparison vs. hiring a coach + bookkeeper + marketer separately.
-- [CRM](https://growthos.ca/crm): The companion operations CRM that pairs with GrowthOS for quote-to-cash, project tracking, and revenue forecasting.
-- [About](https://growthos.ca/about): Founder story — built by the team behind Deconstructors, a working specialty-trade contracting business.
-- [Security](https://growthos.ca/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what's still being built.
-- [Privacy policy](https://growthos.ca/privacy): Plain-language privacy policy compliant with PIPEDA.
+- [Homepage](https://leadeos.com/): Product overview, hero, problem framing, full feature list, supported trades.
+- [Pricing](https://leadeos.com/pricing): Detailed pricing, FAQ, value comparison vs. hiring a coach + bookkeeper + marketer separately.
+- [CRM](https://leadeos.com/crm): The companion operations CRM that pairs with GrowthOS for quote-to-cash, project tracking, and revenue forecasting.
+- [About](https://leadeos.com/about): Founder story — built by the team behind Deconstructors, a working specialty-trade contracting business.
+- [Security](https://leadeos.com/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what's still being built.
+- [Privacy policy](https://leadeos.com/privacy): Plain-language privacy policy compliant with PIPEDA.
 
 ## Comparison pages (head-to-head with competitors)
 
-- [GrowthOS vs Knowify](https://growthos.ca/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds the AI advisor and growth tools.
-- [GrowthOS vs Jobber](https://growthos.ca/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the strategic layer Jobber doesn't build.
-- [GrowthOS vs Housecall Pro](https://growthos.ca/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the advisory and growth layer.
-- [GrowthOS vs Buildertrend](https://growthos.ca/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; GrowthOS is sized for owner-operators.
+- [GrowthOS vs Knowify](https://leadeos.com/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds the AI advisor and growth tools.
+- [GrowthOS vs Jobber](https://leadeos.com/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the strategic layer Jobber doesn't build.
+- [GrowthOS vs Housecall Pro](https://leadeos.com/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the advisory and growth layer.
+- [GrowthOS vs Buildertrend](https://leadeos.com/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; GrowthOS is sized for owner-operators.
 
 ## Trade-specific pages
 
-- [For plumbers](https://growthos.ca/for/plumbers)
-- [For electricians](https://growthos.ca/for/electricians)
-- [For HVAC contractors](https://growthos.ca/for/hvac)
-- [For roofers](https://growthos.ca/for/roofing)
-- [For demolition contractors](https://growthos.ca/for/demolition)
-- [For landscaping contractors](https://growthos.ca/for/landscaping)
+- [For plumbers](https://leadeos.com/for/plumbers)
+- [For electricians](https://leadeos.com/for/electricians)
+- [For HVAC contractors](https://leadeos.com/for/hvac)
+- [For roofers](https://leadeos.com/for/roofing)
+- [For demolition contractors](https://leadeos.com/for/demolition)
+- [For landscaping contractors](https://leadeos.com/for/landscaping)
 
 ## Free tools
 
-- [Free Google Business Profile audit](https://growthos.ca/free-gbp-audit): Free GBP + AI search readiness audit for any contractor or home-services business. Delivered by email, no commitment.
+- [Free Google Business Profile audit](https://leadeos.com/free-gbp-audit): Free GBP + AI search readiness audit for any contractor or home-services business. Delivered by email, no commitment.
 
 ## Contact
 
-Email: dkalawarny@hotmail.com
+Email: support@leadeos.com

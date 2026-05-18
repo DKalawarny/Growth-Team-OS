@@ -31,13 +31,13 @@
  * For now uses .ca placeholder — when we move to a real domain, every
  * canonical link, og:url, sitemap entry, and llms.txt update follows.
  */
-export const SITE_URL = 'https://growthos.ca'
+export const SITE_URL = 'https://leadeos.com'
 
 export const SITE_NAME = 'GrowthOS'
 
 export const ORG_NAME  = 'GrowthOS'
 
-export const CONTACT_EMAIL = 'dkalawarny@hotmail.com'
+export const CONTACT_EMAIL = 'support@leadeos.com'
 
 /** Default OG image — needs to exist at /public/og-default.png (1200×630). */
 export const OG_DEFAULT_IMAGE = `${SITE_URL}/og-default.png`

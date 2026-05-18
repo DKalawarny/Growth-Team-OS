@@ -313,6 +313,18 @@ export default function Advisor() {
     }
   }
 
+  async function handleSaveMessage(content) {
+    if (!profile?.company_id) return
+    const title = content.replace(/\s+/g, ' ').trim().slice(0, 80) + (content.length > 80 ? '…' : '')
+    await supabase.from('documents').insert({
+      company_id:  profile.company_id,
+      user_id:     profile.id,
+      tool_id:     'solomon',
+      title,
+      output_data: { content },
+    })
+  }
+
   function handleKeyDown(e) {
     // On touch devices, never send via Enter — Enter must always add a newline.
     // Mobile keyboards have no Shift+Enter shortcut, so the desktop pattern
@@ -338,7 +350,7 @@ export default function Advisor() {
           ) : (
             <div className="space-y-1.5">
               {messages.map(m => (
-                <Bubble key={m.id} role={m.role} content={m.content} streaming={m.id === '__streaming__'} />
+                <Bubble key={m.id} role={m.role} content={m.content} streaming={m.id === '__streaming__'} onSave={handleSaveMessage} />
               ))}
               {generatingOpen && <MorningThinkingBubble />}
               {/* ThinkingBubble only shows before first chunk arrives */}
@@ -495,21 +507,63 @@ function WelcomeBlock({ profile, onPick }) {
   )
 }
 
-function Bubble({ role, content, streaming = false }) {
+function Bubble({ role, content, streaming = false, onSave }) {
   const isUser = role === 'user'
+  const [saved, setSaved] = useState(false)
+  const [hovered, setHovered] = useState(false)
+
+  const handleSave = () => {
+    if (saved) return
+    setSaved(true)
+    onSave?.(content)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div
-        className="max-w-[78%] px-4 py-2.5 text-sm leading-relaxed rounded-[18px]"
-        style={isUser
-          ? { background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)', color: '#fff', borderBottomRightRadius: '4px' }
-          : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', borderBottomLeftRadius: '4px' }
-        }
-      >
-        {isUser
-          ? <span className="whitespace-pre-wrap">{content}</span>
-          : <MarkdownContent text={content} streaming={streaming} />
-        }
+    <div
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} group`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative max-w-[78%]">
+        <div
+          className="px-4 py-2.5 text-sm leading-relaxed rounded-[18px]"
+          style={isUser
+            ? { background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)', color: '#fff', borderBottomRightRadius: '4px' }
+            : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', borderBottomLeftRadius: '4px' }
+          }
+        >
+          {isUser
+            ? <span className="whitespace-pre-wrap">{content}</span>
+            : <MarkdownContent text={content} streaming={streaming} />
+          }
+        </div>
+        {/* Save button — only on assistant messages, not while streaming */}
+        {!isUser && !streaming && content && (
+          <button
+            type="button"
+            onClick={handleSave}
+            title="Save to Documents"
+            className="absolute -bottom-5 right-1 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded"
+            style={{
+              opacity: (hovered || saved) ? 1 : 0,
+              color: saved ? '#4ade80' : 'rgba(255,255,255,0.35)',
+              pointerEvents: hovered || saved ? 'auto' : 'none',
+            }}
+          >
+            {saved ? (
+              <>
+                <svg viewBox="0 0 16 16" className="w-3 h-3" fill="currentColor"><path d="M13.28 4.22a.75.75 0 010 1.06l-6.5 6.5a.75.75 0 01-1.06 0l-3-3a.75.75 0 011.06-1.06l2.47 2.47 5.97-5.97a.75.75 0 011.06 0z"/></svg>
+                Saved
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 2h8l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M11 2v4H5V2"/><path d="M5 10h6"/></svg>
+                Save
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   )

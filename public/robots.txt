@@ -54,4 +54,4 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-Sitemap: https://growthos.ca/sitemap.xml
+Sitemap: https://leadeos.com/sitemap.xml

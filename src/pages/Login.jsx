@@ -14,7 +14,7 @@ import { SITE_URL, SITE_NAME } from '../lib/seo'
  *
  * SEO posture: noindex. Login pages should never be indexed — they have
  * no value in search results, dilute brand SERP real estate, and can
- * leak into "site:growthos.ca" listings instead of marketing pages.
+ * leak into "site:leadeos.com" listings instead of marketing pages.
  */
 export default function Login() {
   const navigate = useNavigate()

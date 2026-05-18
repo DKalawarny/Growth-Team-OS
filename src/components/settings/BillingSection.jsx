@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
 import { startCheckout, openPortal } from '../../lib/subscriptions'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV } from '../../lib/pricing'
 
 /**
  * BillingSection — plan status + payment management inside Settings.
@@ -33,15 +34,15 @@ import { startCheckout, openPortal } from '../../lib/subscriptions'
 export default function BillingSection() {
   const { subscription, loading, status } = useSubscription()
 
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState(null)
+  const [busy,    setBusy]    = useState(false)
+  const [err,     setErr]     = useState(null)
+  const [billing, setBilling] = useState('monthly') // 'monthly' | 'annual'
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (plan) => {
     setErr(null)
     setBusy(true)
     try {
-      await startCheckout('owner')
-      // Redirects away — if we fall through, something swallowed the nav.
+      await startCheckout(plan ?? (billing === 'annual' ? 'owner_annual' : 'owner'))
     } catch (e) {
       setErr(e.message || 'Could not start checkout')
       setBusy(false)
@@ -89,6 +90,8 @@ export default function BillingSection() {
           subscription={subscription}
           busy={busy}
           err={err}
+          billing={billing}
+          onBillingChange={setBilling}
           onCheckout={handleCheckout}
           onPortal={handlePortal}
         />
@@ -102,7 +105,7 @@ export default function BillingSection() {
 // Split out so the top-level component stays tidy; each branch is ~10 lines.
 // ----------------------------------------------------------------------------
 
-function BillingBody({ status, subscription, busy, err, onCheckout, onPortal }) {
+function BillingBody({ status, subscription, busy, err, billing, onBillingChange, onCheckout, onPortal }) {
   // Precedence matters: a live subscription overrides trial state. We check
   // 'active' first because that's the steady state for paying users.
 
@@ -171,13 +174,18 @@ function BillingBody({ status, subscription, busy, err, onCheckout, onPortal }) 
         <PlanHeader plan="Free trial" tone={urgent ? 'warn' : 'neutral'} />
         <p className={`text-sm mb-4 ${urgent ? 'text-amber-800' : 'text-gray-600'}`}>
           {daysLeft > 0
-            ? <>
-                <strong>{daysLeft} day{daysLeft === 1 ? '' : 's'} left</strong> on your free trial.
-                Upgrade to keep using the tools when it ends.
-              </>
+            ? <><strong>{daysLeft} day{daysLeft === 1 ? '' : 's'} left</strong> on your free trial. Upgrade to keep access when it ends.</>
             : <>Your trial ends today. Upgrade to keep using the tools.</>}
         </p>
-        <PrimaryButton onClick={onCheckout} busy={busy} label="Upgrade now — $97 / month" busyLabel="Redirecting to Stripe…" />
+        <BillingToggle value={billing} onChange={onBillingChange} />
+        <PrimaryButton
+          onClick={onCheckout}
+          busy={busy}
+          label={billing === 'annual'
+            ? `Upgrade — $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
+            : `Upgrade now — $${PRICE_MONTHLY_USD}/mo`}
+          busyLabel="Redirecting to Stripe…"
+        />
         <Hint>
           Cancel anytime. See the{' '}
           <Link to="/pricing" className="text-brand-600 hover:underline">Pricing page</Link>
@@ -188,19 +196,25 @@ function BillingBody({ status, subscription, busy, err, onCheckout, onPortal }) 
     )
   }
 
-  // kind === 'expired' — trial over, no paid sub. The most aggressive
-  // CTA state, but we still don't block the rest of Settings; gating
-  // of the tool routes is the actual paywall. This section is explanation.
+  // kind === 'expired' — trial over, no paid sub.
   return (
     <>
       <PlanHeader plan="No active plan" tone="warn" />
       <p className="text-sm text-red-800 bg-red-50 border border-red-200 rounded-md px-3 py-2 mb-4">
         Your free trial has ended. Upgrade to unlock the tools again.
       </p>
-      <PrimaryButton onClick={onCheckout} busy={busy} label="Upgrade now — $97 / month" busyLabel="Redirecting to Stripe…" />
+      <BillingToggle value={billing} onChange={onBillingChange} />
+      <PrimaryButton
+        onClick={onCheckout}
+        busy={busy}
+        label={billing === 'annual'
+          ? `Upgrade — $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
+          : `Upgrade now — $${PRICE_MONTHLY_USD}/mo`}
+        busyLabel="Redirecting to Stripe…"
+      />
       <Hint>
         Questions before you commit?{' '}
-        <a href="mailto:dkalawarny@hotmail.com" className="text-brand-600 hover:underline">
+        <a href="mailto:support@leadeos.com" className="text-brand-600 hover:underline">
           Email us
         </a>.
       </Hint>
@@ -212,6 +226,30 @@ function BillingBody({ status, subscription, busy, err, onCheckout, onPortal }) 
 // ----------------------------------------------------------------------------
 // Small shared subcomponents — kept inline because they're only used here
 // ----------------------------------------------------------------------------
+
+function BillingToggle({ value, onChange }) {
+  return (
+    <div className="inline-flex items-center bg-gray-100 rounded-lg p-0.5 mb-3 text-xs font-semibold">
+      <button
+        type="button"
+        onClick={() => onChange('monthly')}
+        className={`px-3 py-1.5 rounded-md transition-all ${value === 'monthly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+      >
+        Monthly
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('annual')}
+        className={`px-3 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${value === 'annual' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+      >
+        Annual
+        <span className="text-[10px] font-black text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full leading-none">
+          2 months free
+        </span>
+      </button>
+    </div>
+  )
+}
 
 function PlanHeader({ plan, tone }) {
   const toneCls =

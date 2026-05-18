@@ -818,7 +818,7 @@ function ClosingCTA() {
             Claim your edge — start free
           </Link>
           <a
-            href="mailto:dkalawarny@hotmail.com"
+            href="mailto:support@leadeos.com"
             className="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-gray-950/20 text-gray-950/70 hover:text-gray-950 hover:border-gray-950/40 font-semibold text-base transition-colors"
           >
             Questions? Email us
@@ -841,7 +841,7 @@ function PageFooter() {
         </div>
         <div className="flex items-center gap-5">
           <Link to="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
-          <a href="mailto:dkalawarny@hotmail.com" className="hover:text-white/60 transition-colors">Contact</a>
+          <a href="mailto:support@leadeos.com" className="hover:text-white/60 transition-colors">Contact</a>
           <Link to="/login" className="hover:text-white/60 transition-colors">Log in</Link>
         </div>
       </div>

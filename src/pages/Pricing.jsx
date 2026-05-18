@@ -296,7 +296,7 @@ export default function Pricing() {
               <p className="text-xs text-gray-500 mt-0.5">Agency and white-label options — let's talk.</p>
             </div>
             <a
-              href="mailto:dkalawarny@hotmail.com?subject=GrowthOS%20Agency"
+              href="mailto:support@leadeos.com?subject=GrowthOS%20Agency"
               className="flex-shrink-0 ml-4 px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-white transition-colors"
             >
               Email us →
@@ -414,7 +414,7 @@ export default function Pricing() {
                 Start free trial — no credit card
               </Link>
               <a
-                href="mailto:dkalawarny@hotmail.com"
+                href="mailto:support@leadeos.com"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 font-semibold text-sm transition-colors"
               >
                 Have a question? Email us
@@ -427,7 +427,7 @@ export default function Pricing() {
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
         <footer className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-400">
           <span>© GrowthOS · The operating system for service businesses</span>
-          <a href="mailto:dkalawarny@hotmail.com" className="underline hover:text-gray-600">dkalawarny@hotmail.com</a>
+          <a href="mailto:support@leadeos.com" className="underline hover:text-gray-600">support@leadeos.com</a>
         </footer>
 
       </main>

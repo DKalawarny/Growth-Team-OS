@@ -86,7 +86,7 @@ export default function CRMUpsellCard({
         </p>
         <div className="flex flex-wrap gap-2">
           <a
-            href="mailto:dkalawarny@hotmail.com?subject=Interested%20in%20ProSuite"
+            href="mailto:support@leadeos.com?subject=Interested%20in%20ProSuite"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 px-4 py-2 rounded-lg transition-colors"
           >
             Get ProSuite →

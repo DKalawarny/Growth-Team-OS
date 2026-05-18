@@ -55,7 +55,7 @@ export default function UsageSection() {
         <h2 className="text-lg font-semibold text-gray-900">This month's usage</h2>
         <p className="text-sm text-gray-500 mt-1">
           Each tool resets to zero on <span className="font-medium text-gray-700">{resetLabel}</span>.
-          Need a higher cap? <a href="mailto:dkalawarny@hotmail.com" className="text-brand-600 hover:underline">Get in touch</a>.
+          Need a higher cap? <a href="mailto:support@leadeos.com" className="text-brand-600 hover:underline">Get in touch</a>.
         </p>
       </header>
 

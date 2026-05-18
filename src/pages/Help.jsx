@@ -58,11 +58,11 @@ const FAQ = [
   },
   {
     q: 'How do I export my data?',
-    a: 'Not self-serve yet — email me at dkalawarny@hotmail.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
+    a: 'Not self-serve yet — email me at support@leadeos.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
   },
   {
     q: 'I think I found a bug / something broke',
-    a: 'Email dkalawarny@hotmail.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general — "the cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
+    a: 'Email support@leadeos.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general — "the cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
   },
 ]
 
@@ -222,10 +222,10 @@ export default function Help() {
           </p>
         </div>
         <a
-          href="mailto:dkalawarny@hotmail.com"
+          href="mailto:support@leadeos.com"
           className="px-5 py-2.5 rounded-lg bg-gold-gradient text-white text-sm font-bold whitespace-nowrap glow-gold-sm hover:glow-gold transition-all"
         >
-          dkalawarny@hotmail.com
+          support@leadeos.com
         </a>
       </section>
 
@@ -296,10 +296,10 @@ export default function Help() {
           Still stuck? I read every message.
         </p>
         <a
-          href="mailto:dkalawarny@hotmail.com"
+          href="mailto:support@leadeos.com"
           className="text-sm font-semibold text-brand-600 hover:text-brand-700"
         >
-          dkalawarny@hotmail.com
+          support@leadeos.com
         </a>
       </section>
     </div>
