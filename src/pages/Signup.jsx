@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
+import { TRIAL_DAYS } from '../lib/pricing'
 
 /**
  * Signup — mirror of Login's split-screen, but the brand-side copy flips
@@ -43,7 +44,7 @@ export default function Signup() {
         <title>Start your free trial — {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/signup`} />
         <meta name="robots" content="noindex, nofollow" />
-        <meta name="description" content="Start your 14-day free trial of GrowthOS — the AI advisor and operating system for home-services contractors. No credit card required." />
+        <meta name="description" content={`Start your ${TRIAL_DAYS}-day free trial of GrowthOS — the AI advisor and operating system for home-services contractors. No credit card required.`} />
       </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
@@ -86,7 +87,7 @@ export default function Signup() {
           </p>
 
           <div className="space-y-3 max-w-sm">
-            <TrustRow text="14-day free trial, no card required" />
+            <TrustRow text={`${TRIAL_DAYS}-day free trial, no card required`} />
             <TrustRow text="Your roadmap built in the first 10 minutes" />
             <TrustRow text="Cancel anytime from settings" />
           </div>
@@ -173,7 +174,7 @@ export default function Signup() {
             )}
 
             <p className="text-[11px] text-ink-400 text-center leading-relaxed">
-              By creating an account you agree to our terms. Your trial auto-converts after 14 days — cancel from settings anytime.
+              By creating an account you agree to our terms. Your trial auto-converts after {TRIAL_DAYS} days — cancel from settings anytime.
             </p>
           </form>
 

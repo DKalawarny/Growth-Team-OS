@@ -8,7 +8,7 @@ import {
   softwareApplicationSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS } from '../lib/pricing'
 
 /**
  * / — public marketing landing page.
@@ -30,7 +30,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
 
 const LANDING_META = buildPageMeta({
   title:       'GrowthOS — AI advisor + business tools for home-services contractors',
-  description: `AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, 14-day free trial.`,
+  description: `AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
   path:        '/',
 })
 
@@ -352,7 +352,7 @@ function HeroSection() {
         <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
           <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-semibold px-4 py-1.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            14-day free trial — no credit card required
+            {TRIAL_DAYS}-day free trial — no credit card required
           </div>
           <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-1.5 rounded-full">
             🔒 Founding rate — ${PRICE_MONTHLY_USD} locked in for life
@@ -383,12 +383,12 @@ function HeroSection() {
             to="/signup"
             className="px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
-            Claim your 14-day free trial
+            Claim your {TRIAL_DAYS}-day free trial
           </Link>
         </div>
 
         <p className="text-white/30 text-sm">
-          No credit card · 14 days free · Cancel anytime · ${PRICE_MONTHLY_USD}/month after trial
+          No credit card · {TRIAL_DAYS} days free · Cancel anytime · ${PRICE_MONTHLY_USD}/month after trial
         </p>
       </div>
     </section>
@@ -786,7 +786,7 @@ function PriceSection() {
             to="/signup"
             className="inline-block px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors"
           >
-            Start 14-day free trial
+            Start {TRIAL_DAYS}-day free trial
           </Link>
           <p className="mt-4 text-white/25 text-xs">No credit card required · Cancel anytime</p>
         </div>
@@ -809,7 +809,7 @@ function ClosingCTA() {
           Your competitors are getting smarter.<br />Are you going to let them pull ahead?
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
-          14 days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best ${PRICE_MONTHLY_USD}/month you've ever spent on your business — cancel. No questions. No charge. No risk.
+          {TRIAL_DAYS} days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best ${PRICE_MONTHLY_USD}/month you've ever spent on your business — cancel. No questions. No charge. No risk.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
