@@ -70,10 +70,13 @@ export default function TrialBanner() {
       <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center gap-3">
         <span className="flex-1">
           <strong className="font-semibold">{message}</strong>{' '}
-          <Link to="/settings" className="underline hover:no-underline">
+          <Link to="/settings/billing" className="underline hover:no-underline font-semibold">
             Upgrade now
           </Link>{' '}
-          to keep using the tools.
+          to keep access — or save $194 with the{' '}
+          <Link to="/settings/billing" className="underline hover:no-underline">
+            annual plan
+          </Link>.
         </span>
         <button
           type="button"

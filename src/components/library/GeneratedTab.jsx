@@ -239,10 +239,23 @@ function renderToolBody(doc) {
   if (doc.tool_id === 'rocks-tracker')    return <RocksPlan data={doc.output_data} />
   if (doc.tool_id === 'gbp-optimizer')    return <GBPAudit data={doc.output_data} />
   if (doc.tool_id === 'team-newsletter')  return <NewsletterView data={doc.output_data} />
+  if (doc.tool_id === 'solomon')          return <SolomonSave data={doc.output_data} />
   return (
     <pre className="text-xs text-ink-700 bg-ink-50 border border-ink-100 rounded p-3 overflow-x-auto">
       {JSON.stringify(doc.output_data, null, 2)}
     </pre>
+  )
+}
+
+function SolomonSave({ data }) {
+  const content = data?.content ?? ''
+  return (
+    <div className="rounded-xl border border-ink-100 bg-ink-50 p-5">
+      <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-ink-500 uppercase tracking-widest">
+        <span>💡</span> Solomon
+      </div>
+      <p className="text-sm text-ink-800 leading-relaxed whitespace-pre-wrap">{content}</p>
+    </div>
   )
 }
 

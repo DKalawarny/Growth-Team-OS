@@ -10,6 +10,7 @@ import {
   faqPageSchema,
   jsonLd,
 } from '../lib/seo'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV } from '../lib/pricing'
 
 /**
  * /pricing — public pricing page.
@@ -249,7 +250,7 @@ export default function Pricing() {
               <span className={`text-xs font-black px-2 py-0.5 rounded-full transition-colors ${
                 billing === ANNUAL ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700'
               }`}>
-                Save $194
+                Save ${PRICE_MONTHLY_USD * 2}
               </span>
             </button>
           </div>
@@ -267,7 +268,7 @@ export default function Pricing() {
             <div className="mt-2 mb-2">
               <div className="flex items-baseline justify-center gap-2">
                 <span className="text-7xl font-black text-white leading-none">
-                  {billing === ANNUAL ? '$81' : '$97'}
+                  {billing === ANNUAL ? `$${ANNUAL_MONTHLY_EQUIV}` : `$${PRICE_MONTHLY_USD}`}
                 </span>
                 <div className="text-left">
                   <p className="text-white/40 text-sm leading-tight">USD / mo</p>
@@ -275,7 +276,7 @@ export default function Pricing() {
                 </div>
               </div>
               {billing === ANNUAL ? (
-                <p className="text-amber-400 font-bold mt-2">Billed annually at $970 USD (~$1,329 CAD) — 2 months completely free</p>
+                <p className="text-amber-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD — 2 months completely free</p>
               ) : (
                 <p className="text-white/25 text-sm mt-2">Pay annually and pocket $194 — that's 2 months free</p>
               )}
@@ -344,7 +345,7 @@ export default function Pricing() {
         <section className="mb-20">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
-              What $97 replaces.
+              What ${PRICE_MONTHLY_USD} replaces.
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
               Most owners are already paying for this advice — just scattered, expensive, and slow.
@@ -469,7 +470,7 @@ function OwnerCta({ billing, authState }) {
           disabled={clicking}
           className="w-full rounded-xl px-4 py-4 text-base font-black bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
         >
-          {clicking ? 'Redirecting to Stripe…' : `Upgrade now — ${billing === ANNUAL ? '$970 / year' : '$97 / month'}`}
+          {clicking ? 'Redirecting to Stripe…' : `Upgrade now — ${billing === ANNUAL ? `$${PRICE_ANNUAL_USD} / year` : `$${PRICE_MONTHLY_USD} / month`}`}
         </button>
         {err && <p className="text-xs text-red-400 mt-2 text-center">{err}</p>}
       </div>

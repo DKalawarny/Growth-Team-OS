@@ -179,6 +179,19 @@ export const TOOLS = [
     icon:        '🪨',
     hidden:      true,
   },
+  // ── Virtual tool — Solomon saved answers ──────────────────────────────────
+  // Not a real tool page — documents are saved from the Advisor chat via the
+  // save button. Listed here so the Documents library can resolve the name/icon.
+  {
+    id:      'solomon',
+    route:   '/advisor',
+    name:    'Solomon',
+    tagline: 'Saved advisor response.',
+    category:'foundation',
+    status:  'available',
+    icon:    '💡',
+    hidden:  true,  // not surfaced in /tools grid
+  },
 ]
 
 /**
