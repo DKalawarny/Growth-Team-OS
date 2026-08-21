@@ -24,3 +24,7 @@ supabase/.temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Design canvas working files — seeded output is large and regenerable
+design/*.html
+!design/*.dc.html

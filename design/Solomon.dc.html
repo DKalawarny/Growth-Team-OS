@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    body {
+      margin: 0;
+      background: #F6F8F8;
+      color: #0D1413;
+      font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #14A67B; text-decoration: none; }
+    a:hover { color: #0F8763; }
+    .lbl { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; color: #8A9A9C; font-weight: 600; }
+    .nav { display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 9px; font-size: 14px; color: #47575A; font-weight: 500; }
+    .nav-on { background: #FFFFFF; color: #0D1413; font-weight: 600; box-shadow: 0 1px 2px rgba(13,20,19,0.05); }
+    .card { background: #FFFFFF; border: 1px solid rgba(13,20,19,0.09); border-radius: 14px; }
+    .do { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; color: #2A3A3C; font-weight: 500; }
+    .do-hi { background: #E4F4EE; color: #0B6B4E; font-weight: 600; }
+  </style>
+</helmet>
+
+<div style="display: flex; height: 900px; overflow: hidden;">
+
+  <div style="width: 232px; flex-shrink: 0; background: #EDF1F1; border-right: 1px solid rgba(13,20,19,0.07); display: flex; flex-direction: column; padding: 20px 14px; gap: 22px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 6px;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" fill="#14A67B"></rect><path d="M8 15.5V9.5l4 3 4-3v6" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <div style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em;">[NAME]</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10v9h13v-9"></path></svg>
+        Home
+      </div>
+      <div class="nav nav-on">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"></path></svg>
+        Solomon
+      </div>
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6"></path><path d="M4 8h6l2 2h8"></path><path d="M20 10v7H4"></path></svg>
+        Roadmap
+      </div>
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>
+        Playbooks
+      </div>
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V9"></path><path d="M10 18V5"></path><path d="M16 18v-6"></path><path d="M3 21h18"></path></svg>
+        Finances
+      </div>
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5"></path></svg>
+        Documents
+      </div>
+      <div class="nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-7-9.5A4 4 0 0 1 12 8a4 4 0 0 1 7 2.5C19 15.7 12 20 12 20z"></path></svg>
+        Succession
+      </div>
+    </div>
+    <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-top: 1px solid rgba(13,20,19,0.07);">
+      <div style="width: 30px; height: 30px; border-radius: 999px; background: #0D1413; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center;">MR</div>
+      <div style="display: flex; flex-direction: column;">
+        <div style="font-size: 13px; font-weight: 600;">Marcus Reed</div>
+        <div style="font-size: 11.5px; color: #8A9A9C;">Reed &amp; Sons Mechanical</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; padding: 26px 30px 22px;">
+
+    <div style="display: flex; align-items: center; gap: 11px; padding-bottom: 20px;">
+      <div style="position: relative; width: 34px; height: 34px; border-radius: 999px; background: #0D1413; display: flex; align-items: center; justify-content: center;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <div style="font-size: 15.5px; font-weight: 600;">Solomon</div>
+        <div style="font-size: 12.5px; color: #8A9A9C;">Reads your books, your plan, and last week's check-in</div>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 22px; overflow: hidden;">
+
+      <div style="align-self: flex-end; max-width: 62%; background: #0D1413; color: #FFFFFF; border-radius: 14px 14px 4px 14px; padding: 13px 17px; font-size: 14.5px; line-height: 1.55;">
+        Walk me through the cash thing. How bad is week six actually?
+      </div>
+
+      <div style="max-width: 78%; display: flex; flex-direction: column; gap: 14px;">
+        <div style="font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; line-height: 1.5; color: #0D1413;">Not fatal, but it's tight enough that doing nothing is a decision.</div>
+        <div style="font-size: 14.5px; line-height: 1.65; color: #2A3A3C;">You clear payroll, but you land at $18,400 with two invoices still out and no room if either slips. Here's the run:</div>
+
+        <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="lbl">13-week cash &middot; drawn from QuickBooks</div>
+            <div style="font-size: 12.5px; font-weight: 600; color: #14A67B;">Open in Finances &rarr;</div>
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 7px; height: 92px;">
+            <div style="flex-grow: 1; height: 74%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 68%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 71%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 52%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 38%; background: #E8C4B8; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 19%; background: #C2452F; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 34%; background: #E8C4B8; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 58%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 66%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 79%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 84%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 91%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+            <div style="flex-grow: 1; height: 97%; background: #DCE6E6; border-radius: 4px 4px 0 0;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #8A9A9C; font-variant-numeric: tabular-nums;">
+            <div>Wk 1</div>
+            <div style="color: #C2452F; font-weight: 600;">Wk 6 &middot; $18,400</div>
+            <div>Wk 13</div>
+          </div>
+        </div>
+
+        <div style="font-size: 14.5px; line-height: 1.65; color: #2A3A3C;">Three ways out, cheapest first. Ask Hensley for a deposit &mdash; you've done the drawings, it's fair to ask. Push the truck purchase one month. Or draw on the line of credit, which costs you about $340 and buys certainty.</div>
+
+        <div style="font-size: 14.5px; line-height: 1.65; color: #2A3A3C;">I'd ask for the deposit first. Not because it's cheapest, but because if Hensley won't put money down after nineteen days, that tells you what the proposal is actually worth &mdash; and you'd rather learn that now than in week six.</div>
+
+        <div style="display: flex; gap: 9px; padding-top: 2px;">
+          <div style="border: 1px solid rgba(13,20,19,0.16); font-size: 13.5px; font-weight: 600; padding: 9px 15px; border-radius: 999px;">Draft the deposit ask</div>
+          <div style="border: 1px solid rgba(13,20,19,0.16); font-size: 13.5px; font-weight: 600; padding: 9px 15px; border-radius: 999px;">Show me the other angles</div>
+          <div style="border: 1px solid rgba(13,20,19,0.16); font-size: 13.5px; font-weight: 600; padding: 9px 15px; border-radius: 999px;">Add to the plan</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="padding-top: 20px; display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid rgba(13,20,19,0.12); border-radius: 13px; padding: 13px 16px; margin-top: 18px;">
+      <div style="flex-grow: 1; font-size: 14.5px; color: #8A9A9C;">Ask him anything, or pick something from the right</div>
+      <div style="width: 34px; height: 34px; border-radius: 9px; background: #14A67B; display: flex; align-items: center; justify-content: center;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"></path><path d="M6 11l6-6 6 6"></path></svg>
+      </div>
+    </div>
+  </div>
+
+  <div style="width: 300px; flex-shrink: 0; background: #EDF1F1; border-left: 1px solid rgba(13,20,19,0.07); padding: 26px 18px; display: flex; flex-direction: column; gap: 20px; overflow: hidden;">
+
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <div class="lbl">What Solomon can do</div>
+      <div style="font-size: 12.5px; line-height: 1.5; color: #47575A;">Everything the old tools page held &mdash; it just happens in the conversation now.</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 11px; font-weight: 700; color: #14A67B; letter-spacing: 0.05em; padding-left: 12px;">SUGGESTED NOW</div>
+        <div class="do do-hi">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V9"></path><path d="M10 18V5"></path><path d="M16 18v-6"></path><path d="M3 21h18"></path></svg>
+          Forecast cash further out
+        </div>
+        <div class="do do-hi">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"></path></svg>
+          Price the Hensley job honestly
+        </div>
+      </div>
+
+      <div style="height: 1px; background: rgba(13,20,19,0.09);"></div>
+
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><path d="M17 7h4M19 5v4"></path></svg>
+          Build a hiring scorecard
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>
+          Write down a repeating job
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M5 8h14"></path><circle cx="12" cy="14" r="4"></circle></svg>
+          Check an obligation, with the source
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3z"></path><path d="M3 11h18"></path></svg>
+          Read this month's numbers to me
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 3z"></path></svg>
+          Draft an update for the team
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-7-9.5A4 4 0 0 1 12 8a4 4 0 0 1 7 2.5C19 15.7 12 20 12 20z"></path></svg>
+          Think about who runs this next
+        </div>
+        <div class="do">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6"></path><path d="M4 8h6l2 2h8"></path><path d="M20 10v7H4"></path></svg>
+          Set this quarter's priorities
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; background: #FFFFFF; border: 1px solid rgba(13,20,19,0.09); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;">
+      <div style="font-size: 12.5px; color: #47575A; line-height: 1.5;">Everything he makes is saved to <strong style="font-weight: 600;">Documents</strong>.</div>
+      <div style="font-size: 12.5px; font-weight: 600; color: #14A67B;">See the last 12 &rarr;</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

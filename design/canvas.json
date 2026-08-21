@@ -1,0 +1,92 @@
+{
+  "artboards": [
+    {
+      "file": "Direction.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 900,
+      "h": 1180,
+      "title": "Direction"
+    },
+    {
+      "file": "Main.dc.html",
+      "x": 1000,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Home"
+    },
+    {
+      "file": "Solomon.dc.html",
+      "x": 2520,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Solomon"
+    },
+    {
+      "file": "Decision.dc.html",
+      "x": 1000,
+      "y": 1300,
+      "w": 1440,
+      "h": 900,
+      "title": "A decision, three ways"
+    },
+    {
+      "file": "Roadmap.dc.html",
+      "x": 2520,
+      "y": 1300,
+      "w": 1440,
+      "h": 900,
+      "title": "Roadmap"
+    },
+    {
+      "file": "Context.dc.html",
+      "x": 4040,
+      "y": 1300,
+      "w": 1440,
+      "h": 900,
+      "title": "What Solomon knows"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "counsel-note",
+      "x": 440,
+      "y": 1300,
+      "w": 440,
+      "text": "Counsel from many, without needing many people to show up.\n\nSolomon argues the decision three ways and shows where they disagree \u2014 money, people, pace. He never impersonates your pastor or your accountant; these are ways of arguing, not people.\n\nHe names what he's drawing on, and what he's missing. \"Send this to someone\" is all that's left of the advisors idea: one link, when you actually want a human."
+    },
+    {
+      "id": "launcher-note",
+      "x": 2520,
+      "y": -200,
+      "w": 430,
+      "text": "Your discoverability worry, answered.\n\nThe right rail lists everything Solomon can do \u2014 nothing is hidden \u2014 but clicking one drops you into the conversation instead of opening another form page. The top two are suggested from what he already knows about your week."
+    },
+    {
+      "id": "trajectory-note",
+      "x": 2520,
+      "y": 2300,
+      "w": 430,
+      "text": "Trajectories, kept but re-pointed.\n\nSame charting you already built \u2014 it just plots more than revenue. Revenue climbing while hours climb faster and giving stays flat is the picture a revenue-target chart hides."
+    },
+    {
+      "id": "name-note",
+      "x": 0,
+      "y": 1300,
+      "w": 400,
+      "text": "[NAME] in the sidebar is a deliberate placeholder \u2014 the name is still parked.\n\nSample business throughout: Reed & Sons Mechanical. Invented, not yours."
+    },
+    {
+      "id": "context-note",
+      "x": 4040,
+      "y": 2300,
+      "w": 440,
+      "text": "This screen is the answer to \"give Solomon more to work with.\"\n\nThe plumbing already exists \u2014 Drive and OneDrive import, embeddings, semantic search over your files. What's missing is that staff_members is never passed to him, so he genuinely cannot judge anything about your people.\n\nNote what it does NOT do: no upload wall at signup. He asks for what he needs, at the moment it would have changed his answer."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
