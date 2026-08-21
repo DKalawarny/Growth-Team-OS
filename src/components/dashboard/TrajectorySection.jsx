@@ -76,7 +76,7 @@ function ProjTooltip({ active, payload, label }) {
   return (
     <div className="rounded-lg px-2.5 py-1.5 text-xs" style={{ background: '#1e2330', border: '1px solid rgba(255,255,255,0.1)' }}>
       <span className="text-white/50">{label}: </span>
-      <span className="text-amber-400 font-bold">{fmtRev(payload[0]?.value)}</span>
+      <span className="text-brand-400 font-bold">{fmtRev(payload[0]?.value)}</span>
     </div>
   )
 }
@@ -138,7 +138,7 @@ export default function TrajectorySection({ milestones = [] }) {
           </div>
           <h2 className="text-base font-black text-white leading-tight">
             {hasData
-              ? <>{fmtRev(currentRev)} → <span style={{ color: '#F59E0B' }}>{fmtRev(targetRev)}</span> by {etaLabel(timelineMo)}</>
+              ? <>{fmtRev(currentRev)} → <span style={{ color: '#1CBE8C' }}>{fmtRev(targetRev)}</span> by {etaLabel(timelineMo)}</>
               : <>Set your revenue goal to see your projection.</>
             }
           </h2>
@@ -161,8 +161,8 @@ export default function TrajectorySection({ milestones = [] }) {
             <AreaChart data={curve} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="trajGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor="#F59E0B" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#F59E0B" stopOpacity={0.0} />
+                  <stop offset="0%"   stopColor="#1CBE8C" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#1CBE8C" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -177,11 +177,11 @@ export default function TrajectorySection({ milestones = [] }) {
               <Area
                 type="monotone"
                 dataKey="rev"
-                stroke="#F59E0B"
+                stroke="#1CBE8C"
                 strokeWidth={2}
                 fill="url(#trajGrad)"
                 dot={false}
-                activeDot={{ r: 4, fill: '#F59E0B', strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: '#1CBE8C', strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -224,7 +224,7 @@ export default function TrajectorySection({ milestones = [] }) {
           <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
             <div
               className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${planPct}%`, background: 'linear-gradient(90deg, #92400e, #f59e0b)' }}
+              style={{ width: `${planPct}%`, background: 'linear-gradient(90deg, #0b6b4e, #1cbe8c)' }}
             />
           </div>
         </div>
@@ -256,7 +256,7 @@ function StatCard({ label, value, sub, accent }) {
         {label}
       </div>
       <div className="text-base font-black tabular-nums leading-tight"
-        style={{ color: accent ? '#F59E0B' : 'rgba(255,255,255,0.9)' }}>
+        style={{ color: accent ? '#1CBE8C' : 'rgba(255,255,255,0.9)' }}>
         {value}
       </div>
       {sub && (

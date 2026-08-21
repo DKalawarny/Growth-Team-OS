@@ -42,8 +42,8 @@ export default function CRMUpsellCard({
             <p className="text-sm text-ink-600 mt-1 max-w-xl">{tagline}</p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full whitespace-nowrap">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-800 bg-brand-50 border border-brand-200 px-2.5 py-1 rounded-full whitespace-nowrap">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
           Needs ProSuite
         </span>
       </div>

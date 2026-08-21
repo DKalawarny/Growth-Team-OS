@@ -44,7 +44,7 @@ export default function Security() {
       <PublicHeader />
 
       <main className="max-w-3xl mx-auto px-6 py-16">
-        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-4">Security</p>
+        <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">Security</p>
         <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-6">
           Your data, handled honestly.
         </h1>
@@ -136,7 +136,7 @@ export default function Security() {
           </p>
           <p className="mt-3">
             If you find a vulnerability, please email us at{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">
               {CONTACT_EMAIL}
             </a>{' '}
             with details and steps to reproduce. We'll respond within 48 hours.
@@ -154,9 +154,9 @@ export default function Security() {
 
         <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm text-gray-500">
-            Questions? Email <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">{CONTACT_EMAIL}</a>
+            Questions? Email <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>
           </p>
-          <Link to="/privacy" className="text-sm text-amber-600 hover:underline">
+          <Link to="/privacy" className="text-sm text-brand-600 hover:underline">
             Read the privacy policy →
           </Link>
         </div>

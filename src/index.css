@@ -1,35 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Brand: rich gold/amber ─────────────────────────────────────────────
-     Gold communicates achievement, wealth, and growth — the exact reward
-     signal we want every milestone completion and KPI tick to carry. */
-  --color-brand-50:  #fffbeb;
-  --color-brand-100: #fef3c7;
-  --color-brand-200: #fde68a;
-  --color-brand-300: #fcd34d;
-  --color-brand-400: #fbbf24;   /* pops on dark surfaces */
-  --color-brand-500: #f59e0b;   /* main gold */
-  --color-brand-600: #d97706;   /* primary brand */
-  --color-brand-700: #b45309;   /* hover / pressed */
-  --color-brand-800: #92400e;
-  --color-brand-900: #78350f;
+  /* ── Brand: living green ────────────────────────────────────────────────
+     Reskinned 2026-08-20 for the stewardship repositioning. The old scale
+     was gold/amber, which read as generic SaaS and sat uncomfortably close
+     to the other product's palette. Green says life and growth without the
+     interface having to say either word.
 
-  /* ── Ink: deep navy for dark surfaces ──────────────────────────────────
-     Sidebar, dashboard hero, any "command center" zone. */
-  --color-ink-950: #08101e;
-  --color-ink-900: #0d1728;
-  --color-ink-800: #162038;
-  --color-ink-700: #1e2d4a;
-  --color-ink-600: #2d4060;
-  --color-ink-500: #4a5e7a;
-  --color-ink-400: #7a90aa;
-  --color-ink-300: #a8b8cc;
-  --color-ink-200: #d0dae6;
-  --color-ink-100: #e8edf4;
-  --color-ink-50:  #f4f6fa;
+     The token NAMES are deliberately unchanged. Every `bg-brand-600` and
+     `text-ink-900` across 22 pages inherits the new palette from here — a
+     rename would have meant editing thousands of class strings for nothing. */
+  --color-brand-50:  #edfaf4;
+  --color-brand-100: #d2f3e6;
+  --color-brand-200: #a5e7cd;
+  --color-brand-300: #6fd4ae;
+  --color-brand-400: #35bb8e;   /* pops on dark surfaces */
+  --color-brand-500: #1cbe8c;
+  --color-brand-600: #14a67b;   /* primary brand */
+  --color-brand-700: #0f8763;   /* hover / pressed */
+  --color-brand-800: #0b6b4e;
+  --color-brand-900: #08543e;
 
-  --font-sans: Inter, system-ui, sans-serif;
+  /* ── Ink: cool near-black neutral ──────────────────────────────────────
+     Was a navy scale. Now a cool neutral so the green is the only colour
+     doing any talking, and so light surfaces read as paper rather than as
+     tinted panels. */
+  --color-ink-950: #070b0b;
+  --color-ink-900: #0d1413;
+  --color-ink-800: #17201f;
+  --color-ink-700: #24302e;
+  --color-ink-600: #35443f;
+  --color-ink-500: #47575a;
+  --color-ink-400: #6b7b7d;
+  --color-ink-300: #8a9a9c;
+  --color-ink-200: #c3cfd0;
+  --color-ink-100: #e3eaea;
+  --color-ink-50:  #f6f8f8;
+
+  /* Instrument Sans for interface, Instrument Serif for Solomon's voice and
+     for any number that matters. Loaded in index.html. Not Inter — Inter is
+     what every other tool in this category uses. */
+  --font-sans:  'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 }
 
 @layer base {
@@ -44,8 +56,8 @@
 
   body {
     margin: 0;
-    background-color: #f4f6fa;
-    color: #0d1728;
+    background-color: #f6f8f8;
+    color: #0d1413;
     font-family: var(--font-sans);
   }
 
@@ -77,34 +89,34 @@
     padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
     font-family: inherit;
-    color: #0d1728;                     /* ink-900 */
+    color: #0d1413;                     /* ink-900 */
     background-color: #ffffff;
-    border: 1px solid #d0dae6;          /* ink-200 */
+    border: 1px solid #c3cfd0;          /* ink-200 */
     border-radius: 0.625rem;
     transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
-    box-shadow: 0 1px 2px rgba(13, 23, 40, 0.04);
+    box-shadow: 0 1px 2px rgba(13, 20, 19, 0.04);
   }
 
   input:hover:not(:disabled),
   textarea:hover:not(:disabled),
   select:hover:not(:disabled) {
-    border-color: #a8b8cc;              /* ink-300 */
+    border-color: #8a9a9c;              /* ink-300 */
   }
 
   input:focus,
   textarea:focus,
   select:focus {
     outline: none;
-    border-color: #f59e0b;              /* brand-500 */
+    border-color: #14a67b;              /* brand-600 */
     box-shadow:
-      0 0 0 4px rgba(245, 158, 11, 0.15),
-      0 1px 2px rgba(13, 23, 40, 0.04);
-    background-color: #fffef9;          /* barely-perceptible warm tint */
+      0 0 0 4px rgba(20, 166, 123, 0.15),
+      0 1px 2px rgba(13, 20, 19, 0.04);
+    background-color: #fcfefd;          /* barely-perceptible cool tint */
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: #7a90aa;                      /* ink-400 */
+    color: #6b7b7d;                      /* ink-400 */
   }
 
   input:disabled,
@@ -112,7 +124,7 @@
   select:disabled {
     opacity: 0.55;
     cursor: not-allowed;
-    background-color: #f4f6fa;
+    background-color: #f6f8f8;
   }
 
   /* Invalid state — kicks in after a failed submit, not on every keystroke. */
@@ -126,33 +138,38 @@
   input[type="checkbox"],
   input[type="radio"] {
     width: auto;
-    accent-color: #d97706;
+    accent-color: #14a67b;
   }
 }
 
 @layer utilities {
-  /* Gold glow — primary CTAs, active milestone indicators. */
+  /* Legacy class names, new values. `.glow-gold` is no longer gold; renaming
+     it would mean touching every call site for no behavioural gain.
+     Glows are much softer now — the old ones read as a casino. */
   .glow-gold {
-    box-shadow: 0 4px 24px rgba(217, 119, 6, 0.35);
+    box-shadow: 0 4px 20px rgba(20, 166, 123, 0.18);
   }
   .glow-gold-sm {
-    box-shadow: 0 2px 12px rgba(217, 119, 6, 0.28);
+    box-shadow: 0 2px 10px rgba(20, 166, 123, 0.14);
   }
   .glow-gold-ambient {
-    box-shadow: 0 0 80px 20px rgba(245, 158, 11, 0.08);
+    box-shadow: 0 0 80px 20px rgba(20, 166, 123, 0.05);
   }
 
-  /* Gold gradient background — premium CTA treatment */
+  /* Primary CTA. Flat, not a gradient — gradients on buttons are the single
+     most dated thing in the old design. */
   .bg-gold-gradient {
-    background-image: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    background-image: none;
+    background-color: #14a67b;
   }
   .bg-gold-gradient:hover {
-    background-image: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    background-image: none;
+    background-color: #0f8763;
   }
 
-  /* Dark premium gradient — hero backgrounds */
+  /* Dark surface. Near-black and cool rather than navy. */
   .bg-ink-gradient {
-    background-image: linear-gradient(135deg, #0d1728 0%, #162038 50%, #1e2d4a 100%);
+    background-image: linear-gradient(135deg, #0d1413 0%, #17201f 55%, #24302e 100%);
   }
 
   /* Fade-in — onboarding left panel content swaps between steps */

@@ -206,13 +206,13 @@ export default function Pricing() {
           backgroundImage: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(245,158,11,0.10) 0%, transparent 70%)',
         }} />
         <div className="relative max-w-3xl mx-auto px-6">
-          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             {TRIAL_DAYS}-day free trial — no credit card
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
             One subscription.<br />
-            <span className="text-amber-400">Your entire business team.</span>
+            <span className="text-brand-400">Your entire business team.</span>
           </h1>
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
             An AI advisor who knows your numbers. A live CFO dashboard. A hiring coach. A marketing analyst. A compliance tracker. A growth planner.
@@ -248,7 +248,7 @@ export default function Pricing() {
             >
               Annual
               <span className={`text-xs font-black px-2 py-0.5 rounded-full transition-colors ${
-                billing === ANNUAL ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700'
+                billing === ANNUAL ? 'bg-brand-500 text-white' : 'bg-brand-100 text-brand-700'
               }`}>
                 Save ${PRICE_MONTHLY_USD * 2}
               </span>
@@ -260,7 +260,7 @@ export default function Pricing() {
         <section className="max-w-md mx-auto mb-4">
           <div className="relative bg-gray-950 rounded-2xl p-8 border border-white/10 shadow-2xl text-center">
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-              <span className="bg-amber-500 text-gray-950 text-xs font-black px-5 py-1.5 rounded-full shadow-lg uppercase tracking-wide whitespace-nowrap">
+              <span className="bg-brand-500 text-gray-950 text-xs font-black px-5 py-1.5 rounded-full shadow-lg uppercase tracking-wide whitespace-nowrap">
                 Everything included — no upsells
               </span>
             </div>
@@ -276,7 +276,7 @@ export default function Pricing() {
                 </div>
               </div>
               {billing === ANNUAL ? (
-                <p className="text-amber-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD — 2 months completely free</p>
+                <p className="text-brand-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD — 2 months completely free</p>
               ) : (
                 <p className="text-white/25 text-sm mt-2">Pay annually and pocket $194 — that's 2 months free</p>
               )}
@@ -328,7 +328,7 @@ export default function Pricing() {
                 <div className="divide-y divide-gray-50">
                   {group.features.map((f, fi) => (
                     <div key={fi} className="flex items-start gap-4 px-6 py-4">
-                      <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-bold text-gray-900">{f.name}</p>
                         <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">{f.desc}</p>
@@ -374,7 +374,7 @@ export default function Pricing() {
                 <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
               </div>
               <div className="text-right">
-                <p className="text-amber-400 font-black text-2xl">${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-amber-400/60">/mo</span></p>
+                <p className="text-brand-400 font-black text-2xl">${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></p>
                 <p className="text-white/30 text-xs mt-0.5">vs. $1,480–$4,650/mo separately</p>
               </div>
             </div>
@@ -399,7 +399,7 @@ export default function Pricing() {
             backgroundImage: 'radial-gradient(ellipse 60% 50% at 50% 100%, rgba(245,158,11,0.10) 0%, transparent 70%)',
           }} />
           <div className="relative">
-            <p className="text-amber-400 text-sm font-bold uppercase tracking-widest mb-3">Start today</p>
+            <p className="text-brand-400 text-sm font-bold uppercase tracking-widest mb-3">Start today</p>
             <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
               {TRIAL_DAYS} days free. No card. No risk.
             </h2>
@@ -410,7 +410,7 @@ export default function Pricing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/signup?plan=owner"
-                className="w-full sm:w-auto px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+                className="w-full sm:w-auto px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
               >
                 Start free trial — no credit card
               </Link>
@@ -468,7 +468,7 @@ function OwnerCta({ billing, authState }) {
           type="button"
           onClick={async () => { setErr(null); setClicking(true); try { await startCheckout(plan) } catch (e) { setErr(e.message || 'Could not start checkout'); setClicking(false) } }}
           disabled={clicking}
-          className="w-full rounded-xl px-4 py-4 text-base font-black bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
+          className="w-full rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
         >
           {clicking ? 'Redirecting to Stripe…' : `Upgrade now — ${billing === ANNUAL ? `$${PRICE_ANNUAL_USD} / year` : `$${PRICE_MONTHLY_USD} / month`}`}
         </button>
@@ -480,7 +480,7 @@ function OwnerCta({ billing, authState }) {
   return (
     <Link
       to={`/signup?plan=${plan}`}
-      className="block w-full text-center rounded-xl px-4 py-4 text-base font-black bg-amber-500 hover:bg-amber-400 text-gray-950 transition-colors shadow-lg"
+      className="block w-full text-center rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 text-gray-950 transition-colors shadow-lg"
     >
       Start {TRIAL_DAYS}-day free trial — free
     </Link>
@@ -517,7 +517,7 @@ function FaqRow({ q, a, last }) {
 
 function Tick() {
   return (
-    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 8l3 3 7-7" />
     </svg>
   )

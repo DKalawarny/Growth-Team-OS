@@ -184,12 +184,12 @@ export default function TradePage() {
         }} />
         <div className="relative max-w-3xl mx-auto px-6 text-center">
           <div className="text-5xl mb-5">{data.icon}</div>
-          <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">
+          <p className="text-brand-400 text-xs font-bold uppercase tracking-widest mb-4">
             {data.cta}
           </p>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-5">
             The AI advisor and<br />operating system for<br />
-            <span className="text-amber-400">{data.label}.</span>
+            <span className="text-brand-400">{data.label}.</span>
           </h1>
           <p className="text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
             Built around how {data.h1Trade} businesses actually run. Cash flow,
@@ -199,7 +199,7 @@ export default function TradePage() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/signup"
-              className="px-8 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black transition-colors"
+              className="px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black transition-colors"
             >
               Start free trial — no card
             </Link>
@@ -246,8 +246,8 @@ export default function TradePage() {
           </p>
           <div className="space-y-3">
             {data.examples.map((ex, i) => (
-              <div key={i} className="flex gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
-                <span className="text-amber-600 font-black flex-shrink-0">→</span>
+              <div key={i} className="flex gap-3 p-4 rounded-xl bg-brand-50 border border-brand-200">
+                <span className="text-brand-600 font-black flex-shrink-0">→</span>
                 <p className="text-gray-800 leading-relaxed">{ex}</p>
               </div>
             ))}
@@ -298,7 +298,7 @@ export default function TradePage() {
             </p>
             <Link
               to="/signup"
-              className="inline-block px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black transition-colors"
+              className="inline-block px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black transition-colors"
             >
               Start free trial
             </Link>
@@ -316,7 +316,7 @@ export default function TradePage() {
                 <Link
                   key={slug}
                   to={`/for/${slug}`}
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-amber-400 hover:text-amber-600 transition-colors capitalize"
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-brand-400 hover:text-brand-600 transition-colors capitalize"
                 >
                   {t.icon} {t.label}
                 </Link>

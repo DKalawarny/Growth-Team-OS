@@ -69,7 +69,7 @@ function MilestonePreview({ milestone, status }) {
   const dot =
     status === 'in-progress' ? 'bg-brand-500 ring-2 ring-brand-200'
     : status === 'ready'     ? 'bg-ink-300'
-    : status === 'blocked'   ? 'bg-amber-400'
+    : status === 'blocked'   ? 'bg-brand-400'
                              : 'bg-ink-200'
 
   const badge =
@@ -78,7 +78,7 @@ function MilestonePreview({ milestone, status }) {
       : status === 'ready'
       ? <span className="text-[10.5px] font-semibold text-ink-500 bg-ink-100 px-2 py-0.5 rounded-full flex-shrink-0">Up next</span>
       : status === 'blocked'
-      ? <span className="text-[10.5px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex-shrink-0">Blocked</span>
+      ? <span className="text-[10.5px] font-semibold text-brand-700 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full flex-shrink-0">Blocked</span>
       : null
 
   return (

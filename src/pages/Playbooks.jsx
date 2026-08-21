@@ -857,7 +857,7 @@ function CrewPreview({ items }) {
             Checklist <span className="text-ink-400">· {doneCount} of {items.length}</span>
           </p>
           {requiredLeft > 0 && (
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-800">
               {requiredLeft} required left
             </span>
           )}
@@ -901,7 +901,7 @@ function CrewPreview({ items }) {
                         {item.text || <span className="italic text-ink-400">(unnamed step)</span>}
                       </p>
                       {item.required && !isDone && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 tracking-wide flex-shrink-0">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 tracking-wide flex-shrink-0">
                           REQ
                         </span>
                       )}

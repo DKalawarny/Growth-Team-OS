@@ -83,7 +83,7 @@ export default function ExecutiveBriefCard({ analysis }) {
 function SignalCol({ label, items, color }) {
   const styles = {
     green: { label: 'text-green-600', dot: 'bg-green-500', bg: 'bg-green-50 border-green-100' },
-    amber: { label: 'text-amber-600', dot: 'bg-amber-500', bg: 'bg-amber-50 border-amber-100' },
+    amber: { label: 'text-brand-600', dot: 'bg-brand-500', bg: 'bg-brand-50 border-brand-100' },
     blue:  { label: 'text-blue-600',  dot: 'bg-blue-500',  bg: 'bg-blue-50  border-blue-100'  },
   }[color] ?? { label: 'text-ink-500', dot: 'bg-ink-400', bg: 'bg-ink-50 border-ink-100' }
 

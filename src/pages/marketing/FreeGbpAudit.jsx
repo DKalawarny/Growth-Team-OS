@@ -79,12 +79,12 @@ export default function FreeGbpAudit() {
       <main className="max-w-3xl mx-auto px-6 py-16">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <div className="text-center mb-10">
-          <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-4">
+          <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">
             Free · No sales call
           </p>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-5">
             Get a free audit of<br/>
-            your <span className="text-amber-600">Google Business Profile.</span>
+            your <span className="text-brand-600">Google Business Profile.</span>
           </h1>
           <p className="text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
             We score your listing, your citations, your reviews, and how visible you
@@ -103,7 +103,7 @@ export default function FreeGbpAudit() {
                   value={businessName}
                   onChange={e => setBusiness(e.target.value)}
                   placeholder="ABC Plumbing"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                 />
               </Field>
               <Field label="City">
@@ -112,7 +112,7 @@ export default function FreeGbpAudit() {
                   value={city}
                   onChange={e => setCity(e.target.value)}
                   placeholder="Calgary, AB"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                 />
               </Field>
               <Field label="Website (if any)">
@@ -121,7 +121,7 @@ export default function FreeGbpAudit() {
                   value={website}
                   onChange={e => setWebsite(e.target.value)}
                   placeholder="https://example.com"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                 />
               </Field>
               <Field label="Where to send the report" required>
@@ -131,7 +131,7 @@ export default function FreeGbpAudit() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                 />
               </Field>
               {error && (
@@ -151,7 +151,7 @@ export default function FreeGbpAudit() {
             </div>
           </form>
         ) : (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-8 max-w-xl mx-auto text-center">
+          <div className="bg-brand-50 border border-brand-200 rounded-2xl p-8 max-w-xl mx-auto text-center">
             <div className="text-4xl mb-3">✓</div>
             <h2 className="text-xl font-black text-gray-900 mb-2">Got it. Audit on the way.</h2>
             <p className="text-gray-700 mb-5">
@@ -207,7 +207,7 @@ export default function FreeGbpAudit() {
             fix what's in the report, that's a separate conversation.
           </p>
           <p className="text-sm text-gray-500 mt-4">
-            Questions? <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">{CONTACT_EMAIL}</a>
+            Questions? <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>
           </p>
         </section>
       </main>
@@ -219,7 +219,7 @@ function Field({ label, required, children }) {
   return (
     <label className="block">
       <span className="text-sm font-bold text-gray-700 mb-1.5 block">
-        {label} {required && <span className="text-amber-600">*</span>}
+        {label} {required && <span className="text-brand-600">*</span>}
       </span>
       {children}
     </label>

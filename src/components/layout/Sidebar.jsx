@@ -141,18 +141,31 @@ function Icon({ name, className = 'w-[18px] h-[18px]' }) {
 
 // ── Nav config ────────────────────────────────────────────────────────────────
 
+// Seven surfaces, named in plain business words.
+//
+// The old nav was eleven flat destinations plus a tools section, so every
+// capability competed for attention equally and the whole thing read as
+// sprawl. Nothing was deleted to fix that — Calendar, Board, Trajectories and
+// Analytics all still exist at their own routes and are reachable from the
+// surfaces that own them. They are simply no longer top-level shouting.
+//
+//   Roadmap    now owns the plan, quarterly priorities, trajectories, the
+//              board and the calendar — every "what are we doing and when"
+//   Playbooks  the replace-yourself process library
+//   Finances   CFO dashboard + cash flow
+//   Documents  the library, plus compliance renewals
+//   Succession was Exit Readiness; what gets left behind, not what it sells for
+//
+// Deliberately absent: Analytics (spend metering — it belongs in Settings →
+// Billing, not in the owner's daily nav).
 const mainNav = [
-  { to: '/dashboard',    label: 'Dashboard',           icon: 'dashboard'    },
-  { to: '/advisor',      label: 'Solomon',             sublabel: 'Your Advisor', icon: 'advisor'      },
-  { to: '/roadmap',      label: 'Roadmap',             icon: 'roadmap'      },
-  { to: '/calendar',     label: 'Calendar',            icon: 'calendar'     },
-  { to: '/documents',    label: 'Library',             icon: 'library'      },
-  { to: '/tools/cfo',    label: 'CFO Dashboard',       icon: 'cfo'          },
-  { to: '/tools/safety', label: 'Safety & Compliance', icon: 'safety'       },
-  { to: '/trajectories', label: 'Growth Trajectories',  icon: 'trajectories' },
-  { to: '/board',        label: 'Work Board',          icon: 'board'        },
-  { to: '/playbooks',    label: 'Playbooks',           sublabel: 'Reusable checklists', icon: 'playbooks'    },
-  { to: '/analytics',   label: 'Analytics',           icon: 'analytics'    },
+  { to: '/dashboard',              label: 'Home',       icon: 'dashboard'    },
+  { to: '/advisor',                label: 'Solomon',    icon: 'advisor'      },
+  { to: '/roadmap',                label: 'Roadmap',    icon: 'roadmap'      },
+  { to: '/playbooks',              label: 'Playbooks',  icon: 'playbooks'    },
+  { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
+  { to: '/documents',              label: 'Documents',  icon: 'library'      },
+  { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },
 ]
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -227,7 +240,7 @@ export default function Sidebar() {
                   {/* Advisor morning opener indicator — amber pulse dot */}
                   {icon === 'advisor' && hasOpener && !isActive && (
                     <span className="relative flex-shrink-0" title="Morning brief ready">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 block animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-brand-400 block animate-pulse" />
                     </span>
                   )}
 

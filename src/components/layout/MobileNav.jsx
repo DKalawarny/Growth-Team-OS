@@ -154,7 +154,7 @@ export default function MobileNav() {
                 {tab.label}
               </span>
               {showDot && (
-                <span className="absolute top-2 right-1/4 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="absolute top-2 right-1/4 w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
               )}
               {isActive && (
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-400" />
@@ -221,7 +221,7 @@ export default function MobileNav() {
                   <>
                     <span className="flex-1">{label}</span>
                     {to === '/advisor' && hasOpener && !isActive && (
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
                     )}
                     {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />}
                   </>

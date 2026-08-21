@@ -127,7 +127,7 @@ export default function CRM() {
           <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-500 mb-5">
             Pricing
           </h2>
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-sm text-amber-900">
+          <div className="bg-brand-50 border border-brand-200 rounded-lg p-4 mb-6 text-sm text-brand-900">
             <strong>Pricing TBD.</strong> Numbers below are placeholders —
             replace with real tier pricing once the market study lands.
           </div>

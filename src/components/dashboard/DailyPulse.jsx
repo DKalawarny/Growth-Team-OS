@@ -236,7 +236,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
 
       {/* Header */}
       <div className="px-5 py-3.5 flex items-center gap-3 flex-shrink-0 border-b border-white/5">
-        <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-400/40 flex items-center justify-center flex-shrink-0">
           <span className="text-sm" aria-hidden>💡</span>
         </div>
         <div className="flex-1 min-w-0">
@@ -254,7 +254,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
         <button
           type="button"
           onClick={() => navigate('/advisor')}
-          className="text-xs font-semibold text-amber-400/60 hover:text-amber-400 transition-colors whitespace-nowrap"
+          className="text-xs font-semibold text-brand-400/60 hover:text-brand-400 transition-colors whitespace-nowrap"
         >
           Full chat →
         </button>
@@ -296,7 +296,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
             className={`flex-1 rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none transition-colors disabled:opacity-50 ${
               listening
                 ? 'border border-red-400 ring-1 ring-red-400/30 bg-red-950/20 text-white placeholder-red-400/60'
-                : 'border border-white/10 bg-white/5 text-white placeholder-white/25 focus:border-amber-500/40 focus:bg-white/8'
+                : 'border border-white/10 bg-white/5 text-white placeholder-white/25 focus:border-brand-500/40 focus:bg-white/8'
             }`}
             style={{ minHeight: '42px' }}
           />
@@ -322,7 +322,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
             onClick={handleSend}
             disabled={!input.trim() || sending || generatingOpen}
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white disabled:opacity-30 transition-opacity"
-            style={{ background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)' }}
+            style={{ background: 'linear-gradient(135deg,#0b6b4e 0%,#0f8763 40%,#14a67b 100%)' }}
           >
             <SendIcon />
           </button>
@@ -350,7 +350,7 @@ function Bubble({ role, content }) {
             : 'text-white/85 rounded-[18px] rounded-bl-[4px]'
         }`}
         style={isUser
-          ? { background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)' }
+          ? { background: 'linear-gradient(135deg,#0b6b4e 0%,#0f8763 40%,#14a67b 100%)' }
           : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }
         }
       >

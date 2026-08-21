@@ -166,7 +166,7 @@ function ClientCard({ client, snap, onEnter }) {
 
                 {/* Last check-in */}
                 {daysSince !== null && (
-                  <span className={`text-xs ${daysSince > 14 ? 'text-amber-600' : 'text-ink-400'}`}>
+                  <span className={`text-xs ${daysSince > 14 ? 'text-brand-600' : 'text-ink-400'}`}>
                     {daysSince === 0 ? 'Checked in today'
                       : daysSince === 1 ? 'Last check-in yesterday'
                       : `Last check-in ${daysSince}d ago`}

@@ -23,7 +23,7 @@ const PULSE_TOOLS = [
   { id: 'cfo-dashboard',    icon: '📈', name: 'CFO',         route: '/tools/cfo',          accent: '#6366f1' },
   { id: 'cash-flow',        icon: '📊', name: 'Cash Flow',   route: '/tools/cash-flow',    accent: '#0d9488' },
   { id: 'team-newsletter',  icon: '📰', name: 'Newsletter',  route: '/tools/newsletter',   accent: '#8b5cf6' },
-  { id: 'hiring-scorecard', icon: '🎯', name: 'Hiring',      route: '/tools/hiring',       accent: '#f59e0b' },
+  { id: 'hiring-scorecard', icon: '🎯', name: 'Hiring',      route: '/tools/hiring',       accent: '#1cbe8c' },
   { id: 'gbp-optimizer',    icon: '📍', name: 'Visibility',  route: '/tools/gbp',          accent: '#10b981' },
   { id: 'offer-builder',    icon: '💰', name: 'Offer',       route: '/tools/offer-builder', accent: '#f97316' },
   { id: 'safety-vault',     icon: '🦺', name: 'Safety',      route: '/tools/safety',       accent: '#ef4444' },
@@ -33,7 +33,7 @@ const PULSE_TOOLS = [
 const GRADE_COLOR = {
   A: 'text-green-700 bg-green-100',
   B: 'text-brand-700 bg-brand-100',
-  C: 'text-amber-700 bg-amber-100',
+  C: 'text-brand-700 bg-brand-100',
 }
 
 function gradeBadgeClass(grade) {

@@ -155,7 +155,7 @@ function VideoSection() {
   return (
     <section className="bg-white py-16 border-b border-gray-100">
       <div className="max-w-3xl mx-auto px-6">
-        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
+        <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
           See it in action
         </p>
         <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-3 tracking-tight">
@@ -184,7 +184,7 @@ function VideoSection() {
               <div className="text-5xl mb-3">▶︎</div>
               <p className="font-bold text-gray-700">Video demo coming soon</p>
               <p className="text-sm text-gray-500 mt-1">
-                Want to see it before then? <Link to="/signup" className="text-amber-600 hover:underline">Start a free trial</Link>.
+                Want to see it before then? <Link to="/signup" className="text-brand-600 hover:underline">Start a free trial</Link>.
               </p>
             </div>
           </div>
@@ -205,10 +205,10 @@ function VideoSection() {
 
 function CostGuideSection() {
   return (
-    <section className="bg-gradient-to-br from-amber-50 to-white py-20 border-b border-amber-100">
+    <section className="bg-gradient-to-br from-brand-50 to-white py-20 border-b border-brand-100">
       <div className="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <p className="text-amber-700 text-xs font-bold uppercase tracking-widest mb-3">
+          <p className="text-brand-700 text-xs font-bold uppercase tracking-widest mb-3">
             What nobody else has
           </p>
           <h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight mb-5">
@@ -227,15 +227,15 @@ function CostGuideSection() {
           </p>
           <ul className="space-y-2 mb-7">
             <li className="flex gap-3 text-gray-800">
-              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
               <span>Real cost data — not generic templates</span>
             </li>
             <li className="flex gap-3 text-gray-800">
-              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
               <span>Structured for AI — Solomon reads your quote and sanity-checks it</span>
             </li>
             <li className="flex gap-3 text-gray-800">
-              <span className="text-amber-600 font-black flex-shrink-0">✓</span>
+              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
               <span>Updates as the data does — your numbers don't go stale</span>
             </li>
           </ul>
@@ -248,7 +248,7 @@ function CostGuideSection() {
         </div>
 
         {/* Visual mock — no real screenshot yet, but the slot is ready */}
-        <div className="bg-white rounded-2xl border border-amber-200 shadow-xl p-6">
+        <div className="bg-white rounded-2xl border border-brand-200 shadow-xl p-6">
           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Quote — Kitchen demo</div>
           <div className="space-y-2.5">
             {[
@@ -265,11 +265,11 @@ function CostGuideSection() {
             ))}
             <div className="flex justify-between pt-2 text-sm">
               <span className="font-black text-gray-900">Total</span>
-              <span className="font-black text-amber-600 tabular-nums">$5,970</span>
+              <span className="font-black text-brand-600 tabular-nums">$5,970</span>
             </div>
           </div>
-          <div className="mt-5 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-gray-700 leading-relaxed">
-            <span className="font-bold text-amber-700">Solomon: </span>
+          <div className="mt-5 p-3 rounded-lg bg-brand-50 border border-brand-200 text-xs text-gray-700 leading-relaxed">
+            <span className="font-bold text-brand-700">Solomon: </span>
             Margin at 28% — within your target range. Disposal looks light if the cabinets
             are MDF — confirm before sending.
           </div>
@@ -292,7 +292,7 @@ function TestimonialsSection() {
   return (
     <section className="bg-gray-50 py-20 border-b border-gray-100">
       <div className="max-w-4xl mx-auto px-6">
-        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
+        <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
           Early operators
         </p>
         <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-3 tracking-tight">
@@ -350,18 +350,18 @@ function HeroSection() {
 
       <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-amber-400 text-xs font-semibold px-4 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-semibold px-4 py-1.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             {TRIAL_DAYS}-day free trial — no credit card required
           </div>
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-1.5 rounded-full">
+          <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-semibold px-4 py-1.5 rounded-full">
             🔒 Founding rate — ${PRICE_MONTHLY_USD} locked in for life
           </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
           Stop running a million-dollar operation<br />
-          <span className="text-amber-400">on gut feel and spreadsheets.</span>
+          <span className="text-brand-400">on gut feel and spreadsheets.</span>
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
@@ -381,7 +381,7 @@ function HeroSection() {
         <div className="flex items-center justify-center mb-8">
           <Link
             to="/signup"
-            className="px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+            className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
             Claim your {TRIAL_DAYS}-day free trial
           </Link>
@@ -449,7 +449,7 @@ function SolomonSection() {
 
           {/* Copy */}
           <div>
-            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
               💡 Meet Solomon
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
@@ -469,7 +469,7 @@ function SolomonSection() {
                 'Remembers every conversation — gets smarter over time',
               ].map((point, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-white/70">
-                  <span className="text-amber-400 font-bold mt-0.5 flex-shrink-0">✓</span>
+                  <span className="text-brand-400 font-bold mt-0.5 flex-shrink-0">✓</span>
                   {point}
                 </li>
               ))}
@@ -510,7 +510,7 @@ function SolomonSection() {
                     }`}
                     style={{
                       background: line.role === 'user'
-                        ? 'linear-gradient(135deg,#92400e,#d97706)'
+                        ? 'linear-gradient(135deg,#0b6b4e,#14a67b)'
                         : 'rgba(255,255,255,0.07)',
                     }}
                   >
@@ -743,7 +743,7 @@ function PriceSection() {
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${annual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             Annual
-            <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">2 months free</span>
+            <span className="text-xs font-bold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">2 months free</span>
           </button>
         </div>
 
@@ -759,7 +759,7 @@ function PriceSection() {
             </div>
           </div>
           {annual ? (
-            <p className="text-amber-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${PRICE_MONTHLY_USD * 2}</p>
+            <p className="text-brand-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${PRICE_MONTHLY_USD * 2}</p>
           ) : (
             <p className="text-white/30 mb-8">Switch to annual and save ${PRICE_MONTHLY_USD * 2}/year</p>
           )}
@@ -776,7 +776,7 @@ function PriceSection() {
               'Work board',
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-2 text-white/70">
-                <span className="text-amber-400 font-bold flex-shrink-0">✓</span>
+                <span className="text-brand-400 font-bold flex-shrink-0">✓</span>
                 {f}
               </div>
             ))}
@@ -784,7 +784,7 @@ function PriceSection() {
 
           <Link
             to="/signup"
-            className="inline-block px-10 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-black text-base transition-colors"
+            className="inline-block px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors"
           >
             Start {TRIAL_DAYS}-day free trial
           </Link>
@@ -803,7 +803,7 @@ function PriceSection() {
 
 function ClosingCTA() {
   return (
-    <section className="bg-amber-500 py-16">
+    <section className="bg-brand-500 py-16">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4">
           Your competitors are getting smarter.<br />Are you going to let them pull ahead?
@@ -837,7 +837,7 @@ function PageFooter() {
     <footer className="bg-gray-950 border-t border-white/5 py-10">
       <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
         <div className="flex items-center gap-2">
-          <span className="font-black text-white">Growth<span className="text-amber-400">OS</span></span>
+          <span className="font-black text-white">Growth<span className="text-brand-400">OS</span></span>
           <span>· The operating system for service businesses</span>
         </div>
         <div className="flex items-center gap-5">

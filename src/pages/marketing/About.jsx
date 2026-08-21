@@ -47,10 +47,10 @@ export default function About() {
       <main className="max-w-3xl mx-auto px-6 py-16">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section className="mb-16 text-center">
-          <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-4">About</p>
+          <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">About</p>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-6">
             We built it because<br/>
-            <span className="text-amber-600">we needed it first.</span>
+            <span className="text-brand-600">we needed it first.</span>
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
             GrowthOS is built by the team behind Deconstructors — a working specialty-trade
@@ -129,7 +129,7 @@ export default function About() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="px-8 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold transition-colors"
+              className="px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-bold transition-colors"
             >
               Email us
             </a>
@@ -148,7 +148,7 @@ export default function About() {
 
 function Pillar({ title, body }) {
   return (
-    <div className="border-l-2 border-amber-400 pl-5">
+    <div className="border-l-2 border-brand-400 pl-5">
       <h3 className="font-bold text-gray-900 mb-1.5">{title}</h3>
       <p className="text-gray-600 leading-relaxed text-[15px]">{body}</p>
     </div>

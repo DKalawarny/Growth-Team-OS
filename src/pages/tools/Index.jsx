@@ -77,8 +77,8 @@ function ToolCard({ tool }) {
     }
     if (tool.status === 'preview') {
       return (
-        <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-brand-800 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
           Needs ProSuite
         </span>
       )
@@ -125,10 +125,10 @@ function ToolCard({ tool }) {
     return (
       <Link
         to={tool.route}
-        className={`${baseClass} border-amber-200 bg-amber-50/40 hover:border-amber-300 hover:shadow-sm`}
+        className={`${baseClass} border-brand-200 bg-brand-50/40 hover:border-brand-300 hover:shadow-sm`}
       >
         {body}
-        <div className="mt-3 text-xs text-amber-800 font-medium">
+        <div className="mt-3 text-xs text-brand-800 font-medium">
           See preview →
         </div>
       </Link>

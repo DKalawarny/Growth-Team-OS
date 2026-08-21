@@ -208,7 +208,7 @@ export default function Comparison() {
 
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section className="text-center mb-16">
-          <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-4">Honest Comparison</p>
+          <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">Honest Comparison</p>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-5">
             GrowthOS vs {data.name}
           </h1>
@@ -222,7 +222,7 @@ export default function Comparison() {
         <section className="mb-16 overflow-hidden rounded-2xl border border-gray-200">
           <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-500">
             <div className="p-4">Dimension</div>
-            <div className="p-4 border-l border-gray-200 text-amber-600">GrowthOS</div>
+            <div className="p-4 border-l border-gray-200 text-brand-600">GrowthOS</div>
             <div className="p-4 border-l border-gray-200">{data.name}</div>
           </div>
           <Row label="What it is" growth="AI advisor + business OS for owner-operators" them={data.tagline} />
@@ -265,12 +265,12 @@ export default function Comparison() {
               Visit {data.name} →
             </a>
           </div>
-          <div className="bg-gray-950 border border-amber-500/30 rounded-2xl p-7 text-white">
-            <h3 className="font-black text-amber-400 text-lg mb-3">Pick GrowthOS if…</h3>
+          <div className="bg-gray-950 border border-brand-500/30 rounded-2xl p-7 text-white">
+            <h3 className="font-black text-brand-400 text-lg mb-3">Pick GrowthOS if…</h3>
             <p className="text-white/80 leading-relaxed">{data.pickUs}</p>
             <Link
               to="/signup"
-              className="inline-block mt-4 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-gray-950 text-sm font-bold transition-colors"
+              className="inline-block mt-4 px-5 py-2.5 rounded-lg bg-brand-500 hover:bg-brand-400 text-gray-950 text-sm font-bold transition-colors"
             >
               Start a {TRIAL_DAYS}-day free trial →
             </Link>
@@ -287,7 +287,7 @@ export default function Comparison() {
                 <Link
                   key={slug}
                   to={`/vs/${slug}`}
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-amber-400 hover:text-amber-600 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-brand-400 hover:text-brand-600 transition-colors"
                 >
                   GrowthOS vs {info.name}
                 </Link>
@@ -303,7 +303,7 @@ function Row({ label, growth, them, last }) {
   return (
     <div className={`grid grid-cols-3 text-sm ${last ? '' : 'border-b border-gray-100'}`}>
       <div className="p-4 font-medium text-gray-700">{label}</div>
-      <div className="p-4 border-l border-gray-100 text-gray-700 bg-amber-50/30">{growth}</div>
+      <div className="p-4 border-l border-gray-100 text-gray-700 bg-brand-50/30">{growth}</div>
       <div className="p-4 border-l border-gray-100 text-gray-700">{them}</div>
     </div>
   )
@@ -313,13 +313,13 @@ function ColumnCard({ tone, title, items }) {
   const tones = {
     green: 'border-green-200 bg-green-50',
     red:   'border-red-200 bg-red-50',
-    amber: 'border-amber-200 bg-amber-50',
+    amber: 'border-brand-200 bg-brand-50',
     gray:  'border-gray-200 bg-gray-50',
   }
   const dots = {
     green: 'bg-green-500',
     red:   'bg-red-400',
-    amber: 'bg-amber-500',
+    amber: 'bg-brand-500',
     gray:  'bg-gray-400',
   }
   return (

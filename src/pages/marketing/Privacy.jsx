@@ -38,7 +38,7 @@ export default function Privacy() {
       <PublicHeader />
 
       <main className="max-w-3xl mx-auto px-6 py-16">
-        <p className="text-amber-600 text-xs font-bold uppercase tracking-widest mb-4">Privacy</p>
+        <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">Privacy</p>
         <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-3">
           Privacy policy
         </h1>
@@ -50,7 +50,7 @@ export default function Privacy() {
           explains what personal and business information we collect, how we
           use it, who we share it with, and your rights. We try to write it
           in plain English. If anything is unclear, email{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
           and we'll explain.
         </p>
 
@@ -156,7 +156,7 @@ export default function Privacy() {
           <p className="mt-3">
             Most of these are self-serve in /settings. For anything you can't
             do yourself, email{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
             and we'll handle it within 30 days.
           </p>
         </Sec>
@@ -180,7 +180,7 @@ export default function Privacy() {
         <Sec title="11. Contact">
           <p>
             Privacy questions, requests, or complaints:{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-amber-600 hover:underline">{CONTACT_EMAIL}</a>.
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>.
             Canadian customers may also contact the Office of the Privacy
             Commissioner of Canada (OPC) if you believe we have not handled
             your data properly.

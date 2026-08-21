@@ -29,7 +29,7 @@ export default function KpiRow({
 // ----------------------------------------------------------------------------
 
 function TileShell({ to, children, tone = 'default' }) {
-  const accent = tone === 'warn'  ? 'bg-amber-400'
+  const accent = tone === 'warn'  ? 'bg-brand-400'
                : tone === 'muted' ? 'bg-brand-200'
                                   : 'bg-brand-500'
 
@@ -103,8 +103,8 @@ function ProgressArc({ pct, size = 56 }) {
         />
         <defs>
           <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"   stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#d97706" />
+            <stop offset="0%"   stopColor="#1cbe8c" />
+            <stop offset="100%" stopColor="#14a67b" />
           </linearGradient>
         </defs>
       </svg>
@@ -164,7 +164,7 @@ function CheckinTile({ daysSince }) {
   return (
     <TileShell to="/checkins" tone={stale ? 'warn' : 'default'}>
       <TileLabel>Last check-in</TileLabel>
-      <p className={`text-3xl font-bold tracking-tight ${stale ? 'text-amber-600' : 'text-ink-900'}`}>
+      <p className={`text-3xl font-bold tracking-tight ${stale ? 'text-brand-600' : 'text-ink-900'}`}>
         {daysSince === 0 ? 'Today' : `${daysSince}d`}
       </p>
       <div className="flex items-center gap-1 mt-2">
