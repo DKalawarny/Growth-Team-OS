@@ -1,0 +1,16 @@
+Item,Category,Unit,Cost,Charge Out,Gross Margin %,Last Updated
+Service tech - regular,Labour,hour,42.00,118.00,64.4,2026-02-01
+Service tech - overtime,Labour,hour,63.00,142.00,55.6,2026-02-01
+Lead tech - regular,Labour,hour,52.00,138.00,62.3,2026-02-01
+Installer - regular,Labour,hour,36.00,98.00,63.3,2026-02-01
+Apprentice - regular,Labour,hour,24.00,72.00,66.7,2026-02-01
+Truck charge per callout,Overhead,each,38.00,95.00,60.0,2026-02-01
+R-410A refrigerant,Material,kg,58.00,104.00,44.2,2025-11-15
+R-32 refrigerant,Material,kg,71.00,122.00,41.8,2025-11-15
+Copper line set 3/4,Material,metre,22.40,34.00,34.1,2025-11-15
+Copper line set 7/8,Material,metre,28.90,42.00,31.2,2025-11-15
+5 ton RTU - standard efficiency,Equipment,each,6420.00,8900.00,27.9,2025-11-15
+7.5 ton RTU - standard efficiency,Equipment,each,8850.00,12100.00,26.9,2025-11-15
+Heat pump - residential 3 ton,Equipment,each,3980.00,5400.00,26.3,2025-11-15
+Ductwork - rectangular fabricated,Material,metre,48.00,78.00,38.5,2025-11-15
+Crane hire - half day,Subcontract,each,1150.00,1380.00,16.7,2026-01-10
