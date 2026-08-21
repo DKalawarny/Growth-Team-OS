@@ -12,6 +12,7 @@ import {
   GOAL_TIMELINE_OPTIONS,
 } from '../../lib/businessProfileOptions'
 import CreditFacilitiesSection from '../../components/settings/CreditFacilitiesSection'
+import GivingSection from '../../components/settings/GivingSection'
 
 /**
  * BusinessSettings — the AI's context about you.
@@ -194,6 +195,8 @@ export default function BusinessSettings() {
 
       {/* Credit & liquidity — separate self-saving card */}
       <CreditFacilitiesSection companyId={profile?.company_id} />
+
+      <GivingSection companyId={profile?.company_id} />
     </div>
   )
 }

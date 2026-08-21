@@ -23,18 +23,30 @@
  *   Batch size: up to 2,048 texts per API call
  *
  * Setup:
- *   Add VITE_OPENAI_API_KEY to .env.local
+ *   Set the OPENAI_API_KEY Supabase secret and deploy the `embed`
+ *   function. Never a VITE_ var — those ship to the browser.
  *   Get a key at: https://platform.openai.com/api-keys
  *
  * Graceful degradation:
- *   If the key is missing, embed() returns null and callers skip storing
- *   vectors. The library still uploads and displays fine — RAG search just
- *   won't work until the key is added. This is the same pattern used by
+ *   If the secret is unset the function answers 503, embed() returns null,
+ *   and callers skip storing vectors. The library still uploads and displays
+ *   fine — RAG search just won't work until the secret is set. This is the same pattern used by
  *   the rest of the RAG layer (search.js, indexer.js).
  */
 
-const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY
-const MODEL      = 'text-embedding-3-small'
+// The key used to live here as import.meta.env.VITE_OPENAI_API_KEY, which
+// Vite inlines into the bundle — so it would have shipped to every visitor and
+// shown in their network tab. Same failure that retired VITE_ANTHROPIC_API_KEY
+// from this repo. It now lives as a Supabase secret behind the `embed` Edge
+// Function and never reaches a browser.
+//
+// Absence still degrades quietly: if the function is not deployed or the
+// secret is unset, embed() returns null and callers skip storing vectors,
+// exactly as before. Retrieval is off; nothing crashes.
+import { supabase } from '../supabase'
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const EMBED_URL    = `${SUPABASE_URL}/functions/v1/embed`
 
 export const EMBEDDING_DIMS = 1536
 
@@ -51,37 +63,51 @@ const BATCH_SIZE = 128
 
 
 /**
- * Embed a single string. Returns a float[] of length 1536, or null on
- * config error (missing key).
+ * Post one batch to the Edge Function. Returns embeddings in input order, or
+ * an array of nulls when embeddings are switched off server-side.
+ */
+async function callEmbedFunction(inputs) {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    console.warn('[RAG] no session — embeddings skipped')
+    return inputs.map(() => null)
+  }
+
+  const res = await fetch(EMBED_URL, {
+    method:  'POST',
+    headers: {
+      Authorization:  `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ texts: inputs }),
+  })
+
+  // 503 means the OPENAI_API_KEY secret isn't set. That is a configuration
+  // state, not an error — retrieval is simply off, same as before.
+  if (res.status === 503) {
+    console.warn('[RAG] embeddings not configured server-side — retrieval disabled')
+    return inputs.map(() => null)
+  }
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`embed function error ${res.status}: ${body.slice(0, 200)}`)
+  }
+
+  const { embeddings } = await res.json()
+  return Array.isArray(embeddings) ? embeddings : inputs.map(() => null)
+}
+
+/**
+ * Embed a single string. Returns a float[] of length 1536, or null when
+ * embeddings are unavailable.
  *
  * @param   {string}         text
  * @returns {number[]|null}
  */
 export async function embed(text) {
-  if (!OPENAI_KEY) {
-    console.warn('[RAG] VITE_OPENAI_API_KEY not set — embeddings disabled')
-    return null
-  }
-
-  const res = await fetch('https://api.openai.com/v1/embeddings', {
-    method:  'POST',
-    headers: {
-      Authorization:  `Bearer ${OPENAI_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      input: text.slice(0, MAX_CHARS_PER_INPUT),
-    }),
-  })
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`OpenAI embedding error ${res.status}: ${body.slice(0, 200)}`)
-  }
-
-  const data = await res.json()
-  return data.data[0].embedding   // number[]
+  const [vec] = await callEmbedFunction([text.slice(0, MAX_CHARS_PER_INPUT)])
+  return vec ?? null
 }
 
 
@@ -95,38 +121,12 @@ export async function embed(text) {
 export async function embedBatch(texts) {
   if (!texts.length) return []
 
-  if (!OPENAI_KEY) {
-    console.warn('[RAG] VITE_OPENAI_API_KEY not set — embeddings disabled')
-    return texts.map(() => null)
-  }
-
   const results = []
-
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts
       .slice(i, i + BATCH_SIZE)
       .map(t => t.slice(0, MAX_CHARS_PER_INPUT))
-
-    const res = await fetch('https://api.openai.com/v1/embeddings', {
-      method:  'POST',
-      headers: {
-        Authorization:  `Bearer ${OPENAI_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ model: MODEL, input: batch }),
-    })
-
-    if (!res.ok) {
-      const body = await res.text().catch(() => '')
-      throw new Error(`OpenAI batch embedding error ${res.status}: ${body.slice(0, 200)}`)
-    }
-
-    const data   = await res.json()
-    // OpenAI returns results with an `index` field. Sort to guarantee
-    // we return embeddings in input order even if the API reorders them.
-    const sorted = [...data.data].sort((a, b) => a.index - b.index)
-    results.push(...sorted.map(d => d.embedding))
+    results.push(...await callEmbedFunction(batch))
   }
-
   return results
 }
