@@ -417,6 +417,17 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
   }
 
   return {
+    // ⭐ TODAY. Solomon had milestone target_dates, work-order due_dates and a
+    // 13-week cash horizon, and no idea what day it was — so every relative
+    // statement he made about time was a guess. He told Daniel a milestone
+    // dated 17 May "isn't far off" on 21 August.
+    //
+    // The computed `status` on each milestone was already correct ('overdue'),
+    // which is the tell: the data knew, the model could not check it.
+    today: {
+      date:    todayYmd(),
+      weekday: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
+    },
     today_pulse: todaysPulse ?? null,
     business: {
       name:              bp.business_name ?? null,

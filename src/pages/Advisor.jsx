@@ -275,6 +275,7 @@ export default function Advisor() {
         safety_context:  volSafety,
         past_conversations: volPast,
         today_pulse:     volPulse,
+        today:           volToday,
         ...stableContext
       } = context ?? {}
 
@@ -283,6 +284,12 @@ export default function Advisor() {
         : `\n\nOWNER: You are speaking with ${ownerFirst}. Always use this name when addressing them.`
 
       const volatileParts = []
+      // `today` goes here, not in the stable block. It changes daily, and the
+      // cache key is the exact stable text — parking it there would throw away
+      // the cached prefix every midnight for a value that costs nothing to
+      // resend. It leads the volatile section because a date is useless if the
+      // model has stopped reading by the time it arrives.
+      if (volToday)     volatileParts.push(`TODAY: ${volToday.weekday}, ${volToday.date}`)
       if (volPast)      volatileParts.push(String(volPast))
       if (volPulse)     volatileParts.push(`TODAY_PULSE:\n${JSON.stringify(volPulse, null, 2)}`)
       if (volKnowledge) volatileParts.push(`RELEVANT_FROM_YOUR_LIBRARY:\n${JSON.stringify(volKnowledge, null, 2)}`)
