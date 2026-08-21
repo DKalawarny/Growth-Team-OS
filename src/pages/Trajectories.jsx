@@ -15,7 +15,11 @@ function planCacheKey(companyId, cur, tgt, mo) {
   return `growthos:traj-plan:${companyId}:${cur}:${tgt}:${mo}`
 }
 
-const PLAN_SYSTEM_PROMPT = `You are Solomon, a strategic business advisor. Generate a specific, practical action plan for a small business owner to grow from their current revenue to their target.
+// The plan prompt is deliberately narrower than the advisor prompt: this is a
+// one-shot JSON generator, not a conversation. But it inherits the same
+// posture — no growth advice that only works if nothing goes wrong, and no
+// implying that a bigger number is self-evidently the right goal.
+const PLAN_SYSTEM_PROMPT = `You are Solomon, advisor to a business owner. Generate a specific, practical action plan for getting from their current revenue to their target.
 
 Return ONLY valid JSON — no prose, no markdown fences:
 {
@@ -36,12 +40,25 @@ Return ONLY valid JSON — no prose, no markdown fences:
 }
 
 Rules:
-- 4–5 categories (e.g. Sales, Operations, Finance, Team, Marketing, Systems)
-- 3–4 actions per category
+- 4-5 categories (e.g. Sales, Operations, Finance, Team, Systems)
+- 3-4 actions per category
 - Be SPECIFIC to the industry, revenue gap, and timeline — not generic advice
 - Do NOT duplicate milestone-type goals — focus on systems, processes, tools, relationships
 - Keep "why" fields to one short sentence (under 15 words)
-- Priority "critical" = first 90 days, "high" = first 6 months, "medium" = ongoing`
+- Priority "critical" = first 90 days, "high" = first 6 months, "medium" = ongoing
+
+Posture:
+- Growth is a means here, not the point. Do not write anything that treats a
+  bigger number as self-evidently good, and never imply the target is deserved
+  or promised.
+- If the gap is unrealistic for the timeline, say so in the summary. An owner
+  who is told a 4x in 12 months is achievable, and then misses it, was not
+  helped. Name it plainly rather than generating a plan that pretends.
+- Prefer actions that make the business steadier — margin, collections,
+  written process, the right hire — over actions that only add top-line.
+- No action should require the owner to cut a corner he would be uncomfortable
+  explaining to the person on the other side of it.
+`
 
 function buildPlanPrompt({ industry, location, currentRev, targetRev, timelineMo, milestones, primaryGoal }) {
   const gap = targetRev - currentRev
@@ -69,8 +86,9 @@ Generate a specific action plan to bridge this revenue gap. Focus on what's NOT 
  * (steady / sprint / relaxed) so the owner can see how much timing matters
  * to the financial outcome.
  *
- * Outcome cards at the bottom translate "hitting target revenue" into
- * practical terms — estimated take-home, affordable team size, monthly profit.
+ * The cards at the bottom translate the target into practical terms — what
+ * the owner could draw, how many households it carries, giving (only if he
+ * opted in), runway — and say plainly that the number has a cost.
  *
  * Data:
  *   - business_profiles: current_revenue (text range), goal_timeline, primary_goal
@@ -204,6 +222,7 @@ export default function Trajectories() {
   const [targetRev,   setTargetRev]   = useState('')
   const [timelineMo,  setTimelineMo]  = useState(24)
   const [inputsReady, setInputsReady] = useState(false)
+  const [trackGiving, setTrackGiving] = useState(false)
 
   // Action plan
   const [plan,          setPlan]         = useState(null)   // parsed JSON
@@ -229,8 +248,18 @@ export default function Trajectories() {
         .select('current_revenue, goal_timeline, primary_goal, industry, location')
         .eq('company_id', profile.company_id)
         .maybeSingle(),
-    ]).then(([msRes, bpRes]) => {
+      // Giving is opt-in and off by default (migration 028). This page only
+      // asks so it can stay SILENT about giving for the owners who never
+      // turned it on — surfacing it uninvited is precisely the move the
+      // opt-in exists to prevent.
+      supabase
+        .from('companies')
+        .select('track_giving')
+        .eq('id', profile.company_id)
+        .maybeSingle(),
+    ]).then(([msRes, bpRes, coRes]) => {
       setMilestones(msRes.data ?? [])
+      setTrackGiving(coRes?.data?.track_giving === true)
       const bp = bpRes.data
       setBizProfile(bp)
       if (bp && !inputsReady) {
@@ -373,27 +402,39 @@ export default function Trajectories() {
       .slice(0, 8)
   }, [milestones, timelineMo])
 
-  // ── Outcome cards at target revenue ───────────────────────────────────────
+  // ── What the target would actually mean ───────────────────────────────────
+  //
+  // ⚠️ This block used to be headed "What hitting $X/yr unlocks for you" and
+  // listed take-home, profit, runway — three of four cards pointing at money
+  // arriving in the owner's pocket. That is the single most prosperity-adjacent
+  // surface in the product, and the line Daniel drew is explicit: this must
+  // never read like a wealth-preacher app.
+  //
+  // The arithmetic is not the problem — an owner genuinely needs to know what
+  // he could draw and what team he could carry. The framing was. So: the
+  // near-duplicate profit card is gone, what the money is FOR sits alongside
+  // what it pays, and the section says plainly that the number has a cost.
   const target = Number(targetRev)
   const outcomes = target > 0 ? [
     {
       icon: '💸',
-      label: 'Est. monthly take-home',
+      label: 'What you could draw',
       value: fmtRev(Math.round(target * 0.28 / 12)),
       note: '~28% owner draw after ops & tax',
     },
     {
       icon: '👥',
-      label: 'Team you can support',
-      value: `${Math.max(1, Math.floor(target * 0.40 / 65_000))} people`,
+      label: 'People this could support',
+      value: `${Math.max(1, Math.floor(target * 0.40 / 65_000))} households`,
       note: '~40% of revenue on payroll at $65k avg',
     },
-    {
-      icon: '📈',
-      label: 'Est. monthly profit',
-      value: fmtRev(Math.round(target * 0.18 / 12)),
-      note: '~18% net margin for service businesses',
-    },
+    // Only for owners who turned giving on themselves.
+    ...(trackGiving ? [{
+      icon: '🤲',
+      label: 'What you could give',
+      value: fmtRev(Math.round(target * 0.10 / 12)),
+      note: 'a tenth, monthly — your number, not ours',
+    }] : []),
     {
       icon: '🏦',
       label: 'Runway you could build',
@@ -803,7 +844,7 @@ export default function Trajectories() {
         <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
           <div className="bg-ink-900 px-5 py-3.5">
             <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-              What hitting {fmtRev(target)}/yr unlocks for you
+              What {fmtRev(target)}/yr would actually mean
             </span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-ink-50">
@@ -818,9 +859,10 @@ export default function Trajectories() {
           </div>
           <div className="px-5 py-3 bg-ink-50 border-t border-ink-100">
             <p className="text-[11px] text-ink-400 leading-relaxed">
-              These are estimates based on typical service-business margins.
-              Use the <a href="/tools/cfo" className="underline hover:text-ink-600">CFO Dashboard</a> with your
-              real numbers for precise projections.
+              Estimates from typical margins — use <a href="/tools/cfo" className="underline hover:text-ink-600">Finances</a> with
+              your real numbers for anything you intend to act on. And a number
+              this size has a cost in hours, people and risk. Worth asking
+              Solomon what that cost is before you commit to the date.
             </p>
           </div>
         </div>

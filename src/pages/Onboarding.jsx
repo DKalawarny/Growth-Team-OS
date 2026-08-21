@@ -18,7 +18,14 @@ import {
 } from '../lib/businessProfileOptions'
 
 /**
- * Onboarding wizard — 4 steps, 9 questions, ~3 minutes.
+ * Onboarding wizard — 5 steps, 10 questions, ~3 minutes.
+ *
+ * The fifth step asks the owner, in his own words, what the business is for.
+ * It is optional, it is not a dropdown of pious options, and it is stored in
+ * solomon_memory (source 'onboarding') rather than business_profiles — because
+ * it is a durable statement the advisor should read on every turn, which is
+ * exactly what that table exists for.
+ *
  * Split-screen layout: dark branded left panel + clean form right panel.
  */
 
@@ -121,20 +128,53 @@ const STEPS = [
       { name: 'goal_timeline', label: 'Timeline for those goals', type: 'select', options: GOAL_TIMELINE_OPTIONS },
     ],
   },
+  {
+    // ⭐ The one question that makes this product different from a business
+    // dashboard. Everything above it is facts a spreadsheet could hold; this
+    // is the owner's own reason, in his own words, and Solomon reads it on
+    // every turn from day one.
+    //
+    // Deliberately OPTIONAL and deliberately not a checklist of pious-sounding
+    // options. An owner who is asked to pick "glorify God" from a dropdown has
+    // been handed a gimmick, and the brand rule is that we do not do gimmicks.
+    // Blank is a perfectly good answer and costs him nothing.
+    title:       'What this is for',
+    description: 'One question, in your words. Skip it if you would rather not.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/>
+      </svg>
+    ),
+    panel: {
+      headline: 'The part a\nspreadsheet misses.',
+      sub: 'Solomon reads this before every answer he gives you.',
+      bullets: [
+        'Why you run it the way you do',
+        'Lines you have decided you will not cross',
+        'What you want to be true of this in ten years',
+      ],
+    },
+    fields: [
+      { name: 'why_statement', label: 'Why do you run this business?', type: 'textarea',
+        placeholder: 'What you want it to be for. Who it is meant to look after. Anything you have already decided you will not do to make it work.',
+        hint: 'Optional. Solomon keeps this and reads it on every answer — you can change or delete it later under Context.',
+        optional: true },
+    ],
+  },
 ]
 
 const INITIAL_FORM = {
   full_name: '', business_name: '', website: '', industry: '',
   location: '', team_size: '', hours_per_week: '',
   last_revenue: '', current_revenue: '', profit: '',
-  primary_goal: [], goal_timeline: '',
+  primary_goal: [], goal_timeline: '', why_statement: '',
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const { refresh } = useAuth()
+  const { refresh, session } = useAuth()
 
   const [stepIndex, setStepIndex]   = useState(0)
   const [form, setForm]             = useState(INITIAL_FORM)
@@ -210,6 +250,30 @@ export default function Onboarding() {
           { onConflict: 'company_id' }
         )
       if (bpError) throw new Error(`Could not save your answers: ${bpError.message}`)
+
+      // The owner's own reason goes to solomon_memory, not business_profiles —
+      // it is a durable statement the advisor reads on every turn, which is
+      // what that table is for.
+      //
+      // Fire-and-forget on purpose: a failure here must never cost the owner
+      // an onboarding he has already finished. He can add it later under
+      // /context, and the statement is capped at 400 chars to match the
+      // table's own check constraint rather than letting the insert 400.
+      const why = form.why_statement?.trim()
+      if (why) {
+        supabase
+          .from('solomon_memory')
+          .insert({
+            company_id: companyId,
+            user_id:    session?.user?.id ?? null,
+            kind:       'context',
+            statement:  why.slice(0, 400),
+            source:     'onboarding',
+          })
+          .then(({ error }) => {
+            if (error) console.warn('[onboarding] could not save why_statement:', error.message)
+          })
+      }
 
       setGenStatus(websiteContent
         ? 'Analysing your website and building your roadmap…'
@@ -534,6 +598,17 @@ function Field({ field, value, onChange }) {
           <option value="">Choose one…</option>
           {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
+      )}
+
+      {type === 'textarea' && (
+        <textarea
+          id={name}
+          rows={5}
+          value={value}
+          onChange={e => onChange(e.target.value.slice(0, 400))}
+          placeholder={placeholder}
+          className="w-full rounded-xl border border-ink-200 px-4 py-3 text-sm leading-relaxed resize-none focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400"
+        />
       )}
 
       {type === 'goals' && (
