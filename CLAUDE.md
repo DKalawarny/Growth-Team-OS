@@ -221,11 +221,21 @@ before pushing.
 
 In rough order of priority.
 
-1. 🔴 **Create the $147 / $1,470 Stripe prices.** The site says $147; Stripe
-   still charges $97. Stripe prices are immutable, so this is: create two new
-   prices, then `supabase secrets set STRIPE_PRICE_ID_OWNER=…` and
-   `STRIPE_PRICE_ID_OWNER_ANNUAL=…`. Nothing else on this list matters as much,
-   because right now the site advertises one number and bills another.
+1. ⏸️ **Stripe prices — DELIBERATELY PARKED (21 Aug 2026).** The site says
+   $147; Stripe still charges $97. This is NOT urgent while the pilot is free:
+   nothing is charged, no card is collected, and Stripe prices are immutable —
+   so creating them now just locks in a number Daniel may not want.
+
+   ⭐ He is running a pricing questionnaire with pilot users first, on the
+   suspicion that $147 is TOO CHEAP. Against what GrowthOS displaces (coach
+   $500–2,000/mo, bookkeeper $400–800, fractional CFO $500–1,500) that is a
+   reasonable suspicion.
+
+   ⚠️ Do not create the Stripe prices until that lands, and do not re-litigate
+   the number — it is his call. When it is decided: create two new prices, then
+   `supabase secrets set STRIPE_PRICE_ID_OWNER=…` and
+   `STRIPE_PRICE_ID_OWNER_ANNUAL=…`, and update `src/lib/pricing.js` (the only
+   place a price literal may live — three copies had already drifted once).
 
 2. 🔴 **Revoke two exposed keys.**
    - The OpenAI key typed on the command line during the Aug 2026 session
