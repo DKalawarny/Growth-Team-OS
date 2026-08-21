@@ -160,6 +160,15 @@ export const TOOLS = [
     hidden:      true,
   },
   {
+    id:          'decision',
+    route:       '/tools/decision',
+    name:        'Work through a decision',
+    tagline:     'Argue it more than one way, see where the arguments disagree, and hear where Solomon lands — and what he cannot see.',
+    category:    'advisor',
+    status:      'available',
+    icon:        '⚖️',
+  },
+  {
     id:          'exit-readiness',
     route:       '/tools/exit-readiness',
     name:        'Exit Readiness',

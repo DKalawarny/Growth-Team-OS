@@ -1,0 +1,206 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
+
+/**
+ * What Solomon is working from — /context
+ *
+ * Two jobs, and the second one is the reason this page exists.
+ *
+ * 1. Trust. Every answer he gives is either drawn from their business or is
+ *    general reasoning, and an owner should be able to see which without
+ *    taking his word for it.
+ * 2. Filling the gaps. Nobody feeds an advisor context they don't know he's
+ *    missing. Naming the gap — and what it costs them in the quality of his
+ *    answers — is what makes anyone bother.
+ *
+ * Deliberately NOT an upload wall. There is no version of this that greets a
+ * new owner with "connect six things before we start"; the gaps are shown so
+ * he can ask for what he needs at the moment it would have changed his answer.
+ */
+
+export default function SolomonContext() {
+  const { profile } = useAuth()
+  const [s, setS] = useState({ loading: true })
+
+  useEffect(() => {
+    if (!profile?.company_id) return
+    let cancelled = false
+    const cid = profile.company_id
+    const count = (table, build = q => q) =>
+      build(supabase.from(table).select('id', { count: 'exact', head: true }).eq('company_id', cid))
+
+    ;(async () => {
+      const [staff, files, safety, snaps, qbo, checkins, chats, docs, plays, latestSnap] = await Promise.all([
+        count('staff_members'),
+        count('knowledge_files', q => q.eq('status', 'ready')),
+        count('safety_documents', q => q.eq('is_current', true)),
+        count('financial_snapshots'),
+        supabase.from('integrations').select('status, updated_at').eq('company_id', cid).eq('provider', 'quickbooks').maybeSingle(),
+        count('checkins'),
+        count('chat_messages'),
+        count('documents'),
+        count('work_order_templates', q => q.is('archived_at', null)),
+        supabase.from('financial_snapshots').select('synced_at').eq('company_id', cid).order('synced_at', { ascending: false }).limit(1).maybeSingle(),
+      ])
+      if (cancelled) return
+      setS({
+        loading: false,
+        staff: staff.count ?? 0,
+        files: files.count ?? 0,
+        safety: safety.count ?? 0,
+        snaps: snaps.count ?? 0,
+        qbo: qbo.data?.status ?? 'disconnected',
+        checkins: checkins.count ?? 0,
+        chats: chats.count ?? 0,
+        docs: docs.count ?? 0,
+        plays: plays.count ?? 0,
+        lastSync: latestSnap.data?.synced_at ?? null,
+      })
+    })()
+    return () => { cancelled = true }
+  }, [profile?.company_id])
+
+  if (s.loading) {
+    return (
+      <div className="min-h-screen bg-ink-50">
+        <div className="mx-auto max-w-[760px] px-6 py-14 flex flex-col gap-5">
+          <div className="h-9 w-72 rounded bg-ink-100" />
+          <div className="h-28 w-full rounded-2xl bg-ink-100" />
+          <div className="h-28 w-full rounded-2xl bg-ink-100" />
+        </div>
+      </div>
+    )
+  }
+
+  const qboLive = s.qbo === 'connected' || s.qbo === 'active'
+  const connected = [
+    qboLive && {
+      title: 'QuickBooks',
+      detail: s.lastSync
+        ? `Revenue, margin and cash position — synced ${relative(s.lastSync)}`
+        : 'Revenue, margin and cash position',
+    },
+    s.files > 0 && {
+      title: `Your documents — ${s.files} ${s.files === 1 ? 'file' : 'files'}`,
+      detail: 'Searched by meaning, so he can quote the relevant part rather than the whole file',
+    },
+    s.safety > 0 && {
+      title: `Licences and compliance — ${s.safety} ${s.safety === 1 ? 'document' : 'documents'}`,
+      detail: 'Answered against the real regulation, with the source shown',
+    },
+    s.staff > 0 && {
+      title: `Your team — ${s.staff} ${s.staff === 1 ? 'person' : 'people'}`,
+      detail: 'Who does what, and who is carrying how much',
+    },
+  ].filter(Boolean)
+
+  const learned = [
+    s.checkins > 0 && { title: `${s.checkins} check-${s.checkins === 1 ? 'in' : 'ins'}`, detail: 'How the year has actually gone' },
+    s.chats   > 0 && { title: `${s.chats} messages with Solomon`, detail: "What you've already ruled out" },
+    s.plays   > 0 && { title: `${s.plays} ${s.plays === 1 ? 'job' : 'jobs'} written down`, detail: 'What the business knows how to do without you' },
+    s.docs    > 0 && { title: `${s.docs} ${s.docs === 1 ? 'thing' : 'things'} he's made`, detail: 'Kept so he can build on them instead of starting over' },
+  ].filter(Boolean)
+
+  const gaps = [
+    s.staff === 0 && {
+      key: 'crew',
+      headline: "He doesn't know your crew.",
+      body: "Names, who does what, roughly how long they've been with you. Two minutes, and it changes what he can say about hiring, about who's carrying too much, and about who could run a job without you. Until then he'll tell you plainly that he can't judge anything about your people — which is honest, but it's also half an answer.",
+      cta: { label: 'Add your team', to: '/settings/team' },
+    },
+    !qboLive && {
+      key: 'books',
+      headline: "He can't see your numbers.",
+      body: 'Without the books he can reason about your business but not about your money, so anything about cash, margin or whether you can afford something is guesswork he will refuse to do.',
+      cta: { label: 'Connect QuickBooks', to: '/settings/integrations' },
+    },
+    s.files === 0 && {
+      key: 'docs',
+      headline: 'Nothing of yours is in his hands yet.',
+      body: 'Contracts, your handbook, a job debrief, last year’s numbers — whatever is already written down. He reads what you give him and quotes the relevant part back rather than generalising.',
+      cta: { label: 'Add documents', to: '/documents' },
+    },
+  ].filter(Boolean)
+
+  return (
+    <div className="min-h-screen bg-ink-50">
+      <div className="mx-auto w-full max-w-[760px] px-6 py-14 flex flex-col gap-7">
+
+        <header className="flex flex-col gap-2.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">Solomon</p>
+          <h1 className="font-serif text-[32px] leading-[1.15] text-ink-900">What he's working from</h1>
+          <p className="text-[14.5px] leading-[1.6] text-ink-500 max-w-[600px]">
+            The more of your business he can see, the less he has to generalise.
+            Nothing here leaves your company, and none of it trains anything.
+          </p>
+        </header>
+
+        {connected.length > 0 && <Group label="Connected" rows={connected} live />}
+        {learned.length   > 0 && <Group label="Picked up from using the app" rows={learned} />}
+
+        {gaps.map(g => (
+          <section key={g.key} className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6 flex flex-col gap-3.5">
+            <div className="flex items-center gap-2.5">
+              <svg viewBox="0 0 24 24" className="w-[17px] h-[17px] text-amber-700" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" /><path d="M12 8v5" /><path d="M12 16.5v.5" />
+              </svg>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-amber-800">
+                What he still can't see
+              </p>
+            </div>
+            <p className="font-serif text-[20px] leading-[1.5] text-ink-900">{g.headline}</p>
+            <p className="text-[14.5px] leading-[1.65] text-ink-700">{g.body}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                to={g.cta.to}
+                className="px-5 py-2.5 rounded-[10px] bg-brand-600 hover:bg-brand-700 text-white text-[14px] font-semibold transition-colors"
+              >
+                {g.cta.label}
+              </Link>
+              <span className="text-[13.5px] text-ink-400">Or leave it — he'll ask again when it matters.</span>
+            </div>
+          </section>
+        ))}
+
+        <div className="flex items-start gap-2.5 pt-2">
+          <svg viewBox="0 0 24 24" className="w-[15px] h-[15px] text-ink-300 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+          <p className="text-[13px] leading-[1.6] text-ink-400">
+            Your data stays inside your company. It is never used to train a model,
+            and no one else's business is ever in your answers.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+function Group({ label, rows, live = false }) {
+  return (
+    <section className="bg-white border border-ink-100 rounded-2xl px-6 pt-5 pb-1">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300 pb-2">{label}</p>
+      {rows.map((r, i) => (
+        <div key={r.title} className={`flex items-center gap-4 py-3.5 ${i < rows.length - 1 ? 'border-b border-ink-100' : ''}`}>
+          <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+            <p className="text-[14.5px] font-semibold text-ink-900">{r.title}</p>
+            <p className="text-[13px] text-ink-400">{r.detail}</p>
+          </div>
+          {live && <span className="text-[12.5px] font-semibold text-brand-700 shrink-0">Live</span>}
+        </div>
+      ))}
+    </section>
+  )
+}
+
+function relative(iso) {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+  if (!Number.isFinite(days)) return 'recently'
+  if (days <= 0) return 'today'
+  if (days === 1) return 'yesterday'
+  if (days < 30) return `${days} days ago`
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
+}

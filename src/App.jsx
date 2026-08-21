@@ -59,6 +59,8 @@ const Analytics      = lazy(() => import('./pages/Analytics'))
 const ToolsIndex         = lazy(() => import('./pages/tools/Index'))
 const GBP                = lazy(() => import('./pages/tools/GBP'))
 const ExitReadiness      = lazy(() => import('./pages/tools/ExitReadiness'))
+const Decision           = lazy(() => import('./pages/tools/Decision'))
+const SolomonContext     = lazy(() => import('./pages/SolomonContext'))
 const Hiring             = lazy(() => import('./pages/tools/Hiring'))
 const OfferBuilder       = lazy(() => import('./pages/tools/OfferBuilder'))
 const CashFlow           = lazy(() => import('./pages/tools/CashFlow'))
@@ -231,6 +233,8 @@ export default function App() {
             <Route path="/tools"                element={<ToolsIndex />} />
             <Route path="/tools/gbp"            element={<GBP />} />
             <Route path="/tools/exit-readiness" element={<ExitReadiness />} />
+            <Route path="/tools/decision" element={<Decision />} />
+            <Route path="/context" element={<SolomonContext />} />
             <Route path="/tools/hiring"         element={<Hiring />} />
             <Route path="/tools/offer-builder"  element={<OfferBuilder />} />
             <Route path="/tools/cash-flow"      element={<CashFlow />} />

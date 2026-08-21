@@ -39,6 +39,7 @@ const GROUPS = [
   {
     title: 'The business',
     items: [
+      { label: 'Work through a decision',       seed: 'I have a decision to make and I keep going round in circles on it. Argue it more than one way for me.', to: '/tools/decision' },
       { label: 'Set this quarter’s priorities', seed: 'Help me pick the two or three things that actually matter this quarter, and be honest if I’m taking on too many.', to: '/tools/rocks' },
       { label: 'Write down a repeating job',    seed: 'I want to write down a job we do over and over so it stops living in my head. Walk me through it.',                to: '/playbooks' },
       { label: 'Check an obligation',           seed: 'I have a question about a rule or an obligation. Answer it from my documents and show me the actual source.',      to: '/tools/safety' },
@@ -105,6 +106,9 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
         </p>
         <Link to="/documents" className="text-[12.5px] font-semibold text-brand-400 hover:text-brand-300 transition-colors">
           See what’s there →
+        </Link>
+        <Link to="/context" className="text-[12.5px] font-semibold text-white/40 hover:text-white/70 transition-colors">
+          What he’s working from →
         </Link>
       </div>
     </aside>
