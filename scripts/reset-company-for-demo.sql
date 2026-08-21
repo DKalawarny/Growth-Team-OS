@@ -1,127 +1,95 @@
 -- ============================================================================
 -- Point the account at a fresh, empty demo workspace
 --
--- ⚠️ REWRITTEN AFTER IT FAILED IN THE REAL DATABASE.
+-- ⭐ FILLED IN WITH THE REAL IDS from the 2026-08-21 query. No pattern matching.
 --
--- The first version matched the company by name:
+-- What the database actually had — two companies, both named "Deconstructors":
 --
---     where company_id = (select id from companies where name ilike '%deconstruct%')
+--   2ed1c998-5e9a-4e05-9c87-66ae2bffda49   17 Apr 20:09
+--     0 profiles · 12 milestones · 0 messages · 0 documents
+--     An ORPHAN. A first onboarding attempt that generated a roadmap and was
+--     abandoned two hours later. Nothing points at it.
 --
--- and died with "21000: more than one row returned by a subquery used as an
--- expression". More than one company matches that pattern. The statement is
--- atomic so nothing was written — but a name pattern was the wrong tool for
--- picking a row that must be exactly one, and a guard in a comment is not a
--- guard. This version makes you paste real ids, so it cannot hit the wrong
--- company or several at once.
+--   c35291b5-4ddb-4e88-b68d-44da6be3e73e   17 Apr 22:11
+--     1 profile · 15 milestones · 15 messages · 6 documents
+--     THE LIVE ONE. This is where the login points and where the real data is.
 --
--- The change itself is unchanged in spirit: create a company, repoint
--- profiles.company_id at it. RLS scopes every customer table by that column,
--- so the app becomes a clean workspace immediately and setting the id back is
--- a complete undo. Nothing is deleted.
+-- That duplicate is why the first version of this script failed with
+-- "21000: more than one row returned by a subquery" — `name ilike
+-- '%deconstruct%'` matched both.
+--
+-- ⚠️ quickbooks_connected is FALSE on both. QuickBooks has never been
+-- connected, so there are no tokens to revoke and the QBO flow has never run
+-- end to end. The old step 4 is deleted rather than left in as busywork.
 -- ============================================================================
 
 
--- ── STEP 1 — see what is actually there. Deletes nothing. ───────────────────
--- Run this ALONE first and read the output. This is the step that failed to
--- happen last time.
-
-select
-  c.id,
-  c.name,
-  c.created_at,
-  c.qb_realm_id is not null                                              as quickbooks_connected,
-  (select count(*) from public.profiles       p  where p.company_id  = c.id) as profiles,
-  (select count(*) from public.milestones     m  where m.company_id  = c.id) as milestones,
-  (select count(*) from public.chat_messages  cm where cm.company_id = c.id) as messages,
-  (select count(*) from public.documents      d  where d.company_id  = c.id) as documents
-from public.companies c
-order by c.created_at;
-
--- Read it like this:
---   • The row with profiles > 0 is the one your login currently points at.
---     That is the one that matters — the others are strays.
---   • Strays with 0 profiles and 0 of everything else are empty shells, almost
---     certainly from a half-finished onboarding. Harmless. Ignore them, or
---     clean them up at the very bottom.
---   • If 'Bridgewater Mechanical' already appears, a previous attempt got
---     further than you think — use its id in step 2b instead of creating
---     another one.
-
-
--- ── STEP 2a — create the demo company, and note the id it returns ───────────
--- Skip this if Bridgewater Mechanical already exists in step 1's output.
+-- ── STEP 1 — create the demo company ────────────────────────────────────────
 
 insert into public.companies (name)
 values ('Bridgewater Mechanical')
 returning id, name;
 
+-- Copy the id it returns into step 2.
 
--- ── STEP 2b — repoint your profile ──────────────────────────────────────────
--- Paste both ids. No pattern matching, no subquery that can return two rows.
---   NEW_COMPANY_ID = the id returned by 2a (or the existing Bridgewater row)
---   YOUR_PROFILE_ID = the profile id from step 1's row where profiles > 0
---
--- If you would rather not hunt for the profile id, use the email form below
--- instead — it is exact, because emails are unique in auth.users.
+
+-- ── STEP 2 — repoint the profile ────────────────────────────────────────────
+-- Targets the live company by id, so it cannot touch the orphan or anything
+-- else. Replace NEW_COMPANY_ID with what step 1 returned.
 
 update public.profiles
 set    company_id = 'NEW_COMPANY_ID'
-where  id = 'YOUR_PROFILE_ID';
+where  company_id = 'c35291b5-4ddb-4e88-b68d-44da6be3e73e'
+returning id as profile_id, company_id;
 
--- ── or, by email (pick ONE of these two, not both) ──
--- update public.profiles
--- set    company_id = 'NEW_COMPANY_ID'
--- where  id = (select id from auth.users where email = 'dkalawarny@hotmail.com');
+-- Expect exactly ONE row back. If it returns zero, the profile is not where
+-- step 1's query said it was — stop and re-run the audit rather than guessing.
 
 
 -- ── STEP 3 — confirm ────────────────────────────────────────────────────────
--- Should show one row: your profile against Bridgewater Mechanical.
 
 select p.id as profile_id, c.id as company_id, c.name
 from   public.profiles p
 join   public.companies c on c.id = p.company_id;
 
--- Next app load sends you through onboarding, because the new company has no
--- business_profiles row. That is the intended path for setting the demo up.
-
-
--- ── STEP 4 — revoke QuickBooks tokens on the OLD company ────────────────────
--- Optional, recommended. Paste the OLD company id from step 1.
+-- Expect one row: your profile against Bridgewater Mechanical.
 --
--- ⚠️ QBO tokens live on the companies row itself, not only in
--- integration_secrets. The new company has none, so the demo workspace is
--- already clean — this closes the old door, which still holds working
--- credentials against a real business's books.
-
-update public.companies
-set    qb_access_token_encrypted  = null,
-       qb_refresh_token_encrypted = null,
-       qb_realm_id                = null,
-       qb_token_expires_at        = null,
-       qb_connected_at            = null
-where  id = 'OLD_COMPANY_ID';
-
-delete from public.integration_secrets
-where  company_id = 'OLD_COMPANY_ID';
+-- Next app load sends you through onboarding, because the new company has no
+-- business_profiles row yet. That is the intended path — it is how the demo
+-- business gets set up.
 
 
--- ── STEP 5 — storage, which SQL cannot reach ────────────────────────────────
--- Uploaded PDFs live in Supabase Storage and none of the above touches them.
--- They are invisible to the new workspace so nothing is broken by leaving
--- them, but they include real foreman procedures and an A/R aging report.
--- Dashboard → Storage → bucket → select → delete, when convenient.
+-- ── STEP 4 (optional) — bin the orphan ──────────────────────────────────────
+-- Safe: 0 profiles, 0 messages, 0 documents. Only 12 milestones from an
+-- abandoned onboarding, and the cascade takes them with it.
+
+-- delete from public.companies
+-- where  id = '2ed1c998-5e9a-4e05-9c87-66ae2bffda49';
+
+
+-- ── STEP 5 (optional, and only once you are sure) ───────────────────────────
+-- Bin the old live company too. Daniel said he does not care about keeping
+-- Deconstructors, so this is available — but there is no need to rush it.
+-- Leaving it costs nothing, it is invisible to the app, and while it exists
+-- the rollback below still works.
+--
+-- ⚠️ Run ONLY after step 3 confirms the profile has moved. Deleting a company
+-- cascades to every company-scoped row under it: 15 milestones, 15 messages,
+-- 6 documents, the check-ins, the uploaded file records.
+
+-- delete from public.companies
+-- where  id = 'c35291b5-4ddb-4e88-b68d-44da6be3e73e';
 
 
 -- ============================================================================
--- ROLLBACK — the entire undo, because nothing was destroyed:
+-- ROLLBACK — the whole undo, as long as step 5 has not been run:
 --
---   update public.profiles set company_id = 'OLD_COMPANY_ID'
---   where id = 'YOUR_PROFILE_ID';
+--   update public.profiles
+--   set    company_id = 'c35291b5-4ddb-4e88-b68d-44da6be3e73e'
+--   where  id = '<your-profile-id>';
 --
---
--- OPTIONAL — remove the empty stray companies step 1 revealed.
--- ⚠️ Only ids with 0 profiles AND 0 of everything else. Deleting a company
--- cascades to its company-scoped rows, so do not guess here.
---
---   delete from public.companies where id in ('stray-id-1', 'stray-id-2');
+-- STORAGE — SQL cannot reach it. The uploaded PDFs stay in the bucket and are
+-- invisible to the new workspace, so nothing is broken by leaving them. They
+-- do include real foreman procedures and an A/R aging report, so clear them
+-- when convenient: dashboard → Storage → bucket → select → delete.
 -- ============================================================================
