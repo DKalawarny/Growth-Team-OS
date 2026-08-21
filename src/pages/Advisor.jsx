@@ -9,6 +9,7 @@ import SpendCapBanner from '../components/tools/SpendCapBanner'
 import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../lib/prompts'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
+import SolomonLauncher from '../components/advisor/SolomonLauncher'
 
 /**
  * Advisor — the owner's daily AI coaching chat.
@@ -341,7 +342,8 @@ export default function Advisor() {
     <div className="flex flex-col h-screen" style={{ background: '#0f1117' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0 flex">
+       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-6 py-6">
           {loading ? (
             <LoadingHistory />
@@ -359,6 +361,13 @@ export default function Advisor() {
           )}
           <div ref={bottomRef} />
         </div>
+       </div>
+
+       {/* Everything Solomon can do stays visible; clicking seeds the
+           conversation rather than opening another form page. */}
+       <SolomonLauncher
+         onPick={seed => { setInput(seed); inputRef.current?.focus() }}
+       />
       </div>
 
       <Composer

@@ -2,41 +2,30 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { detectStage } from '../lib/stageEngine'
-import {
-  computeWeightedProgress,
-  classifyAll,
-  todayYmd,
-} from '../lib/milestoneProgress'
-import { getLibraryAnalysis, ANALYSIS_TOOL_ID } from '../lib/libraryAnalysis'
-
-import NextFocusCard      from '../components/dashboard/NextFocusCard'
-import RecentActivity     from '../components/dashboard/RecentActivity'
-import DashboardCalendar  from '../components/dashboard/DashboardCalendar'
-import RoadmapStrip       from '../components/dashboard/RoadmapStrip'
-import ExecutiveBriefCard from '../components/dashboard/ExecutiveBriefCard'
-import AdvisorTeaser      from '../components/dashboard/DailyPulse'
-import TrajectorySection  from '../components/dashboard/TrajectorySection'
-import QuickActions       from '../components/dashboard/QuickActions'
-import Hero               from '../components/dashboard/Hero'
-import KpiRow             from '../components/dashboard/KpiRow'
-import ToolPulseStrip     from '../components/dashboard/ToolPulseStrip'
-import OverdueMilestonesAlert from '../components/dashboard/OverdueMilestonesAlert'
+import { classifyAll, todayYmd } from '../lib/milestoneProgress'
 
 /**
- * Dashboard — Option A redesign.
+ * Home.
  *
- * Layout:
- *   1. Slim dark header bar   — greeting, company, stage, inline stats
- *   2. Chat panel (full-width) — the daily advisor chat, prominent
- *   3. KPI strip               — plan %, focus count, check-in, P&L
- *   4. Content grid            — Next Focus + Quick Actions / Recent Activity
- *   5. Roadmap strip
+ * This page used to stack twelve blocks — hero, KPI strip, tool pulse, quick
+ * actions, executive brief, next focus, calendar, recent activity, trajectory,
+ * roadmap strip, overdue alert. Everything competed for attention equally, so
+ * opening the app felt like reading an incident report. For an owner already
+ * carrying the business that is the opposite of useful.
+ *
+ * It now says ONE thing — whichever has a date on it — and lets the rest wait
+ * behind a quiet row of chips. The counts at the bottom are counted, not
+ * scored: no targets, no progress bars, no red. A number that judges you every
+ * morning is guilt-driven engagement wearing a calm palette.
+ *
+ * None of the old components were deleted; this page simply stopped rendering
+ * them. They live on in src/components/dashboard/ and on the surfaces that own
+ * them.
  */
 
 function greeting() {
   const h = new Date().getHours()
-  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+  return h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening'
 }
 
 function daysBetween(iso, now) {
@@ -45,230 +34,217 @@ function daysBetween(iso, now) {
   return Math.max(0, Math.floor((now.getTime() - past) / (1000 * 60 * 60 * 24)))
 }
 
+function longDate(d = new Date()) {
+  return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
+/**
+ * Pick the single thing worth leading with, and everything else that's live.
+ *
+ * Deliberately derived from real rows rather than generated prose — Solomon
+ * writes the briefing on his own page, and inventing a summary here would be
+ * putting words in his mouth that aren't grounded in anything.
+ */
+function pickFocus({ milestones, statusById, daysSinceLastCheckin }) {
+  const open = milestones.filter(m => !m.completed)
+  const byStatus = s => open.filter(m => statusById.get(m.id) === s)
+
+  const overdue    = byStatus('overdue')
+  const inProgress = byStatus('in-progress')
+  const ready      = byStatus('ready')
+
+  const candidates = [...overdue, ...inProgress, ...ready]
+  const lead = candidates[0] ?? null
+
+  let headline, detail
+  if (overdue.length) {
+    headline = `“${overdue[0].title}” has passed its date.`
+    detail = overdue.length > 1
+      ? `It's the oldest of ${overdue.length} that have slipped. Worth either moving the date honestly or deciding it isn't happening.`
+      : `Worth either moving the date honestly or deciding it isn't happening. Carrying it costs more than closing it.`
+  } else if (inProgress.length) {
+    headline = `“${inProgress[0].title}” is the one in flight.`
+    detail = inProgress[0].end_date
+      ? `Due ${new Date(inProgress[0].end_date).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}. Nothing else needs you first.`
+      : `Nothing else needs you first.`
+  } else if (ready.length) {
+    headline = `“${ready[0].title}” is ready to start.`
+    detail = `Nothing is blocking it, and nothing else is in flight.`
+  } else if (daysSinceLastCheckin === null) {
+    headline = `Nothing is on the plan yet.`
+    detail = `Half an hour with Solomon is usually enough to get the first few things down.`
+  } else {
+    headline = `Nothing has a date on it this week.`
+    detail = `That's worth noticing rather than filling. If it's genuinely quiet, take the quiet.`
+  }
+
+  return { headline, detail, lead, others: candidates.slice(1, 3) }
+}
+
 export default function Dashboard() {
-  const { profile, company } = useAuth()
+  const { profile } = useAuth()
   const [state, setState] = useState({ loading: true })
 
   useEffect(() => {
     if (!profile?.company_id) return
     let cancelled = false
+    const cid = profile.company_id
 
     ;(async () => {
-      const [bpRes, msRes, ciRes, docsRes, pnlRes, intRes, analysis] = await Promise.all([
-        supabase.from('business_profiles').select('*').eq('company_id', profile.company_id).maybeSingle(),
-        supabase.from('milestones').select('*').eq('company_id', profile.company_id).order('sort_order', { ascending: true }),
-        supabase.from('checkins').select('id, win, revenue_update, created_at').eq('company_id', profile.company_id).order('created_at', { ascending: false }).limit(5),
-        supabase.from('documents').select('id, tool_id, title, created_at, output_data, input_data').eq('company_id', profile.company_id).neq('tool_id', ANALYSIS_TOOL_ID).order('created_at', { ascending: false }).limit(30),
-        supabase.from('financial_snapshots').select('period_label, synced_at, period_end').eq('company_id', profile.company_id).eq('report_type', 'profit_and_loss').order('period_end', { ascending: false, nullsFirst: false }).limit(1).maybeSingle(),
-        supabase.from('integrations').select('status').eq('company_id', profile.company_id).eq('provider', 'quickbooks').maybeSingle(),
-        getLibraryAnalysis(profile.company_id).catch(() => null),
+      const [msRes, ciRes, ciCount, docCount, playCount, staffCount] = await Promise.all([
+        supabase.from('milestones').select('*').eq('company_id', cid).order('sort_order', { ascending: true }),
+        supabase.from('checkins').select('id, created_at').eq('company_id', cid).order('created_at', { ascending: false }).limit(1),
+        supabase.from('checkins').select('id', { count: 'exact', head: true }).eq('company_id', cid),
+        supabase.from('documents').select('id', { count: 'exact', head: true }).eq('company_id', cid),
+        supabase.from('work_order_templates').select('id', { count: 'exact', head: true }).eq('company_id', cid).is('archived_at', null),
+        supabase.from('staff_members').select('id', { count: 'exact', head: true }).eq('company_id', cid),
       ])
       if (cancelled) return
       setState({
-        loading:         false,
-        businessProfile: bpRes.data   ?? null,
-        milestones:      msRes.data   ?? [],
-        checkins:        ciRes.data   ?? [],
-        documents:       docsRes.data ?? [],
-        latestPnl:       pnlRes.data  ?? null,
-        qboStatus:       intRes.data?.status ?? 'disconnected',
-        analysis:        analysis     ?? null,
+        loading:      false,
+        milestones:   msRes.data ?? [],
+        lastCheckin:  ciRes.data?.[0] ?? null,
+        counts: {
+          checkins:  ciCount.count    ?? 0,
+          documents: docCount.count   ?? 0,
+          playbooks: playCount.count  ?? 0,
+          staff:     staffCount.count ?? 0,
+        },
       })
     })()
 
     return () => { cancelled = true }
   }, [profile?.company_id])
 
-  const { weightedPct, sharePctById } = useMemo(
-    () => computeWeightedProgress(state.milestones ?? []),
-    [state.milestones],
-  )
   const statusById = useMemo(
     () => classifyAll(state.milestones ?? [], todayYmd()),
     [state.milestones],
   )
-  // Build toolDocs: latest doc per tool_id — fed into ToolPulseStrip.
-  // Must be declared BEFORE the early return below so hook order stays
-  // stable between the loading and loaded renders (Rules of Hooks).
-  const toolDocs = useMemo(() => {
-    const map = {}
-    for (const doc of state.documents ?? []) {
-      if (!map[doc.tool_id]) map[doc.tool_id] = doc
-    }
-    return map
-  }, [state.documents])
 
   if (state.loading) return <LoadingSkeleton />
 
-  const { businessProfile, milestones, checkins, documents, latestPnl, qboStatus, analysis } = state
-  const stage = detectStage(businessProfile?.current_revenue)
+  const { milestones, lastCheckin, counts } = state
+  const firstName = profile?.name?.split(' ')[0] ?? null
+  const daysSinceLastCheckin = lastCheckin ? daysBetween(lastCheckin.created_at, new Date()) : null
+  const done = milestones.filter(m => m.completed).length
 
-  const firstName          = profile?.name?.split(' ')[0] ?? null
-  const milestonesComplete = milestones.filter(m => m.completed).length
-  const daysBuilding       = company?.created_at ? Math.max(1, daysBetween(company.created_at, new Date())) : 0
-
-  const activeFocusCount = milestones.filter(m => {
-    const s = statusById.get(m.id)
-    return s === 'in-progress' || s === 'ready'
-  }).length
-
-  const daysSinceLastCheckin = checkins.length > 0
-    ? daysBetween(checkins[0].created_at, new Date())
-    : null
-
-  const nextMilestone =
-    milestones.find(m => statusById.get(m.id) === 'in-progress') ??
-    milestones.find(m => statusById.get(m.id) === 'ready')       ??
-    milestones.find(m => !m.completed)                           ??
-    null
+  const { headline, detail, others } = pickFocus({ milestones, statusById, daysSinceLastCheckin })
 
   return (
     <div className="min-h-screen bg-ink-50">
+      <div className="mx-auto w-full max-w-[680px] px-6 pt-16 pb-12 flex flex-col gap-11">
 
-      {/* ── 1. Dark hero header ─────────────────────────────────────────────── */}
-      <div className="bg-ink-900 border-b border-ink-800">
-        <div className="max-w-6xl mx-auto px-8 py-8">
-          <Hero
-            firstName={firstName}
-            companyName={company?.name}
-            stage={stage}
-            businessProfile={businessProfile}
-            daysBuilding={daysBuilding}
-            milestonesComplete={milestonesComplete}
-            totalMilestones={milestones.length}
-            weightedPct={weightedPct}
-          />
-        </div>
-      </div>
+        <header className="animate-fade-in flex flex-col gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
+            {longDate()}
+          </p>
+          <h1 className="font-serif text-4xl leading-[1.1] text-ink-900">
+            {greeting()}{firstName ? `, ${firstName}` : ''}.
+          </h1>
+        </header>
 
-      {/* ── Content ─────────────────────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-8 py-6 space-y-6">
+        {/* ── The one thing ───────────────────────────────────────────────── */}
+        <section className="animate-fade-in flex flex-col gap-5">
+          <h2 className="font-serif text-[27px] leading-[1.45] text-ink-900">
+            {headline}
+          </h2>
+          <p className="text-[15.5px] leading-[1.7] text-ink-700">{detail}</p>
 
-        {/* 1. Getting Started — shown only until the first milestone exists */}
-        {milestones.length === 0 && (
-          <div className="bg-ink-900 border border-brand-500/20 rounded-xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-brand-400">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white mb-0.5">Welcome — here's where to start</p>
-                <p className="text-xs text-ink-400 mb-4">GrowthOS works best once it knows your business. Three quick steps get you up and running.</p>
-                <div className="space-y-2">
-                  {[
-                    { step: '1', label: 'Set up your business profile', sub: 'Revenue, goals, and timeline — shapes everything Solomon tells you', to: '/settings' },
-                    { step: '2', label: 'Build your first roadmap', sub: 'Add the 3–5 milestones that matter most this year', to: '/roadmap' },
-                    { step: '3', label: 'Run your first check-in', sub: 'Weekly wins and revenue updates — keeps your plan sharp', to: '/advisor' },
-                  ].map(({ step, label, sub, to }) => (
-                    <Link key={step} to={to} className="flex items-center gap-3 p-3 rounded-lg bg-white/4 hover:bg-white/7 transition-colors group">
-                      <span className="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 text-xs font-bold flex items-center justify-center flex-shrink-0">{step}</span>
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-white group-hover:text-brand-300 transition-colors">{label}</p>
-                        <p className="text-[11px] text-ink-500 leading-snug">{sub}</p>
-                      </div>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-ink-600 group-hover:text-brand-400 flex-shrink-0 ml-auto transition-colors">
-                        <polyline points="9 18 15 12 9 6"/>
-                      </svg>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-3 pt-0.5">
+            <Link
+              to="/advisor"
+              className="px-6 py-3 rounded-[10px] bg-brand-600 hover:bg-brand-700 text-white text-[14.5px] font-semibold transition-colors"
+            >
+              Talk it through
+            </Link>
+            <Link
+              to="/roadmap"
+              className="px-6 py-3 rounded-[10px] border border-ink-200 hover:border-ink-300 text-ink-900 text-[14.5px] font-semibold transition-colors"
+            >
+              Open the roadmap
+            </Link>
           </div>
+        </section>
+
+        {/* ── Everything else, quietly ────────────────────────────────────── */}
+        {others.length > 0 && (
+          <>
+            <hr className="border-0 border-t border-ink-100" />
+            <section className="flex flex-col gap-4">
+              <p className="text-[14.5px] text-ink-500">
+                {others.length === 1 ? 'One other thing' : `${others.length} other things`}, whenever you want {others.length === 1 ? 'it' : 'them'}
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {others.map(m => (
+                  <Link
+                    key={m.id}
+                    to="/roadmap"
+                    className="px-4 py-2.5 rounded-full bg-white border border-ink-100 hover:border-ink-200 text-[13.5px] text-ink-600 transition-colors"
+                  >
+                    {m.title}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </>
         )}
 
-        {/* Overdue milestones alert — only renders if anything is past due */}
-        <OverdueMilestonesAlert milestones={milestones} statusById={statusById} />
-
-        {/* 2. Chat — full width, leads the page */}
-        <AdvisorTeaser
-          userId={profile?.id}
-          companyId={profile?.company_id}
-          firstName={firstName}
-        />
-
-        {/* 3. KPI strip — plan %, focus count, check-in, P&L */}
-        <KpiRow
-          planProgressPct={weightedPct}
-          activeFocusCount={activeFocusCount}
-          daysSinceLastCheckin={daysSinceLastCheckin}
-          latestPnl={latestPnl}
-          qboStatus={qboStatus}
-        />
-
-        {/* 4. Tool pulse — last-run summary for each key tool */}
-        <ToolPulseStrip toolDocs={toolDocs} />
-
-        {/* 5. Quick links — 4 user-configurable shortcut tiles */}
-        <QuickActions />
-
-        {/* Executive brief (library analysis) */}
-        {analysis && <ExecutiveBriefCard analysis={analysis} />}
-
-        {/* 4. Next focus — full width */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="md:col-span-2">
-            <NextFocusCard
-              milestone={nextMilestone}
-              sharePct={nextMilestone ? sharePctById.get(nextMilestone.id) : null}
-              totalMilestones={milestones.length}
-            />
+        {/* ── Counted, not scored ─────────────────────────────────────────── */}
+        <hr className="border-0 border-t border-ink-100" />
+        <section className="flex flex-col gap-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
+            So far
+          </p>
+          <div className="flex flex-wrap gap-x-10 gap-y-5">
+            <Count n={done}              label={done === 1 ? 'step finished' : 'steps finished'} />
+            <Count n={counts.checkins}   label={counts.checkins === 1 ? 'check-in logged' : 'check-ins logged'} />
+            <Count n={counts.playbooks}  label={counts.playbooks === 1 ? 'job written down' : 'jobs written down'} />
+            <Count n={counts.staff}      label={counts.staff === 1 ? 'person on the team' : 'people on the team'} />
+            <Count n={counts.documents}  label={counts.documents === 1 ? 'thing Solomon made' : 'things Solomon made'} />
           </div>
-          <div className="space-y-5">
-            <DashboardCalendar />
-            <RecentActivity documents={documents} checkins={checkins} />
-          </div>
+          <p className="text-[13.5px] leading-[1.6] text-ink-300 max-w-[520px]">
+            Counted, not scored. The trends live in the roadmap when you want to look at them.
+          </p>
+        </section>
+
+        {/* ── A door, not a nag ───────────────────────────────────────────── */}
+        <div className="mt-4 pt-6 border-t border-ink-100 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[14px] text-ink-500">
+            {daysSinceLastCheckin === null
+              ? 'Solomon reads your plan and your numbers before he says anything.'
+              : "Sit down with Solomon when you're ready. He'll keep."}
+          </p>
+          <Link to="/checkins" className="text-[14px] font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+            {daysSinceLastCheckin === null ? 'Log your first check-in →' : "Start this week's check-in →"}
+          </Link>
         </div>
 
-        {/* 5 & 6. Trajectory + Roadmap — side by side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-          <TrajectorySection milestones={milestones} />
-          <RoadmapStrip
-            milestones={milestones}
-            statusById={statusById}
-            weightedPct={weightedPct}
-          />
-        </div>
-
-        <div className="h-6" />
       </div>
     </div>
   )
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-// ── Loading skeleton ──────────────────────────────────────────────────────────
+function Count({ n, label }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="font-serif text-[27px] leading-none text-ink-900 tabular-nums">{n}</span>
+      <span className="text-[13px] text-ink-300">{label}</span>
+    </div>
+  )
+}
 
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-ink-50">
-      {/* Slim header skeleton */}
-      <div className="bg-ink-900 border-b border-ink-800 px-8 py-5">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="space-y-2">
-            <div className="h-3 w-24 bg-ink-800 rounded animate-pulse" />
-            <div className="h-6 w-48 bg-ink-800 rounded animate-pulse" />
-          </div>
-          <div className="flex gap-6">
-            {[1,2,3].map(i => <div key={i} className="h-8 w-14 bg-ink-800 rounded animate-pulse" />)}
-          </div>
+      <div className="mx-auto w-full max-w-[680px] px-6 pt-16 flex flex-col gap-11">
+        <div className="flex flex-col gap-3">
+          <div className="h-3 w-32 rounded bg-ink-100" />
+          <div className="h-10 w-64 rounded bg-ink-100" />
         </div>
-      </div>
-      {/* Content skeleton */}
-      <div className="max-w-6xl mx-auto px-8 py-6 space-y-5">
-        <div className="h-80 bg-white rounded-2xl animate-pulse shadow-sm" />
-        <div className="grid grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white rounded-xl animate-pulse shadow-sm" />)}
-        </div>
-        <div className="grid grid-cols-3 gap-5">
-          <div className="col-span-2 h-72 bg-white rounded-xl animate-pulse shadow-sm" />
-          <div className="space-y-4">
-            <div className="h-32 bg-white rounded-xl animate-pulse shadow-sm" />
-            <div className="h-32 bg-white rounded-xl animate-pulse shadow-sm" />
-          </div>
+        <div className="flex flex-col gap-4">
+          <div className="h-7 w-full rounded bg-ink-100" />
+          <div className="h-7 w-4/5 rounded bg-ink-100" />
+          <div className="h-4 w-full rounded bg-ink-100" />
         </div>
       </div>
     </div>
