@@ -19,6 +19,7 @@ const About         = lazy(() => import('./pages/marketing/About'))
 const Security      = lazy(() => import('./pages/marketing/Security'))
 const Privacy       = lazy(() => import('./pages/marketing/Privacy'))
 const Terms         = lazy(() => import('./pages/marketing/Terms'))
+const Demo          = lazy(() => import('./pages/marketing/Demo'))
 const Comparison    = lazy(() => import('./pages/marketing/Comparison'))
 const TradePage     = lazy(() => import('./pages/marketing/TradePage'))
 const FreeGbpAudit  = lazy(() => import('./pages/marketing/FreeGbpAudit'))
@@ -173,6 +174,7 @@ export default function App() {
         <Route path="/security" element={<LazyRoute><Security /></LazyRoute>} />
         <Route path="/privacy"  element={<LazyRoute><Privacy /></LazyRoute>} />
         <Route path="/terms"    element={<LazyRoute><Terms /></LazyRoute>} />
+        <Route path="/demo"     element={<LazyRoute><Demo /></LazyRoute>} />
 
         {/* Comparison pages — same component, slug-driven */}
         <Route path="/vs/:competitor" element={<LazyRoute><Comparison /></LazyRoute>} />

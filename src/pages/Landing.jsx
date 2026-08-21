@@ -649,6 +649,7 @@ function PageFooter() {
           <span>· The operating system for service businesses</span>
         </div>
         <div className="flex items-center gap-5">
+          <Link to="/demo" className="hover:text-white/60 transition-colors">See it work</Link>
           <Link to="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
           <Link to="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
           <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>

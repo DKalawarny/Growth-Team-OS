@@ -163,6 +163,7 @@ const TRADE_SLUGS      = ['plumbers', 'electricians', 'hvac', 'roofing', 'demoli
 export const PUBLIC_PAGES = [
   { path: '/',                priority: '1.0', changefreq: 'weekly'  },
   { path: '/pricing',         priority: '0.9', changefreq: 'monthly' },
+  { path: '/demo',            priority: '0.9', changefreq: 'monthly' },
   { path: '/crm',             priority: '0.8', changefreq: 'monthly' },
   { path: '/about',           priority: '0.7', changefreq: 'monthly' },
   { path: '/security',        priority: '0.5', changefreq: 'yearly'  },

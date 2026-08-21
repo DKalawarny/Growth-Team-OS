@@ -52,6 +52,7 @@ const ROUTES = [
   // repositioned. The catch below now prints both.
   { path: '/',                titleContains: 'advisor for Christian business owners' },
   { path: '/pricing',         titleContains: 'Pricing — GrowthOS' },
+  { path: '/demo',            titleContains: 'See it work' },
   { path: '/crm',             titleContains: 'CRM for contractors' },
   { path: '/about',           titleContains: 'About GrowthOS' },
   { path: '/security',        titleContains: 'Security & data handling' },
