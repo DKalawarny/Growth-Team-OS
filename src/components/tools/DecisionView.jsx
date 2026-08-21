@@ -7,6 +7,8 @@
  * is allowed to look like a conclusion.
  */
 
+import ToolDisclaimer from './ToolDisclaimer'
+
 const LEAN = {
   for:     { label: 'Argues for',     bar: 'bg-brand-600',  text: 'text-brand-800' },
   against: { label: 'Argues against', bar: 'bg-red-500',    text: 'text-red-700'   },
@@ -130,6 +132,8 @@ export default function DecisionView({ result }) {
           ))}
         </section>
       )}
+
+      <ToolDisclaimer toolId="decision" />
 
     </div>
   )

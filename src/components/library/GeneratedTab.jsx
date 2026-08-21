@@ -13,6 +13,7 @@ import CFODashboardView from '../tools/CFODashboardView'
 import RocksPlan from '../tools/RocksPlan'
 import GBPAudit from '../tools/GBPAudit'
 import NewsletterView from '../tools/NewsletterView'
+import DecisionView    from '../tools/DecisionView'
 import ContextUsedLine from '../tools/ContextUsedLine'
 
 /**
@@ -239,11 +240,25 @@ function renderToolBody(doc) {
   if (doc.tool_id === 'rocks-tracker')    return <RocksPlan data={doc.output_data} />
   if (doc.tool_id === 'gbp-optimizer')    return <GBPAudit data={doc.output_data} />
   if (doc.tool_id === 'team-newsletter')  return <NewsletterView data={doc.output_data} />
+  // ⚠️ DecisionView's prop is `result`, not `data` like its neighbours. Copying
+  // the line above and swapping the component renders a blank panel with no
+  // error — the destructure just yields undefined for everything.
+  if (doc.tool_id === 'decision')         return <DecisionView result={doc.output_data} />
   if (doc.tool_id === 'solomon')          return <SolomonSave data={doc.output_data} />
+  // Fallback. Reaching this means a tool saves documents with a tool_id that
+  // has no renderer registered above — which is how 'decision' shipped showing
+  // the owner raw JSON. The notice makes that a visible bug rather than
+  // something that looks vaguely intentional.
   return (
-    <pre className="text-xs text-ink-700 bg-ink-50 border border-ink-100 rounded p-3 overflow-x-auto">
-      {JSON.stringify(doc.output_data, null, 2)}
-    </pre>
+    <div className="flex flex-col gap-2">
+      <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+        No formatted view is registered for <code className="font-mono">{doc.tool_id}</code> yet,
+        so this is the raw output. Add it to renderToolBody in GeneratedTab.jsx.
+      </p>
+      <pre className="text-xs text-ink-700 bg-ink-50 border border-ink-100 rounded p-3 overflow-x-auto">
+        {JSON.stringify(doc.output_data, null, 2)}
+      </pre>
+    </div>
   )
 }
 

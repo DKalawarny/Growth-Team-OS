@@ -45,6 +45,12 @@ export const TOOL_DISCLAIMERS = {
   'rocks-tracker':
     'Suggested 90-day rocks based on your roadmap. Edit them so they match what your team actually committed to — they only work when the team owns them.',
 
+  'decision':
+    'Solomon argued this more than one way and told you where he lands — that is a structured opinion, not a verdict. He also names what he cannot see; read that part before you act on the recommendation.',
+
+  'solomon':
+    'Saved from a conversation with Solomon. It reflects what he could see at the time — if your numbers or your situation have moved since, so has the answer.',
+
   'team-newsletter':
     'A drafted newsletter from your context. Read it, edit the voice to match yours, then send.',
 
