@@ -17,44 +17,41 @@
  *      a state-of-the-art retrieval model rarely shows up in real Q&A
  *      against a single tenant's document library.
  *
- *   Model:      text-embedding-3-small
- *   Dimensions: 1536 (matches our pgvector column types)
- *   Max input:  8,191 tokens per text (~32k chars)
- *   Batch size: up to 2,048 texts per API call
+ *   Model:      Supabase gte-small, run inside the `embed` Edge Function
+ *   Dimensions: 384 (matches the pgvector columns after migration 029)
+ *   Max input:  ~512 tokens per text; the chunker stays well under
+ *   Batch size: 128 texts per call
  *
  * Setup:
- *   Set the OPENAI_API_KEY Supabase secret and deploy the `embed`
- *   function. Never a VITE_ var — those ship to the browser.
- *   Get a key at: https://platform.openai.com/api-keys
+ *   supabase functions deploy embed
+ *   No API key. No vendor. Inference runs in the Edge Runtime itself.
+ *
+ * History worth keeping:
+ *   This read import.meta.env.VITE_OPENAI_API_KEY and called api.openai.com
+ *   from the browser. Vite inlines VITE_ vars, so that key would have shipped
+ *   to every visitor — the same failure that retired VITE_ANTHROPIC_API_KEY.
+ *   It was never set, which is why embed() returned null and the whole RAG
+ *   layer sat dead from April until this was fixed. Never reintroduce a
+ *   VITE_-prefixed credential.
  *
  * Graceful degradation:
- *   If the secret is unset the function answers 503, embed() returns null,
- *   and callers skip storing vectors. The library still uploads and displays
- *   fine — RAG search just won't work until the secret is set. This is the same pattern used by
- *   the rest of the RAG layer (search.js, indexer.js).
+ *   If the function isn't deployed the client gets a 404, embed() returns
+ *   null, and callers skip storing vectors. Uploads and the library still
+ *   work; only search is off. Same pattern as search.js and indexer.js.
  */
 
-// The key used to live here as import.meta.env.VITE_OPENAI_API_KEY, which
-// Vite inlines into the bundle — so it would have shipped to every visitor and
-// shown in their network tab. Same failure that retired VITE_ANTHROPIC_API_KEY
-// from this repo. It now lives as a Supabase secret behind the `embed` Edge
-// Function and never reaches a browser.
-//
-// Absence still degrades quietly: if the function is not deployed or the
-// secret is unset, embed() returns null and callers skip storing vectors,
-// exactly as before. Retrieval is off; nothing crashes.
 import { supabase } from '../supabase'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const EMBED_URL    = `${SUPABASE_URL}/functions/v1/embed`
 
-export const EMBEDDING_DIMS = 1536
+export const EMBEDDING_DIMS = 384
 
 // Conservative per-input cap. text-embedding-3-small accepts up to 8,191
 // tokens (~32k chars); we slice well below that so a single oversized
 // chunk can't fail the whole batch. The chunker tries to keep chunks ~375
 // tokens, so this is just a safety belt.
-const MAX_CHARS_PER_INPUT = 30_000
+const MAX_CHARS_PER_INPUT = 8_000
 
 // Batch size — OpenAI accepts up to 2,048 inputs per call. We use 128 to
 // match Voyage's batching behaviour and to keep request bodies under
@@ -82,10 +79,10 @@ async function callEmbedFunction(inputs) {
     body: JSON.stringify({ texts: inputs }),
   })
 
-  // 503 means the OPENAI_API_KEY secret isn't set. That is a configuration
-  // state, not an error — retrieval is simply off, same as before.
-  if (res.status === 503) {
-    console.warn('[RAG] embeddings not configured server-side — retrieval disabled')
+  // 404 means the function isn't deployed yet. A configuration state, not an
+  // error — retrieval is simply off until `supabase functions deploy embed`.
+  if (res.status === 404) {
+    console.warn('[RAG] embed function not deployed — retrieval disabled')
     return inputs.map(() => null)
   }
 
