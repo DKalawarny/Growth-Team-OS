@@ -38,6 +38,10 @@ const DEMO_META = buildPageMeta({
 // Invented. Deliberately NOT Deconstructors — that is a real company Daniel is
 // exiting, and using it here would imply a customer relationship and a
 // endorsement that do not exist.
+// ⚠️ The article before CO.trade is hardcoded as "a" in the copy below. It read
+// "an commercial HVAC…" on the live page until this was caught. If you change
+// `trade` to something vowel-initial, fix the article too — this is prose, not
+// a template engine, and it will not do it for you.
 const CO = {
   name:     'Bridgewater Mechanical',
   trade:    'commercial HVAC and refrigeration',
@@ -153,7 +157,7 @@ export default function Demo() {
         {/* ── The setup ───────────────────────────────────────────────────── */}
         <Step n="1" title="What Solomon already knows">
           <p className="text-gray-700 leading-relaxed mb-5">
-            {CO.name} is an {CO.trade} contractor in {CO.where} — {CO.people} people,
+            {CO.name} is a {CO.trade} contractor in {CO.where} — {CO.people} people,
             about {CO.revenue} a year at {CO.margin} net. The owner connected
             QuickBooks and answered the setup questions once. Nothing here was
             re-typed for this conversation.
