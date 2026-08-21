@@ -163,34 +163,71 @@ where t.name = 'Service callout'
 
 
 -- ── Check-ins ───────────────────────────────────────────────────────────────
+-- ⚠️ These two blocks used `from public.profiles p, (values ...) as c(cols)` —
+-- a VALUES list as a table source with a column alias. It failed in the
+-- Supabase SQL editor with "42601: syntax error at or near )". The other
+-- blocks use the same shape and parsed, so the objection is specific rather
+-- than general, and without a local Postgres I could not pin down which
+-- element it choked on.
+--
+-- So they are rewritten as plain INSERT ... VALUES with scalar subqueries,
+-- which has no ambiguity to argue about. Slower to read, guaranteed to parse.
+-- Chasing the exact cause of a parser complaint is not worth a second failed
+-- paste for someone who just wants the demo populated.
+
 with co as (select company_id as id from public.profiles limit 1)
 delete from public.checkins where company_id = (select id from co);
 
-insert into public.checkins (company_id, user_id, revenue_update, win, challenge, mood, hours_this_week, created_at)
-select p.company_id, p.id, c.rev, c.win, c.ch, c.md, c.hrs, (now() - c.ago)
-from public.profiles p, (values
-  ('Tracking about $290k for the month','Northgate renewed the maintenance contract for two years','Still doing dispatch myself every morning',3,'55-65','7 days'::interval),
-  ('$310k, best month since March','Priya ran the Willow Creek phase without me on site once',E'Phase one went 20% over hours and I only found out at invoicing',3,'50-60','14 days'::interval),
-  ('Around $265k','Got the estimating rebuild started','Marcus asked about his overtime. I did not have a good answer.',2,'60-70','21 days'::interval)
-) as c(rev,win,ch,md,hrs,ago)
-limit 3;
+insert into public.checkins
+  (company_id, user_id, revenue_update, win, challenge, mood, hours_this_week, created_at)
+values
+  ((select company_id from public.profiles limit 1),
+   (select id from public.profiles limit 1),
+   'Tracking about $290k for the month',
+   'Northgate renewed the maintenance contract for two years',
+   'Still doing dispatch myself every morning',
+   3, '55-65', now() - interval '7 days'),
+
+  ((select company_id from public.profiles limit 1),
+   (select id from public.profiles limit 1),
+   '$310k, best month since March',
+   'Priya ran the Willow Creek phase without me on site once',
+   'Phase one went 20% over hours and I only found out at invoicing',
+   3, '50-60', now() - interval '14 days'),
+
+  ((select company_id from public.profiles limit 1),
+   (select id from public.profiles limit 1),
+   'Around $265k',
+   'Got the estimating rebuild started',
+   'Marcus asked about his overtime. I did not have a good answer.',
+   2, '60-70', now() - interval '21 days');
 
 
 -- ── Solomon's memory ────────────────────────────────────────────────────────
 -- What makes the demo land: he already knows these before the first question.
+
 with co as (select company_id as id from public.profiles limit 1)
 delete from public.solomon_memory where company_id = (select id from co);
 
 insert into public.solomon_memory (company_id, user_id, kind, statement, source)
-select p.company_id, p.id, m.kind, m.stmt, 'conversation'
-from public.profiles p, (values
-  ('constraint','Will not use the overdraft to fund contract work — wants growth funded by the work itself'),
-  ('decision','Held off hiring a second service tech in August, pending the job-costing review'),
-  ('person','Marcus Reyes and Danny Okafor have carried sustained overtime since November'),
-  ('commitment','Pricing review before adding any capacity'),
-  ('context','Wants to be off the tools within two years, and for the business to run a week without him'),
-  ('preference','Prefers being told the hard thing once, plainly, rather than having it softened')
-) as m(kind,stmt);
+values
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'constraint', 'Will not use the overdraft to fund contract work — wants growth funded by the work itself', 'conversation'),
+
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'decision', 'Held off hiring a second service tech in August, pending the job-costing review', 'conversation'),
+
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'person', 'Marcus Reyes and Danny Okafor have carried sustained overtime since November', 'conversation'),
+
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'commitment', 'Pricing review before adding any capacity', 'conversation'),
+
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'context', 'Wants to be off the tools within two years, and for the business to run a week without him', 'conversation'),
+
+  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+   'preference', 'Prefers being told the hard thing once, plainly, rather than having it softened', 'conversation');
 
 
 -- ── Confirm ─────────────────────────────────────────────────────────────────
