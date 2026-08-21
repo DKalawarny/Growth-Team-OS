@@ -43,6 +43,17 @@ import { authedUser }      from '../_shared/supabase.ts'
 const MAX_CHARS  = 8_000   // gte-small handles ~512 tokens; the chunker stays well under
 const MAX_INPUTS = 128
 
+// `Supabase` is a global injected by the Edge Runtime, so TypeScript has no
+// idea it exists. Declaring it keeps `supabase functions deploy` from failing
+// type-check on a symbol that is genuinely there at runtime.
+declare const Supabase: {
+  ai: {
+    Session: new (model: string) => {
+      run(input: string, opts?: { mean_pool?: boolean; normalize?: boolean }): Promise<unknown>
+    }
+  }
+}
+
 // One session reused across invocations. Constructing it per request would
 // pay model start-up on every call.
 const session = new Supabase.ai.Session('gte-small')
