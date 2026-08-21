@@ -1,0 +1,50 @@
+# Backup for the local launchd job on the Mac. That job is the primary
+# keep-alive; this one only matters if the Mac is off for a week or more.
+#
+# INACTIVE until the repo secret SUPABASE_ANON_KEY is set:
+#   GitHub -> this repo -> Settings -> Secrets and variables -> Actions
+#   -> New repository secret -> name SUPABASE_ANON_KEY
+#   -> value = the VITE_SUPABASE_ANON_KEY line from ~/growthOS/.env.local
+#
+# Supabase pauses free-tier projects after 7 consecutive days of no activity.
+# This makes one small read against the database each day so it stays awake.
+
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Daily at 12:20 UTC. Runs daily rather than weekly because GitHub
+    # silently drops scheduled runs under load, and the pause window is
+    # only 7 days — daily attempts leave plenty of margin.
+    - cron: '20 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST endpoint
+        env:
+          SUPABASE_URL: https://ufhduewbamnmoiksqgfq.supabase.co
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "SUPABASE_ANON_KEY secret is not set — see the note at the top of this file."
+            exit 1
+          fi
+
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -m 30 \
+            "$SUPABASE_URL/rest/v1/companies?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+
+          echo "HTTP $CODE"
+
+          # 2xx means the read succeeded. 401/403 means RLS refused the anon
+          # role, but the project still served the request — which is all the
+          # pause timer measures.
+          case "$CODE" in
+            200|206|401|403) echo "Project is awake." ;;
+            000) echo "No response — project paused, deleted, or network failure."; exit 1 ;;
+            *)   echo "Unexpected status."; exit 1 ;;
+          esac
