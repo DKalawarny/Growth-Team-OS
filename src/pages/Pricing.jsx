@@ -10,7 +10,7 @@ import {
   faqPageSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, TRIAL_DAYS } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS } from '../lib/pricing'
 
 /**
  * /pricing — public pricing page.
@@ -264,7 +264,13 @@ export default function Pricing() {
                 </span>
                 <div className="text-left">
                   <p className="text-white/40 text-sm leading-tight">USD / mo</p>
-                  <p className="text-white/25 text-xs leading-tight">{billing === ANNUAL ? '~$111 CAD' : '~$133 CAD'}</p>
+                  {/* Derived, never written by hand. These were literal
+                      '~$133' / '~$111' — the $97-era conversions — and stayed
+                      that way through the price change while
+                      PRICE_MONTHLY_CAD_EST sat unused two files away. */}
+                  <p className="text-white/25 text-xs leading-tight">
+                    ~${billing === ANNUAL ? Math.round(PRICE_ANNUAL_CAD_EST / 12) : PRICE_MONTHLY_CAD_EST} CAD
+                  </p>
                 </div>
               </div>
               {billing === ANNUAL ? (
