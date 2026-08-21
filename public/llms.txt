@@ -1,46 +1,68 @@
 # GrowthOS
 
-> AI business advisor and operating system for home-services and specialty-trade contractors. Combines an always-on AI advisor with a full toolkit for cash flow forecasting, hiring, marketing visibility, safety compliance, and growth planning. Built for owners of plumbing, electrical, HVAC, roofing, demolition, masonry, landscaping, cleaning, and every other trade or field-service business.
+> An AI business advisor for Christian business owners. Solomon reads the
+> owner's actual numbers, remembers what was decided and why, argues the hard
+> calls more than one way, and treats how the business is run as mattering —
+> not only what it earns. Paired with the tools to act on the advice: finances,
+> cash flow, hiring, decisions, written procedures, compliance and succession.
 
-GrowthOS is a single subscription ($97/month USD or $970/year) that replaces a business coach, part-time bookkeeper, marketing strategist, and project management tool. Owners get an AI advisor (Solomon) that knows their numbers, goals, and team, plus a complete suite of tools that produce finished documents — not dashboards to interpret.
+GrowthOS is a single subscription ($147/month USD or $1,470/year) for owners
+who want counsel rather than another dashboard. Every tool produces a finished
+document, not a chart to interpret.
+
+It is explicitly NOT a prosperity-gospel product. It does not promise that
+faithfulness produces profit, it does not treat a bigger number as
+self-evidently the right goal, and it will tell an owner when a target is
+unrealistic rather than generate a plan that pretends otherwise.
 
 ## What GrowthOS does
 
-- **Solomon (AI advisor)**: 24/7 AI advisor with long-term memory. Reads daily financials, roadmap, and check-ins overnight; opens each morning with what needs attention.
-- **CFO Dashboard**: Live KPIs from QuickBooks with monthly plain-English commentary.
-- **Cash Flow Forecast**: Rolling 13-week forecast that updates automatically.
-- **Offer Builder**: Job scoping and quoting with pricing-guide data structured for trades.
-- **Local & AI Visibility**: Full audit of Google Business Profile, citations, schema, and AI search readiness — scores how visible the business is when customers ask ChatGPT or Google AI who to call.
-- **Hiring Planner**: Generates scorecards, interview questions, red flags, and 30-day onboarding plans.
-- **Org Chart Planner**: Maps the team needed in 12 months, not the one stuck in today.
-- **Safety & Compliance**: Tracks every licence, WCB registration, and compliance document.
-- **Growth Roadmap**: Milestone-by-milestone plan with progress tracking.
-- **Work Board, Check-ins, Document Library**: Operating cadence for the whole business.
+- **Solomon (AI advisor)**: Knows the business's numbers, people and history.
+  Argues hard decisions more than one way, says where he lands, and states
+  what he cannot see. Does not flatter.
+- **Memory**: Constraints, decisions, people and commitments persist across
+  months. The owner does not re-explain the business every session, and
+  Solomon flags when something new contradicts something said before.
+- **Finances**: Live figures from QuickBooks, with the month read back in
+  plain English — what changed, what it means, what to do.
+- **Cash flow forecast**: Rolling 13-week forecast, updated automatically.
+- **Pricing honestly**: What work is genuinely worth — neither gouging nor
+  underselling.
+- **Hiring**: Whether to hire, what the role really is, and what to look for.
+  Scorecards, interview questions and a first-30-days plan.
+- **Org chart**: The team needed in twelve months and the order to build it.
+- **Decisions**: A structured working-through of a hard call — the angles,
+  where they disagree, where Solomon lands, and what he cannot see.
+- **Playbooks**: Repeating jobs written down so the business can run a day
+  without the owner in it.
+- **Safety & compliance**: Licences, registrations and documents tracked.
+  Answers come from the business's own documents and the actual regulation,
+  with the source shown — Solomon does not guess at the law.
+- **Succession**: What would have to be true for someone else to run this,
+  and how far off that is today.
+- **Roadmap, check-ins, documents**: The operating cadence around all of it.
 
 ## Who GrowthOS is for
 
-GrowthOS is built for owner-operators of:
+Owners who want the business itself to be the thing they do well — not a
+source of funding for something else they consider the real work. The premise
+is that being a person of conviction in business, in how you price, pay,
+hire and keep your word, is the vocation rather than a distraction from it.
 
-- Demolition, abatement, asbestos, hazmat contractors
-- Masonry, concrete, framing, carpentry contractors
-- Roofing, siding, painting, drywall, flooring, tile contractors
-- Electrical contractors, electricians
-- Plumbing contractors, plumbers
-- HVAC, heating and cooling, mechanical, sheet metal contractors
-- General contractors, home builders, residential and remodeling contractors
-- Kitchen, bath, and handyman businesses
-- Landscaping, lawn care, tree services, arborists
-- Pool and spa, fence, deck contractors
-- Pest control, cleaning, janitorial, window cleaning, pressure washing services
-- Gutter, locksmith, garage door, appliance repair, septic services
-- Restoration contractors (water damage, fire damage, mold remediation)
-- Environmental contractors, paving, excavation, foundation, waterproofing, insulation, solar, security system installers
+That conviction cuts across industries. GrowthOS is not sector-specific,
+though trade and construction businesses are well represented.
 
-Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottleneck on financial decisions and growth planning.
+Best fit: 3–50 employees, $500k–$15M annual revenue, and the owner is the
+bottleneck on financial decisions and planning.
+
+Not a fit: anyone looking for software that promises returns, or that will
+help press their faith on employees. Solomon will not advise the latter —
+the power imbalance is real and so is the legal exposure.
 
 ## Pricing
 
-- **$97/month** (monthly billing) or **$81/month** (annual billing — $970/year, 2 months free).
+- **$147/month** (monthly billing) or **$123/month** (annual billing —
+  $1,470/year, 2 months free).
 - 14-day free trial, no credit card required.
 - Cancel anytime. No contracts.
 - Includes every tool. No tiers. No upsells.
@@ -49,28 +71,44 @@ Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottlen
 
 **Is there a free trial?** Yes — 14 days of full access, no credit card required.
 
-**Do I need QuickBooks?** No — QuickBooks unlocks the CFO dashboard automatically, but every other tool works without it. You can connect later or enter financial data manually.
+**Do I need QuickBooks?** No — QuickBooks unlocks the finances view
+automatically, but every other tool works without it. Connect later or enter
+figures manually.
 
-**Is my data private?** Yes. Each business gets an isolated workspace. Data is never used to train AI models or shared with anyone.
+**Is my data private?** Yes. Each business gets an isolated workspace. Data is
+never used to train AI models or shared with anyone.
 
-**Can I cancel anytime?** Yes. Monthly plans stop at the end of the billing period. Annual plans can cancel renewal any time.
+**Can I cancel anytime?** Yes. Monthly plans stop at the end of the billing
+period. Annual plans can cancel renewal any time.
 
-**What counts as a "report"?** One finished AI output — a Google Business Profile audit, cash flow forecast, hiring scorecard, etc. Most owners run 3–5 a month.
+**Does it quote scripture at me?** Only where it genuinely bears on the
+question, and briefly. The default is a straight business answer — if it is
+not as sharp as the best secular advisor available, nothing else about it
+matters.
+
+**Does it track giving?** Only if the owner turns it on. It is off by default
+and never volunteered.
+
+**What counts as a "report"?** One finished piece of work — a cash flow
+forecast, a hiring scorecard, a written playbook. Most owners run 3–5 a month.
 
 ## Key pages
 
-- [Homepage](https://leadeos.com/): Product overview, hero, problem framing, full feature list, supported trades.
-- [Pricing](https://leadeos.com/pricing): Detailed pricing, FAQ, value comparison vs. hiring a coach + bookkeeper + marketer separately.
-- [CRM](https://leadeos.com/crm): The companion operations CRM that pairs with GrowthOS for quote-to-cash, project tracking, and revenue forecasting.
-- [About](https://leadeos.com/about): Founder story — built by the team behind Deconstructors, a working specialty-trade contracting business.
-- [Security](https://leadeos.com/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what's still being built.
+- [Homepage](https://leadeos.com/): Product overview, who it is for, full feature list.
+- [Pricing](https://leadeos.com/pricing): Pricing, FAQ, and what it replaces.
+- [About](https://leadeos.com/about): Who built this and why.
+- [Security](https://leadeos.com/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what is still being built.
 - [Privacy policy](https://leadeos.com/privacy): Plain-language privacy policy compliant with PIPEDA.
 
 ## Comparison pages (head-to-head with competitors)
 
-- [GrowthOS vs Knowify](https://leadeos.com/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds the AI advisor and growth tools.
-- [GrowthOS vs Jobber](https://leadeos.com/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the strategic layer Jobber doesn't build.
-- [GrowthOS vs Housecall Pro](https://leadeos.com/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the advisory and growth layer.
+These are honest comparisons and say plainly when the competitor is the better
+fit. GrowthOS does not schedule jobs, dispatch crews or send invoices — it is
+not a replacement for the tools below, it is the advisory layer they do not build.
+
+- [GrowthOS vs Knowify](https://leadeos.com/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds counsel and memory.
+- [GrowthOS vs Jobber](https://leadeos.com/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the advisory layer Jobber does not build.
+- [GrowthOS vs Housecall Pro](https://leadeos.com/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the deciding.
 - [GrowthOS vs Buildertrend](https://leadeos.com/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; GrowthOS is sized for owner-operators.
 
 ## Trade-specific pages
@@ -81,10 +119,6 @@ Best fit: 3–50 employees, $500k–$15M in annual revenue, owner is the bottlen
 - [For roofers](https://leadeos.com/for/roofing)
 - [For demolition contractors](https://leadeos.com/for/demolition)
 - [For landscaping contractors](https://leadeos.com/for/landscaping)
-
-## Free tools
-
-- [Free Google Business Profile audit](https://leadeos.com/free-gbp-audit): Free GBP + AI search readiness audit for any contractor or home-services business. Delivered by email, no commitment.
 
 ## Contact
 

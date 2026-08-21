@@ -44,7 +44,7 @@ export default function Signup() {
         <title>Start your free trial — {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/signup`} />
         <meta name="robots" content="noindex, nofollow" />
-        <meta name="description" content={`Start your ${TRIAL_DAYS}-day free trial of GrowthOS — the AI advisor and operating system for home-services contractors. No credit card required.`} />
+        <meta name="description" content={`Start your ${TRIAL_DAYS}-day free trial of GrowthOS — an AI business advisor for Christian business owners. No credit card required.`} />
       </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}

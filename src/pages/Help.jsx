@@ -11,7 +11,7 @@ import { PRICE_MONTHLY_USD } from '../lib/pricing'
  *
  * DRAFT NOTE for Daniel: every guide and FAQ answer below is a starting
  * draft. Read them through and rewrite in your voice — you know what
- * actually confuses contractors better than I do. Mark each item ✓ when
+ * actually confuses owners better than I do. Mark each item ✓ when
  * you've reviewed it.
  *
  * Linked from:
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: 'Why is there a 10-runs-per-month cap on tools?',
-    a: `Tools (GBP Audit, Cash Flow, Hiring Scorecards, etc.) each make an AI call that costs real money to run. The cap keeps your subscription priced at $${PRICE_MONTHLY_USD} even when you're using it heavily. Most owners use 3–5 runs a month total. If you need more, email me — caps are easy to raise.`,
+    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap keeps your subscription priced at $${PRICE_MONTHLY_USD} even when you're using it heavily. Most owners use 3–5 runs a month total. If you need more, email me — caps are easy to raise.`,
   },
   {
     q: 'Do I need QuickBooks to use GrowthOS?',
@@ -99,17 +99,6 @@ const TOOL_GUIDES = [
       'GrowthOS extends 13 weeks out and highlights any week where you go negative.',
       'If QuickBooks is connected, the inflow/outflow defaults come from your real data — just adjust forward-looking weeks.',
       'Re-run it any time your pipeline changes. It\'s designed to be cheap to run weekly.',
-    ],
-  },
-  {
-    name:   'Local & AI Visibility (GBP Audit)',
-    href:   '/tools/gbp',
-    short:  'Full audit of your Google Business Profile, citations, and AI search readiness.',
-    steps: [
-      'Enter your business name + city. GrowthOS finds your GBP and crawls associated citations.',
-      'You\'ll get a scored audit — categories, photos, hours, post cadence, review velocity, NAP consistency.',
-      'Includes an AI search readiness score: whether ChatGPT, Claude, and Perplexity will recommend you when asked.',
-      'The report is the same one we sell publicly as a lead magnet — it\'s built into your subscription.',
     ],
   },
   {

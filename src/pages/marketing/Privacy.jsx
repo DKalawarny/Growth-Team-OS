@@ -45,8 +45,8 @@ export default function Privacy() {
         <p className="text-sm text-gray-500 mb-12">Last updated: {LAST_UPDATED}</p>
 
         <p className="text-gray-700 leading-relaxed mb-12">
-          {ORG_NAME} ("we", "us", "our") provides AI-powered business
-          tools to home-services and specialty-trade contractors. This policy
+          {ORG_NAME} ("we", "us", "our") provides an AI business advisor and
+          related tools to business owners. This policy
           explains what personal and business information we collect, how we
           use it, who we share it with, and your rights. We try to write it
           in plain English. If anything is unclear, email{' '}

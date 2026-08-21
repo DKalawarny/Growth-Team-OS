@@ -5,26 +5,33 @@ import { buildPageMeta, organizationSchema, jsonLd, CONTACT_EMAIL } from '../../
 import { TRIAL_DAYS } from '../../lib/pricing'
 
 /**
- * /about — founder story + why GrowthOS exists.
+ * /about — why GrowthOS exists.
  *
- * Why this page matters for a small-startup site:
- *   - AI assistants get asked "who runs GrowthOS?" — without this, the
- *     answer is nothing. With it, ChatGPT/Claude/Perplexity can quote
- *     a real founder story, which makes the brand feel real.
- *   - First-time founder. Skeptical-trades audience. A face + a why
- *     builds more trust than any branding.
- *   - The Deconstructors team angle is a moat — it's not Daniel alone,
- *     it's a team that already runs an actual specialty-trade business.
+ * ⚠️ READ THIS BEFORE EDITING.
  *
- * IMPORTANT: This is draft copy in Daniel's voice, not Daniel's actual
- * words. Edit before going live. The structural shape (story → problem
- * → why now → who it's for) is what makes it convert; the specifics
- * are placeholders.
+ * The previous version of this page was draft copy written in Daniel's voice
+ * but not by him, and it was LIVE. It claimed a shared history the reader had
+ * no way to check: losing a $40k bid on disposal rates, sitting at the kitchen
+ * table choosing between payroll and the equipment lease, competitors
+ * outranking us on Google. Invented specifics, told in the first person, on a
+ * page whose entire job is to make the reader trust us.
+ *
+ * It also leaned on Deconstructors as a credibility angle. That is a separate
+ * company Daniel may be exiting, and this product is its own thing.
+ *
+ * What is here now is only what is true: who it is for, why it exists, and
+ * what it refuses to do. It is deliberately shorter and quieter than a
+ * conversion-optimised About page.
+ *
+ * ⭐ THE FOUNDER STORY IS DANIEL'S TO WRITE — in his own words, or not at all.
+ * A page with no story beats a page with a fabricated one, on a product whose
+ * central promise is that it will not tell you things that are not so. Do not
+ * fill this gap with plausible-sounding narrative.
  */
 
 const ABOUT_META = buildPageMeta({
-  title:       'About GrowthOS — built by contractors, for contractors',
-  description: 'GrowthOS is built by the team behind Deconstructors, a specialty-trade contracting business. We built the AI advisor we wished we had — one that actually knows the trade, the cash flow rhythm, and the operator on the other end.',
+  title:       'About GrowthOS — why it exists',
+  description: 'GrowthOS is an AI business advisor for Christian business owners. What it is for, who it is for, and what it will not do.',
   path:        '/about',
 })
 
@@ -49,54 +56,59 @@ export default function About() {
         <section className="mb-16 text-center">
           <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-4">About</p>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-6">
-            We built it because<br/>
-            <span className="text-brand-600">we needed it first.</span>
+            An advisor for people who<br/>
+            <span className="text-brand-600">want it run a certain way.</span>
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            GrowthOS is built by the team behind Deconstructors — a working specialty-trade
-            contracting business. Every tool, every screen, every prompt was shaped by the
-            problem we hit running our own jobs.
+            Most business software assumes the only question worth asking is
+            how to make the number bigger. GrowthOS is built for owners who
+            have a second question underneath that one.
           </p>
         </section>
 
-        {/* ── Story ───────────────────────────────────────────────────────── */}
+        {/* ── What it is ──────────────────────────────────────────────────── */}
         <section className="mb-16 prose prose-gray max-w-none">
           <h2 className="text-2xl font-black text-gray-900 mb-4">The short version</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Most "small business AI" tools are built for marketing agencies, knowledge workers,
-            or startup founders. None of them know what it's like to lose a $40k bid because
-            you misjudged disposal rates. None of them know that your cash flow is hostage
-            to one slow-paying GC. None of them speak the language.
+            Not everyone who takes their faith seriously is called to be a
+            minister. Most are called to be the person of conviction inside an
+            ordinary business — in how they price, how they pay, who they hire,
+            and whether their word holds when keeping it costs something.
           </p>
           <p className="text-gray-700 leading-relaxed mb-4">
-            We've been on the other side of that. We've sat at the kitchen table figuring
-            out whether to make payroll or pay the equipment lease. We've hired the wrong
-            foreman because the gut said yes and there was no scorecard to say otherwise.
-            We've watched competitors with worse work rank above us on Google because they
-            paid an SEO agency that didn't actually know our trade.
+            That is a harder job than it sounds, and it is a lonely one. Owners
+            have plenty of people who need answers from them and almost nobody
+            to ask. GrowthOS exists to be somewhere to ask — an advisor called
+            Solomon who reads your real numbers, remembers what you decided and
+            why, argues the hard calls both ways, and tells you plainly when he
+            does not know.
           </p>
           <p className="text-gray-700 leading-relaxed">
-            GrowthOS is the AI advisor and operating system we wished existed when we needed
-            it most. We built it for the operator who's smart, capable, and stretched too thin —
-            and who deserves a co-pilot that actually knows the work.
+            The first commitment is competence. If the advice is not as sharp
+            as the best secular advisor you could hire, nothing else about this
+            matters. What differs is the posture, not the arithmetic.
           </p>
         </section>
 
-        {/* ── Why now ─────────────────────────────────────────────────────── */}
+        {/* ── What it will not do ─────────────────────────────────────────── */}
         <section className="mb-16">
-          <h2 className="text-2xl font-black text-gray-900 mb-6">Why now</h2>
+          <h2 className="text-2xl font-black text-gray-900 mb-6">What this is not</h2>
           <div className="space-y-5">
             <Pillar
-              title="The AI is finally good enough"
-              body="Two years ago, AI advice was generic word soup. Today, with the right context — your books, your team, your goals — Claude can give you advice that's better than what most coaches charge $2,000/month for. We just had to build the right harness around it."
+              title="It is not a prosperity-gospel product"
+              body="It will never suggest that faithfulness produces profit, that a downturn is a test of belief, or that a bigger number is self-evidently the right goal. If a target is unrealistic, Solomon says so instead of generating a plan that pretends."
             />
             <Pillar
-              title="Customers ask AI before they ask Google"
-              body="Your next customer is asking ChatGPT 'who's the best plumber near me?' or 'should I hire this contractor?' If you're not visible in AI search, you don't exist to them. We built the audit and visibility tools because we needed them ourselves."
+              title="It will not help you press your faith on your staff"
+              body="The power imbalance between an owner and someone who needs the job is real, and so is the legal exposure. Solomon will decline that and say why."
             />
             <Pillar
-              title="The market is fragmented and slow"
-              body="The big incumbents (Procore, Buildertrend) cost $300+/month and aim at companies 10× our ICP's size. The cheap ones (basic CRMs) don't think about strategy. There was a hole big enough to drive a truck through."
+              title="It does not make things up"
+              body="Questions about rules and obligations are answered from your own documents and the actual regulation, with the source shown. Where Solomon cannot see something, he names it rather than filling the gap."
+            />
+            <Pillar
+              title="It does not quote scripture at you"
+              body="Only where it genuinely bears on the question, and briefly. The default is a straight business answer."
             />
           </div>
         </section>
@@ -105,17 +117,21 @@ export default function About() {
         <section className="mb-16 bg-gray-50 rounded-2xl p-8">
           <h2 className="text-2xl font-black text-gray-900 mb-4">Who GrowthOS is for</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            We built this for owner-operators of specialty-trade and home-services
-            businesses doing somewhere between $500k and $15M a year in revenue, with
-            3 to 50 people on the team. That's plumbers, electricians, HVAC, roofers,
-            demolition contractors, masons, landscapers, restoration companies, cleaners,
-            pest control — anyone who runs work crews and lives in the field.
+            Owner-operators doing somewhere between $500k and $15M a year, with
+            3 to 50 people on the team, where the owner is still the bottleneck
+            on the financial decisions. It is not sector-specific — the thing
+            these owners have in common is a conviction about how the business
+            should be run, not what it does. Trade and construction businesses
+            are well represented, but the question it answers is not a trade
+            question.
           </p>
           <p className="text-gray-700 leading-relaxed">
             <span className="font-bold text-gray-900">It's probably not for you if:</span>{' '}
-            you're a 100+ person company with a controller and a marketing team — you've
-            outgrown what we do. Or if you're a pre-revenue side hustle — wait until you
-            have real numbers to plug in.
+            you have a controller and a leadership team already — you have
+            outgrown this. If you are pre-revenue, wait until there are real
+            numbers to work with. And if what you want is software that
+            promises returns, this is the wrong product and will be a
+            frustrating one.
           </p>
         </section>
 
@@ -123,8 +139,8 @@ export default function About() {
         <section className="text-center">
           <h2 className="text-2xl font-black text-gray-900 mb-4">Want to talk?</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Daniel reads every email. If you're an owner thinking about it, or a friend
-            who wants to introduce a contractor — write us. No sales script.
+            Daniel reads every email. If you are an owner thinking about it, or
+            you want to introduce someone — write. No sales script.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <a
