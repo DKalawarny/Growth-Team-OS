@@ -45,7 +45,12 @@ const HOST       = `http://127.0.0.1:${PORT}`
 //   - react-helmet-async always rewrites it via document.title = …
 //   - no schema-shape coupling per route
 const ROUTES = [
-  { path: '/',                titleContains: 'AI advisor + business tools' },
+  // ⚠️ These needles must track the real <title> of each page. Change a title
+  // in Helmet or index.html without changing it here and the build fails 20
+  // seconds later with a bare "Waiting failed" and no clue which route or
+  // which string — which is exactly what happened when the landing page was
+  // repositioned. The catch below now prints both.
+  { path: '/',                titleContains: 'advisor for Christian business owners' },
   { path: '/pricing',         titleContains: 'Pricing — GrowthOS' },
   { path: '/crm',             titleContains: 'CRM for contractors' },
   { path: '/about',           titleContains: 'About GrowthOS' },
@@ -152,11 +157,24 @@ async function main() {
       // signature substring. react-helmet-async rewrites the title in place
       // (document.title = ...), so this is a single, deterministic source
       // of truth for "the page-level Helmet has run."
-      await page.waitForFunction(
-        (needle) => document.title.includes(needle),
-        { timeout: 20_000 },
-        titleContains,
-      )
+      try {
+        await page.waitForFunction(
+          (needle) => document.title.includes(needle),
+          { timeout: 20_000 },
+          titleContains,
+        )
+      } catch {
+        // A bare timeout here is almost always a title that was edited without
+        // updating ROUTES. Say so, with both strings, instead of making the
+        // next person read this file to find out.
+        const actual = await page.title()
+        throw new Error(
+          `Title check failed for ${route}\n` +
+          `  expected to contain: ${JSON.stringify(titleContains)}\n` +
+          `  actual title:        ${JSON.stringify(actual)}\n` +
+          `  Fix the needle in ROUTES (scripts/prerender.mjs) or the page's Helmet title.`,
+        )
+      }
 
       // One more rAF tick so any final Helmet flush settles before we serialize.
       await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r())))
