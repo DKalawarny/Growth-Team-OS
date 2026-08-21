@@ -71,15 +71,22 @@ export default function Terms() {
           one that matters most.
         </p>
 
-        {/* The single most important framing on the page. */}
-        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-6 mb-12">
+        {/* The single most important framing on the page.
+            ⚠️ Stated as a boundary, not an apology — see the note in
+            components/legal/TermsGate.jsx. Every protective element is here;
+            none of it is phrased as a confession of poor quality. */}
+        <div className="rounded-2xl border border-gray-300 bg-gray-50 p-6 mb-12">
           <p className="font-bold text-gray-900 mb-2">The short version</p>
+          <p className="text-gray-800 leading-relaxed text-[15px] mb-3">
+            Solomon gives you real business thinking on your real numbers. He works
+            from what you give him and what your connected accounts return, so his
+            answer is only ever as good as what he can see.
+          </p>
           <p className="text-gray-800 leading-relaxed text-[15px]">
-            GrowthOS is unfinished software being tested. It gives you AI-generated
-            business opinions, not professional advice. It will sometimes be wrong.
-            Every decision you make is yours, and you are responsible for it. If
-            something here would be expensive to get wrong, check it with a real
-            accountant, lawyer, or the relevant authority before you act.
+            He is not your accountant, lawyer, or regulator, and nothing here is
+            professional advice. Every decision is yours and you are responsible
+            for it — so where being wrong would be expensive, confirm it with a
+            qualified professional or the relevant authority before you act.
           </p>
         </div>
 

@@ -93,27 +93,43 @@ export default function TermsGate({ children }) {
       >
         <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-ink-100 p-7 my-auto">
           <h2 id="terms-gate-title" className="text-xl font-black text-ink-900 mb-2">
-            Before you carry on
+            Welcome to the pilot
           </h2>
           <p className="text-sm text-ink-500 leading-relaxed mb-5">
-            GrowthOS is in private pilot, and there is now an agreement covering
-            it. It is short. Please have a look before you accept.
+            You are one of a small group testing GrowthOS early. There is a short
+            agreement covering it — worth a look before you accept.
           </p>
 
-          <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 mb-5">
+          {/* ⚠️ TONE IS LOAD-BEARING HERE — do not restack this as a list of
+              negatives. The first version read "unfinished software being
+              tested… it will sometimes be wrong", four apologies before anyone
+              had used the product, in amber warning styling. It made a serious
+              tool look shaky, which is a real cost for no legal gain.
+
+              Every protective element is still present: not professional
+              advice, decisions stay with the owner, confirm the expensive
+              calls. What changed is that the limit is stated as a fact about
+              RELIANCE rather than a confession of poor quality — "only as good
+              as what he can see" is more specific about the actual failure
+              mode than "sometimes wrong", and therefore does the job better. */}
+          <div className="rounded-xl border border-ink-200 bg-ink-50 p-4 mb-5">
             <p className="text-[13.5px] text-ink-800 leading-relaxed">
-              GrowthOS is unfinished software being tested. It gives you
-              AI-generated business opinions, <strong>not professional advice</strong>,
-              and it will sometimes be wrong. Every decision stays yours. Anything
-              expensive to get wrong — a hire, a price, a tax or safety question —
-              check with a real professional first.
+              Solomon gives you real business thinking on your real numbers. He
+              works from what you give him, so his answer is only ever as good as
+              what he can see.
+            </p>
+            <p className="text-[13.5px] text-ink-800 leading-relaxed mt-2.5">
+              He is not your accountant, lawyer, or regulator, and nothing here is{' '}
+              <strong>professional advice</strong>. The decisions stay yours — on
+              anything expensive, like a hire, a price, or a tax or safety
+              question, get it confirmed before you act.
             </p>
           </div>
 
           <p className="text-[13px] text-ink-500 leading-relaxed mb-5">
             The pilot is free and nothing will be charged to you during it. It is
-            run personally by {OPERATOR_LEGAL_NAME} while the company behind
-            GrowthOS is being incorporated — when that is done you will be asked
+            currently run by {OPERATOR_LEGAL_NAME} while the company behind
+            GrowthOS is being incorporated — once that is done, you will be asked
             to accept a version in the company&rsquo;s name.
           </p>
 
@@ -125,7 +141,7 @@ export default function TermsGate({ children }) {
               className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-600"
             />
             <span className="text-sm text-ink-700 leading-relaxed">
-              I have read and accept the{' '}
+              I accept the{' '}
               <Link
                 to="/terms"
                 target="_blank"
@@ -134,8 +150,8 @@ export default function TermsGate({ children }) {
               >
                 pilot agreement
               </Link>
-              , including that GrowthOS does not give professional advice and is
-              provided without warranty.
+              {' '}— including that Solomon gives business thinking rather than
+              professional advice, and that the decisions remain mine.
             </span>
           </label>
 

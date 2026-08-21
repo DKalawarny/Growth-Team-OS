@@ -856,7 +856,7 @@ const Composer = forwardRef(function Composer(
             prompts.js handles the sharp, contextual warning on the answers that
             actually carry money. */}
         <p className="text-[10px] mt-2 text-center leading-relaxed" style={{ color: 'rgba(13,20,19,0.32)' }}>
-          Solomon gives business opinions, not professional advice, and can be wrong — check anything costly.
+          Solomon works from what you give him. Not professional advice — confirm anything costly.
           <span className="hidden sm:inline"> · Enter to send, Shift+Enter for a new line</span>
         </p>
       </div>

@@ -208,9 +208,9 @@ export default function Signup() {
                 <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold underline underline-offset-2">
                   pilot agreement
                 </Link>
-                {' '}— GrowthOS is unfinished software in private testing, it gives
-                AI-generated business opinions rather than professional advice,
-                and the decisions stay mine.
+                {' '}— GrowthOS is in private pilot, Solomon gives business
+                thinking rather than professional advice, and the decisions
+                stay mine.
               </span>
             </label>
             <p className="text-[11px] text-ink-400 text-center leading-relaxed">
