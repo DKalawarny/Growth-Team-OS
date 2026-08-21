@@ -28,3 +28,6 @@ supabase/.temp/
 # Design canvas working files — seeded output is large and regenerable
 design/*.html
 !design/*.dc.html
+
+# Puppeteer Chrome download (netlify.toml points PUPPETEER_CACHE_DIR here).
+.cache/

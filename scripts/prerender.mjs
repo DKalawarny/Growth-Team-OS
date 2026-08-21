@@ -136,7 +136,22 @@ async function main() {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
       })
     } catch (launchErr) {
-      console.warn('[prerender] Could not launch Chrome — skipping prerender (SEO snapshots will be stale):', launchErr.message)
+      // Deliberately NOT fatal — a missing browser must never block a deploy.
+      //
+      // But this warning hid a real outage for weeks: on Netlify the launch
+      // failed every time (Chrome lands in $HOME/.cache/puppeteer, which the
+      // build cannot reach), so every production deploy shipped the raw SPA
+      // shell while the build went green in 13 seconds. See netlify.toml.
+      //
+      // So it is loud now. A skipped prerender means crawlers and AI
+      // assistants get no title, no meta and no JSON-LD.
+      console.warn('')
+      console.warn('  ⚠️  PRERENDER SKIPPED — Chrome would not launch.')
+      console.warn('      Every marketing page will ship as an empty SPA shell:')
+      console.warn('      no per-page title, no meta, no JSON-LD for crawlers or AI.')
+      console.warn(`      Reason: ${launchErr.message}`)
+      console.warn('      On Netlify this means PUPPETEER_CACHE_DIR is not set (netlify.toml).')
+      console.warn('')
       return
     }
 

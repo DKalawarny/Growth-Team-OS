@@ -1,0 +1,41 @@
+# Netlify build configuration.
+#
+# ⚠️ WHY THIS FILE EXISTS — the prerender was silently not running in production.
+#
+# `npm run build` is `vite build && node scripts/prerender.mjs`. The prerender
+# step boots the built site in a preview server, drives it with headless Chrome,
+# and writes a real HTML snapshot per marketing route (dist/about/index.html,
+# dist/pricing/index.html, …) so that crawlers and AI assistants get finished
+# markup — title, meta, and the JSON-LD blocks — instead of an empty SPA shell.
+#
+# It was working locally and skipping on Netlify, and nothing failed loudly:
+#
+#   1. puppeteer's postinstall downloads Chrome into $HOME/.cache/puppeteer.
+#   2. Netlify's build does not carry that directory over, so at build time
+#      puppeteer.executablePath() points at a binary that is not there.
+#   3. scripts/prerender.mjs catches the launch error on purpose, warns, and
+#      continues — a missing browser should never fail a deploy.
+#   4. The build therefore "succeeded" in about 13 seconds, publishing the
+#      un-prerendered shell, with the explanation buried in the build log.
+#
+# The symptom was invisible from the app: leadeos.com/about returned the
+# homepage <title> and the homepage served one JSON-LD block where the local
+# dist/ had two. Every schema and per-page meta fix was reaching the browser
+# and nothing else.
+#
+# PUPPETEER_CACHE_DIR moves that download inside the repo, where the build can
+# actually reach it. If this ever regresses, the check is one line:
+#
+#   curl -s https://leadeos.com/about | grep -o "<title>[^<]*</title>"
+#
+# It must print "About GrowthOS", not the homepage title.
+
+[build]
+  # Same command the dashboard already used — pinned here so it lives in git.
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Keep Chrome inside the repo so the build step can find what install fetched.
+  PUPPETEER_CACHE_DIR = "/opt/build/repo/.cache/puppeteer"
+  NODE_VERSION = "20"

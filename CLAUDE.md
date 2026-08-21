@@ -16,24 +16,43 @@ GrowthOS (a **Leadeos** product) — React + Vite SPA backed by Supabase
 (Postgres + Auth + Edge Functions). Repo: `github.com/DKalawarny/Growth-Team-OS`.
 
 It's an AI business advisor ("Solomon" — Claude Opus/Sonnet/Haiku via a
-server-side Edge Function proxy) plus a suite of tools (CFO dashboard, cash
-flow forecasting, hiring planner, GBP audit, AI search visibility, safety
-compliance tracker, work order checklists) for owner-operated trades —
-plumbing, electrical, HVAC, roofing, demolition, masonry, landscaping.
+server-side Edge Function proxy) plus the tools to act on the advice: finances,
+cash flow forecasting, hiring, decisions, playbooks, safety compliance,
+succession.
+
+⭐ **REPOSITIONED (Aug 2026).** The buyer is no longer defined by SECTOR
+(a plumber, a roofer) but by CONVICTION — a Christian business owner who wants
+the business run a particular way. The thesis, in Daniel's words: not everyone
+of God needs to be a minister; some are called to be that person inside an
+ordinary business. That axis cuts across every industry.
+
+**Hard product rules, from Daniel, non-negotiable:**
+- This must NEVER read like a wealth-preacher app. No prosperity gospel in any
+  dilution. Never imply faithfulness produces profit.
+- No gimmicks. "It's still business."
+- Solomon must be as sharp as the best secular advisor available first —
+  what differs is the posture, not the arithmetic.
+- Never advise an owner to press faith on employees (power imbalance + legal
+  exposure).
+- The founder story on /about is DANIEL'S OWN WORDS ONLY. It is currently
+  absent on purpose. Do not fill the gap with plausible narrative.
 
 Target buyer: owner-operators, $500k–$15M revenue, 3–50 people.
 
 ## Pricing
 
-- **$97/mo** ([`price_1TWhaTAiDwj4YybG6xnspbRl`](https://dashboard.stripe.com/test/prices/price_1TWhaTAiDwj4YybG6xnspbRl))
-- **$970/yr** (`price_1TWhaTAiDwj4YybGHNJic1hY`), positioned as "2 months free"
+- **$147/mo**, **$1,470/yr** (positioned as "2 months free")
 - 14-day free trial, no credit card required
-- Hardcoded as `$97/month` in ~8 places: [Landing.jsx:32](src/pages/Landing.jsx),
-  [Pricing.jsx](src/pages/Pricing.jsx), [Comparison.jsx](src/pages/marketing/Comparison.jsx),
-  [Paywall.jsx:137](src/components/billing/Paywall.jsx),
-  [Help.jsx](src/pages/Help.jsx), [TradePage.jsx](src/pages/marketing/TradePage.jsx),
-  [Roadmap.jsx](src/pages/Roadmap.jsx) — if pricing changes, all of these flip
-  together with the Stripe price IDs
+- [`src/lib/pricing.js`](src/lib/pricing.js) is the single source of truth for
+  the human-readable price. `src/lib/seo.js` now imports from it too — the
+  JSON-LD schemas used to hardcode `97` / `CAD` and went on advertising that
+  long after the price changed, which is what an AI assistant quotes when
+  someone asks what this costs. **Never write a price literal anywhere else.**
+
+⚠️ **THE PAGE SAYS $147 AND STRIPE STILL CHARGES $97.** Stripe prices are
+immutable, so going live at $147 means creating two NEW prices and updating
+`STRIPE_PRICE_ID_OWNER` and `STRIPE_PRICE_ID_OWNER_ANNUAL`. Until that happens
+the site advertises one number and bills another. This is the top open item.
 
 Stripe currently in **test mode** ("Leados sandbox" account
 `acct_1TWhOqAiDwj4YybG`).
@@ -48,7 +67,11 @@ Stripe currently in **test mode** ("Leados sandbox" account
   `@anthropic-ai/sdk` with `dangerouslyAllowBrowser` leaked the key in every
   customer's network tab, so `VITE_ANTHROPIC_API_KEY` is **retired** (see
   [`.env.example`](.env.example))
-- **RAG**: OpenAI `text-embedding-3-small` + Haiku-based context compressor
+- **RAG**: `gte-small` via `Supabase.ai.Session` inside the `embed` Edge
+  Function (384-dim) + Haiku-based context compressor. ⭐ **OpenAI is gone
+  entirely** — no key, no vendor, no billing relationship (migration 029).
+  `VITE_OPENAI_API_KEY` and `VITE_VOYAGE_API_KEY` are retired; a `VITE_`
+  prefix ships the key to every browser, so never reintroduce one.
 - **Email**: Resend with a closed template registry in
   [`supabase/functions/send-email/`](supabase/functions/send-email/index.ts)
 - **Payments**: Stripe subscriptions (checkout, customer portal, top-ups, webhook)
