@@ -31,8 +31,20 @@
 # It must print "About GrowthOS", not the homepage title.
 
 [build]
-  # Same command the dashboard already used — pinned here so it lives in git.
-  command = "npm run build"
+  # ⚠️ `npx puppeteer browsers install chrome` is load-bearing, not belt-and-braces.
+  #
+  # Setting PUPPETEER_CACHE_DIR alone did NOT fix this — the deploy after it
+  # reported "All files already uploaded by a previous deploy with the same
+  # commits", meaning dist/ came out byte-identical and the prerender had still
+  # not run. The reason is that puppeteer only downloads Chrome from its
+  # postinstall hook, and Netlify restores a cached node_modules, so the
+  # install step is a no-op and that hook never fires again.
+  #
+  # So the browser is fetched explicitly here instead, at build time, with the
+  # cache dir below already in effect. It is idempotent — a warm cache makes it
+  # a fast no-op — and it does not depend on whether npm decided to install
+  # anything.
+  command = "npx puppeteer browsers install chrome && npm run build"
   publish = "dist"
 
 [build.environment]
