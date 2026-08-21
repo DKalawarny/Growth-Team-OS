@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { HOURS_OPTIONS } from '../lib/businessProfileOptions'
+import { HOURS_OPTIONS, DAYS_OFF_OPTIONS } from '../lib/businessProfileOptions'
 
 /**
  * Check-ins (/checkins).
@@ -37,6 +37,8 @@ const INITIAL_FORM = {
   challenge:       '',
   revenue_update:  '',
   hours_this_week: '',
+  days_off:        '',
+  gave_amount:     '',
   notes:           '',
 }
 
@@ -51,6 +53,10 @@ export default function Checkins() {
   const [nextMilestone, setNextMilestone] = useState(null)
   const [form, setForm]                 = useState(INITIAL_FORM)
   const [showOptional, setShowOptional] = useState(false)
+  // Giving is opt-in at the company level and off by default. Asking an owner
+  // about their tithing because they signed up for business software reads as
+  // a purity test — see migration 028.
+  const [trackGiving, setTrackGiving] = useState(false)
   const [saving, setSaving]             = useState(false)
   const [error, setError]               = useState(null)
   const [expandedId, setExpandedId]     = useState(null)
@@ -61,7 +67,7 @@ export default function Checkins() {
     let cancelled = false
 
     ;(async () => {
-      const [ciRes, msRes] = await Promise.all([
+      const [ciRes, msRes, coRes] = await Promise.all([
         supabase
           .from('checkins')
           .select('*')
@@ -76,10 +82,19 @@ export default function Checkins() {
           .order('sort_order', { ascending: true })
           .limit(1)
           .maybeSingle(),
+        // Opt-in only. A missing column (migration 028 not yet applied) or a
+        // failed read both land on false, which is the safe default: the
+        // giving field simply does not render.
+        supabase
+          .from('companies')
+          .select('track_giving')
+          .eq('id', profile.company_id)
+          .maybeSingle(),
       ])
       if (cancelled) return
       setCheckins(ciRes.data ?? [])
       setNextMilestone(msRes.data ?? null)
+      setTrackGiving(coRes?.data?.track_giving === true)
       setLoading(false)
     })()
 
@@ -117,6 +132,11 @@ export default function Checkins() {
       challenge:       form.challenge.trim(),
       revenue_update:  form.revenue_update.trim() || null,
       hours_this_week: form.hours_this_week || null,
+      // Blank stays null. An unanswered field must never be stored as a zero —
+      // "didn't say" and "took none" are different facts and only one of them
+      // is a problem.
+      days_off:        form.days_off === '' ? null : parseInt(form.days_off, 10),
+      gave_amount:     form.gave_amount === '' ? null : Number(form.gave_amount),
       notes:           form.notes.trim() || null,
     }
 
@@ -207,7 +227,7 @@ export default function Checkins() {
               onClick={() => setShowOptional(true)}
               className="text-sm font-medium text-ink-400 hover:text-ink-600 transition-colors"
             >
-              + Add revenue, hours, or notes
+              + Add revenue, hours, rest, or notes
             </button>
           ) : (
             <div className="space-y-5 pt-4 border-t border-ink-100">
@@ -223,6 +243,27 @@ export default function Checkins() {
                 onChange={v => set('hours_this_week', v)}
                 options={HOURS_OPTIONS}
               />
+              {/* Rest and giving.
+                *
+                * Phrased as observations, never as questions about obedience,
+                * and shown with no target, streak or comparison anywhere near
+                * them. "Days you didn't work" can be answered honestly on a
+                * bad week; "did you keep Sabbath?" can only be failed.
+                */}
+              <SelectField
+                label="Days you didn't work (optional)"
+                value={form.days_off}
+                onChange={v => set('days_off', v)}
+                options={DAYS_OFF_OPTIONS}
+              />
+              {trackGiving && (
+                <TextField
+                  label="Given this period (optional)"
+                  value={form.gave_amount}
+                  onChange={v => set('gave_amount', v.replace(/[^0-9.]/g, ''))}
+                  placeholder="Leave blank if you'd rather not say"
+                />
+              )}
               <TextAreaField
                 label="Notes (optional)"
                 value={form.notes}
