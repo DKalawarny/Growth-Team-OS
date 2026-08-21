@@ -75,10 +75,11 @@ export default function Decision() {
     setSaving(true)
     const { error: insertErr } = await supabase.from('documents').insert({
       company_id:  profile.company_id,
-      created_by:  profile.id,
+      user_id:     profile.id,
       tool_id:     'decision',
       title:       result.decision?.slice(0, 120) || 'A decision',
-      input_data:  form,
+      tags:        [],
+      input_data:  { ...form, context_summary: contextSummary },
       output_data: result,
     })
     setSaving(false)
