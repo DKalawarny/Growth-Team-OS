@@ -13,6 +13,7 @@ import { compressSafetyContext } from './rag/compress'
 import { embed as embedQuery } from './rag/embeddings'
 import { getJurisdictionLinks } from './jurisdictionLinks'
 import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
+import { referenceCanonBlock } from './references'
 
 // Safety vault — char budget for direct loading (no embeddings path).
 // Owner uploads SOPs, SDS sheets, permits. We load the most recent
@@ -81,8 +82,16 @@ const MAX_SNAPSHOT_CHARS   = 4000
 //   - MAX_TOTAL_CHARS:     hard cap across all files to protect the prompt
 //                          budget when the owner has uploaded many short docs.
 const MAX_KNOWLEDGE_FILES = 8
+
 const MAX_CHARS_PER_FILE  = 3000
 const MAX_TOTAL_CHARS     = 18000
+
+// People and work. Kept small on purpose — Solomon needs to know who is here
+// and roughly what they do, not a full HR record.
+const MAX_STAFF       = 40
+const MAX_WORK_ORDERS = 30
+const MAX_PLAYBOOKS   = 20
+
 
 /**
  * Rank order for milestone surfacing.
@@ -149,7 +158,8 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       })
     : Promise.resolve(null)
 
-  const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes] = await Promise.all([
+  const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes,
+         staffRes, woRes, tplRes] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -212,6 +222,31 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
           .order('created_at', { ascending: false })
           .limit(SAFETY_VAULT_LIMIT)
       : Promise.resolve({ data: [] }),
+    // The crew. Without this Solomon cannot say anything real about hiring,
+    // who is carrying too much, or who could run a job without the owner —
+    // he was previously never told these people existed.
+    supabase
+      .from('staff_members')
+      .select('id, name, role, created_at')
+      .eq('company_id', companyId)
+      .order('created_at', { ascending: true })
+      .limit(MAX_STAFF),
+    // Recent work, so "who actually does what here" is evidence rather than
+    // an org chart the owner drew once.
+    supabase
+      .from('work_orders')
+      .select('id, title, status, due_date, staff_member_id, milestone_id, updated_at')
+      .eq('company_id', companyId)
+      .order('updated_at', { ascending: false })
+      .limit(MAX_WORK_ORDERS),
+    // Playbooks — what the business already knows how to do without the owner.
+    supabase
+      .from('work_order_templates')
+      .select('id, name, description')
+      .eq('company_id', companyId)
+      .is('archived_at', null)
+      .order('created_at', { ascending: false })
+      .limit(MAX_PLAYBOOKS),
   ])
 
   const bp        = bpRes.data ?? {}
@@ -394,6 +429,42 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       vision_3yr:        bp.vision_3yr ?? null,
     },
     stage: detectStage(bp.current_revenue),
+    // ── The people ────────────────────────────────────────────────────────
+    // Solomon was previously never told who works here, which made every
+    // answer about hiring, load, or who could run a job without the owner
+    // pure generalisation. `tenure_months` is derived rather than raw dates
+    // so he reasons about "been here a while" instead of quoting a hire date
+    // back at the owner.
+    people: (staffRes?.data ?? []).map(m => ({
+      name:   m.name,
+      role:   m.role ?? null,
+      tenure_months: m.created_at
+        ? Math.max(0, Math.round((Date.now() - new Date(m.created_at).getTime()) / 2_629_800_000))
+        : null,
+      open_work: (woRes?.data ?? []).filter(
+        w => w.staff_member_id === m.id && w.status !== 'done'
+      ).length,
+    })),
+    // Recent work, so "who does what here" is evidence rather than an org
+    // chart drawn once and never revisited.
+    recent_work: (woRes?.data ?? []).slice(0, MAX_WORK_ORDERS).map(w => ({
+      title:    w.title,
+      status:   w.status,
+      due_date: w.due_date ?? null,
+      assigned: w.staff_member_id
+        ? ((staffRes?.data ?? []).find(m => m.id === w.staff_member_id)?.name ?? 'someone')
+        : null,
+    })),
+    // What the business already knows how to do without the owner in the room.
+    // Directly relevant to succession and to "can I step back".
+    playbooks: (tplRes?.data ?? []).map(t => ({
+      name: t.name,
+      description: t.description ?? null,
+    })),
+    // Curated book canon. Solomon may reference ONLY these titles — see the
+    // REFERENCING BOOKS section of ADVISOR_SYSTEM_PROMPT and lib/references.js
+    // for why recalling books from training data is not acceptable here.
+    reference_canon: referenceCanonBlock(),
     // Jurisdiction-specific authority links — used by Solomon (and any tool
     // prompt) to REDIRECT instead of advise on legal / employment-standards /
     // workplace-safety / tax questions. Null when location is missing or
