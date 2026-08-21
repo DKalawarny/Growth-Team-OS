@@ -1,172 +1,105 @@
 -- ============================================================================
--- Reset the Deconstructors workspace into a clean demo workspace
+-- Point the account at a fresh, empty demo workspace
 --
--- ⚠️ READ THIS BEFORE RUNNING ANYTHING. THE DELETES ARE PERMANENT.
+-- Daniel picked the non-destructive route and does not care about keeping the
+-- Deconstructors data. Both of those are true at once, and the second is not a
+-- reason to do the first differently: deleting rows nobody minds about is work
+-- with no payoff and a real downside if it goes wrong halfway.
 --
--- Run it in the Supabase SQL editor in FOUR passes, in order. Step 1 deletes
--- nothing — it shows you what you are about to destroy. Do not skip it.
+-- So this creates a new company and repoints the profile at it. RLS scopes
+-- every customer table by profile.company_id, so the app is instantly a clean
+-- workspace. The old rows stay in the database, invisible to the app, and can
+-- be dropped later at leisure — or never.
 --
--- WHAT PROTECTS YOU IF THIS GOES WRONG
+-- ⭐ Reversible in one statement. Set company_id back and everything returns.
 --
--- The project has physical backups (most recent: 2026-08-21 13:20 UTC). That
--- is a real recovery path, but it restores the WHOLE project — it would also
--- roll back migration 030 and the terms acceptance from this afternoon. So
--- treat it as a fire escape, not an undo button.
---
--- ⚠️ I could not take a clean logical dump first: `supabase db dump` needs
--- Docker, and Docker was not running. If you want a proper row-level backup
--- before this, start Docker Desktop and say so — that is the belt-and-braces
--- version and it takes about a minute.
---
--- ⭐ THERE IS A NON-DESTRUCTIVE ALTERNATIVE. See OPTION B at the bottom. It
--- gives you the same clean, renamed workspace without deleting anything, by
--- pointing your profile at a brand-new company. The Deconstructors data stays
--- in the database, invisible, and recoverable if you ever want it. Unless you
--- specifically want the rows gone, B is the better trade.
+-- Run STEP 1 and STEP 2. Step 3 is optional but recommended, and step 4 is a
+-- reminder about something SQL cannot reach.
 -- ============================================================================
 
 
--- ── STEP 1 — LOOK AT THE TARGET. Deletes nothing. ───────────────────────────
--- Confirm this is the right company and see what would go.
+-- ── STEP 1 — look first ─────────────────────────────────────────────────────
+-- Confirm exactly one company matches, and see whose profile is attached.
 
-with c as (
-  select id, name from public.companies where name ilike '%deconstruct%'
-)
-select
-  (select name from c)                                                      as company,
-  (select id   from c)                                                      as company_id,
-  (select count(*) from public.milestones      m  where m.company_id  = (select id from c)) as milestones,
-  (select count(*) from public.chat_messages   cm where cm.company_id = (select id from c)) as chat_messages,
-  (select count(*) from public.documents       d  where d.company_id  = (select id from c)) as generated_docs,
-  (select count(*) from public.knowledge_files k  where k.company_id  = (select id from c)) as uploaded_files,
-  (select count(*) from public.checkins        ci where ci.company_id = (select id from c)) as checkins,
-  (select count(*) from public.work_orders     w  where w.company_id  = (select id from c)) as work_orders,
-  (select count(*) from public.staff_members   s  where s.company_id  = (select id from c)) as staff,
-  (select count(*) from public.solomon_memory  sm where sm.company_id = (select id from c)) as memories,
-  (select count(*) from public.safety_documents sd where sd.company_id = (select id from c)) as safety_docs;
+select c.id, c.name, c.qb_realm_id is not null as quickbooks_connected,
+       (select count(*) from public.profiles p where p.company_id = c.id) as profiles_attached
+from   public.companies c
+where  c.name ilike '%deconstruct%';
 
--- ⚠️ If `company` comes back NULL, the name does not match — STOP and check
--- `select id, name from public.companies;` rather than editing this blindly.
--- ⚠️ If more than one row matches '%deconstruct%', STOP. Every statement below
--- would hit both.
+-- ⚠️ Expect ONE row. If you get none, the name does not match — list them all
+-- with `select id, name from public.companies;` before going further. If you
+-- get more than one, stop: step 2 would repoint profiles on both.
 
 
--- ── STEP 2 — DELETE THE CONTENT ─────────────────────────────────────────────
--- Everything here is business data. None of it is account plumbing.
---
--- What is deliberately NOT in this list, and why:
---   profiles           — that is YOUR user row. Deleting it locks you out.
---   company_members    — your membership link. Deleting it orphans you.
---   companies          — renamed in step 3, not deleted.
---   terms_acceptances  — keyed to user, not company. Deleting it just makes
---                        the gate ask you again for no reason.
---   subscriptions      — harmless, and payments are off during the pilot.
+-- ── STEP 2 — new company, profile repointed. This is the whole change. ──────
+-- Rename the string below to whatever you want the demo business called.
+-- 'Bridgewater Mechanical' matches the example on leadeos.com/demo, so the
+-- page and the live workspace tell the same story.
 
 begin;
 
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.document_chunks          where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.chat_chunks              where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.knowledge_files          where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.documents                where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.chat_messages            where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.solomon_memory           where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.checkins                 where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.work_order_step_comments where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.work_orders              where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.work_order_templates     where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.staff_members            where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.safety_incidents         where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.safety_documents         where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.milestones               where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.financial_snapshots      where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.gbp_profiles             where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.qb_sync_log              where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.usage_events             where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.email_log                where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.company_invites          where company_id = (select id from c);
-
--- ⚠️ QuickBooks. These hold the OAuth tokens and the connection to the real
--- Deconstructors books. For a demo workspace they must go — otherwise the
--- demo pulls live financials from a real company.
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.integration_secrets      where company_id = (select id from c);
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.integrations             where company_id = (select id from c);
-
--- The business profile holds the real revenue, margin and goals. Removing the
--- row sends you back through onboarding on next load, which is exactly what
--- you want for setting up the demo business.
-with c as (select id from public.companies where name ilike '%deconstruct%')
-delete from public.business_profiles        where company_id = (select id from c);
+with newco as (
+  insert into public.companies (name)
+  values ('Bridgewater Mechanical')
+  returning id
+)
+update public.profiles
+set    company_id = (select id from newco)
+where  company_id = (select id from public.companies where name ilike '%deconstruct%');
 
 commit;
 
+-- Confirm: this should now show your profile against the new company.
+select p.id as profile_id, c.id as company_id, c.name
+from   public.profiles p
+join   public.companies c on c.id = p.company_id;
 
--- ── STEP 3 — RENAME ─────────────────────────────────────────────────────────
--- Change the name to whatever you want the demo business called.
+-- Next time you load the app it will send you through onboarding, because the
+-- new company has no business_profiles row yet. That is the intended path —
+-- it is how you set up the demo business.
+
+
+-- ── STEP 3 — revoke the QuickBooks tokens on the OLD company ────────────────
+-- Optional for the demo, worth doing anyway.
+--
+-- ⚠️ The QBO tokens live on the companies row itself, not only in
+-- integration_secrets. The new company has none, so the demo workspace is
+-- already clean — but the Deconstructors row still holds working credentials
+-- against a real business's books, in a project you are about to hand round as
+-- a demo. Clearing them costs nothing and closes that.
 
 update public.companies
-set    name = 'Bridgewater Mechanical'
+set    qb_access_token_encrypted  = null,
+       qb_refresh_token_encrypted = null,
+       qb_realm_id                = null,
+       qb_token_expires_at        = null,
+       qb_connected_at            = null
 where  name ilike '%deconstruct%';
 
-select id, name from public.companies;
+delete from public.integration_secrets
+where  company_id = (select id from public.companies where name ilike '%deconstruct%');
 
 
--- ── STEP 4 — STORAGE, WHICH SQL DOES NOT TOUCH ──────────────────────────────
--- ⚠️ Deleting knowledge_files rows removes the DATABASE records. The actual
--- uploaded PDFs still sit in Supabase Storage and are not affected by anything
--- above. Clear them by hand: Supabase dashboard → Storage → the bucket → select
--- the Deconstructors files → delete.
---
--- Worth doing. Those files include real foreman procedures and an A/R aging
+-- ── STEP 4 — storage, which SQL cannot touch ────────────────────────────────
+-- The uploaded PDFs live in Supabase Storage and none of the above affects
+-- them. They are invisible to the new workspace, so nothing is broken by
+-- leaving them — but they include real foreman procedures and an A/R aging
 -- report for a real company.
+--
+-- Clear them when convenient: dashboard → Storage → bucket → select → delete.
 
 
 -- ============================================================================
--- OPTION B — the non-destructive version. Run INSTEAD of steps 2 and 3.
+-- ROLLBACK, if you ever want the old workspace back
 --
--- Makes a fresh empty company and points your profile at it. RLS scopes
--- everything by profile.company_id, so the app immediately behaves as a clean
--- workspace — while every Deconstructors row stays in the database, invisible,
--- and recoverable by switching the id back.
+--   update public.profiles
+--   set    company_id = (select id from public.companies where name ilike '%deconstruct%')
+--   where  id = '<your-profile-id>';
 --
--- Same visible result. Nothing destroyed. Reversible in one statement.
+-- That is the entire undo. Nothing was destroyed.
 --
--- ⚠️ Replace the email with the login you actually use.
+-- CLEANING UP FOR REAL, once you are sure you never want it:
+-- delete from public.companies where name ilike '%deconstruct%';
+-- ⚠️ Only after profiles no longer points there. Cascades will take the
+-- company-scoped rows with it.
 -- ============================================================================
-
--- begin;
---
--- insert into public.companies (name)
--- values ('Bridgewater Mechanical')
--- returning id;
---
--- -- paste the returned id below, then:
--- update public.profiles
--- set    company_id = '<the-new-company-id>'
--- where  id = (select id from auth.users where email = 'you@example.com');
---
--- commit;
---
--- -- To undo, set company_id back to the Deconstructors id. That is the whole
--- -- rollback. Nothing was deleted.
