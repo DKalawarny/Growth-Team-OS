@@ -389,7 +389,7 @@ export default function Advisor() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#0b1110' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#F6F8F8' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} />
 
       <div className="flex-1 min-h-0 flex">
@@ -443,11 +443,11 @@ function Header({ companyName, spendInfo }) {
     const pct     = Math.min(spendInfo.used / spendInfo.cap, 1)
     const remaining = Math.max(spendInfo.cap - spendInfo.used, 0)
     const isNearCap = pct >= 0.8
-    const color = isNearCap ? 'rgba(251,191,36,0.7)' : 'rgba(255,255,255,0.25)'
+    const color = isNearCap ? 'rgba(251,191,36,0.7)' : 'rgba(13,20,19,0.25)'
     return (
       <div
         className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium"
-        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color }}
+        style={{ background: 'rgba(13,20,19,0.04)', border: '1px solid rgba(13,20,19,0.09)', color }}
         title={`$${spendInfo.used.toFixed(2)} of $${spendInfo.cap.toFixed(0)} monthly budget used`}
       >
         <span style={{ color }}>
@@ -458,7 +458,7 @@ function Header({ companyName, spendInfo }) {
   })() : null
 
   return (
-    <header className="px-4 sm:px-6 py-3 sm:py-3.5 flex-shrink-0" style={{ background: '#161b22', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <header className="px-4 sm:px-6 py-3 sm:py-3.5 flex-shrink-0" style={{ background: '#161b22', borderBottom: '1px solid rgba(13,20,19,0.05)' }}>
       <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -466,8 +466,8 @@ function Header({ companyName, spendInfo }) {
             <span className="text-sm" aria-hidden>💡</span>
           </div>
           <div className="min-w-0">
-            <h1 className="text-sm font-bold text-white leading-tight">Solomon</h1>
-            <p className="text-[11px] text-white/30 truncate">
+            <h1 className="text-sm font-bold text-ink-900 leading-tight">Solomon</h1>
+            <p className="text-[11px] text-ink-300 truncate">
               {dayLabel}{companyName ? ` · ${companyName}` : ''}
             </p>
           </div>
@@ -478,9 +478,9 @@ function Header({ companyName, spendInfo }) {
             to="/checkins"
             aria-label="Log check-in"
             className="flex items-center gap-1.5 text-xs font-medium transition-colors px-2.5 sm:px-3 py-1.5 rounded-lg"
-            style={{ color: 'rgba(255,255,255,0.45)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+            style={{ color: 'rgba(13,20,19,0.45)', background: 'rgba(13,20,19,0.05)', border: '1px solid rgba(13,20,19,0.10)' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#0D1413'; e.currentTarget.style.background = 'rgba(13,20,19,0.10)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(13,20,19,0.45)'; e.currentTarget.style.background = 'rgba(13,20,19,0.05)' }}
           >
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
               <path d="M8 2v4l2.5 2.5"/>
@@ -508,7 +508,7 @@ function LoadingHistory() {
             className="h-12 rounded-2xl animate-pulse"
             style={{
               width: i % 2 === 0 ? '48%' : '62%',
-              background: i % 2 === 0 ? 'rgba(180,83,9,0.3)' : 'rgba(255,255,255,0.07)',
+              background: i % 2 === 0 ? 'rgba(180,83,9,0.3)' : 'rgba(13,20,19,0.05)',
             }}
           />
         </div>
@@ -541,8 +541,8 @@ function WelcomeBlock({ profile, onPick }) {
           style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
           <span className="text-2xl" aria-hidden>💡</span>
         </div>
-        <h2 className="text-xl font-bold text-white">Hey {firstName}.</h2>
-        <p className="text-sm mt-1 max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h2 className="text-xl font-bold text-ink-900">Hey {firstName}.</h2>
+        <p className="text-sm mt-1 max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(13,20,19,0.45)' }}>
           I know your business, your roadmap, and your goals.
           Ask me anything — or I'll kick things off when you come back tomorrow.
         </p>
@@ -554,9 +554,9 @@ function WelcomeBlock({ profile, onPick }) {
             type="button"
             onClick={() => onPick(s)}
             className="text-left text-sm transition-colors rounded-xl px-4 py-3"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
+            style={{ background: 'rgba(13,20,19,0.04)', border: '1px solid rgba(13,20,19,0.09)', color: 'rgba(13,20,19,0.50)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(13,20,19,0.09)'; e.currentTarget.style.color = '#0D1413' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(13,20,19,0.04)'; e.currentTarget.style.color = 'rgba(13,20,19,0.50)' }}
           >
             {s}
           </button>
@@ -599,7 +599,7 @@ function Bubble({ role, content, streaming = false, onSave }) {
           }`}
           style={isUser
             ? { background: '#0d1413', color: '#fff', borderBottomRightRadius: '4px' }
-            : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.90)', borderBottomLeftRadius: '4px' }
+            : { background: '#FFFFFF', border: '1px solid rgba(13,20,19,0.09)', color: '#1B2422', borderBottomLeftRadius: '4px' }
           }
         >
           {isUser
@@ -616,7 +616,7 @@ function Bubble({ role, content, streaming = false, onSave }) {
             className="absolute -bottom-5 right-1 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded"
             style={{
               opacity: (hovered || saved) ? 1 : 0,
-              color: saved ? '#4ade80' : 'rgba(255,255,255,0.35)',
+              color: saved ? '#4ade80' : 'rgba(13,20,19,0.35)',
               pointerEvents: hovered || saved ? 'auto' : 'none',
             }}
           >
@@ -677,7 +677,7 @@ function MarkdownContent({ text, streaming }) {
       }
       nodes.push(
         <pre key={nodes.length} className="my-2 px-3 py-2 rounded-lg text-xs font-mono overflow-x-auto"
-          style={{ background: 'rgba(0,0,0,0.35)', color: 'rgba(255,255,255,0.8)' }}>
+          style={{ background: 'rgba(13,20,19,0.05)', color: '#1B2422' }}>
           {codeLines.join('\n')}
         </pre>
       )
@@ -692,7 +692,7 @@ function MarkdownContent({ text, streaming }) {
       const level = hMatch[1].length
       const Tag   = level === 1 ? 'h2' : level === 2 ? 'h3' : 'h4'
       const cls   = level === 1 ? 'text-base font-bold mt-3 mb-1' : 'text-sm font-bold mt-2 mb-1'
-      nodes.push(<Tag key={nodes.length} className={cls} style={{ color: 'rgba(255,255,255,0.95)' }}>{inlineRender(hMatch[2])}</Tag>)
+      nodes.push(<Tag key={nodes.length} className={cls} style={{ color: '#0D1413' }}>{inlineRender(hMatch[2])}</Tag>)
       i++
       continue
     }
@@ -707,7 +707,7 @@ function MarkdownContent({ text, streaming }) {
         items.push(<li key={i} className="mb-0.5">{inlineRender(m[2])}</li>)
         i++
       }
-      nodes.push(<ul key={nodes.length} className="list-disc list-inside my-1.5 space-y-0.5 text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>{items}</ul>)
+      nodes.push(<ul key={nodes.length} className="list-disc list-inside my-1.5 space-y-0.5 text-sm" style={{ color: '#1B2422' }}>{items}</ul>)
       continue
     }
 
@@ -721,7 +721,7 @@ function MarkdownContent({ text, streaming }) {
         items.push(<li key={i} className="mb-0.5">{inlineRender(m[1])}</li>)
         i++
       }
-      nodes.push(<ol key={nodes.length} className="list-decimal list-inside my-1.5 space-y-0.5 text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>{items}</ol>)
+      nodes.push(<ol key={nodes.length} className="list-decimal list-inside my-1.5 space-y-0.5 text-sm" style={{ color: '#1B2422' }}>{items}</ol>)
       continue
     }
 
@@ -755,9 +755,9 @@ function inlineRender(text) {
   let m
   while ((m = regex.exec(text)) !== null) {
     if (m.index > last) parts.push(text.slice(last, m.index))
-    if (m[2])      parts.push(<strong key={m.index} className="font-bold" style={{ color: 'rgba(255,255,255,0.98)' }}>{m[2]}</strong>)
+    if (m[2])      parts.push(<strong key={m.index} className="font-bold" style={{ color: '#0D1413' }}>{m[2]}</strong>)
     else if (m[3]) parts.push(<em key={m.index} className="italic">{m[3]}</em>)
-    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(0,0,0,0.3)', color: '#6fd4ae' }}>{m[4]}</code>)
+    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(13,20,19,0.06)', color: '#6fd4ae' }}>{m[4]}</code>)
     last = m.index + m[0].length
   }
   if (last < text.length) parts.push(text.slice(last))
@@ -769,14 +769,14 @@ function MorningThinkingBubble() {
     <div className="flex justify-start">
       <div
         className="rounded-[18px] px-4 py-3 flex items-center gap-2"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', borderBottomLeftRadius: '4px' }}
+        style={{ background: 'rgba(13,20,19,0.05)', border: '1px solid rgba(13,20,19,0.09)', borderBottomLeftRadius: '4px' }}
       >
         <div className="flex gap-1">
           {[0, 150, 300].map(d => (
-            <span key={d} className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'rgba(255,255,255,0.3)', animationDelay: `${d}ms` }} />
+            <span key={d} className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'rgba(13,20,19,0.30)', animationDelay: `${d}ms` }} />
           ))}
         </div>
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>Reading your context…</span>
+        <span className="text-xs" style={{ color: 'rgba(13,20,19,0.30)' }}>Reading your context…</span>
       </div>
     </div>
   )
@@ -787,11 +787,11 @@ function ThinkingBubble() {
     <div className="flex justify-start">
       <div
         className="rounded-[18px] px-4 py-3"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', borderBottomLeftRadius: '4px' }}
+        style={{ background: 'rgba(13,20,19,0.05)', border: '1px solid rgba(13,20,19,0.09)', borderBottomLeftRadius: '4px' }}
       >
         <div className="flex gap-1">
           {[0, 150, 300].map(d => (
-            <span key={d} className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'rgba(255,255,255,0.3)', animationDelay: `${d}ms` }} />
+            <span key={d} className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'rgba(13,20,19,0.30)', animationDelay: `${d}ms` }} />
           ))}
         </div>
       </div>
@@ -804,7 +804,7 @@ const Composer = forwardRef(function Composer(
   ref,
 ) {
   return (
-    <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background: '#161b22', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background: '#161b22', borderTop: '1px solid rgba(13,20,19,0.05)' }}>
       <div className="max-w-3xl mx-auto">
         {error && (
           typeof error === 'object' && error.code === 'spend_cap_exceeded'
@@ -828,8 +828,8 @@ const Composer = forwardRef(function Composer(
             style={{
               minHeight: '44px',
               maxHeight: '160px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(13,20,19,0.04)',
+              border: '1px solid rgba(13,20,19,0.10)',
               color: '#fff',
             }}
             onInput={e => {
@@ -841,14 +841,14 @@ const Composer = forwardRef(function Composer(
             type="submit"
             disabled={disabled || !value.trim()}
             aria-label="Send"
-            className="rounded-xl px-4 py-2.5 text-sm font-bold text-white disabled:opacity-30 transition-opacity flex-shrink-0 min-h-[44px]"
+            className="rounded-xl px-4 py-2.5 text-sm font-bold text-ink-900 disabled:opacity-30 transition-opacity flex-shrink-0 min-h-[44px]"
             style={{ background: '#14a67b' }}
           >
             Send
           </button>
         </form>
         {/* Hint: only show desktop shortcut hint on devices with a real keyboard */}
-        <p className="text-[10px] mt-2 text-center hidden sm:block" style={{ color: 'rgba(255,255,255,0.2)' }}>
+        <p className="text-[10px] mt-2 text-center hidden sm:block" style={{ color: 'rgba(13,20,19,0.20)' }}>
           Enter to send · Shift+Enter for a new line
         </p>
       </div>

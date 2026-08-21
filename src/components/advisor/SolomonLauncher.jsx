@@ -63,13 +63,13 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
   const suggestedLabels = new Set(suggested.map(s => s.label))
 
   return (
-    <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-5 overflow-y-auto scrollbar-hide border-l border-white/8 px-5 py-6">
+    <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-5 overflow-y-auto scrollbar-hide border-l border-ink-100 bg-[#EDF1F1] px-5 py-6">
 
       <div className="flex flex-col gap-1.5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-white/35">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">
           What Solomon can do
         </p>
-        <p className="text-[12.5px] leading-[1.5] text-white/40">
+        <p className="text-[12.5px] leading-[1.5] text-ink-400">
           Everything the tools page held — it just happens in the conversation now.
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
         if (!items.length) return null
         return (
           <div key={group.title} className="flex flex-col gap-1">
-            <p className="px-3 text-[10.5px] font-bold tracking-[0.05em] text-white/25 uppercase">
+            <p className="px-3 text-[10.5px] font-bold tracking-[0.05em] text-ink-300 uppercase">
               {group.title}
             </p>
             {items.map(item => (
@@ -100,14 +100,14 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
         )
       })}
 
-      <div className="mt-auto pt-4 border-t border-white/8 flex flex-col gap-1.5">
-        <p className="text-[12.5px] leading-[1.5] text-white/40">
+      <div className="mt-auto pt-4 border-t border-ink-100 flex flex-col gap-1.5">
+        <p className="text-[12.5px] leading-[1.5] text-ink-400">
           Everything he makes is saved to your documents.
         </p>
-        <Link to="/documents" className="text-[12.5px] font-semibold text-brand-400 hover:text-brand-300 transition-colors">
+        <Link to="/documents" className="text-[12.5px] font-semibold text-brand-700 hover:text-brand-800 transition-colors">
           See what’s there →
         </Link>
-        <Link to="/context" className="text-[12.5px] font-semibold text-white/40 hover:text-white/70 transition-colors">
+        <Link to="/context" className="text-[12.5px] font-semibold text-ink-400 hover:text-ink-700 transition-colors">
           What he’s working from →
         </Link>
       </div>
@@ -124,8 +124,8 @@ function Row({ item, onPick, highlight = false }) {
         className={[
           'w-full text-left px-3 py-2.5 rounded-[10px] text-[13.5px] transition-colors',
           highlight
-            ? 'bg-brand-600/15 text-brand-300 font-semibold hover:bg-brand-600/25'
-            : 'text-white/65 hover:bg-white/6 hover:text-white/90',
+            ? 'bg-brand-50 text-brand-800 font-semibold hover:bg-brand-100'
+            : 'text-ink-600 hover:bg-white hover:text-ink-900',
         ].join(' ')}
       >
         {item.label}
@@ -134,7 +134,7 @@ function Row({ item, onPick, highlight = false }) {
         <Link
           to={item.to}
           title="Open the full tool"
-          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-white/30 hover:text-white/70 p-1"
+          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-ink-300 hover:text-ink-700 p-1"
         >
           <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M7 17 17 7" /><path d="M8 7h9v9" />

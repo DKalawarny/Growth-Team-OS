@@ -184,13 +184,13 @@ export default function Sidebar() {
     : '?'
 
   return (
-    <aside className="hidden lg:flex w-60 shrink-0 bg-ink-900 flex-col h-screen sticky top-0 border-r border-ink-800">
+    <aside className="hidden lg:flex w-60 shrink-0 bg-[#EDF1F1] flex-col h-screen sticky top-0 border-r border-ink-100">
 
       {/* Logo */}
-      <div className="px-5 pt-6 pb-5 border-b border-ink-800">
+      <div className="px-5 pt-6 pb-5 border-b border-ink-100">
         <div className="flex items-center gap-2 mb-0.5">
           <span className="text-lg font-black tracking-tight">
-            <span className="text-white">Growth</span>
+            <span className="text-ink-900">Growth</span>
             <span className="text-brand-400">OS</span>
           </span>
         </div>
@@ -218,8 +218,8 @@ export default function Sidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-white/8 text-white'
-                    : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
+                    ? 'bg-white text-ink-900 shadow-sm'
+                    : 'text-ink-500 hover:bg-white/70 hover:text-ink-900'
                 }`
               }
             >
@@ -230,7 +230,7 @@ export default function Sidebar() {
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block truncate">{label}</span>
-                    {sublabel && <span className="block text-[10px] text-ink-600 leading-tight mt-0.5">{sublabel}</span>}
+                    {sublabel && <span className="block text-[10px] text-ink-400 leading-tight mt-0.5">{sublabel}</span>}
                   </span>
 
                   {/* Advisor morning opener indicator — amber pulse dot */}
@@ -269,8 +269,8 @@ export default function Sidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
               isActive
-                ? 'bg-white/8 text-white'
-                : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
+                ? 'bg-white text-ink-900'
+                : 'text-ink-500 hover:bg-white/70 hover:text-ink-900'
             }`
           }
         >
@@ -290,8 +290,8 @@ export default function Sidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
               isActive
-                ? 'bg-white/8 text-white'
-                : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
+                ? 'bg-white text-ink-900'
+                : 'text-ink-500 hover:bg-white/70 hover:text-ink-900'
             }`
           }
         >
@@ -308,17 +308,17 @@ export default function Sidebar() {
       </div>
 
       {/* User section + sign out */}
-      <div className="px-3 py-4 border-t border-ink-800">
+      <div className="px-3 py-4 border-t border-ink-100">
         {profile?.name && (
           <div className="flex items-center gap-3 px-3 py-2.5 mb-1 rounded-lg">
             {/* Avatar */}
             <div className="w-7 h-7 rounded-full bg-gold-gradient flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-black text-white">{initials}</span>
+              <span className="text-[10px] font-black text-ink-900">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-ink-200 truncate">{profile.name}</p>
+              <p className="text-xs font-semibold text-ink-700 truncate">{profile.name}</p>
               {profile.company_id && (
-                <p className="text-[10px] text-ink-600 truncate">Owner</p>
+                <p className="text-[10px] text-ink-400 truncate">Owner</p>
               )}
             </div>
           </div>
@@ -326,7 +326,7 @@ export default function Sidebar() {
 
         <button
           onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-ink-500 hover:bg-white/5 hover:text-ink-300 transition-all duration-150"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-ink-500 hover:bg-white/70 hover:text-ink-900 transition-all duration-150"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
