@@ -37,12 +37,12 @@ const TRADES = {
       'Cash flow is hostage to slow-paying property managers and GCs',
       'You estimate two-hour calls in 30 seconds at the kitchen table',
       'Hiring an apprentice is a coin flip — no scorecard, all gut',
-      'Customers ask Google or AI "best plumber near me" and your competitor with worse work shows up first',
+      'You want this run a particular way, and nobody you can ask about the numbers understands why that matters',
     ],
     examples: [
       'Solomon flagging a 14-day cash gap from a slow-paying commercial client before payroll week',
       'A scope sheet for a kitchen reno that includes the actual material list, not a generic template',
-      'A GBP audit telling you why three local plumbers outrank you',
+      'A written playbook for the callout you do fifty times a year, so it stops living only in your head',
     ],
     cta: 'Built for plumbing contractors and shop owners',
   },
@@ -80,7 +80,7 @@ const TRADES = {
     examples: [
       'A 13-week cash forecast that knows your Q1 dip is coming',
       'Solomon helping you decide: another tech, or pricing changes first?',
-      'AI search visibility audit so you actually appear when someone asks "best HVAC near me"',
+      'A playbook for the seasonal maintenance run, written down once and handed to a tech',
     ],
     cta: 'Built for HVAC, heating, and cooling contractors',
   },
@@ -94,12 +94,12 @@ const TRADES = {
       'Insurance jobs come in waves — you\'re feast-or-famine on cash',
       'Hail and storm work spikes demand and your team can\'t scale fast enough',
       'Material lead times surprise you mid-project',
-      'Your "best" lead source last year became your worst this year — but you don\'t know why',
+      'Storm money tempts you into decisions you would not make in a calm quarter',
     ],
     examples: [
       'Cash flow forecasting that accounts for insurance pay timing',
       'A hiring scorecard for a foreman with 5 years of storm-work experience',
-      'A GBP audit that explains why roofing competitors outrank you on weather-event days',
+      'Solomon arguing both sides of taking on a crew you may not be able to keep past the season',
     ],
     cta: 'Built for roofing contractors and storm-restoration crews',
   },
@@ -132,12 +132,12 @@ const TRADES = {
       'Six months of revenue has to carry twelve months of fixed costs',
       'Crews ramp up in March, get cut in October — hiring is a yearly puzzle',
       'Maintenance contracts keep the lights on but design-build pays the rent',
-      'Customers Google "landscapers near me" — if you\'re not in the top 3, you\'re invisible',
+      'You are the only one who knows how any of it actually works, and you have not had a full week off in years',
     ],
     examples: [
       'A cash forecast that knows winter is coming',
       'Hiring scorecards for the seasonal foreman vs. the year-round designer',
-      'GBP audit + AI visibility for the spring search spike',
+      'A succession picture: what would have to be true for someone else to run the spring',
     ],
     cta: 'Built for landscaping, lawn care, and design-build contractors',
   },
@@ -150,8 +150,8 @@ export default function TradePage() {
   if (!data) return <Navigate to="/" replace />
 
   const meta = buildPageMeta({
-    title:       `GrowthOS for ${data.label} — AI advisor + business tools for ${data.h1Trade}`,
-    description: `AI business advisor and full operating system built for ${data.label}. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
+    title:       `GrowthOS for ${data.label} — an advisor who knows ${data.h1Trade}`,
+    description: `An AI business advisor for Christian owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
     path:        `/for/${trade}`,
   })
 
@@ -170,8 +170,7 @@ export default function TradePage() {
         <script type="application/ld+json">{jsonLd(softwareApplicationSchema())}</script>
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        `GrowthOS for ${data.label}`,
-          description: `AI business advisor and operating system for ${data.label}. CFO dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit.`,
-          price:       String(PRICE_MONTHLY_USD),
+          description: `An AI business advisor for Christian owners running ${data.label}. Finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession.`,
         }))}</script>
       </Helmet>
 
@@ -193,7 +192,7 @@ export default function TradePage() {
           </h1>
           <p className="text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
             Built around how {data.h1Trade} businesses actually run. Cash flow,
-            hiring, marketing visibility, compliance — all in one place, all
+            hiring, the hard decisions, compliance — all in one place, all
             connected, all for ${PRICE_MONTHLY_USD}/month.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -267,7 +266,7 @@ export default function TradePage() {
               ['💡', 'Solomon — AI advisor'],
               ['📈', 'CFO Dashboard'],
               ['📊', 'Cash Flow Forecast'],
-              ['📍', 'Local & AI Visibility'],
+              ['📖', 'Playbooks'],
               ['💰', 'Offer Builder + cost guide'],
               ['🎯', 'Hiring Planner'],
               ['🦺', 'Safety & Compliance'],

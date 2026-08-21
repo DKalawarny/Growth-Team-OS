@@ -14,7 +14,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  * / — public marketing landing page.
  *
  * Structured to convert service-business owners:
- *   Hero → Problem → Solomon showcase → Tools → Built-for trades → How it works → Price anchor → CTA
+ *   Hero → Problem → Solomon showcase → Tools → Integrations → How it works → Price anchor → CTA
  *
  * SEO posture (see src/lib/seo.js for the canonical config):
  *   - Per-page <Helmet> with rich meta + canonical + og/twitter
@@ -22,10 +22,11 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  *     (what category we're in + price). These power Google rich results
  *     and let AI assistants answer "what is GrowthOS?" / "how much does
  *     it cost?" without crawling the visible page.
- *   - Keyword breadth handled by the visible TradesSection — every
- *     plausible specialty trade and home-service vertical is enumerated
- *     once on the page so we rank for "AI advisor for [trade]" queries
- *     without making the hero copy a keyword-stuffed mess.
+ *   ⚠️ There used to be an sr-only div here listing ~55 trades for crawlers.
+ *   It went with the reposition: the buyer is now defined by conviction, not
+ *   sector, so that list ranked us for the wrong queries — and hidden text
+ *   that exists only for crawlers is a liability on a site whose whole pitch
+ *   is that it does not tell you things that are not so.
  */
 
 const LANDING_META = buildPageMeta({
@@ -129,7 +130,7 @@ export default function Landing() {
       <ProblemSection />
       <SolomonSection />
       <ToolsSection />
-      <TradesSection />
+      <IntegrationsSection />
       <HowItWorksSection />
       <PriceSection />
       <ClosingCTA />
@@ -186,141 +187,6 @@ function VideoSection() {
             </div>
           </div>
         )}
-      </div>
-    </section>
-  )
-}
-
-// ── Cost guide ────────────────────────────────────────────────────────────────
-//
-// This is the moat. Nobody else in the bundle space has a structured
-// pricing/cost-guide layer the way we do (the RS-Means-equivalent set up
-// for our platform's quoting flow). Surface it on the landing page so
-// people get the wedge — not just "AI advisor" but "AI advisor + the
-// only quoting tool that knows what materials actually cost in your
-// market."
-
-function CostGuideSection() {
-  return (
-    <section className="bg-gradient-to-br from-brand-50 to-white py-20 border-b border-brand-100">
-      <div className="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <p className="text-brand-700 text-xs font-bold uppercase tracking-widest mb-3">
-            What nobody else has
-          </p>
-          <h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight mb-5">
-            The cost guide<br/>built into your quoting.
-          </h2>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            Most quoting tools hand you an empty template and say "good luck." Ours
-            ships with structured cost data — material rates, labour benchmarks,
-            disposal and tipping figures — organized the way your trade actually
-            quotes work.
-          </p>
-          <p className="text-gray-700 leading-relaxed mb-6">
-            Combined with Solomon, you're not just generating a quote — you're getting
-            an AI second-opinion on whether your numbers are tight, whether you missed
-            a line item, and whether your margin holds at this price.
-          </p>
-          <ul className="space-y-2 mb-7">
-            <li className="flex gap-3 text-gray-800">
-              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
-              <span>Real cost data — not generic templates</span>
-            </li>
-            <li className="flex gap-3 text-gray-800">
-              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
-              <span>Structured for AI — Solomon reads your quote and sanity-checks it</span>
-            </li>
-            <li className="flex gap-3 text-gray-800">
-              <span className="text-brand-600 font-black flex-shrink-0">✓</span>
-              <span>Updates as the data does — your numbers don't go stale</span>
-            </li>
-          </ul>
-          <Link
-            to="/pricing"
-            className="inline-block px-6 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors"
-          >
-            See full pricing →
-          </Link>
-        </div>
-
-        {/* Visual mock — no real screenshot yet, but the slot is ready */}
-        <div className="bg-white rounded-2xl border border-brand-200 shadow-xl p-6">
-          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Quote — Kitchen demo</div>
-          <div className="space-y-2.5">
-            {[
-              ['Selective demolition (kitchen)', '$2,400'],
-              ['Disposal + tipping (4 yd)',     '$680'],
-              ['Asbestos pre-survey',           '$420'],
-              ['Labour — 2 crew, 1.5 days',     '$2,160'],
-              ['Materials + dust containment',  '$310'],
-            ].map(([label, value]) => (
-              <div key={label} className="flex justify-between text-sm py-2 border-b border-gray-100">
-                <span className="text-gray-700">{label}</span>
-                <span className="font-bold text-gray-900 tabular-nums">{value}</span>
-              </div>
-            ))}
-            <div className="flex justify-between pt-2 text-sm">
-              <span className="font-black text-gray-900">Total</span>
-              <span className="font-black text-brand-600 tabular-nums">$5,970</span>
-            </div>
-          </div>
-          <div className="mt-5 p-3 rounded-lg bg-brand-50 border border-brand-200 text-xs text-gray-700 leading-relaxed">
-            <span className="font-bold text-brand-700">Solomon: </span>
-            Margin at 28% — within your target range. Disposal looks light if the cabinets
-            are MDF — confirm before sending.
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── Testimonials ──────────────────────────────────────────────────────────────
-//
-// PLACEHOLDER — replace with real customer quotes (with permission, real
-// names + company names) the moment we have them. Beta trialers from the
-// Deconstructors network are the obvious first source. Until they exist,
-// we ship a deliberately understated "early operators" frame rather than
-// faking testimonials. Faking is a dead-on-arrival decision for a trades
-// audience that has been burned by every SaaS that did it.
-
-function TestimonialsSection() {
-  return (
-    <section className="bg-gray-50 py-20 border-b border-gray-100">
-      <div className="max-w-4xl mx-auto px-6">
-        <p className="text-brand-600 text-xs font-bold uppercase tracking-widest mb-3 text-center">
-          Early operators
-        </p>
-        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-3 tracking-tight">
-          Built with the people running the work.
-        </h2>
-        <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
-          GrowthOS is in early-access with a small group of specialty-trade owners
-          who are shaping it as we build. Once they go on record, their quotes
-          live here. Until then — here's what they care about.
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {/* Three concern cards — replace each with a real testimonial when available */}
-          <ConcernCard
-            quote="It can't add work to my plate. My day is already full."
-            note="Solomon briefs you in 30 seconds — no dashboards to interpret."
-          />
-          <ConcernCard
-            quote="It has to know my numbers. Generic advice is useless."
-            note="QuickBooks sync, your goals, your team — context Solomon actually uses."
-          />
-          <ConcernCard
-            quote="If I cancel, my data better come with me."
-            note="Full export from /settings, any time. No hostage-taking."
-          />
-        </div>
-
-        <p className="text-center text-xs text-gray-400 mt-10 italic">
-          We don't fake testimonials. Real owner quotes will replace these as our
-          early-access group goes on record.
-        </p>
       </div>
     </section>
   )
@@ -581,73 +447,8 @@ function ToolsSection() {
   )
 }
 
-// ── Trades / built-for ────────────────────────────────────────────────────────
-/**
- * Visible-copy keyword coverage. Two jobs:
- *
- *   1. Tell a real human owner "yes, this is for me" by enumerating
- *      their specific trade — readers scan for their own category.
- *   2. Give Google + AI crawlers explicit text matches for queries like
- *      "AI advisor for HVAC contractors" or "business software for
- *      demolition contractors." Without this, the page targets
- *      "home-services" generically and misses high-intent long-tail.
- *
- * Grouped by category so it reads as helpful taxonomy (not keyword stuffing).
- * Adding a trade here is purely additive — no other code changes needed.
- */
-const TRADE_CATEGORIES = [
-  {
-    label: 'Construction specialty trades',
-    trades: [
-      'Demolition', 'Abatement & hazmat', 'Asbestos abatement',
-      'Masonry', 'Concrete', 'Framing & carpentry',
-      'Drywall', 'Flooring & tile', 'Insulation',
-      'Foundation & waterproofing', 'Excavation', 'Paving',
-    ],
-  },
-  {
-    label: 'Mechanical, electrical, plumbing',
-    trades: [
-      'Electrical contractors', 'Plumbers', 'HVAC contractors',
-      'Heating & cooling', 'Mechanical contractors', 'Sheet metal',
-      'Solar installers', 'Security system installers',
-    ],
-  },
-  {
-    label: 'Roofing, siding & exterior',
-    trades: [
-      'Roofing contractors', 'Siding contractors', 'Gutter services',
-      'Window & door installers', 'Painting contractors',
-      'Pressure washing', 'Deck builders', 'Fence contractors',
-    ],
-  },
-  {
-    label: 'Home services & field service',
-    trades: [
-      'General contractors', 'Home builders', 'Remodeling contractors',
-      'Kitchen & bath', 'Handyman businesses', 'Appliance repair',
-      'Garage door services', 'Locksmith services', 'Septic services',
-    ],
-  },
-  {
-    label: 'Outdoor & seasonal',
-    trades: [
-      'Landscaping contractors', 'Lawn care services', 'Tree services',
-      'Arborists', 'Pool & spa services', 'Pest control',
-      'Snow removal', 'Irrigation contractors',
-    ],
-  },
-  {
-    label: 'Cleaning, restoration & environmental',
-    trades: [
-      'Cleaning services', 'Janitorial services', 'Window cleaning',
-      'Water damage restoration', 'Fire damage restoration',
-      'Mold remediation', 'Environmental contractors',
-    ],
-  },
-]
-
-function TradesSection() {
+// ── Integrations ────────────────────────────────────────────────────────
+function IntegrationsSection() {
   return (
     <>
       {/* Integrations strip — visible */}
@@ -680,10 +481,6 @@ function TradesSection() {
         </div>
       </section>
 
-      {/* SEO keyword coverage — hidden from view, readable by crawlers */}
-      <div className="sr-only" aria-hidden="true">
-        {TRADE_CATEGORIES.flatMap(g => g.trades).join(', ')}
-      </div>
     </>
   )
 }

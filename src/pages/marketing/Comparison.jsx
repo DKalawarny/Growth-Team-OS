@@ -43,14 +43,14 @@ const COMPETITORS = {
     ],
     weaknesses: [
       'No AI advisor or strategic guidance — pure operations',
-      'No marketing or visibility tools',
+      'No memory of your decisions or your reasoning',
       'No hiring scorecards or org planning',
       'Steeper price for small teams',
     ],
     growthOSWins: [
       'Solomon (AI advisor) — pulls your numbers and tells you what to do, not just what happened',
-      'Local & AI Visibility audit — Knowify has nothing like this',
-      'Hiring Planner with scorecards — Knowify is operations-only',
+      'Hiring, org planning and succession — Knowify is operations-only',
+      'Remembers your decisions and constraints across months, not just this session',
       `$${PRICE_MONTHLY_USD}/month flat — no per-seat math, no add-ons`,
     ],
     competitorWins: [
@@ -58,7 +58,7 @@ const COMPETITORS = {
       'More mature scheduling and time-tracking workflows',
     ],
     pickThem: 'You\'re a 10-50 person construction sub, your bottleneck is real-time job-costing accuracy, and you don\'t need strategic advice from your software.',
-    pickUs: 'You\'re an owner-operator who needs an actual advisor — someone (or something) that understands your numbers AND tells you what to do about them. You want hiring, marketing, and growth tools alongside operations.',
+    pickUs: 'You are an owner-operator who needs actual counsel — something that understands your numbers and tells you what to do about them, and that cares how the business is run and not only what it earns.',
   },
 
   jobber: {
@@ -78,13 +78,13 @@ const COMPETITORS = {
       'No AI advisor or strategic layer',
       'No CFO dashboard or cash flow forecasting',
       'No hiring or org-planning tools',
-      'No AI search visibility tools',
+      'No memory of what you decided, or why',
       'Higher tiers get pricey fast',
     ],
     growthOSWins: [
       'AI advisor that knows your business — Jobber has no equivalent',
       'CFO dashboard, cash flow forecasting, hiring planner — strategic tools Jobber doesn\'t build',
-      'Local & AI Visibility audit',
+      'Succession planning and written playbooks',
       `Flat $${PRICE_MONTHLY_USD}/month for everything`,
     ],
     competitorWins: [
@@ -93,7 +93,7 @@ const COMPETITORS = {
       'Larger integration library',
     ],
     pickThem: 'Your bottleneck is dispatching, scheduling, and getting invoices paid. You have field crews running multiple jobs a day and need real-time coordination.',
-    pickUs: 'You already have ops handled (or your ops are simpler than Jobber needs to manage). What you actually need is strategic guidance — cash flow, hiring, marketing visibility, growth roadmap. The advisor and the tools to act on the advice.',
+    pickUs: 'You already have ops handled, or your ops are simpler than Jobber needs to manage. What you actually need is counsel — cash flow, hiring, the hard decisions, what happens to this business after you. The advisor, and the tools to act on the advice.',
   },
 
   'housecall-pro': {
@@ -113,14 +113,13 @@ const COMPETITORS = {
       'No AI advisor',
       'No CFO dashboard or cash flow forecasting',
       'No hiring scorecards',
-      'No AI search visibility audit',
+      'No memory of your decisions across months',
       'Per-user fees and add-ons inflate the real price',
     ],
     growthOSWins: [
       'Solomon — strategic advisor knowing your numbers and goals',
       'Cash flow forecasting and CFO dashboard',
-      'Local & AI Visibility audit',
-      'Hiring Planner, Org Chart, Growth Roadmap',
+      'Hiring, org chart, roadmap and succession planning',
       'Flat pricing — no per-user inflation',
     ],
     competitorWins: [
@@ -128,7 +127,7 @@ const COMPETITORS = {
       'More mature mobile app for crews',
     ],
     pickThem: 'You run a high-volume residential service business, your customer experience IS your moat, and dispatching/payments are your daily friction.',
-    pickUs: 'You\'ve got customer experience handled. Your real friction is strategic — knowing what to do next, when to hire, where the cash is going, why customers can\'t find you.',
+    pickUs: 'You have customer experience handled. Your real friction is the deciding — what to do next, when to hire, where the cash is actually going, and whether the business is still serving your family or consuming it.',
   },
 
   buildertrend: {
@@ -149,14 +148,14 @@ const COMPETITORS = {
       'Steep learning curve',
       'No AI advisor — features-driven, not advisory',
       'Sized for project managers, not owner-operators',
-      'No AI visibility / marketing tools',
+      'No advisory layer, and no memory of your decisions',
     ],
     growthOSWins: [
       'Built for owner-operators, not project managers',
       'AI advisor that thinks about strategy, not just project tracking',
       `A fraction of the price ($${PRICE_MONTHLY_USD}/month vs. $400-1,100/month)`,
       'No 2-week onboarding required',
-      'Hiring, marketing, growth tools built in',
+      'Hiring, decisions, playbooks and succession built in',
     ],
     competitorWins: [
       'Materially deeper project management features for larger builders',
@@ -164,7 +163,7 @@ const COMPETITORS = {
       'Mature commercial-construction workflows',
     ],
     pickThem: 'You\'re a homebuilder or remodeler running 10+ active projects with dedicated PM staff. You need every project management feature in the catalog and the budget supports it.',
-    pickUs: 'You\'re an owner-operator running a sub-$15M specialty-trade business. You don\'t need project management built for general contractors managing dozens of homes — you need an advisor and growth tools that understand your size.',
+    pickUs: 'You are an owner-operator, not a project manager. You do not need a catalogue of project-management features — you need counsel that understands your size and the way you want this run.'
   },
 }
 
@@ -178,8 +177,8 @@ export default function Comparison() {
   if (!data) return <Navigate to="/pricing" replace />
 
   const meta = buildPageMeta({
-    title:       `GrowthOS vs ${data.name} — honest comparison for contractors`,
-    description: `Comparing GrowthOS and ${data.name} for home-services and specialty-trade contractors. ${data.summary.slice(0, 100)}... See which one actually fits your business.`,
+    title:       `GrowthOS vs ${data.name} — an honest comparison`,
+    description: `Comparing GrowthOS and ${data.name} for owner-operated businesses. ${data.summary.slice(0, 100)}... See which one actually fits — including when the answer is ${data.name}.`,
     path:        `/vs/${competitor}`,
   })
 
@@ -197,8 +196,7 @@ export default function Comparison() {
         )}
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        `GrowthOS — alternative to ${data.name}`,
-          description: `AI advisor and operating system for home-services contractors and specialty trades. An alternative to ${data.name} for owner-operators who need strategic guidance alongside operations.`,
-          price:       String(PRICE_MONTHLY_USD),
+          description: `An AI business advisor for owners who want counsel, not another operations tool. Considered alongside ${data.name} by owner-operators who already have scheduling and invoicing handled.`,
         }))}</script>
       </Helmet>
 
@@ -233,7 +231,7 @@ export default function Comparison() {
             data.name === 'Knowify' ? 'Partial (job-costing only)' : 'No'
           } />
           <Row label="Hiring planner / scorecards" growth="Yes" them="No" />
-          <Row label="AI search visibility audit" growth="Yes" them="No" />
+          <Row label="Remembers your decisions" growth="Yes" them="No" />
           <Row label="Field crew dispatching" growth="No (intentional — pair with our CRM or your existing tool)" them={
             data.name === 'Knowify' || data.name === 'Buildertrend' ? 'Limited' : 'Yes — strong'
           } last />

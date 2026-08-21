@@ -18,8 +18,9 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, TRIAL_DAYS }
  * SEO posture:
  *   - Per-page Helmet with pricing-specific meta (signals "this is the
  *     pricing page" not "this is the home page")
- *   - Product schema → Google may render the $97 price directly in
- *     search results as a rich snippet
+ *   - Product schema → Google may render the price directly in search
+ *     results as a rich snippet. It reads the number from lib/pricing.js;
+ *     never hardcode a second copy here.
  *   - FAQPage schema wraps the existing FAQS array → ChatGPT, Claude,
  *     Perplexity, and Google AI can answer specific questions ("does
  *     GrowthOS need a credit card?", "can I cancel?") without crawling
@@ -32,7 +33,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, TRIAL_DAYS }
  */
 const PRICING_META = buildPageMeta({
   title:       `Pricing — GrowthOS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`,
-  description: `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for the full AI advisor (Solomon), CFO Dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, and every other tool. ${TRIAL_DAYS}-day free trial, no credit card required.`,
+  description: `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`,
   path:        '/pricing',
 })
 
@@ -44,54 +45,46 @@ const ANNUAL  = 'annual'
 
 const FEATURE_GROUPS = [
   {
-    label: 'Your AI Advisor',
+    label: 'Your advisor',
     icon:  '💡',
     color: 'amber',
     features: [
-      { name: 'Solomon', desc: 'On call 24/7. Knows your numbers, your goals, and your team. Opens every morning with what actually matters today.' },
-      { name: 'Daily briefings', desc: 'Solomon reads your financials, roadmap, and check-ins overnight — and greets you with what needs your attention.' },
-      { name: 'Long-term memory', desc: 'Every conversation builds context. The longer you use it, the smarter the advice.' },
+      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way and tells you where he lands — and what he cannot see.' },
+      { name: 'He remembers', desc: 'Constraints, decisions, people, commitments. You do not re-explain your business every time you open it, and he will tell you when something you say contradicts something you said before.' },
+      { name: 'He will say he does not know', desc: 'Answers about rules and obligations come from your own documents and the actual regulation, with the source shown. He does not guess at the law and he does not flatter you.' },
     ],
   },
   {
-    label: 'Your Financial Command Center',
+    label: 'Money',
     icon:  '📈',
     color: 'green',
     features: [
-      { name: 'CFO Dashboard', desc: 'Live KPIs pulled straight from QuickBooks. Monthly commentary in plain English — no accountant required.' },
-      { name: 'Cash Flow Forecast', desc: '13-week runway, updated automatically. Know what\'s coming before payroll week arrives.' },
-      { name: 'Offer Builder', desc: 'Scope your jobs and price them properly. Stop leaving money on the table with vague quotes.' },
+      { name: 'Finances', desc: 'Live figures pulled straight from QuickBooks, with the month read back to you in plain English — what changed, what it means, what to do about it.' },
+      { name: 'Cash flow forecast', desc: 'The next thirteen weeks, updated automatically. Know before payroll week becomes a problem.' },
+      { name: 'Pricing something honestly', desc: 'What the work is genuinely worth — neither gouging nor underselling yourself out of discomfort.' },
     ],
   },
   {
-    label: 'Your Marketing Engine',
-    icon:  '📍',
-    color: 'blue',
-    features: [
-      { name: 'Local & AI Visibility', desc: 'Full audit of your Google Business Profile, website, citations, backlinks, and schema — plus a score for how visible you are when customers ask ChatGPT or Google AI who to call.' },
-      { name: 'AI search readiness', desc: 'Find out exactly what\'s stopping you from being recommended by AI. Get specific content to create, directories to claim, and the review velocity needed to appear.' },
-    ],
-  },
-  {
-    label: 'Your Team & Hiring Tools',
+    label: 'People',
     icon:  '🎯',
     color: 'purple',
     features: [
-      { name: 'Hiring Planner', desc: 'Tell us the role, get back a scorecard, interview questions, red flags to watch for, and a 30-day onboarding plan.' },
-      { name: 'Org Chart Planner', desc: 'Map the team you need in 12 months — not the one you\'re stuck with today.' },
-      { name: 'Team Newsletter', desc: 'Monthly update for your crew. What you built, where you\'re headed, everyone aligned.' },
-      { name: 'Safety & Compliance', desc: 'Track every licence, WCB registration, and compliance document. Never miss a renewal.' },
+      { name: 'Think through a hire', desc: 'Whether to hire at all, what the role really is, and what you are actually looking for in the person. Scorecard, questions, and a first-30-days plan if you go ahead.' },
+      { name: 'Plan the team you will need', desc: 'What the team should look like in twelve months, and the order to build it in.' },
+      { name: 'An honest update for the team', desc: 'Say where the business is really heading, in words you would be comfortable having repeated back to you.' },
+      { name: 'Safety and compliance', desc: 'Every licence, registration, and compliance document tracked, so a renewal never catches you out.' },
     ],
   },
   {
-    label: 'Your Operating System',
+    label: 'The business',
     icon:  '🗺️',
     color: 'gray',
     features: [
-      { name: 'Growth Roadmap', desc: 'Milestone-by-milestone plan from where you are to where you\'re going. With progress tracking built in.' },
-      { name: 'Work Board', desc: 'Tasks, priorities, and progress — visible at a glance. No more sticky notes.' },
-      { name: 'Check-ins', desc: 'Weekly reflection log. Your advisor reads your last 5 to stay current on how you\'re actually doing.' },
-      { name: 'Document Library', desc: 'Every report GrowthOS generates, saved and searchable. Your whole business, documented.' },
+      { name: 'Roadmap', desc: 'A milestone-by-milestone plan from where you are to where you are going, with the slipped ones surfaced honestly rather than buried.' },
+      { name: 'Playbooks', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
+      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones so he knows how you are actually doing, not just how the numbers are.' },
+      { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
+      { name: 'Documents', desc: 'Everything GrowthOS writes for you, saved and searchable.' },
     ],
   },
 ]
@@ -101,7 +94,7 @@ const FEATURE_GROUPS = [
 const REPLACES = [
   { label: 'Business coach or consultant',  low: 500,  high: 2000 },
   { label: 'Part-time bookkeeper',          low: 400,  high: 800  },
-  { label: 'Marketing strategy retainer',   low: 500,  high: 1500 },
+  { label: 'Fractional CFO or advisor',     low: 500,  high: 1500 },
   { label: 'Project management tool',       low: 50,   high: 200  },
   { label: 'HR / check-in tool',            low: 30,   high: 150  },
 ]
@@ -111,11 +104,11 @@ const REPLACES = [
 const FAQS = [
   {
     q: 'Do I need a credit card to start?',
-    a: 'Nope. Sign up with your email, get 7 full days of everything — no card, no commitment. You decide at the end of the trial whether it\'s worth it. We think you\'ll stay.',
+    a: `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything — no card, no commitment. You decide at the end of the trial whether it is worth it.`,
   },
   {
     q: 'What exactly counts as a "report"?',
-    a: 'One finished AI output — a GBP audit, a cash-flow forecast, a hiring scorecard. Refining an existing report also counts. In practice, most owners run 3–5 a month and never come close to the limit.',
+    a: 'One finished piece of work — a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. In practice most owners run 3–5 a month and never come close to the limit.',
   },
   {
     q: 'What if I need more than 10 reports per tool?',
@@ -183,8 +176,7 @@ export default function Pricing() {
             from the structured Q&A list, not by inferring from the page). */}
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        'GrowthOS — AI advisor + business tools',
-          description: 'AI business advisor and full operating system for home-services contractors, specialty trades, and field-service companies. CFO dashboard, cash flow forecasting, hiring planner, Local & AI Visibility audit, safety and compliance tracker, growth roadmap, and more — for one monthly subscription.',
-          price:       '97',
+          description: 'An AI business advisor for Christian business owners, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession — for one monthly subscription.',
         }))}</script>
         <script type="application/ld+json">{jsonLd(faqPageSchema(FAQS))}</script>
       </Helmet>

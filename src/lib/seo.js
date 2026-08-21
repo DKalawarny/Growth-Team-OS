@@ -18,18 +18,31 @@
  *   3. Add it to public/sitemap.xml
  *
  * Keyword philosophy:
- *   We rank for breadth (every plausible trade) but convert on the wedge
- *   (specialty trades). A plumber who lands on the homepage is a fine
- *   ICP — he just gets the home-services framing instead of demo-specific
- *   copy. Cast wide, qualify on the page, convert the right-fit ones.
+ *   ⚠️ This changed with the reposition. The buyer is no longer defined by
+ *   SECTOR (a plumber, a roofer) but by CONVICTION — a Christian owner who
+ *   wants the business run a particular way. That axis cuts across every
+ *   industry, so ranking for "AI advisor for HVAC contractors" now brings
+ *   the wrong visitor to a page that will not speak to them.
+ *
+ *   So: rank on the conviction terms, stay industry-neutral in the general
+ *   copy, and keep a SHORT trades list only because /for/:trade pages still
+ *   exist and trades are Daniel's actual network — not as the wedge.
+ *
+ *   The old list enumerated ~55 verticals for breadth. Breadth against the
+ *   wrong axis is not reach, it is noise.
  */
+
+// The price lives in exactly one place. The schema below publishes it to
+// Google and to AI assistants, so a hardcoded copy here silently becomes a
+// second source of truth — which is how it came to advertise $97 CAD long
+// after the price was $147 USD.
+import { PRICE_MONTHLY_USD } from './pricing'
 
 // ── Site constants ──────────────────────────────────────────────────────────
 
 /**
- * Production URL. Change this when DNS is live.
- * For now uses .ca placeholder — when we move to a real domain, every
- * canonical link, og:url, sitemap entry, and llms.txt update follows.
+ * Production URL. Every canonical link, og:url, sitemap entry, and llms.txt
+ * entry follows from this.
  */
 export const SITE_URL = 'https://leadeos.com'
 
@@ -45,159 +58,91 @@ export const OG_DEFAULT_IMAGE = `${SITE_URL}/og-default.png`
 // ── Keyword sets ────────────────────────────────────────────────────────────
 
 /**
- * Every trade and home-service vertical we plausibly serve. Used in:
- *   - meta keywords (low SEO value but harmless)
- *   - visible page copy ("Built for X, Y, Z…")
- *   - FAQ schema answers
- *   - llms.txt description
- *
- * Kept broad on purpose — we rank for breadth, convert on the wedge.
- * Adding a trade here doesn't commit us to building trade-specific
- * features. It just ensures we show up when an HVAC contractor Googles
- * "AI advisor for HVAC business."
+ * Trades still listed because /for/:trade pages exist and because trades are
+ * the network Daniel actually knows. Deliberately short — this is a tail, not
+ * the wedge. Adding a trade here does not commit us to trade-specific
+ * features, and it should never grow back into a keyword dump.
  */
 export const TRADES = [
-  // Construction specialty trades (the core wedge)
   'demolition contractors',
-  'abatement contractors',
-  'asbestos abatement',
-  'masonry contractors',
-  'concrete contractors',
-  'framing contractors',
-  'carpentry contractors',
-  'roofing contractors',
-  'siding contractors',
-  'painting contractors',
-  'drywall contractors',
-  'flooring contractors',
-  'tile contractors',
-
-  // MEP trades
-  'electrical contractors',
-  'electricians',
   'plumbing contractors',
-  'plumbers',
+  'electrical contractors',
   'HVAC contractors',
-  'heating and cooling contractors',
-  'mechanical contractors',
-  'sheet metal contractors',
-
-  // Residential & home services
-  'general contractors',
-  'home builders',
-  'residential contractors',
-  'remodeling contractors',
-  'kitchen and bath contractors',
-  'handyman businesses',
+  'roofing contractors',
   'landscaping contractors',
-  'lawn care services',
-  'tree services',
-  'arborists',
-  'pool and spa services',
-  'fence contractors',
-  'deck builders',
-
-  // Field service trades
-  'pest control companies',
-  'cleaning services',
-  'janitorial services',
-  'window cleaning services',
-  'pressure washing services',
-  'gutter services',
-  'locksmith services',
-  'garage door services',
-  'appliance repair services',
-  'septic services',
-
-  // Specialty / disaster
-  'restoration contractors',
-  'water damage restoration',
-  'fire damage restoration',
-  'mold remediation',
-  'environmental contractors',
-  'hazmat contractors',
-  'paving contractors',
-  'excavation contractors',
-  'foundation contractors',
-  'waterproofing contractors',
-  'insulation contractors',
-  'solar contractors',
-  'security system installers',
+  'general contractors',
 ]
 
 /**
- * Higher-level service-business categories — used in copy and meta where
- * the full TRADES list would be too long.
+ * Who this is actually for. The buyer is defined by how they want to run the
+ * business, not by what the business does — so these are stated as people,
+ * not verticals.
+ */
+export const AUDIENCE = [
+  'Christian business owners',
+  'faith-driven business owners',
+  'Christian entrepreneurs',
+  'business owners of faith',
+  'owner-operators',
+  'small business owners',
+  'family business owners',
+]
+
+/**
+ * Higher-level categories — used in copy and meta where the full audience
+ * list would be too long.
  */
 export const SERVICE_CATEGORIES = [
-  'home-services businesses',
-  'specialty trade contractors',
-  'service business owners',
-  'construction businesses',
-  'field service companies',
-  'contractor companies',
-  'trades businesses',
-  'residential service contractors',
-  'commercial service contractors',
+  'Christian-owned businesses',
+  'faith-driven companies',
+  'small and mid-sized businesses',
+  'owner-operated businesses',
+  'family-owned businesses',
 ]
 
 /**
- * Core feature/benefit keywords. Used in meta descriptions, visible copy,
- * and FAQ answers — anywhere we want to signal "this is what GrowthOS does."
+ * Core feature/benefit keywords — what GrowthOS actually does.
+ *
+ * ⚠️ Every entry here must correspond to something a signed-in user can
+ * really reach today (see the Sidebar nav and SolomonLauncher groups).
+ * "Google Business Profile audit" and "AI search visibility" were removed
+ * because neither is surfaced in the app any more — keeping them would have
+ * been marketing a thing we do not ship.
  */
 export const FEATURE_KEYWORDS = [
   'AI business advisor',
-  'AI for contractors',
-  'contractor business software',
-  'home services CRM',
-  'service business management',
-  'field service management',
-  'construction CRM',
+  'Christian business advisor',
+  'biblical business principles',
+  'stewardship in business',
+  'business decision making',
   'CFO dashboard',
   'cash flow forecasting',
-  'business hiring planner',
-  'Google Business Profile audit',
-  'local SEO for contractors',
-  'AI search visibility',
-  'contractor scorecard',
-  'job costing',
-  'quoting and estimating',
+  'hiring planner',
+  'succession planning',
+  'business roadmap',
+  'standard operating procedures',
   'safety and compliance tracking',
-  'WCB compliance',
-  'organizational chart planner',
-  'growth roadmap',
-  'team management software',
-  'small business AI',
   'QuickBooks integration',
+  'small business AI',
 ]
 
-/** Top-25 keyword set for meta tags — picks the highest-volume terms. */
+/** Top keyword set for meta tags — the conviction axis first, then the job. */
 export const PRIMARY_KEYWORDS = [
-  'AI advisor for contractors',
-  'home services business software',
-  'contractor business management software',
-  'AI for service businesses',
+  'AI advisor for Christian business owners',
+  'Christian business advisor',
+  'faith-driven business software',
+  'biblical business principles',
+  'running a business with integrity',
+  'stewardship business',
+  'business advisor for small business',
+  'AI business advisor',
   'CFO dashboard for small business',
-  'cash flow forecasting for contractors',
-  'hiring planner for trades',
-  'Google Business Profile audit',
-  'local SEO for plumbers electricians HVAC',
-  'AI search visibility',
-  'contractor CRM',
-  'home services CRM',
-  'specialty trade contractor software',
-  'plumber business software',
-  'electrician business software',
-  'HVAC business software',
-  'roofing business software',
-  'demolition contractor software',
-  'construction business AI',
-  'small business operating system',
-  'QuickBooks AI advisor',
-  'safety compliance tracking software',
+  'cash flow forecasting',
+  'hiring planner',
+  'succession planning for owners',
   'business growth roadmap',
-  'org chart planner',
-  'team management for contractors',
+  'QuickBooks AI advisor',
+  'small business operating system',
 ]
 
 // ── Public routes ────────────────────────────────────────────────────────────
@@ -298,7 +243,7 @@ export function organizationSchema() {
     url:         SITE_URL,
     logo:        `${SITE_URL}/favicon.svg`,
     email:       CONTACT_EMAIL,
-    description: 'AI-powered operating system for home-services and specialty-trade contractors — combining an AI business advisor with tools for cash flow, hiring, marketing, compliance, and operations.',
+    description: 'An AI business advisor for Christian business owners — one who reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering, not only what it earns.',
     sameAs:      [
       // Add LinkedIn / X / YouTube once those exist
     ],
@@ -306,27 +251,32 @@ export function organizationSchema() {
 }
 
 /**
- * SoftwareApplication schema. Used on Landing — tells Google + AI tools
- * what category of software this is so it shows up in "best AI advisor
- * for contractors" type queries.
+ * SoftwareApplication schema. Used on Landing — tells Google + AI tools what
+ * category of software this is so it shows up in "AI advisor for Christian
+ * business owners" type queries.
+ *
+ * ⚠️ The price is read from pricing.js, not written here. This schema is what
+ * an AI assistant quotes when someone asks "how much does GrowthOS cost?", so
+ * a stale number here misinforms buyers before they ever reach the site.
  */
 export function softwareApplicationSchema() {
+  const price = String(PRICE_MONTHLY_USD)
   return {
     '@context':         'https://schema.org',
     '@type':            'SoftwareApplication',
     name:                SITE_NAME,
     applicationCategory: 'BusinessApplication',
     operatingSystem:     'Web',
-    description:         'AI business advisor and tool suite for home-services businesses, specialty-trade contractors, and field-service companies. Includes CFO dashboard, cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and growth roadmap.',
+    description:         'An AI business advisor for Christian business owners, with tools for cash flow, finances, hiring, decisions, written procedures, compliance, and succession. Reads your real numbers, remembers your decisions, and argues the hard calls both ways.',
     url:                 SITE_URL,
     offers: {
       '@type':         'Offer',
-      price:           '97',
-      priceCurrency:   'CAD',
+      price,
+      priceCurrency:   'USD',
       priceSpecification: {
         '@type':       'UnitPriceSpecification',
-        price:         '97',
-        priceCurrency: 'CAD',
+        price,
+        priceCurrency: 'USD',
         unitText:      'MONTH',
       },
     },
@@ -339,7 +289,7 @@ export function softwareApplicationSchema() {
  * directly in search results, and lets AI tools answer "how much does
  * GrowthOS cost?" with the right number.
  */
-export function productSchema({ name, description, price, priceCurrency = 'CAD' }) {
+export function productSchema({ name, description, price = PRICE_MONTHLY_USD, priceCurrency = 'USD' }) {
   return {
     '@context':    'https://schema.org',
     '@type':       'Product',
