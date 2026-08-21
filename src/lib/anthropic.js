@@ -59,15 +59,36 @@ export const HAIKU  = 'claude-haiku-4-5'
 
 const MIN_CACHE_CHARS = 500
 
-function buildSystemPayload(text) {
+// Cache lifetime.
+//
+// Anthropic charges 1.25x base to write a 5-minute entry and 2x for a
+// one-hour one; reads are 0.1x either way. So the question is simply how
+// often a session crosses the window and has to pay the write again.
+//
+// Five minutes is too short for THIS product. Solomon's answers are long and
+// meant to be thought about — the owner reads one, checks something in
+// QuickBooks, gets interrupted by a job, and replies eight minutes later.
+// Under a 5m entry most of those turns re-write at 1.25x. Over an eight-turn
+// conversation with four such gaps that is roughly twice the cost of writing
+// once at 2x and reading the rest at 0.1x.
+//
+// Tools keep the 5-minute default: they are one-shot generates, and the only
+// follow-up (a refine) lands within seconds.
+const TTL_CONVERSATION = '1h'
+
+function buildSystemPayload(text, ttl) {
   if (!text || text.length < MIN_CACHE_CHARS) {
     return { systemPrompt: text || '' }
   }
   return {
     systemBlocks: [
-      { type: 'text', text, cache_control: { type: 'ephemeral' } },
+      { type: 'text', text, cache_control: cacheControl(ttl) },
     ],
   }
+}
+
+function cacheControl(ttl) {
+  return ttl ? { type: 'ephemeral', ttl } : { type: 'ephemeral' }
 }
 
 /**
@@ -86,11 +107,11 @@ function buildSystemPayload(text) {
  * Order is load-bearing. Anthropic caches the prefix UP TO the marker, so
  * anything that varies per question must come after it.
  */
-function buildSplitSystemPayload(stable, volatile) {
+function buildSplitSystemPayload(stable, volatile, ttl) {
   if (!stable || stable.length < MIN_CACHE_CHARS) {
     return { systemPrompt: [stable, volatile].filter(Boolean).join('') }
   }
-  const blocks = [{ type: 'text', text: stable, cache_control: { type: 'ephemeral' } }]
+  const blocks = [{ type: 'text', text: stable, cache_control: cacheControl(ttl) }]
   if (volatile) blocks.push({ type: 'text', text: volatile })
   return { systemBlocks: blocks }
 }
@@ -211,6 +232,8 @@ export async function streamClaude({
   return streamClaudeRaw({
     systemPrompt,
     systemVolatile,
+    // Streaming is the conversational path, so it gets the long entry.
+    cacheTtl: TTL_CONVERSATION,
     messages,
     maxTokens,
     model,
@@ -389,6 +412,7 @@ export async function streamToolCall({
 async function streamClaudeRaw({
   systemPrompt,
   systemVolatile,
+  cacheTtl,
   messages,
   maxTokens,
   model,
@@ -399,8 +423,8 @@ async function streamClaudeRaw({
   skipCaps,
 }) {
   const sys     = systemVolatile
-    ? buildSplitSystemPayload(systemPrompt, systemVolatile)
-    : buildSystemPayload(systemPrompt)
+    ? buildSplitSystemPayload(systemPrompt, systemVolatile, cacheTtl)
+    : buildSystemPayload(systemPrompt, cacheTtl)
   const headers = await authHeaders()
 
   const res = await fetch(claudeFunctionUrl(), {
