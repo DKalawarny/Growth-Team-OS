@@ -10,11 +10,24 @@
 -- ⭐ WHY NOW AND NOT LATER
 --
 -- Changing embedding model normally means re-embedding an entire corpus. Here
--- it costs nothing: the browser-side key was never set, so embed() has
--- returned null since April and NOT ONE VECTOR HAS EVER BEEN STORED. The
--- OpenAI dashboard confirms it independently — that key's last-used column
--- reads "Never". These columns are empty. This is the cheapest this decision
--- will ever be.
+-- it cost almost nothing.
+--
+-- ⚠️ CORRECTION, recorded because the guard below is the only reason it was
+-- caught. I asserted twice that nothing had ever been embedded — reasoning
+-- from the browser key never being set, and from the OpenAI dashboard showing
+-- that key's last-used column as "Never". Both were true and the conclusion
+-- was still wrong: a SECOND key, created 15 May and last used 8 June, had
+-- indexed six rows into chat_chunks. document_chunks and safety_documents
+-- were genuinely empty.
+--
+-- Nothing was lost. chat_chunks keeps content and occurred_at; the vector is
+-- a derived index over text that is still present, so those six were nulled
+-- and can be regenerated from the admin backfill page at any time. They were
+-- six test exchanges from June, and solomon_memory (migration 027) is now the
+-- better mechanism for durable recall anyway.
+--
+-- The lesson worth keeping: infer emptiness from the data, not from the
+-- absence of a credential. Run the count.
 --
 -- gte-small is 384 dimensions against text-embedding-3-small's 1536. Smaller
 -- model, smaller index, faster search. For one business's document library —
