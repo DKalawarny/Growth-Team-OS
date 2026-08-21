@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
-import { toolsNavItems } from '../../lib/tools'
 
 /**
  * MobileNav — shown only on small screens (lg:hidden).
@@ -65,19 +64,19 @@ const TABS = [
 
 // ── Full nav (mirrors desktop sidebar) ───────────────────────────────────────
 
+// The same seven surfaces as the desktop sidebar, in the same order and with
+// the same plain names. This list had drifted badly — it still carried the
+// pre-restructure twelve (Dashboard, Calendar, Check-ins, Library, Growth
+// Trajectories, Work Board, Analytics) long after the desktop nav moved on,
+// so the whole restructure was invisible on a phone. Change both together.
 const MAIN_NAV = [
-  { to: '/dashboard',    label: 'Dashboard'           },
-  { to: '/advisor',      label: 'Solomon'              },
-  { to: '/roadmap',      label: 'Roadmap'              },
-  { to: '/calendar',     label: 'Calendar'             },
-  { to: '/checkins',     label: 'Check-ins'            },
-  { to: '/documents',    label: 'Library'              },
-  { to: '/trajectories', label: 'Growth Trajectories'  },
-  { to: '/board',        label: 'Work Board'           },
-  { to: '/playbooks',    label: 'Playbooks'            },
-  { to: '/tools/cfo',    label: 'CFO Dashboard'        },
-  { to: '/tools/safety', label: 'Safety & Compliance'  },
-  { to: '/analytics',    label: 'Analytics'            },
+  { to: '/dashboard',            label: 'Home'       },
+  { to: '/advisor',              label: 'Solomon'    },
+  { to: '/roadmap',              label: 'Roadmap'    },
+  { to: '/playbooks',            label: 'Playbooks'  },
+  { to: '/tools/cfo',            label: 'Finances'   },
+  { to: '/documents',            label: 'Documents'  },
+  { to: '/tools/exit-readiness', label: 'Succession' },
 ]
 
 function advisorHasOpener(userId) {
@@ -102,12 +101,6 @@ export default function MobileNav() {
 
   // Close drawer on navigation
   useEffect(() => { setOpen(false) }, [location.pathname])
-
-  const MAIN_NAV_TOOL_ROUTES = new Set(['/tools/cfo', '/tools/safety'])
-  const toolsNav = [
-    { to: '/tools', label: 'All tools' },
-    ...toolsNavItems().filter(t => !MAIN_NAV_TOOL_ROUTES.has(t.to)),
-  ]
 
   const initials = profile?.name
     ? profile.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -230,25 +223,10 @@ export default function MobileNav() {
             ))}
           </div>
 
-          {/* Tools section */}
-          <div>
-            <p className="mb-2 px-3 text-[10px] font-semibold text-ink-600 uppercase tracking-widest">Tools</p>
-            <div className="space-y-0.5">
-              {toolsNav.map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={({ isActive }) =>
-                    `block px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
-                      isActive ? 'text-brand-400 bg-white/5' : 'text-ink-500 hover:text-ink-200 hover:bg-white/5'
-                    }`
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
+          {/* Tools section removed — see the note in Sidebar.jsx. Every
+              capability is listed in SolomonLauncher now, which seeds the
+              conversation rather than opening a form page. /tools still
+              resolves for anyone who wants the old grid. */}
         </div>
 
         {/* User + sign out */}

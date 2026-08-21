@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
-import { toolsNavItems } from '../../lib/tools'
 import DailyQuote from './DailyQuote'
 
 // ── Morning opener indicator ──────────────────────────────────────────────────
@@ -181,13 +180,6 @@ export default function Sidebar() {
     setHasOpener(advisorHasOpener(profile?.id))
   })
 
-  // CFO and Safety live in the main nav — exclude them from the tools section
-  const MAIN_NAV_TOOL_ROUTES = new Set(['/tools/cfo', '/tools/safety'])
-  const toolsNav = [
-    { to: '/tools', label: 'All tools', end: true },
-    ...toolsNavItems().filter(t => !MAIN_NAV_TOOL_ROUTES.has(t.to)),
-  ]
-
   const initials = profile?.name
     ? profile.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '?'
@@ -254,29 +246,16 @@ export default function Sidebar() {
           ))}
         </div>
 
-        {/* Tools section */}
-        <div>
-          <p className="mb-2 px-3 text-[10px] font-semibold text-ink-600 uppercase tracking-widest flex items-center gap-2">
-            <Icon name="tools" className="w-3 h-3" />
-            Tools
-          </p>
-          <div className="space-y-0.5">
-            {toolsNav.map(({ to, label, end }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={end}
-                className={({ isActive }) =>
-                  `block px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
-                    isActive ? 'text-brand-400 bg-white/5' : 'text-ink-500 hover:text-ink-200 hover:bg-white/5'
-                  }`
-                }
-              >
-                {label}
-              </NavLink>
-            ))}
-          </div>
-        </div>
+        {/* The tools section used to live here — "All tools" plus every tool
+            route, sitting directly under the seven surfaces. It defeated the
+            point of the restructure: the sprawl was still on screen, just
+            lower down, and it advertised things that are leaving (the GBP
+            audit) alongside the decision tool, which belongs inside Solomon
+            rather than as its own destination.
+
+            Discoverability now lives in SolomonLauncher, which lists every
+            capability and seeds the conversation instead of opening a form
+            page. /tools still resolves for anyone who wants the old grid. */}
       </nav>
 
       {/* Help + Settings — pinned above user section */}
