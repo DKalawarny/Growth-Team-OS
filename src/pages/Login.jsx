@@ -6,7 +6,7 @@ import { SITE_URL, SITE_NAME } from '../lib/seo'
 
 /**
  * Login — premium split-screen treatment. Left side is the dark brand zone
- * (command center vibe), right side is the sign-in card. On mobile the dark
+ * (the pitch), right side is the sign-in card. On mobile the dark
  * zone collapses above the card.
  *
  * The brand side does more than decoration — it sets the emotional tone
@@ -92,18 +92,18 @@ export default function Login() {
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-            The command center for your business.
+            Someone in your corner who reads the numbers.
           </h1>
 
           <p className="text-ink-300 text-sm leading-relaxed mb-10 max-w-sm">
-            Where serious operators plan, execute, and grow — every day the plan gets sharper and the business gets bigger.
+            He remembers what you decided and why, argues the hard calls both ways, and tells you when he doesn't know.
           </p>
 
           {/* Trust signals / stage markers */}
           <div className="space-y-3 max-w-sm">
-            <TrustRow text="Your roadmap, built and maintained for you" />
-            <TrustRow text="Weekly check-ins that keep the week on rails" />
-            <TrustRow text="AI tools trained on what home-services owners need" />
+            <TrustRow text="Reads your books before he says anything" />
+            <TrustRow text="Remembers what you decided, and why" />
+            <TrustRow text="Tells you plainly when he doesn't know" />
           </div>
         </div>
       </div>

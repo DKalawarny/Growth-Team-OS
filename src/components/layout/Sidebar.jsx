@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
-import DailyQuote from './DailyQuote'
 
 // ── Morning opener indicator ──────────────────────────────────────────────────
 // Returns true if the advisor's morning opener hasn't been triggered today,
@@ -195,13 +194,18 @@ export default function Sidebar() {
             <span className="text-brand-400">OS</span>
           </span>
         </div>
-        <p className="text-[10px] font-semibold text-ink-600 uppercase tracking-widest">
-          Business Command Center
-        </p>
       </div>
 
-      {/* Daily quote — sits just above the nav links */}
-      <DailyQuote />
+      {/* The daily quote used to sit here. Removed, not restyled: the pool was
+          hustle-culture — "work like there is someone working 24 hours a day to
+          take it all away from you", "the harder I work the luckier I get" —
+          which directly contradicts what Solomon now tells an owner about hours
+          and rest being real inputs. An app that argues with itself in the
+          margins is worse than one with a quieter sidebar.
+
+          DailyQuote.jsx is untouched if it is ever wanted back, but it would
+          need a pool that matches the product's convictions, and every
+          attribution verified rather than recalled. */}
 
       <nav className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-3 py-4 space-y-6">
 
