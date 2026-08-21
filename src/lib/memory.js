@@ -20,6 +20,25 @@ import { runToolCall, HAIKU } from './anthropic'
 
 const MAX_ACTIVE = 80
 
+/**
+ * Cheap gate before spending a model call on extraction.
+ *
+ * This used to run on every single turn, including "thanks" and "ok" — a
+ * Haiku call each time to reliably learn nothing. The extractor only ever
+ * records what the OWNER revealed, so a turn with nothing first-person in it
+ * has nothing for it to find.
+ *
+ * Deliberately loose. A missed fact costs almost nothing (they will say it
+ * again, and check-ins and tools write memory too); a wrongly skipped
+ * extraction is invisible. So this only filters the obviously empty.
+ */
+function worthExtracting(text) {
+  const t = String(text).trim()
+  if (t.length < 60) return false                       // acknowledgements, one-word replies
+  if (!/\b(i|i'm|im|we|we're|my|our|us|me)\b/i.test(t)) return false  // nothing about them in it
+  return true
+}
+
 /** Every durable fact for this company, plus this user's personal ones. */
 export async function loadMemory(companyId, userId) {
   if (!companyId) return []
@@ -106,6 +125,7 @@ Rules:
  */
 export async function rememberFromExchange({ companyId, userId, userMessage, assistantMessage, sourceRef }) {
   if (!companyId || !userMessage) return
+  if (!worthExtracting(userMessage)) return
   try {
     const existing = await loadMemory(companyId, userId)
     const known = existing.map(r => `- [${r.kind}] ${r.statement}`).join('\n') || '(nothing yet)'

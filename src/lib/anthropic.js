@@ -70,6 +70,31 @@ function buildSystemPayload(text) {
   }
 }
 
+/**
+ * Two-block system payload: a STABLE prefix that gets the cache marker, and a
+ * VOLATILE suffix that does not.
+ *
+ * This exists because single-block caching was silently never hitting on the
+ * Advisor. A cache entry is keyed on the exact text of everything up to and
+ * including the marked block — so folding query-dependent material (semantic
+ * search hits, the safety brief, recalled past conversations) into the same
+ * block as the system prompt changes the text on every single turn and misses
+ * the cache every single time. We were paying full freight for ~5k tokens of
+ * instructions plus the whole business context on every message, while a
+ * comment in this file claimed we were saving 90%.
+ *
+ * Order is load-bearing. Anthropic caches the prefix UP TO the marker, so
+ * anything that varies per question must come after it.
+ */
+function buildSplitSystemPayload(stable, volatile) {
+  if (!stable || stable.length < MIN_CACHE_CHARS) {
+    return { systemPrompt: [stable, volatile].filter(Boolean).join('') }
+  }
+  const blocks = [{ type: 'text', text: stable, cache_control: { type: 'ephemeral' } }]
+  if (volatile) blocks.push({ type: 'text', text: volatile })
+  return { systemBlocks: blocks }
+}
+
 // ── Edge Function URL builder ─────────────────────────────────────────────────
 //
 // We can't use supabase.functions.invoke() for the streaming case (it
@@ -116,13 +141,16 @@ function claudeFunctionUrl() {
  */
 export async function callClaude({
   systemPrompt,
+  systemVolatile,
   messages,
   maxTokens = 1024,
   json      = false,
   model     = SONNET,
   skipCaps  = true,
 }) {
-  const sys     = buildSystemPayload(systemPrompt)
+  const sys     = systemVolatile
+    ? buildSplitSystemPayload(systemPrompt, systemVolatile)
+    : buildSystemPayload(systemPrompt)
   const headers = await authHeaders()
 
   const res = await fetch(claudeFunctionUrl(), {
@@ -170,6 +198,7 @@ export async function callClaude({
  */
 export async function streamClaude({
   systemPrompt,
+  systemVolatile,
   messages,
   maxTokens = 2000,
   model     = SONNET,
@@ -181,6 +210,7 @@ export async function streamClaude({
   // streams use streamToolCall instead when they want caps + tracking.
   return streamClaudeRaw({
     systemPrompt,
+    systemVolatile,
     messages,
     maxTokens,
     model,
@@ -358,6 +388,7 @@ export async function streamToolCall({
 
 async function streamClaudeRaw({
   systemPrompt,
+  systemVolatile,
   messages,
   maxTokens,
   model,
@@ -367,7 +398,9 @@ async function streamClaudeRaw({
   json    = false,
   skipCaps,
 }) {
-  const sys     = buildSystemPayload(systemPrompt)
+  const sys     = systemVolatile
+    ? buildSplitSystemPayload(systemPrompt, systemVolatile)
+    : buildSystemPayload(systemPrompt)
   const headers = await authHeaders()
 
   const res = await fetch(claudeFunctionUrl(), {

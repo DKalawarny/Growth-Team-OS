@@ -250,11 +250,36 @@ export default function Advisor() {
         content: m.content,
       }))
       const ownerFirst  = profile?.name?.split(' ')[0] ?? 'there'
-      const pastBlock   = context?.past_conversations ? `\n\n${context.past_conversations}` : ''
-      const contextBlock = context
-        ? `\n\nOWNER: You are speaking with ${ownerFirst}. Always use this name when addressing them — never use any other person's name from the business context.${pastBlock}\n\nBUSINESS_CONTEXT:\n${JSON.stringify({ ...context, past_conversations: undefined }, null, 2)}`
+
+      // Split the system payload so prompt caching can actually hit.
+      //
+      // Everything up to and including the cache marker has to be
+      // byte-identical between turns or the entry is missed. Semantic search
+      // hits, the safety brief and recalled conversations all change with the
+      // QUESTION, so folding them in with the instructions — which is what
+      // this did — meant a guaranteed miss on every message while the code
+      // claimed a 90% saving. Stable material first, per-question material
+      // strictly after.
+      const {
+        knowledge_files: volKnowledge,
+        safety_context:  volSafety,
+        past_conversations: volPast,
+        today_pulse:     volPulse,
+        ...stableContext
+      } = context ?? {}
+
+      const stableBlock = context
+        ? `\n\nOWNER: You are speaking with ${ownerFirst}. Always use this name when addressing them — never use any other person's name from the business context.\n\nBUSINESS_CONTEXT:\n${JSON.stringify(stableContext, null, 2)}`
         : `\n\nOWNER: You are speaking with ${ownerFirst}. Always use this name when addressing them.`
-      const systemPrompt = `${ADVISOR_SYSTEM_PROMPT}${contextBlock}`
+
+      const volatileParts = []
+      if (volPast)      volatileParts.push(String(volPast))
+      if (volPulse)     volatileParts.push(`TODAY_PULSE:\n${JSON.stringify(volPulse, null, 2)}`)
+      if (volKnowledge) volatileParts.push(`RELEVANT_FROM_YOUR_LIBRARY:\n${JSON.stringify(volKnowledge, null, 2)}`)
+      if (volSafety)    volatileParts.push(`SAFETY_CONTEXT:\n${JSON.stringify(volSafety, null, 2)}`)
+
+      const systemPrompt   = `${ADVISOR_SYSTEM_PROMPT}${stableBlock}`
+      const systemVolatile = volatileParts.length ? `\n\n${volatileParts.join('\n\n')}` : undefined
 
       // 4. Stream the reply — update the placeholder bubble on every chunk.
       //
@@ -270,6 +295,7 @@ export default function Advisor() {
       const reply = await streamClaude({
         model:     choice.model,
         systemPrompt,
+        systemVolatile,
         messages:  historySlice,
         maxTokens: 2000,
         onChunk: (_chunk, fullText) => {
