@@ -379,7 +379,7 @@ export default function Advisor() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#0f1117' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#0b1110' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} />
 
       <div className="flex-1 min-h-0 flex">
@@ -575,11 +575,21 @@ function Bubble({ role, content, streaming = false, onSave }) {
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative max-w-[78%]">
+        {/* Solomon answers in the serif, the owner types in the sans.
+            Counsel should look considered rather than look like chat — it is
+            the one typographic decision carrying the whole positioning, and a
+            reply set in the same face as the input reads as a chatbot. Size
+            and line-height are bumped with it, because Instrument Serif runs
+            small and needs the air. */}
         <div
-          className="px-4 py-2.5 text-sm leading-relaxed rounded-[18px]"
+          className={`px-4 py-2.5 rounded-[18px] ${
+            isUser
+              ? 'text-sm leading-relaxed'
+              : 'font-serif text-[16.5px] leading-[1.62]'
+          }`}
           style={isUser
-            ? { background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)', color: '#fff', borderBottomRightRadius: '4px' }
-            : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', borderBottomLeftRadius: '4px' }
+            ? { background: '#0d1413', color: '#fff', borderBottomRightRadius: '4px' }
+            : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.90)', borderBottomLeftRadius: '4px' }
           }
         >
           {isUser
@@ -737,7 +747,7 @@ function inlineRender(text) {
     if (m.index > last) parts.push(text.slice(last, m.index))
     if (m[2])      parts.push(<strong key={m.index} className="font-bold" style={{ color: 'rgba(255,255,255,0.98)' }}>{m[2]}</strong>)
     else if (m[3]) parts.push(<em key={m.index} className="italic">{m[3]}</em>)
-    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(0,0,0,0.3)', color: '#fbbf24' }}>{m[4]}</code>)
+    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(0,0,0,0.3)', color: '#6fd4ae' }}>{m[4]}</code>)
     last = m.index + m[0].length
   }
   if (last < text.length) parts.push(text.slice(last))
@@ -822,7 +832,7 @@ const Composer = forwardRef(function Composer(
             disabled={disabled || !value.trim()}
             aria-label="Send"
             className="rounded-xl px-4 py-2.5 text-sm font-bold text-white disabled:opacity-30 transition-opacity flex-shrink-0 min-h-[44px]"
-            style={{ background: 'linear-gradient(135deg,#92400e 0%,#b45309 40%,#d97706 100%)' }}
+            style={{ background: '#14a67b' }}
           >
             Send
           </button>
