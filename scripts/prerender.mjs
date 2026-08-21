@@ -56,6 +56,7 @@ const ROUTES = [
   { path: '/about',           titleContains: 'About GrowthOS' },
   { path: '/security',        titleContains: 'Security & data handling' },
   { path: '/privacy',         titleContains: 'Privacy policy' },
+  { path: '/terms',           titleContains: 'Pilot agreement' },
   { path: '/free-gbp-audit',  titleContains: 'Free Google Business Profile audit' },
 
   // Comparison pages

@@ -167,6 +167,7 @@ export const PUBLIC_PAGES = [
   { path: '/about',           priority: '0.7', changefreq: 'monthly' },
   { path: '/security',        priority: '0.5', changefreq: 'yearly'  },
   { path: '/privacy',         priority: '0.4', changefreq: 'yearly'  },
+  { path: '/terms',           priority: '0.4', changefreq: 'yearly'  },
   { path: '/free-gbp-audit',  priority: '0.8', changefreq: 'monthly' },
   ...COMPETITOR_SLUGS.map(slug => ({ path: `/vs/${slug}`,  priority: '0.7', changefreq: 'monthly' })),
   ...TRADE_SLUGS     .map(slug => ({ path: `/for/${slug}`, priority: '0.7', changefreq: 'monthly' })),

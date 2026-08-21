@@ -18,6 +18,7 @@ const CRMMarketing  = lazy(() => import('./pages/marketing/CRM'))
 const About         = lazy(() => import('./pages/marketing/About'))
 const Security      = lazy(() => import('./pages/marketing/Security'))
 const Privacy       = lazy(() => import('./pages/marketing/Privacy'))
+const Terms         = lazy(() => import('./pages/marketing/Terms'))
 const Comparison    = lazy(() => import('./pages/marketing/Comparison'))
 const TradePage     = lazy(() => import('./pages/marketing/TradePage'))
 const FreeGbpAudit  = lazy(() => import('./pages/marketing/FreeGbpAudit'))
@@ -29,6 +30,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 // Sidebar, MobileNav, AdvisorBanner, TrialBanner all only matter inside the
 // app — keeping them lazy means a logged-out visitor never downloads them.
 const AppLayoutChrome = lazy(() => import('./components/layout/AppLayoutChrome'))
+const TermsGate       = lazy(() => import('./components/legal/TermsGate'))
 
 // ── Lazy: authed pages ─────────────────────────────────────────────────────
 const Onboarding     = lazy(() => import('./pages/Onboarding'))
@@ -92,9 +94,15 @@ function LoadingScreen() {
 function AppLayout() {
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <AppLayoutChrome>
-        <Outlet />
-      </AppLayoutChrome>
+      {/* TermsGate wraps the whole authed shell rather than sitting on one
+          page, because the users who most need it — everyone who signed up
+          before the pilot agreement existed — can land on any route. It
+          fails open on error; see the component. */}
+      <TermsGate>
+        <AppLayoutChrome>
+          <Outlet />
+        </AppLayoutChrome>
+      </TermsGate>
     </Suspense>
   )
 }
@@ -164,6 +172,7 @@ export default function App() {
         <Route path="/about"    element={<LazyRoute><About /></LazyRoute>} />
         <Route path="/security" element={<LazyRoute><Security /></LazyRoute>} />
         <Route path="/privacy"  element={<LazyRoute><Privacy /></LazyRoute>} />
+        <Route path="/terms"    element={<LazyRoute><Terms /></LazyRoute>} />
 
         {/* Comparison pages — same component, slug-driven */}
         <Route path="/vs/:competitor" element={<LazyRoute><Comparison /></LazyRoute>} />

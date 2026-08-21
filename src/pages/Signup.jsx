@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
 import { TRIAL_DAYS } from '../lib/pricing'
+import { parkPendingAcceptance } from '../lib/terms'
 
 /**
  * Signup — mirror of Login's split-screen, but the brand-side copy flips
@@ -21,11 +22,23 @@ export default function Signup() {
   const [loading, setLoading]       = useState(false)
   const [confirmSent, setConfirmSent] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  // Required. Blocks submit until ticked — see the note on the checkbox JSX.
+  const [agreed, setAgreed] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (!agreed) return
     setLoading(true)
     setError(null)
+
+    // Park the acceptance BEFORE the network call.
+    //
+    // ⚠️ Supabase email confirmation returns a user with NO session, so we
+    // cannot write the acceptance row here — the insert would fail RLS with
+    // auth.uid() null. TermsGate flushes this on the first authenticated load
+    // and keeps this timestamp, which is the moment they actually agreed.
+    parkPendingAcceptance()
+
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {
       setError(error.message)
@@ -167,14 +180,41 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gold-gradient text-white rounded-lg px-4 py-3 text-sm font-bold tracking-wide disabled:opacity-50 glow-gold-sm hover:glow-gold transition-all duration-200"
+              disabled={loading || !agreed}
+              className="w-full bg-gold-gradient text-white rounded-lg px-4 py-3 text-sm font-bold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed glow-gold-sm hover:glow-gold transition-all duration-200"
             >
               {loading ? 'Creating your account…' : 'Start my free trial →'}
             </button>
             )}
 
+            {/* ⚠️ This replaced the sentence "By creating an account you agree
+                to our terms." — which linked to nothing, because no terms
+                existed. Asserting an agreement that cannot be produced is
+                worse than asking plainly, so now it is a real checkbox with a
+                real link and a recorded acceptance.
+
+                It is also no longer claiming the trial auto-converts. Nothing
+                is charged during the pilot and no card is collected, so that
+                sentence described a thing that could not happen. */}
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={e => setAgreed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-600"
+              />
+              <span className="text-[11px] text-ink-400 leading-relaxed">
+                I accept the{' '}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold underline underline-offset-2">
+                  pilot agreement
+                </Link>
+                {' '}— GrowthOS is unfinished software in private testing, it gives
+                AI-generated business opinions rather than professional advice,
+                and the decisions stay mine.
+              </span>
+            </label>
             <p className="text-[11px] text-ink-400 text-center leading-relaxed">
-              By creating an account you agree to our terms. Your trial auto-converts after {TRIAL_DAYS} days — cancel from settings anytime.
+              Free while in pilot. No card, and nothing is charged.
             </p>
           </form>
 

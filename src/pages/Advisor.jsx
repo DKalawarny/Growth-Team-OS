@@ -848,8 +848,16 @@ const Composer = forwardRef(function Composer(
           </button>
         </form>
         {/* Hint: only show desktop shortcut hint on devices with a real keyboard */}
-        <p className="text-[10px] mt-2 text-center hidden sm:block" style={{ color: 'rgba(13,20,19,0.20)' }}>
-          Enter to send · Shift+Enter for a new line
+        {/* ⭐ The persistent line — the "Claude can make mistakes" equivalent.
+            The per-tool disclaimers in lib/toolDisclaimers.js only ride on tool
+            OUTPUTS. Solomon in conversation had nothing, and conversation is
+            where someone asks about a termination or a price. Deliberately
+            always-on and deliberately dull: it is the constant backdrop, while
+            prompts.js handles the sharp, contextual warning on the answers that
+            actually carry money. */}
+        <p className="text-[10px] mt-2 text-center leading-relaxed" style={{ color: 'rgba(13,20,19,0.32)' }}>
+          Solomon gives business opinions, not professional advice, and can be wrong — check anything costly.
+          <span className="hidden sm:inline"> · Enter to send, Shift+Enter for a new line</span>
         </p>
       </div>
     </div>

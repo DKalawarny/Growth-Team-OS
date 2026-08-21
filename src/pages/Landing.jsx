@@ -650,6 +650,9 @@ function PageFooter() {
         </div>
         <div className="flex items-center gap-5">
           <Link to="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
+          <Link to="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
+          <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
+          <Link to="/security" className="hover:text-white/60 transition-colors">Security</Link>
           <a href="mailto:support@leadeos.com" className="hover:text-white/60 transition-colors">Contact</a>
           <Link to="/login" className="hover:text-white/60 transition-colors">Log in</Link>
         </div>
