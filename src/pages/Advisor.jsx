@@ -170,10 +170,20 @@ export default function Advisor() {
       setMessages(history)
       setLoading(false)
 
-      // Send morning opener if this is the first open today AND the Dashboard
-      // hasn't already generated one (the Dashboard card generates + saves it
-      // to DB before navigating here, so we'd create a duplicate otherwise).
-      if (!hasOpenedToday(profile.id) && !dashboardAlreadyGeneratedOpener(profile.id)) {
+      // Don't stack greetings. The only gate used to be "first open today", so
+      // an owner who didn't reply collected one unanswered hello per day — the
+      // live thread had four in a row, which reads as an app talking to itself.
+      //
+      // An unanswered opener is the last message, from the assistant, and
+      // short. A real answer runs much longer, so the length test separates
+      // "he greeted me and I ignored it" from "he answered me properly".
+      // Imperfect, but it fails in the safe direction: worst case one greeting
+      // is skipped, which costs nothing.
+      const last = history[history.length - 1]
+      const greetingLeftHanging =
+        last && last.role === 'assistant' && (last.content ?? '').length < 400
+
+      if (!hasOpenedToday(profile.id) && !dashboardAlreadyGeneratedOpener(profile.id) && !greetingLeftHanging) {
         markOpenedToday(profile.id)
         generateMorningOpener()
       } else {
