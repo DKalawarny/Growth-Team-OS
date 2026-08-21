@@ -458,7 +458,7 @@ function Header({ companyName, spendInfo }) {
   })() : null
 
   return (
-    <header className="px-4 sm:px-6 py-3 sm:py-3.5 flex-shrink-0" style={{ background: '#161b22', borderBottom: '1px solid rgba(13,20,19,0.05)' }}>
+    <header className="px-4 sm:px-6 py-3 sm:py-3.5 flex-shrink-0" style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(13,20,19,0.08)' }}>
       <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -490,8 +490,8 @@ function Header({ companyName, spendInfo }) {
           </Link>
           {/* Online indicator hidden on mobile to keep header tight */}
           <div className="hidden sm:flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400" aria-hidden />
-            <span className="text-xs text-green-400/70 font-medium">Online</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-600" aria-hidden />
+            <span className="text-xs text-green-700 font-medium">Online</span>
           </div>
         </div>
       </div>
@@ -804,13 +804,13 @@ const Composer = forwardRef(function Composer(
   ref,
 ) {
   return (
-    <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background: '#161b22', borderTop: '1px solid rgba(13,20,19,0.05)' }}>
+    <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background: '#FFFFFF', borderTop: '1px solid rgba(13,20,19,0.08)' }}>
       <div className="max-w-3xl mx-auto">
         {error && (
           typeof error === 'object' && error.code === 'spend_cap_exceeded'
-            ? <div className="mb-2"><SpendCapBanner err={error} dark /></div>
+            ? <div className="mb-2"><SpendCapBanner err={error} /></div>
             : (
-              <div className="mb-2 rounded-lg px-3 py-2 text-xs" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5' }}>
+              <div className="mb-2 rounded-lg px-3 py-2 text-xs" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#b91c1c' }}>
                 {typeof error === 'string' ? error : error.message}
               </div>
             )
@@ -830,7 +830,7 @@ const Composer = forwardRef(function Composer(
               maxHeight: '160px',
               background: 'rgba(13,20,19,0.04)',
               border: '1px solid rgba(13,20,19,0.10)',
-              color: '#fff',
+              color: '#0D1413',
             }}
             onInput={e => {
               e.target.style.height = 'auto'
