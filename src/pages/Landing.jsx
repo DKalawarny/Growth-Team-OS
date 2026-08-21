@@ -29,8 +29,8 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  */
 
 const LANDING_META = buildPageMeta({
-  title:       'GrowthOS — AI advisor + business tools for home-services contractors',
-  description: `AI business advisor for plumbers, electricians, HVAC, roofing, demolition, masonry, landscaping, and every home-services trade. Cash flow forecasting, hiring planner, Google Business Profile audit, AI search visibility, and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
+  title:       'GrowthOS — an advisor for Christian business owners',
+  description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
   path:        '/',
 })
 
@@ -38,39 +38,36 @@ const LANDING_META = buildPageMeta({
 
 const TOOLS = [
   {
-    icon: '💡',
-    name: 'Solomon — AI Advisor',
-    outcome: 'Your on-call business advisor. Knows your goals, your finances, and your team. Briefs you every morning on what matters today.',
+    name: 'Work through a decision',
+    outcome: 'He argues it more than one way, tells you where the arguments disagree, then says where he lands and what he cannot see.',
   },
   {
-    icon: '📈',
-    name: 'CFO Dashboard',
-    outcome: 'Connect QuickBooks and get a live financial health view — KPIs, trends, and plain-English commentary every month.',
+    name: 'Read your numbers',
+    outcome: 'Connect QuickBooks and get the month in plain English — what changed, what it means, what to do about it.',
   },
   {
-    icon: '📊',
-    name: 'Cash Flow Forecast',
-    outcome: 'See your next 13 weeks of cash. Know before payroll week becomes a problem.',
+    name: 'Forecast your cash',
+    outcome: 'The next thirteen weeks. Know before payroll week becomes a problem.',
   },
   {
-    icon: '📍',
-    name: 'Local & AI Visibility',
-    outcome: 'Show up on Google Maps, in organic search, and when customers ask ChatGPT or Google AI who to call. Full audit with an AI search readiness score.',
+    name: 'Think through a hire',
+    outcome: 'Whether to, what the role really is, and what you are actually looking for in the person.',
   },
   {
-    icon: '🦺',
-    name: 'Safety & Compliance',
-    outcome: 'Track every licence, WCB registration, and compliance document your business needs to stay legal and insurable.',
+    name: 'Price with integrity',
+    outcome: 'What the work is genuinely worth. Neither gouging nor underselling yourself out of discomfort.',
   },
   {
-    icon: '🧩',
-    name: 'Org Chart Planner',
-    outcome: 'Map the team you need next year — not the one you have today. Plan your next hire before you need them.',
+    name: 'Write down a repeating job',
+    outcome: 'Get what lives in your head onto paper, so the business can run a day without you in it.',
   },
   {
-    icon: '🗺️',
-    name: 'Growth Roadmap',
-    outcome: 'A milestone-by-milestone plan from where you are to where you want to be. With progress tracking built in.',
+    name: 'Check an obligation',
+    outcome: 'Answered from your own documents and the actual regulation, with the source shown. He will not guess at the law.',
+  },
+  {
+    name: 'Plan what you leave behind',
+    outcome: 'What would have to be true for someone else to run this, and how far off that is today.',
   },
 ]
 
@@ -345,7 +342,7 @@ function HeroSection() {
     <section className="bg-gray-950 text-white relative overflow-hidden">
       {/* Background texture */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.12) 0%, transparent 60%)',
+        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20,166,123,0.14) 0%, transparent 60%)',
       }} />
 
       <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
@@ -355,23 +352,30 @@ function HeroSection() {
             {TRIAL_DAYS}-day free trial — no credit card required
           </div>
           <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-semibold px-4 py-1.5 rounded-full">
-            🔒 Founding rate — ${PRICE_MONTHLY_USD} locked in for life
+            For Christian business owners
           </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
-          Stop running a million-dollar operation<br />
-          <span className="text-brand-400">on gut feel and spreadsheets.</span>
+          You carry this business<br />
+          <span className="text-brand-400">on your own.</span>
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
-          Everything a $5,000/month consultant gives you — AI advisor, live CFO dashboard,
-          cash flow, hiring, local SEO, compliance — for ${PRICE_MONTHLY_USD}/month.
+          An advisor who reads your actual numbers, remembers what you told him
+          in March, and answers like someone who believes the way you run this
+          matters — not only what it earns.
         </p>
 
-        {/* Feature pill row */}
+        {/* What he does, in the owner's language rather than in feature names. */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-2xl mx-auto">
-          {['AI Advisor','CFO Dashboard','Cash Flow','Local & AI Visibility','Safety & Compliance','Org Chart','Growth Roadmap','Work Board'].map(f => (
+          {[
+            'Reads your books',
+            'Remembers your decisions',
+            'Argues both sides',
+            'Says when he doesn\u2019t know',
+            'Never flatters you',
+          ].map(f => (
             <span key={f} className="text-xs font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/50">
               {f}
             </span>
@@ -383,7 +387,7 @@ function HeroSection() {
             to="/signup"
             className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
-            Claim your {TRIAL_DAYS}-day free trial
+            Start free for {TRIAL_DAYS} days
           </Link>
         </div>
 
@@ -399,11 +403,11 @@ function HeroSection() {
 
 function ProblemSection() {
   const pains = [
-    'Making $100k decisions on last month\'s bank balance and a gut feeling',
-    'Paying a bookkeeper $800/month for reports you don\'t have time to read',
-    'Googling "how to hire a foreman" at 11pm because nobody told you how',
-    'Watching your competitor rank #1 on Google while you\'re still on page 3',
-    'Running five apps that don\'t talk to each other and still missing things',
+    'Making six-figure decisions alone, on last month\'s bank balance and a feeling',
+    'Nobody to ask who understands both the numbers and why you run it this way',
+    'Advice that treats profit as the only thing worth measuring',
+    'Everyone around you needs an answer from you, and you need one from someone',
+    'Wondering whether the business is still serving your family or consuming it',
   ]
 
   return (
@@ -411,10 +415,11 @@ function ProblemSection() {
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            This is costing you money right now.
+            Deciding alone is the expensive part.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
-            Most contractors are running great operations with terrible back-office infrastructure. Every week without the right systems is revenue left on the table.
+            Most owners have plenty of people who need answers from them and almost
+            nobody to ask. Scripture is not subtle about what that costs.
           </p>
         </div>
 
@@ -450,16 +455,21 @@ function SolomonSection() {
           {/* Copy */}
           <div>
             <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
-              💡 Meet Solomon
+              Meet Solomon
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
-              Not a chatbot.<br />A real business advisor.
+              Sharp about the business.<br />Clear about what it&rsquo;s for.
             </h2>
             <p className="text-white/60 leading-relaxed mb-6">
-              Solomon reads your roadmap, your weekly check-ins, your QuickBooks data,
-              and your hiring plans — then opens every morning with a briefing on
-              what actually needs your attention today. Ask him anything.
-              He already knows the context.
+              He reads your books, your plan and your last six check-ins, and he
+              remembers what you decided in March and why. On anything hard to
+              reverse he argues it more than one way, tells you where the arguments
+              genuinely disagree, then says where he lands &mdash; and what he can&rsquo;t
+              see from where he sits.
+            </p>
+            <p className="text-white/60 leading-relaxed mb-6">
+              He will not tell you that being faithful makes a business profitable.
+              Nobody can promise you that, and you have heard enough people try.
             </p>
             <ul className="space-y-3">
               {[
@@ -551,7 +561,7 @@ function ToolsSection() {
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            The complete arsenal for contractors who play to win.
+            Everything he can do, without leaving the conversation.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
             Ask a few questions. Get a finished plan. Act on it today.
@@ -560,12 +570,9 @@ function ToolsSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
           {TOOLS.map((tool, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50">
-              <span className="text-xl flex-shrink-0">{tool.icon}</span>
-              <div>
-                <p className="font-bold text-gray-900 text-sm">{tool.name}</p>
-                <p className="text-xs text-gray-500 leading-snug">{tool.outcome.split('.')[0]}.</p>
-              </div>
+            <div key={i} className="px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50">
+              <p className="font-bold text-gray-900 text-sm mb-0.5">{tool.name}</p>
+              <p className="text-xs text-gray-500 leading-snug">{tool.outcome}</p>
             </div>
           ))}
         </div>
@@ -724,10 +731,12 @@ function PriceSection() {
     <section className="bg-white py-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          An advisor, a CFO, a hiring coach, and a growth planner. ${PRICE_MONTHLY_USD} a month.
+          ${PRICE_MONTHLY_USD} a month. One tier, everything in it.
         </h2>
         <p className="text-gray-500 mb-10 max-w-lg mx-auto">
-          Hiring those people separately would cost you $3,000–$6,000 a month. GrowthOS gives you all of it — plus the tools to execute — for less than a single consulting hour.
+          A coach or a mastermind runs $500 to $2,500 a month, and most of them
+          will tell you what you want to hear. This is a fraction of that, and it
+          reads your actual numbers before it says anything.
         </p>
 
         {/* Toggle */}
@@ -806,17 +815,19 @@ function ClosingCTA() {
     <section className="bg-brand-500 py-16">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4">
-          Your competitors are getting smarter.<br />Are you going to let them pull ahead?
+          You don&rsquo;t have to decide the next one alone.
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
-          {TRIAL_DAYS} days free. Connect your books, run your first tool, ask Solomon anything. If it's not the best ${PRICE_MONTHLY_USD}/month you've ever spent on your business — cancel. No questions. No charge. No risk.
+          {TRIAL_DAYS} days free, no card. Connect your books, tell him what you&rsquo;re
+          weighing, and see whether he tells you anything you didn&rsquo;t already know.
+          If he doesn&rsquo;t, leave — and take your data with you.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             to="/signup"
             className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gray-950 text-white font-black text-base hover:bg-gray-800 transition-colors"
           >
-            Claim your edge — start free
+            Start free
           </Link>
           <a
             href="mailto:support@leadeos.com"
