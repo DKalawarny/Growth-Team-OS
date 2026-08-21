@@ -237,18 +237,47 @@ In rough order of priority.
    `STRIPE_PRICE_ID_OWNER_ANNUAL=…`, and update `src/lib/pricing.js` (the only
    place a price literal may live — three copies had already drifted once).
 
-2. 🔴 **Revoke two exposed keys.**
+2. ⏸️ **PRICING QUESTIONNAIRE — drafted, not built, not sent (21 Aug 2026).**
+   To go to pilot users before any price is set. Daniel will send it himself
+   when ready; do not build or send anything until he says so.
+
+   ⚠️ Do NOT ask "what would you pay?" — the least reliable pricing question
+   there is. People under-report willingness to pay, and friends distort it
+   both ways (lowball so as not to look like an easy mark, or inflate to be
+   encouraging). The set below is Van Westendorp plus behavioural anchors.
+
+   Lead with behaviour, because it beats stated opinion every time:
+     1. What did you actually use it for this month?
+     2. What would you stop paying for, or stop doing yourself, if you kept it?
+     3. What do you currently spend on that thing?
+
+   Then Van Westendorp (four points, not one number):
+     4. At what monthly price would this be so expensive you would not consider it?
+     5. At what price would it be expensive, but still worth considering?
+     6. At what price would it be a bargain?
+     7. At what price would it be so cheap you would question whether it was any good?
+
+   Then one direct check:
+     8. At $147/month, would you sign up today — yes / no / maybe, and why?
+
+   ⭐ Q7 is the one that answers Daniel's actual question. If a meaningful
+   number name something at or above $147, the price is too low.
+
+   ⭐ Weight the behavioural answers over the stated numbers. Someone who says
+   they would pay $300 but logged in twice has given a $0 answer.
+
+3. 🔴 **Revoke two exposed keys.**
    - The OpenAI key typed on the command line during the Aug 2026 session
      (it appeared in a screenshot). OpenAI is no longer used at all, so also
      `supabase secrets unset OPENAI_API_KEY`.
    - The Voyage key, leaked into a chat transcript by a grep. dash.voyageai.com.
 
-3. **Stripe live-mode switchover** — blocked on bank account login. Then:
+4. **Stripe live-mode switchover** — blocked on bank account login. Then:
    finish account activation, create the LIVE product and prices (at $147 /
    $1,470, not $97), create the live webhook endpoint, update the four
    `STRIPE_*` secrets, and do a real $1 charge + refund.
 
-4. **Two marketing pages are still on the old positioning, deliberately left
+5. **Two marketing pages are still on the old positioning, deliberately left
    for Daniel to decide rather than deleted:**
    - `/crm` — markets a companion operations CRM at $699 that does not exist
      yet (it depends on the partner's job-management system, item 6).
@@ -259,22 +288,22 @@ In rough order of priority.
      audits, it is a promise being made and not kept.
    Neither was removed unilaterally. Both are live right now.
 
-5. **`/tools/gbp` still exists as a route** but is surfaced nowhere — not in
+6. **`/tools/gbp` still exists as a route** but is surfaced nowhere — not in
    the sidebar, not in SolomonLauncher. All marketing claims about it were
    removed. It is legacy, not deleted. Decide whether it goes.
 
-6. **Delete the old Anthropic API key** at
+7. **Delete the old Anthropic API key** at
    https://console.anthropic.com/settings/keys. It was shipped to the browser
    pre-rewrite — assume it is leaked.
 
-7. **Offer Builder + Hiring Planner as partner add-on** — kept in the app,
+8. **Offer Builder + Hiring Planner as partner add-on** — kept in the app,
    gated behind a second tier once the partner's job-management system exists.
 
-8. **Tool-use for Solomon.** He currently SEEDS a conversation from the
+9. **Tool-use for Solomon.** He currently SEEDS a conversation from the
    launcher rather than running tools himself. This is the biggest remaining
    product gap.
 
-9. **Netlify**: Daniel is on the Personal plan and intends to cancel — confirm
+10. **Netlify**: Daniel is on the Personal plan and intends to cancel — confirm
    it ends Sep 13 rather than immediately, or deploys stop. Deploys are
    credit-metered (300/mo free ≈ 20 deploys at 15 credits each), so batch
    changes rather than pushing one fix at a time.
