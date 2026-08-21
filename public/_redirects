@@ -1,0 +1,20 @@
+# Netlify SPA fallback.
+#
+# Without this, every path except / returns 404 in production. Not "looks
+# broken" — an actual 404 from the CDN, before React ever loads. Refreshing
+# any page inside the app, bookmarking /dashboard, or sending anyone a link
+# to /pricing or /signup all failed. Only the homepage worked, and only
+# because index.html is a real file at the root.
+#
+# The rule says: if the requested path doesn't match a file on disk, serve
+# index.html with a 200 and let the client-side router work out the route.
+# The 200 matters — a 301/302 would change the URL, and a 404 status would
+# tell crawlers the page doesn't exist even while rendering it.
+#
+# Real files still win. The prerender step (scripts/prerender.mjs, run by
+# `npm run build`) writes dist/<route>/index.html for the marketing routes,
+# and Netlify serves those directly because they exist. This only catches
+# what's left over — which is every authenticated app route, since those
+# can't be prerendered.
+
+/*    /index.html   200
