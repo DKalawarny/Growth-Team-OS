@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
 import { startCheckout, openPortal } from '../../lib/subscriptions'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PAYMENTS_LIVE } from '../../lib/pricing'
 
 /**
  * BillingSection — plan status + payment management inside Settings.
@@ -162,6 +162,26 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
         </p>
         <PrimaryButton onClick={onCheckout} busy={busy} label="Reactivate subscription" busyLabel="Opening Stripe…" />
         {err && <ErrorLine text={err} />}
+      </>
+    )
+  }
+
+  // During the free pilot there is nothing to buy, and the trial countdown is
+  // noise — it nags about an ending that has no consequence and no price
+  // attached. Both upgrade states (trialing and expired) collapse into this.
+  if (!PAYMENTS_LIVE && (status.kind === 'trialing' || status.kind === 'expired')) {
+    return (
+      <>
+        <PlanHeader plan="Free pilot" tone="neutral" />
+        <p className="text-sm text-gray-600 mb-3">
+          You have full access while GrowthOS is in pilot. There is nothing to
+          pay, and no card is held on file.
+        </p>
+        <Hint>
+          If pricing is introduced later you will be told before anything is
+          charged — see the{' '}
+          <Link to="/terms" className="text-brand-600 hover:underline">pilot agreement</Link>.
+        </Hint>
       </>
     )
   }

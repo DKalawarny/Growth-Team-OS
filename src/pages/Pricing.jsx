@@ -10,7 +10,7 @@ import {
   faqPageSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE } from '../lib/pricing'
 
 /**
  * /pricing — public pricing page.
@@ -464,7 +464,7 @@ function OwnerCta({ billing, authState }) {
       <div>
         <button
           type="button"
-          onClick={async () => { setErr(null); setClicking(true); try { await startCheckout(plan) } catch (e) { setErr(e.message || 'Could not start checkout'); setClicking(false) } }}
+          onClick={async () => { if (!PAYMENTS_LIVE) return; setErr(null); setClicking(true); try { await startCheckout(plan) } catch (e) { setErr(e.message || 'Could not start checkout'); setClicking(false) } }}
           disabled={clicking}
           className="w-full rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
         >

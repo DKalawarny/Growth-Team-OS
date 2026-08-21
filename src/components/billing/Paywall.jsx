@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
 import { startCheckout, openPortal } from '../../lib/subscriptions'
-import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS, PAYMENTS_LIVE } from '../../lib/pricing'
 
 /**
  * Paywall — full-card screen shown when a user without active access
@@ -27,6 +27,8 @@ export default function Paywall() {
 
   const upgrade = async () => {
     setErr(null); setBusy(true)
+    // Belt and braces — startCheckout also refuses during the pilot.
+    if (!PAYMENTS_LIVE) return
     try { await startCheckout('owner') }
     catch (e) { setErr(e.message || 'Could not start checkout'); setBusy(false) }
   }

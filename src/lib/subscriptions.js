@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { PAYMENTS_LIVE } from './pricing'
 
 /**
  * Subscription helpers — browser-side wrapper over the stripe-* Edge
@@ -130,6 +131,12 @@ export function describeSubscription({ subscription, trialEndsAt }) {
  * should catch and surface the error inline (not block with an alert).
  */
 export async function startCheckout(plan = 'owner') {
+  // The one place every checkout path converges, so the guarantee lives here
+  // rather than in three separate buttons. Hiding the UI is good manners; this
+  // is what actually makes "nothing will be charged during the pilot" true.
+  if (!PAYMENTS_LIVE) {
+    throw new Error('GrowthOS is in free pilot — there is nothing to pay for yet.')
+  }
   const { data, error } = await supabase.functions.invoke('stripe-checkout', {
     method: 'POST',
     body:   { plan },
