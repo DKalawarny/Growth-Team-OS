@@ -34,9 +34,10 @@ export default function SolomonContext() {
       build(supabase.from(table).select('id', { count: 'exact', head: true }).eq('company_id', cid))
 
     ;(async () => {
-      const [staff, files, safety, snaps, qbo, checkins, chats, docs, plays, latestSnap] = await Promise.all([
+      const [staff, files, chunks, safety, snaps, qbo, checkins, chats, docs, plays, latestSnap] = await Promise.all([
         count('staff_members'),
         count('knowledge_files', q => q.eq('status', 'ready')),
+        count('document_chunks'),
         count('safety_documents', q => q.eq('is_current', true)),
         count('financial_snapshots'),
         supabase.from('integrations').select('status, updated_at').eq('company_id', cid).eq('provider', 'quickbooks').maybeSingle(),
@@ -53,6 +54,7 @@ export default function SolomonContext() {
         loading: false,
         staff: staff.count ?? 0,
         files: files.count ?? 0,
+        chunks: chunks.count ?? 0,
         safety: safety.count ?? 0,
         snaps: snaps.count ?? 0,
         qbo: qbo.data?.status ?? 'disconnected',
@@ -86,7 +88,11 @@ export default function SolomonContext() {
         ? `Revenue, margin and cash position — synced ${relative(s.lastSync)}`
         : 'Revenue, margin and cash position',
     },
-    s.files > 0 && {
+    // Only claim this when the files are actually indexed. Uploaded and
+    // searchable are different states, and a file with no chunks is invisible
+    // to him — saying "Live" over it is the most misleading thing this page
+    // could do, because it is the exact question the page exists to answer.
+    s.files > 0 && s.chunks > 0 && {
       title: `Your documents — ${s.files} ${s.files === 1 ? 'file' : 'files'}`,
       detail: 'Searched by meaning, so he can quote the relevant part rather than the whole file',
     },
@@ -119,6 +125,12 @@ export default function SolomonContext() {
       headline: "He can't see your numbers.",
       body: 'Without the books he can reason about your business but not about your money, so anything about cash, margin or whether you can afford something is guesswork he will refuse to do.',
       cta: { label: 'Connect QuickBooks', to: '/settings/integrations' },
+    },
+    s.files > 0 && s.chunks === 0 && {
+      key: 'unindexed',
+      headline: `Your ${s.files} ${s.files === 1 ? 'file is' : 'files are'} uploaded, but he can't read ${s.files === 1 ? 'it' : 'them'} yet.`,
+      body: "They were added while document search was switched off, so they were never indexed — which means every answer so far has ignored them completely. Indexing takes a few seconds and only needs doing once.",
+      cta: { label: 'Index them now', to: '/admin/backfill' },
     },
     s.files === 0 && {
       key: 'docs',
