@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { HOURS_OPTIONS, DAYS_OFF_OPTIONS } from '../lib/businessProfileOptions'
+import { HOURS_OPTIONS } from '../lib/businessProfileOptions'
 
 /**
  * Check-ins (/checkins).
@@ -37,7 +37,6 @@ const INITIAL_FORM = {
   challenge:       '',
   revenue_update:  '',
   hours_this_week: '',
-  days_off:        '',
   gave_amount:     '',
   notes:           '',
 }
@@ -132,10 +131,9 @@ export default function Checkins() {
       challenge:       form.challenge.trim(),
       revenue_update:  form.revenue_update.trim() || null,
       hours_this_week: form.hours_this_week || null,
-      // Blank stays null. An unanswered field must never be stored as a zero —
-      // "didn't say" and "took none" are different facts and only one of them
-      // is a problem.
-      days_off:        form.days_off === '' ? null : parseInt(form.days_off, 10),
+      // Blank stays null. "Didn't say" and "gave nothing" are different facts
+      // and only one of them is a problem — storing a blank as zero would
+      // quietly invent the wrong one.
       gave_amount:     form.gave_amount === '' ? null : Number(form.gave_amount),
       notes:           form.notes.trim() || null,
     }
@@ -227,7 +225,7 @@ export default function Checkins() {
               onClick={() => setShowOptional(true)}
               className="text-sm font-medium text-ink-400 hover:text-ink-600 transition-colors"
             >
-              + Add revenue, hours, rest, or notes
+              + Add revenue, hours, or notes
             </button>
           ) : (
             <div className="space-y-5 pt-4 border-t border-ink-100">
@@ -243,19 +241,8 @@ export default function Checkins() {
                 onChange={v => set('hours_this_week', v)}
                 options={HOURS_OPTIONS}
               />
-              {/* Rest and giving.
-                *
-                * Phrased as observations, never as questions about obedience,
-                * and shown with no target, streak or comparison anywhere near
-                * them. "Days you didn't work" can be answered honestly on a
-                * bad week; "did you keep Sabbath?" can only be failed.
-                */}
-              <SelectField
-                label="Days you didn't work (optional)"
-                value={form.days_off}
-                onChange={v => set('days_off', v)}
-                options={DAYS_OFF_OPTIONS}
-              />
+              {/* Opt-in only, and shown with no target, streak or comparison
+                * anywhere near it. */}
               {trackGiving && (
                 <TextField
                   label="Given this period (optional)"
