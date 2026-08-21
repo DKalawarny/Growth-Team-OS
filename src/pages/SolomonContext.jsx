@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { loadMemory, dismissMemory } from '../lib/memory'
 
 /**
  * What Solomon is working from — /context
@@ -23,6 +24,7 @@ import { useAuth } from '../hooks/useAuth'
 export default function SolomonContext() {
   const { profile } = useAuth()
   const [s, setS] = useState({ loading: true })
+  const [memory, setMemory] = useState([])
 
   useEffect(() => {
     if (!profile?.company_id) return
@@ -44,7 +46,9 @@ export default function SolomonContext() {
         count('work_order_templates', q => q.is('archived_at', null)),
         supabase.from('financial_snapshots').select('synced_at').eq('company_id', cid).order('synced_at', { ascending: false }).limit(1).maybeSingle(),
       ])
+      const mem = await loadMemory(cid, profile.id).catch(() => [])
       if (cancelled) return
+      setMemory(mem)
       setS({
         loading: false,
         staff: staff.count ?? 0,
@@ -137,6 +141,14 @@ export default function SolomonContext() {
           </p>
         </header>
 
+        <MemorySection
+          rows={memory}
+          onDismiss={async id => {
+            setMemory(m => m.filter(r => r.id !== id))
+            await dismissMemory(id)
+          }}
+        />
+
         {connected.length > 0 && <Group label="Connected" rows={connected} live />}
         {learned.length   > 0 && <Group label="Picked up from using the app" rows={learned} />}
 
@@ -203,4 +215,75 @@ function relative(iso) {
   if (days === 1) return 'yesterday'
   if (days < 30) return `${days} days ago`
   return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
+}
+
+const KIND_LABEL = {
+  constraint: 'A line you drew',
+  decision:   'Decided',
+  person:     'Someone',
+  commitment: 'You said you would',
+  preference: 'How you like it',
+  context:    'Background',
+}
+
+/**
+ * What he remembers, and the button that says he's wrong.
+ *
+ * The dismiss control is the entire trust model of this feature. A durable
+ * fact the owner cannot correct is worse than no memory at all — it quietly
+ * skews every later answer with no way to find out why.
+ */
+function MemorySection({ rows, onDismiss }) {
+  if (!rows.length) {
+    return (
+      <section className="bg-white border border-ink-100 rounded-2xl p-6 flex flex-col gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
+          What he remembers
+        </p>
+        <p className="text-[14.5px] leading-[1.65] text-ink-500">
+          Nothing yet. As you talk, he writes down the things that will still
+          matter in six months — lines you’ve drawn, decisions you’ve already
+          made, who your people are. Not the conversation, just what lasts.
+        </p>
+      </section>
+    )
+  }
+  return (
+    <section className="bg-white border border-ink-100 rounded-2xl px-6 pt-5 pb-2 flex flex-col">
+      <div className="flex items-baseline justify-between pb-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
+          What he remembers
+        </p>
+        <span className="text-[12.5px] text-ink-300">{rows.length}</span>
+      </div>
+      <p className="text-[13px] text-ink-400 pb-3">
+        Wrong, or no longer true? Remove it and he’ll stop using it.
+      </p>
+      {rows.map((r, i) => (
+        <div key={r.id} className={`group flex items-start gap-4 py-3.5 ${i < rows.length - 1 ? 'border-b border-ink-100' : ''}`}>
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+              <span className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-brand-700">
+                {KIND_LABEL[r.kind] ?? r.kind}
+              </span>
+              {r.first_seen && (
+                <span className="text-[11.5px] text-ink-300">
+                  {new Date(r.first_seen).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+            <p className="text-[14.5px] leading-[1.55] text-ink-900">{r.statement}</p>
+            {r.detail && <p className="text-[13px] leading-[1.55] text-ink-400">{r.detail}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={() => onDismiss(r.id)}
+            className="shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-[12.5px] font-semibold text-ink-300 hover:text-red-600 px-2 py-1"
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+    </section>
+  )
 }

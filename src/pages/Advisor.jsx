@@ -10,6 +10,7 @@ import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../lib/prompts'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
+import { rememberFromExchange } from '../lib/memory'
 
 /**
  * Advisor — the owner's daily AI coaching chat.
@@ -279,6 +280,19 @@ export default function Advisor() {
       })
 
       if (!reply) throw new Error('Empty response from Claude.')
+
+      // 4b. Write down anything durable from this exchange.
+      //
+      // Deliberately NOT awaited: memory is a background concern and must
+      // never sit between the owner and their reply. A failure in here is
+      // logged and swallowed — a missed fact is a small loss, a blocked
+      // conversation is not.
+      rememberFromExchange({
+        companyId:        profile.company_id,
+        userId:           profile.id,
+        userMessage:      text,
+        assistantMessage: reply,
+      })
 
       // 5. Persist the completed reply, swap placeholder with the real DB row.
       const { data: assistantRow, error: asstErr } = await supabase

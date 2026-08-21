@@ -14,6 +14,7 @@ import { embed as embedQuery } from './rag/embeddings'
 import { getJurisdictionLinks } from './jurisdictionLinks'
 import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
 import { referenceCanonBlock } from './references'
+import { loadMemory, formatMemory } from './memory'
 
 // Safety vault — char budget for direct loading (no embeddings path).
 // Owner uploads SOPs, SDS sheets, permits. We load the most recent
@@ -159,7 +160,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : Promise.resolve(null)
 
   const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes,
-         staffRes, woRes, tplRes] = await Promise.all([
+         staffRes, woRes, tplRes, memoryRows] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -247,6 +248,10 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .is('archived_at', null)
       .order('created_at', { ascending: false })
       .limit(MAX_PLAYBOOKS),
+    // Durable memory. Unlike chat retrieval this is NOT searched — every
+    // active row goes in on every turn. It is small by design, and the whole
+    // point is that Solomon doesn't have to go looking for what he knows.
+    loadMemory(companyId, userId).catch(() => []),
   ])
 
   const bp        = bpRes.data ?? {}
@@ -465,6 +470,10 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // REFERENCING BOOKS section of ADVISOR_SYSTEM_PROMPT and lib/references.js
     // for why recalling books from training data is not acceptable here.
     reference_canon: referenceCanonBlock(),
+    // What Solomon actually knows about this business, as opposed to what he
+    // can find. See lib/memory.js and migration 027 for why these are
+    // different things.
+    memory: formatMemory(memoryRows),
     // Jurisdiction-specific authority links — used by Solomon (and any tool
     // prompt) to REDIRECT instead of advise on legal / employment-standards /
     // workplace-safety / tax questions. Null when location is missing or
