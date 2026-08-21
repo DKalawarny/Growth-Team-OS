@@ -138,7 +138,29 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## What just shipped (2026-08 reposition)
+
+- **Solomon rewritten** — `src/lib/prompts.js` `ADVISOR_SYSTEM_PROMPT` grew from
+  ~4.7k to ~21k chars: the vocation thesis, six convictions, an explicit
+  anti-prosperity-gospel section (including "would this sentence still be
+  honest if the business failed anyway?"), when faith belongs in an answer,
+  and a crisis-referral clause that outranks the brevity rule.
+- **Memory** — migration 027 `solomon_memory` + `src/lib/memory.js`. Durable
+  statements (constraint / decision / person / commitment / preference /
+  context) read on every turn. Editable at `/context`.
+- **Prompt caching** — `src/lib/anthropic.js` splits the system payload into a
+  stable cached block (1h TTL) and a volatile tail. ~90% input saving, measured.
+- **OpenAI removed entirely** — migration 029, `supabase/functions/embed`.
+- **Design converted dark → light** to match the approved canvas.
+- **Marketing surface repositioned** and two live falsehoods removed: JSON-LD
+  advertising $97 CAD, and an /about page telling a fabricated first-person
+  founder story. See those commits — the reasoning is in the messages.
+- **Prerender was silently skipping on Netlify** — fixed in `netlify.toml`.
+  Every marketing page had been shipping as an empty SPA shell. Verify with:
+  `curl -s https://leadeos.com/about | grep -o "<title>[^<]*</title>"`
+
 ## What just shipped (2026-05-17 session — continued)
+
 
 - **GBP audit form fully wired** — `FreeGbpAudit.jsx` inserts into `gbp_audit_requests`
   (migration 025). Postgres trigger (migration 026) fires `gbp-audit-notify` Edge Function
@@ -197,42 +219,55 @@ before pushing.
 
 ## Parked — pick up here
 
-In rough order of priority:
+In rough order of priority.
 
-1. ~~**End-to-end signup test**~~ — **DONE (2026-05-14).** Stripe → webhook →
-   DB confirmed working. Bug found and fixed: `stripe-webhook` was deployed
-   without `--no-verify-jwt` (Supabase was blocking Stripe with a 401).
-   Redeployed with the flag; subscription row writes correctly.
+1. 🔴 **Create the $147 / $1,470 Stripe prices.** The site says $147; Stripe
+   still charges $97. Stripe prices are immutable, so this is: create two new
+   prices, then `supabase secrets set STRIPE_PRICE_ID_OWNER=…` and
+   `STRIPE_PRICE_ID_OWNER_ANNUAL=…`. Nothing else on this list matters as much,
+   because right now the site advertises one number and bills another.
 
-2. **Stripe live-mode switchover** — blocked on bank account login (Daniel
-   needs credentials). Steps once unblocked: finish Stripe account activation
-   (Business details → bank account), then create live product + $97/mo +
-   $970/yr prices, create live webhook endpoint, update the 4 `STRIPE_*`
-   Supabase secrets to live values, do a real $1 charge + refund.
+2. 🔴 **Revoke two exposed keys.**
+   - The OpenAI key typed on the command line during the Aug 2026 session
+     (it appeared in a screenshot). OpenAI is no longer used at all, so also
+     `supabase secrets unset OPENAI_API_KEY`.
+   - The Voyage key, leaked into a chat transcript by a grep. dash.voyageai.com.
 
-3. ~~**Set `APP_URL` Supabase secret**~~ — **DONE (2026-05-16).** Set to
-   `https://leadeos.com`. Site is live and deployed on Netlify.
+3. **Stripe live-mode switchover** — blocked on bank account login. Then:
+   finish account activation, create the LIVE product and prices (at $147 /
+   $1,470, not $97), create the live webhook endpoint, update the four
+   `STRIPE_*` secrets, and do a real $1 charge + refund.
 
-4. ~~**Add `supabase/.temp/` to `.gitignore`**~~ — **DONE (2026-05-14).**
-   Untracked and ignored.
+4. **Two marketing pages are still on the old positioning, deliberately left
+   for Daniel to decide rather than deleted:**
+   - `/crm` — markets a companion operations CRM at $699 that does not exist
+     yet (it depends on the partner's job-management system, item 6).
+     Currently indexed and in the sitemap.
+   - `/free-gbp-audit` — a working lead-gen funnel (form → `gbp_audit_requests`
+     → trigger → email). It promises a GBP audit deliverable, and the GBP tool
+     is no longer part of the product story. If nobody is fulfilling those
+     audits, it is a promise being made and not kept.
+   Neither was removed unilaterally. Both are live right now.
 
-5. **Delete the old Anthropic API key** at
-   https://console.anthropic.com/settings/keys once the new server-side
-   key has been live a few days and nothing's broken. The old key was
-   shipped to the browser pre-rewrite — assume it's leaked.
+5. **`/tools/gbp` still exists as a route** but is surfaced nowhere — not in
+   the sidebar, not in SolomonLauncher. All marketing claims about it were
+   removed. It is legacy, not deleted. Decide whether it goes.
 
-6. **Offer Builder + Hiring Planner as partner add-on** — these two tools
-   are removed from GrowthOS marketing but kept in the app. Once the
-   partner's job-management system is built, gate them behind a second
-   subscription tier that requires both GrowthOS + the partner product.
-   Hiring Planner needs incoming job data from that system to be fully
-   useful; Offer Builder is a natural upsell from their quoting flow.
+6. **Delete the old Anthropic API key** at
+   https://console.anthropic.com/settings/keys. It was shipped to the browser
+   pre-rewrite — assume it is leaked.
 
-7. **(After traction)** Bump $97 → $147/mo. Recommended $147 at launch
-   based on buyer profile (owner-operators with $500k–$15M revenue
-   already spend $500–3k/mo on accountants and ServiceTitan). Trigger to
-   revisit: 50+ paying customers, OR named case studies on the landing
-   page, OR clear data that conversion isn't price-limited.
+7. **Offer Builder + Hiring Planner as partner add-on** — kept in the app,
+   gated behind a second tier once the partner's job-management system exists.
+
+8. **Tool-use for Solomon.** He currently SEEDS a conversation from the
+   launcher rather than running tools himself. This is the biggest remaining
+   product gap.
+
+9. **Netlify**: Daniel is on the Personal plan and intends to cancel — confirm
+   it ends Sep 13 rather than immediately, or deploys stop. Deploys are
+   credit-metered (300/mo free ≈ 20 deploys at 15 credits each), so batch
+   changes rather than pushing one fix at a time.
 
 ## Common commands
 
