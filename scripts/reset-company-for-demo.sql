@@ -24,26 +24,39 @@
 -- ============================================================================
 
 
--- ── STEP 1 — create the demo company ────────────────────────────────────────
+-- ── STEP 1+2 — ONE STATEMENT. Nothing to fill in. ──────────────────────────
+--
+-- ⚠️ This was two steps with a NEW_COMPANY_ID placeholder to paste between
+-- them. Daniel ran the second one as-is and got "22P02: invalid input syntax
+-- for type uuid: NEW_COMPANY_ID". Predictable, and my fault: a hand-edit step
+-- in a script whose whole purpose was to stop hand-editing ids. If it can be
+-- one atomic statement, it should be.
+--
+-- Safe from the earlier duplicate-match failure because the WHERE targets one
+-- explicit uuid, and the INSERT returns exactly one id.
 
-insert into public.companies (name)
-values ('Bridgewater Mechanical')
-returning id, name;
-
--- Copy the id it returns into step 2.
-
-
--- ── STEP 2 — repoint the profile ────────────────────────────────────────────
--- Targets the live company by id, so it cannot touch the orphan or anything
--- else. Replace NEW_COMPANY_ID with what step 1 returned.
-
+with newco as (
+  insert into public.companies (name)
+  values ('Bridgewater Mechanical')
+  returning id
+)
 update public.profiles
-set    company_id = 'NEW_COMPANY_ID'
+set    company_id = (select id from newco)
 where  company_id = 'c35291b5-4ddb-4e88-b68d-44da6be3e73e'
 returning id as profile_id, company_id;
 
--- Expect exactly ONE row back. If it returns zero, the profile is not where
--- step 1's query said it was — stop and re-run the audit rather than guessing.
+-- Expect exactly ONE row back.
+
+
+-- ── STEP 2b — only if an earlier attempt already ran the bare INSERT ────────
+-- That would have left a spare empty 'Bridgewater Mechanical'. This finds it.
+
+-- select c.id, c.name,
+--        (select count(*) from public.profiles p where p.company_id = c.id) as profiles
+-- from   public.companies c
+-- where  c.name = 'Bridgewater Mechanical';
+--
+-- Delete any row with profiles = 0 — an empty shell, same as the orphan.
 
 
 -- ── STEP 3 — confirm ────────────────────────────────────────────────────────
