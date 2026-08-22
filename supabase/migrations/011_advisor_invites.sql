@@ -21,8 +21,20 @@ create table public.company_invites (
   invited_by   uuid        not null references public.profiles(id)  on delete cascade,
   email        text,                                  -- optional; for display only
   role         text        not null default 'advisor',
+  -- ⚠️ This was `encode(gen_random_bytes(32), 'hex')`, which is why this
+  -- migration never actually ran: gen_random_bytes lives in pgcrypto, which is
+  -- not on the search path here, so the whole file failed with
+  -- "function gen_random_bytes(integer) does not exist" and was marked applied
+  -- by hand to get past it. The tables have therefore never existed in
+  -- production, and the advisor-invite feature has been silently dead.
+  --
+  -- Two concatenated UUIDs give the same 256 bits of randomness using
+  -- gen_random_uuid(), which is core Postgres and needs no extension.
   token        text        not null unique
-                           default encode(gen_random_bytes(32), 'hex'),
+                           default (
+                             replace(gen_random_uuid()::text, '-', '') ||
+                             replace(gen_random_uuid()::text, '-', '')
+                           ),
   status       text        not null default 'pending', -- pending | accepted | revoked
   created_at   timestamptz not null default now(),
   accepted_at  timestamptz,
@@ -47,12 +59,31 @@ create policy "Owners manage invites"
     )
   );
 
--- Anyone authenticated can read an invite by its token (needed for the
--- accept-invite page — the caller will filter by token in the WHERE clause).
-create policy "Authenticated users read any invite"
+-- ⚠️ THIS POLICY USED TO BE `using (true)` WITH THIS COMMENT:
+--   "Anyone authenticated can read an invite by its token (needed for the
+--    accept-invite page — the caller will filter by token in the WHERE clause)."
+--
+-- The comment was the bug. RLS does not care what the caller filters by.
+-- `using (true)` meant every authenticated user could read every row of this
+-- table — including `token`, which is the secret that grants advisor access to
+-- a company. Combined with accept_invite() not checking who was accepting,
+-- any signed-up user could list pending tokens and join any company that had
+-- one outstanding, gaining sight of their books, documents and conversations.
+--
+-- Caught in the 22 Aug audit before this migration had ever actually run.
+--
+-- Reads are now limited to the people who own the invite. The accept page does
+-- not read this table at all — it calls get_invite_by_token() below, which
+-- returns display fields and never the token.
+create policy "Owners and admins read their own invites"
   on public.company_invites for select
   to authenticated
-  using (true);
+  using (
+    company_id in (
+      select company_id from public.profiles
+      where id = auth.uid() and role in ('owner', 'admin')
+    )
+  );
 
 -- ----------------------------------------------------------------------------
 -- company_members — accepted advisor memberships
@@ -143,6 +174,21 @@ begin
     raise exception 'accept_invite: this invite has expired';
   end if;
 
+  -- ⚠️ Verify WHO is accepting. This check did not exist: the function
+  -- confirmed the token was valid and nothing about the caller, so whoever
+  -- held a token could redeem it. The token is no longer readable from the
+  -- client, but a leaked or forwarded link should still only work for the
+  -- person it was addressed to.
+  --
+  -- When email is null the invite is a bare link by the owner's choice, and
+  -- the token alone is the credential — the normal model for a share link.
+  if v_invite.email is not null then
+    if lower(v_invite.email) is distinct from
+       lower((select u.email from auth.users u where u.id = v_user_id)) then
+      raise exception 'accept_invite: this invite was sent to a different email address';
+    end if;
+  end if;
+
   -- Create the membership (idempotent via ON CONFLICT DO NOTHING)
   insert into public.company_members (company_id, user_id, role, invited_by)
   values (v_invite.company_id, v_user_id, v_invite.role, v_invite.invited_by)
@@ -156,6 +202,45 @@ begin
   return v_invite.company_id;
 end;
 $$;
+
+-- ----------------------------------------------------------------------------
+-- get_invite_by_token — what the accept page reads instead of the table.
+--
+-- Returns only what the page needs to say "X invited you to Y". Deliberately
+-- does NOT return the token: the page already has it (it is in the URL) and
+-- nothing else should ever receive it.
+--
+-- SECURITY DEFINER so it can look up a single invite by token without the
+-- caller needing read access to the table. That is the whole point — the
+-- lookup is scoped to one row the caller already holds the secret for, rather
+-- than granting a select policy broad enough to enumerate every invite.
+-- ----------------------------------------------------------------------------
+create or replace function public.get_invite_by_token(p_token text)
+returns table (
+  id           uuid,
+  company_id   uuid,
+  company_name text,
+  email        text,
+  role         text,
+  status       text,
+  expires_at   timestamptz,
+  created_at   timestamptz
+)
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $fn$
+  select i.id, i.company_id, c.name, i.email, i.role, i.status,
+         i.expires_at, i.created_at
+  from public.company_invites i
+  join public.companies c on c.id = i.company_id
+  where i.token = p_token
+  limit 1;
+$fn$;
+
+revoke all on function public.get_invite_by_token(text) from public;
+grant execute on function public.get_invite_by_token(text) to authenticated;
 
 revoke all on function public.accept_invite(text) from public;
 grant execute on function public.accept_invite(text) to authenticated;

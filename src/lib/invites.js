@@ -95,14 +95,17 @@ export async function removeAdvisor(memberId) {
  * Returns null if the token doesn't exist.
  */
 export async function getInviteByToken(token) {
+  // ⚠️ Reads through an RPC, not the table. The select policy on
+  // company_invites used to be `using (true)` so that this could filter by
+  // token client-side — which meant every authenticated user could read every
+  // invite token in the database. The policy is now scoped to owners and
+  // admins, and this lookup goes through get_invite_by_token(), which is
+  // SECURITY DEFINER, matches exactly one row, and never returns the token.
   const { data, error } = await supabase
-    .from('company_invites')
-    .select('id, company_id, email, role, status, expires_at, created_at')
-    .eq('token', token)
-    .maybeSingle()
+    .rpc('get_invite_by_token', { p_token: token })
 
   if (error) throw new Error(error.message)
-  return data ?? null
+  return (Array.isArray(data) ? data[0] : data) ?? null
 }
 
 /**
