@@ -1,49 +1,83 @@
-import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { fetchIntegration } from '../../lib/quickbooks'
-import { CATEGORY_LABEL, toolsByCategory, visibleTools } from '../../lib/tools'
 
 /**
- * /tools — the Tools landing page.
+ * /tools — the index of everything the product can do.
  *
- * Shows every visible tool as a card, grouped by category. Each card is:
- *   - Available: clickable, routes to the tool page
- *   - Coming soon: dimmed, non-interactive, tooltip explains the state
+ * ⭐ REBUILT Aug 2026. What was wrong was not the styling.
  *
- * Why grouped by category: matches the roadmap milestone categories so the
- * owner mentally maps "my roadmap says I need to work on Team" → the Team
- * tools column.
+ * 1. TWO VOCABULARIES FOR ONE PRODUCT. This page said "CFO Dashboard", "Rocks
+ *    Tracker", "Org Chart". SolomonLauncher said "Read this month's numbers to
+ *    me", "Set this quarter's priorities", "Plan the team I'll need". Same
+ *    destinations, two naming systems, and only one of them is how an owner
+ *    actually thinks about his week. The launcher's language wins here, so the
+ *    two surfaces stop describing the same thing differently.
  *
- * ⚠️ Repositioned Aug 2026. The pitch used to be "running a service business"
- * with "audit your Google listing" as the lead example. Both went with the
- * reposition: the buyer is defined by conviction rather than sector, and the
- * Google Business Profile audit is no longer surfaced anywhere in the product,
- * so leading with it advertised a thing nobody can find.
+ * 2. IT COMPETED WITH SOLOMON INSTEAD OF BACKING HIM UP. The launcher tells
+ *    owners these now happen in conversation; this page pretended he did not
+ *    exist. Solomon is the front door now and the page says so, then offers
+ *    the direct route for people who already know what they want.
  *
- * ⭐ This page is NOT dead, despite SolomonLauncher saying the tools now happen
- * in conversation. It is the Cancel destination from eight tool pages and the
- * only route to six tools the launcher does not list (GBP, L10, job autopsy,
- * the two scorecards, pipeline-to-hire). Deleting it orphans them.
+ * 3. A GRID OF THIRTEEN CARDS IS A MENU, NOT AN ANSWER. Cards in a grid ask
+ *    you to compare before choosing. A grouped list of jobs is scanned. Same
+ *    information, far less work to use.
  *
- * When we launch a tool we flip its `status` to 'available' in src/lib/tools.js
- * — no change here. When we want a tool off this page without deleting it,
- * set `hidden: true` there.
+ * ⚠️ DO NOT DELETE THIS PAGE. Despite the launcher's copy, it is the Cancel
+ * destination for eight tool pages and the only route to five tools the
+ * launcher does not list. Deleting it orphans them.
+ *
+ * The list below is deliberately hand-written rather than generated from
+ * lib/tools.js. The registry holds routes and status; how a job is DESCRIBED
+ * to an owner is editorial, and it should be written, not derived.
  */
-export default function ToolsIndex() {
-  const grouped = toolsByCategory()
-  const tools = visibleTools()
-  const availableCount = tools.filter(t => t.status === 'available').length
 
-  // ⭐ QuickBooks status belongs on THIS page, not only in Settings.
-  //
-  // The two tools people come here for — CFO Dashboard and Cash Flow — are
-  // the two that need connected books, and the page said nothing about it.
-  // Someone opens Cash Flow, finds it empty, and has no idea the fix is three
-  // clicks away in a different section. Surfacing the state where the
-  // dependency actually bites is the whole point.
+// Groups and labels mirror SolomonLauncher exactly. If you change one, change
+// both — that shared vocabulary is the entire point of this rebuild.
+const GROUPS = [
+  {
+    title: 'Money',
+    items: [
+      { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', needsQbo: true },
+      { label: 'Read this month’s numbers to me', note: 'The month in plain English — what changed, and what to do about it.', to: '/tools/cfo', needsQbo: true },
+      { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder' },
+    ],
+  },
+  {
+    title: 'People',
+    items: [
+      { label: 'Think through a hire',         note: 'Whether to, what the role really is, and what to look for in the person.', to: '/tools/hiring' },
+      { label: 'Plan the team I’ll need',      note: 'What the team should look like in twelve months, and the order to build it.', to: '/tools/org-chart' },
+      { label: 'Draft an update for the team', note: 'Say where things are heading, in words you would be happy to have repeated.', to: '/tools/newsletter' },
+    ],
+  },
+  {
+    title: 'The business',
+    items: [
+      { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision' },
+      { label: 'Set this quarter’s priorities',  note: 'The two or three that matter — and an honest word if it is too many.', to: '/tools/rocks' },
+      { label: 'Write down a repeating job',     note: 'Get it out of your head and onto paper, so the business can run without you.', to: '/playbooks' },
+      { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety' },
+      { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness' },
+    ],
+  },
+]
+
+// ⚠️ These five are the reason this page cannot be deleted — none of them
+// appear in SolomonLauncher, so this is their only route. Kept in a quieter
+// group because they are narrower, not because they are lesser.
+const ALSO = [
+  { label: 'See how a finished job actually costed out', note: 'Line by line, against what you quoted.', to: '/tools/job-autopsy' },
+  { label: 'Look at how your estimator is doing',        note: 'Patterns across bid history — a coaching starting point, not a verdict.', to: '/tools/estimator-scorecard' },
+  { label: 'Look at how a foreman is doing',             note: 'Planned hours against actual. Read it as a signal, not a grade.', to: '/tools/foreman-scorecard' },
+  { label: 'Work out when to start hiring',              note: 'From the pipeline, so the search starts before the need does.', to: '/tools/pipeline-to-hire' },
+  { label: 'Check how findable you are online',          note: 'Your public listing and what it is missing.', to: '/tools/gbp' },
+]
+
+export default function ToolsIndex() {
   const { profile } = useAuth()
-  const [qbo, setQbo] = useState(null)   // null = unknown, then true/false
+  const [qbo, setQbo] = useState(null)   // null = unknown, then true / false
 
   useEffect(() => {
     if (!profile?.company_id) return
@@ -55,155 +89,100 @@ export default function ToolsIndex() {
   }, [profile?.company_id])
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Tools
-        </h1>
-        <p className="text-sm text-gray-600 mt-2 max-w-2xl">
-          Each one answers a single question and hands back a finished document,
-          not another dashboard. Forecast the next thirteen weeks of cash,
-          scorecard a hire, work through a decision. Everything saves to your{' '}
-          <Link to="/documents" className="underline hover:text-gray-700">Documents library</Link>.
-        </p>
-        <p className="text-sm text-gray-500 mt-3 max-w-2xl">
-          You can also just ask{' '}
-          <Link to="/advisor" className="underline hover:text-gray-700">Solomon</Link>
-          {' '}— he runs most of these from the conversation, with your numbers
-          already loaded.
-        </p>
-        {/* ⚠️ No cadence promise here. It used to say "more rolling out
-            weekly", which was a commitment nobody was keeping. */}
-        <p className="text-xs text-gray-400 mt-3">
-          {availableCount} of {tools.length} available
-        </p>
+    <div className="px-6 sm:px-10 py-12">
+      <div className="max-w-[680px] mx-auto">
 
-        {/* Only rendered once we know — a "not connected" flash on every load
-            for someone who IS connected reads as a bug. */}
-        {qbo === false && (
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-ink-200 bg-ink-50 px-4 py-3">
-            <span className="text-sm text-ink-700">
-              <strong className="font-semibold">QuickBooks is not connected.</strong>
-              {' '}Finances and Cash Flow work from your real numbers once it is.
-            </span>
-            <Link
-              to="/settings/integrations"
-              className="text-sm font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
-            >
-              Connect it →
+        <header className="mb-10">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
+            Everything it can do
+          </p>
+          <h1 className="font-serif text-[34px] leading-[1.2] text-ink-900 mb-4">
+            Ask Solomon, or go straight to it.
+          </h1>
+          <p className="text-[15px] leading-relaxed text-ink-500">
+            He can run most of these in conversation, with your numbers already
+            loaded — that is usually the shorter path.{' '}
+            <Link to="/advisor" className="text-brand-700 font-semibold underline underline-offset-2">
+              Talk to Solomon
             </Link>
+            . If you already know what you want, everything is listed here and
+            saves to your{' '}
+            <Link to="/documents" className="underline underline-offset-2 hover:text-ink-700">
+              documents
+            </Link>.
+          </p>
+        </header>
+
+        {/* Only once known — flashing "not connected" at someone who is
+            connected reads as a bug. */}
+        {qbo === false && (
+          <div className="mb-10 rounded-xl border border-ink-200 bg-ink-50 px-5 py-4">
+            <p className="text-[14px] text-ink-700 leading-relaxed">
+              <strong className="font-semibold">QuickBooks is not connected.</strong>{' '}
+              The two money tools below work from your real books once it is —
+              until then you enter the figures by hand.{' '}
+              <Link to="/settings/integrations" className="text-brand-700 font-semibold underline underline-offset-2">
+                Connect it
+              </Link>
+            </p>
           </div>
         )}
-        {qbo === true && (
-          <p className="mt-4 text-xs text-ink-400">
-            QuickBooks connected ·{' '}
-            <Link to="/settings/integrations" className="underline hover:text-ink-600">manage</Link>
-          </p>
-        )}
-      </header>
 
-      <div className="space-y-8">
-        {[...grouped.entries()].map(([category, tools]) => (
-          <section key={category}>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-              {CATEGORY_LABEL[category] ?? category}
+        <div className="flex flex-col gap-10">
+          {GROUPS.map(group => (
+            <section key={group.title}>
+              <h2 className="text-[11px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
+                {group.title}
+              </h2>
+              <div className="bg-white border border-ink-100 rounded-2xl overflow-hidden">
+                {group.items.map((item, i) => (
+                  <ToolRow key={item.to} item={item} first={i === 0} qbo={qbo} />
+                ))}
+              </div>
+            </section>
+          ))}
+
+          <section>
+            <h2 className="text-[11px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
+              Also here
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {tools.map(tool => <ToolCard key={tool.id} tool={tool} />)}
+            <div className="bg-white border border-ink-100 rounded-2xl overflow-hidden">
+              {ALSO.map((item, i) => (
+                <ToolRow key={item.to} item={item} first={i === 0} qbo={qbo} />
+              ))}
             </div>
+            <p className="text-[12px] text-ink-400 mt-3 leading-relaxed">
+              Narrower jobs, and newer. They work, but they have had less use
+              than the ones above.
+            </p>
           </section>
-        ))}
+        </div>
+
       </div>
     </div>
   )
 }
 
-function ToolCard({ tool }) {
-  // Three states:
-  //   'available' → clickable, green Live badge
-  //   'preview'   → clickable, amber Needs CRM badge (cross-system tools)
-  //   'coming-soon' → not clickable, dimmed
-  const clickable = tool.status === 'available' || tool.status === 'preview'
-
-  const badge = (() => {
-    if (tool.status === 'available') {
-      return (
-        <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-          Live
-        </span>
-      )
-    }
-    if (tool.status === 'preview') {
-      return (
-        // ⚠️ Was "Needs ProSuite" — a partner product that does not exist yet
-        // (see CLAUDE.md). Telling an owner a tool is gated behind something
-        // he cannot buy is worse than saying it is not ready.
-        <span className="inline-flex items-center gap-1 text-xs font-medium text-ink-500 bg-ink-100 border border-ink-200 px-2 py-0.5 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-ink-400" />
-          Preview
-        </span>
-      )
-    }
-    return (
-      <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-        Coming soon
-      </span>
-    )
-  })()
-
-  const body = (
-    <>
-      <div className="flex items-start justify-between mb-2">
-        <span className="text-2xl" aria-hidden>{tool.icon}</span>
-        {badge}
-      </div>
-      <h3 className={`text-base font-semibold mb-1 ${clickable ? 'text-gray-900' : 'text-gray-700'}`}>
-        {tool.name}
-      </h3>
-      <p className={`text-sm leading-relaxed ${clickable ? 'text-gray-600' : 'text-gray-500'}`}>
-        {tool.tagline}
-      </p>
-    </>
-  )
-
-  const baseClass = 'block rounded-xl border p-5 transition-all'
-
-  if (tool.status === 'available') {
-    return (
-      <Link
-        to={tool.route}
-        className={`${baseClass} border-gray-200 bg-white hover:border-brand-300 hover:shadow-sm`}
-      >
-        {body}
-        <div className="mt-3 text-xs text-brand-700 font-medium">
-          Open tool →
-        </div>
-      </Link>
-    )
-  }
-
-  if (tool.status === 'preview') {
-    return (
-      <Link
-        to={tool.route}
-        className={`${baseClass} border-brand-200 bg-brand-50/40 hover:border-brand-300 hover:shadow-sm`}
-      >
-        {body}
-        <div className="mt-3 text-xs text-brand-800 font-medium">
-          See preview →
-        </div>
-      </Link>
-    )
-  }
-
+function ToolRow({ item, first, qbo }) {
   return (
-    <div
-      className={`${baseClass} border-dashed border-gray-200 bg-gray-50/50 cursor-not-allowed`}
-      aria-disabled="true"
-      title="This tool is in the pipeline — coming soon."
+    <Link
+      to={item.to}
+      className={`flex items-baseline justify-between gap-4 px-5 py-4 transition-colors hover:bg-ink-50 ${first ? '' : 'border-t border-ink-100'}`}
     >
-      {body}
-    </div>
+      <span className="min-w-0">
+        <span className="block text-[15px] font-semibold text-ink-900 leading-snug">
+          {item.label}
+          {item.needsQbo && qbo === false && (
+            <span className="ml-2 align-middle text-[10px] font-semibold uppercase tracking-wide text-ink-400">
+              needs QuickBooks
+            </span>
+          )}
+        </span>
+        <span className="block text-[13px] text-ink-500 leading-snug mt-0.5">
+          {item.note}
+        </span>
+      </span>
+      <span aria-hidden className="text-ink-300 flex-shrink-0">→</span>
+    </Link>
   )
 }
