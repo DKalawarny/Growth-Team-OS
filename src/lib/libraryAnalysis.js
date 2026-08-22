@@ -25,6 +25,21 @@ const MAX_FILES          = 12
 const MAX_CHARS_PER_FILE = 4_000
 const MAX_TOTAL_CHARS    = 32_000
 
+// 🔴 THIS WAS 1500 AND EVERY ANALYSIS FAILED.
+//
+// The prompt asks for a summary, three strengths, three gaps, three
+// opportunities, and up to four milestones each carrying a description, three
+// actions and a reasoning line. That does not fit in 1500 output tokens. The
+// model produced exactly 1500 and stopped mid-word, JSON.parse failed on the
+// truncated object, and the UI reported "Could not parse analysis response
+// from Claude" — blaming the model for a ceiling we imposed.
+//
+// ⚠️ It looked like a parser bug and was a budget bug. The only tell was
+// output_tokens landing on the cap exactly, which nothing surfaced.
+// A complete response measures ~2,200–2,600 tokens; 4,000 leaves headroom for
+// the four-milestone case without inviting padding.
+const ANALYSIS_MAX_TOKENS = 4_000
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -69,12 +84,23 @@ export async function runLibraryAnalysis(companyId) {
   const raw = await callClaude({
     model: HAIKU,
     messages: [{ role: 'user', content: prompt }],
-    maxTokens: 1500,
+    maxTokens: ANALYSIS_MAX_TOKENS,
     json: true,
   })
 
   const analysis = safeParseJson(raw)
-  if (!analysis?.summary) throw new Error('Could not parse analysis response from Claude.')
+  if (!analysis?.summary) {
+    // Distinguish "the model returned something we can't read" from "we cut
+    // the model off mid-sentence". The old single message said the former
+    // while the latter was happening, which sent the last investigation
+    // looking at the parser instead of the token budget.
+    const looksTruncated = raw && !raw.trim().replace(/```$/, '').trim().endsWith('}')
+    throw new Error(
+      looksTruncated
+        ? 'The analysis was cut off before it finished. Try again, or remove a document or two.'
+        : 'Could not parse analysis response from Claude.'
+    )
+  }
 
   // Attach metadata
   analysis.file_ids    = files.map(f => f.id)
@@ -125,7 +151,13 @@ export async function getLibraryAnalysis(companyId) {
 // ---------------------------------------------------------------------------
 
 function buildPrompt(fileCount, fileContext) {
-  return `You are analyzing the business knowledge library for a home-services business owner.
+  // ⚠️ This said "for a home-services business owner". That was true of the
+  // product before the Aug 2026 reposition and is now simply wrong: the buyer
+  // is defined by conviction rather than sector, and onboarding offers 46
+  // industries. Telling the model the owner runs a home-services business
+  // makes it read a dental practice's documents as a trade's — and it is the
+  // kind of error that reads as plausible instead of obviously broken.
+  return `You are analyzing the business knowledge library for an owner-operated business. Infer what the business actually does from the documents themselves rather than assuming an industry.
 
 ${fileCount} document${fileCount !== 1 ? 's have' : ' has'} been uploaded:
 
