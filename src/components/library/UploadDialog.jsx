@@ -174,9 +174,21 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
     if (failures.length) {
       // Keep the dialog open on partial failure — closing it would report
       // success for a batch that was not fully successful.
+      //
+      // ⭐ Keep the FAILED files queued and drop the ones that landed, so
+      // pressing Upload again retries exactly what is missing. Clearing the
+      // list outright (the first version of this) made a partial failure worse
+      // than a total one: the owner had to find and re-pick every file,
+      // including the ones already safely in the library.
+      const failedNames = new Set(failures.map(f => f.name))
       setRej(failures)
-      setFiles([])
-      setError(`${failures.length} of ${files.length} could not be uploaded.`)
+      setFiles(prev => prev.filter(f => failedNames.has(f.name)))
+      setDone(0)
+      setError(
+        failures.length === files.length
+          ? `None of the ${files.length} files could be uploaded.`
+          : `${failures.length} of ${files.length} could not be uploaded — the rest are in your library. Press Upload to retry these.`
+      )
       setBusy(false)
       return
     }
@@ -199,7 +211,9 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
             <div className="text-[10px] uppercase tracking-widest text-brand-400 font-semibold mb-0.5">
               Knowledge Library
             </div>
-            <h2 className="text-base font-bold text-white">Upload a document</h2>
+            <h2 className="text-base font-bold text-white">
+              {files.length > 1 ? `Upload ${files.length} documents` : 'Upload a document'}
+            </h2>
           </div>
           <button
             type="button" onClick={onClose} disabled={busy}
@@ -340,8 +354,14 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
               <div className="text-xs font-semibold text-amber-900">
                 {rejected.length === 1 ? 'One file was skipped' : `${rejected.length} files were skipped`}
               </div>
+              {/* ⚠️ Name the file. validateFile's messages already embed the
+                  filename, but a server-side failure's does not — six files
+                  failing the same way rendered as six identical sentences with
+                  nothing to say which file each one was about. */}
               {rejected.map(r => (
-                <div key={r.name} className="text-xs text-amber-800 leading-relaxed">{r.reason}</div>
+                <div key={r.name} className="text-xs text-amber-800 leading-relaxed">
+                  {r.reason.includes(r.name) ? r.reason : `${r.name} — ${r.reason}`}
+                </div>
               ))}
             </div>
           )}
