@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { reportError } from '../lib/monitoring'
 
 /**
  * ErrorBoundary — catches uncaught render errors anywhere below it.
@@ -45,13 +46,12 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    // Runs after the fallback has rendered. Best place for telemetry.
-    // For now we just log to the console — operators reading the user's
-    // DevTools (or a screen-share) can copy the stack out.
+    // Runs after the fallback has rendered. This is the telemetry point the
+    // file has been pointing at since it was written — now wired.
     //
-    // If we ship Sentry / PostHog later, hook them in here. Keep the
-    // console.error too: it's free signal and zero-cost when nothing
-    // is wrong.
+    // The console.error stays. It costs nothing when nothing is wrong, and on
+    // a screen-share it is the fastest way to read a stack.
+    reportError(error, { componentStack: info?.componentStack })
     // eslint-disable-next-line no-console
     console.error('[ErrorBoundary] uncaught render error:', error, info?.componentStack)
   }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { identify } from '../lib/monitoring'
 import { supabase } from '../lib/supabase'
 import { getAdvisorMemberships } from '../lib/invites'
 
@@ -102,6 +103,10 @@ export function useAuth() {
         .eq('company_id', profileRow.company_id)
         .limit(1),
     ])
+
+    // Tag the session so a report answers "one customer or everybody".
+    // ID and company only — see lib/monitoring.js for what is withheld.
+    identify({ userId, companyId: profileRow.company_id })
 
     setCompany(companyRes.data ?? null)
     setAdvisorClients(memberships)
