@@ -165,13 +165,13 @@ export default function UploadDialog({ onClose, onUploaded }) {
                   Drop a file here, or click to browse
                 </div>
                 <div className="text-xs text-ink-400 mt-1">
-                  PDF, Word, Excel, CSV, TXT, Markdown · up to {MAX_MB} MB
+                  PDF, Word, Excel, CSV, text, Markdown or a photo · up to {MAX_MB} MB
                 </div>
                 <input
                   ref={inputRef}
                   type="file"
                   className="hidden"
-                  accept=".pdf,.docx,.txt,.md,.markdown,.csv,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                  accept=".pdf,.docx,.txt,.md,.markdown,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.gif,.heic,.heif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,image/*,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                   onChange={(e) => pickFile(e.target.files?.[0])}
                 />
               </div>

@@ -18,7 +18,10 @@
  *   - application/pdf      → pdfjs-dist (lazy)
  *   - .docx                → mammoth (lazy) — extracts body text, strips formatting
  *   - .xlsx / .xls         → xlsx library
+ *   - images (png/jpg/webp/gif/heic) → Claude Vision, via rag/imageFileExtract
  */
+
+const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.heic', '.heif']
 
 const MAX_EXTRACTED_CHARS = 250_000  // ~50 pages of dense PDF; cap to keep DB rows bounded
 
@@ -57,7 +60,30 @@ export async function extractText(file) {
     ) {
       return ready(truncate(await extractExcel(file)))
     }
-    return fail(`Unsupported file type: ${type || 'unknown'}. Upload .pdf, .docx, .xlsx, .csv, .txt, or .md.`)
+    // Images — photographed whiteboards, scanned pages, screenshots of a
+    // report. Read by Claude Vision, the same capability that has been
+    // describing image-heavy PDF pages all along (rag/imageExtract.js).
+    if (type.startsWith('image/') || IMAGE_EXTS.some(e => name.endsWith(e))) {
+      const { extractImage } = await import('./rag/imageFileExtract')
+      const described = await extractImage(file)
+      if (!described) {
+        return fail('Could not read that image. If it is a photo, try better light or a straighter angle.')
+      }
+      return ready(truncate(described))
+    }
+
+    // ⚠️ .doc (pre-2007 Word) is deliberately NOT accepted. mammoth reads .docx
+    // only, so accepting .doc would take the upload and then fail extraction —
+    // a file that appears in the library with no content, which is worse than a
+    // clear refusal at the door.
+    if (name.endsWith('.doc')) {
+      return fail('Old Word format (.doc) cannot be read. Open it and Save As .docx, then upload that.')
+    }
+    if (name.endsWith('.pages') || name.endsWith('.numbers') || name.endsWith('.key')) {
+      return fail('Apple iWork files cannot be read. Export as PDF or Word and upload that.')
+    }
+
+    return fail(`Unsupported file type: ${type || 'unknown'}. Upload a PDF, Word, Excel, CSV, text, Markdown or image file.`)
   } catch (err) {
     console.error('[knowledgeExtract]', err)
     return fail(err?.message || 'Could not read the file.')

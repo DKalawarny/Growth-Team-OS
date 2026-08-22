@@ -27,10 +27,22 @@ const BUCKET            = 'knowledge-files'
 // ⚠️ EXPORTED so the UI cannot drift from it. The empty state advertised
 // "15 MB max" against this 10MB ceiling — an owner with a 12MB scanned PDF was
 // told it would work and then rejected. Import MAX_MB; never retype a number.
-const MAX_BYTES         = 10 * 1024 * 1024
+// ⭐ Raised 10 → 25MB. The ceiling is not storage — the Supabase bucket takes
+// far more — it is that extraction runs CLIENT-SIDE, so a huge PDF is the
+// owner's browser memory and his patience. 25MB covers scanned handbooks and
+// photographed documents, which is what people actually hit the old limit with,
+// without asking a laptop to hold a 100MB file in memory.
+const MAX_BYTES         = 25 * 1024 * 1024
 export const MAX_MB     = MAX_BYTES / 1024 / 1024
-const ALLOWED_PREFIXES  = ['application/pdf', 'text/', 'application/vnd.openxmlformats']
-const ALLOWED_EXTS      = ['.pdf', '.docx', '.txt', '.md', '.markdown', '.csv', '.xlsx', '.xls']
+const ALLOWED_PREFIXES  = ['application/pdf', 'text/', 'image/', 'application/vnd.openxmlformats']
+// ⚠️ Every entry here MUST be extractable by lib/knowledgeExtract.js. Accepting
+// a type it cannot read produces a file that uploads happily and then sits in
+// the library empty — worse than a refusal, because it looks like it worked.
+// That is why .doc, .pages and .key are absent and refused by name instead.
+const ALLOWED_EXTS      = [
+  '.pdf', '.docx', '.txt', '.md', '.markdown', '.csv', '.xlsx', '.xls',
+  '.png', '.jpg', '.jpeg', '.webp', '.gif', '.heic', '.heif',
+]
 
 export const KIND_OPTIONS = [
   { value: 'general',   label: 'General' },
