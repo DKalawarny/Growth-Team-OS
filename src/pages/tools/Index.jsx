@@ -24,9 +24,17 @@ import { fetchIntegration } from '../../lib/quickbooks'
  *    you to compare before choosing. A grouped list of jobs is scanned. Same
  *    information, far less work to use.
  *
- * ⚠️ DO NOT DELETE THIS PAGE. Despite the launcher's copy, it is the Cancel
- * destination for eight tool pages and the only route to five tools the
- * launcher does not list. Deleting it orphans them.
+ * ⚠️ DO NOT DELETE THIS PAGE — it is the Cancel destination for eight tool
+ * pages.
+ *
+ * ⭐ CUT TO ELEVEN, Aug 2026. It listed sixteen. Four of those — job autopsy,
+ * both scorecards, pipeline-to-hire — were 27-line files containing nothing
+ * but an advert for ProSuite, a partner system that is not happening. A fifth,
+ * L10, was an 8-line stub. They were not tools; they were placeholders wearing
+ * tool names, and they made the product look padded.
+ *
+ * GBP is also off this list. It still works and its route remains, but it is
+ * the local-SEO tool from the old positioning and is marketed nowhere.
  *
  * The list below is deliberately hand-written rather than generated from
  * lib/tools.js. The registry holds routes and status; how a job is DESCRIBED
@@ -62,17 +70,6 @@ const GROUPS = [
       { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness' },
     ],
   },
-]
-
-// ⚠️ These five are the reason this page cannot be deleted — none of them
-// appear in SolomonLauncher, so this is their only route. Kept in a quieter
-// group because they are narrower, not because they are lesser.
-const ALSO = [
-  { label: 'See how a finished job actually costed out', note: 'Line by line, against what you quoted.', to: '/tools/job-autopsy' },
-  { label: 'Look at how your estimator is doing',        note: 'Patterns across bid history — a coaching starting point, not a verdict.', to: '/tools/estimator-scorecard' },
-  { label: 'Look at how a foreman is doing',             note: 'Planned hours against actual. Read it as a signal, not a grade.', to: '/tools/foreman-scorecard' },
-  { label: 'Work out when to start hiring',              note: 'From the pipeline, so the search starts before the need does.', to: '/tools/pipeline-to-hire' },
-  { label: 'Check how findable you are online',          note: 'Your public listing and what it is missing.', to: '/tools/gbp' },
 ]
 
 export default function ToolsIndex() {
@@ -142,20 +139,6 @@ export default function ToolsIndex() {
             </section>
           ))}
 
-          <section>
-            <h2 className="text-[11px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
-              Also here
-            </h2>
-            <div className="bg-white border border-ink-100 rounded-2xl overflow-hidden">
-              {ALSO.map((item, i) => (
-                <ToolRow key={item.to} item={item} first={i === 0} qbo={qbo} />
-              ))}
-            </div>
-            <p className="text-[12px] text-ink-400 mt-3 leading-relaxed">
-              Narrower jobs, and newer. They work, but they have had less use
-              than the ones above.
-            </p>
-          </section>
         </div>
 
       </div>

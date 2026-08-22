@@ -54,17 +54,9 @@ export const TOOL_DISCLAIMERS = {
   'team-newsletter':
     'A drafted newsletter from your context. Read it, edit the voice to match yours, then send.',
 
-  'pipeline-to-hire':
-    'A directional read on when to start the search — not a guarantee the work will land. Re-run as the pipeline shifts; treat the dates as guideposts, not deadlines.',
 
-  'estimator-scorecard':
-    'Pattern recognition from your bid history — not a verdict on any individual quote. Use it to start coaching conversations, not finish them.',
 
-  'foreman-scorecard':
-    'Variance from time-tracking and planned hours. Context — weather, scope changes, crew sickness — may explain individual jobs. Read it as a signal, not a grade.',
 
-  'job-autopsy':
-    'A post-mortem on one job\'s numbers — not a critique of the team or PM. Use it to refine the next quote, not to grade the last one.',
 }
 
 /**

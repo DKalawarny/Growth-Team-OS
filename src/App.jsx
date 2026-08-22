@@ -69,14 +69,9 @@ const OfferBuilder       = lazy(() => import('./pages/tools/OfferBuilder'))
 const CashFlow           = lazy(() => import('./pages/tools/CashFlow'))
 const Safety             = lazy(() => import('./pages/tools/Safety'))
 const CFO                = lazy(() => import('./pages/tools/CFO'))
-const L10                = lazy(() => import('./pages/tools/L10'))
 const OrgChart           = lazy(() => import('./pages/tools/OrgChart'))
 const Rocks              = lazy(() => import('./pages/tools/Rocks'))
 const Newsletter         = lazy(() => import('./pages/tools/Newsletter'))
-const PipelineToHire     = lazy(() => import('./pages/tools/PipelineToHire'))
-const EstimatorScorecard = lazy(() => import('./pages/tools/EstimatorScorecard'))
-const ForemanScorecard   = lazy(() => import('./pages/tools/ForemanScorecard'))
-const JobAutopsy         = lazy(() => import('./pages/tools/JobAutopsy'))
 
 // Eager imports that are tiny and used by every authed render — leaving these
 // in the main chunk would only matter if logged-out users hit the app, which
@@ -251,14 +246,9 @@ export default function App() {
             <Route path="/tools/cash-flow"      element={<CashFlow />} />
             <Route path="/tools/safety"         element={<Safety />} />
             <Route path="/tools/cfo"            element={<RequireRole allow={['owner', 'admin', 'cfo']}><CFO /></RequireRole>} />
-            <Route path="/tools/l10"            element={<L10 />} />
             <Route path="/tools/org-chart"      element={<OrgChart />} />
             <Route path="/tools/rocks"          element={<Rocks />} />
             <Route path="/tools/newsletter"     element={<Newsletter />} />
-            <Route path="/tools/pipeline-to-hire"     element={<PipelineToHire />} />
-            <Route path="/tools/estimator-scorecard"  element={<EstimatorScorecard />} />
-            <Route path="/tools/foreman-scorecard"    element={<ForemanScorecard />} />
-            <Route path="/tools/job-autopsy"          element={<JobAutopsy />} />
           </Route>
         </Route>
 

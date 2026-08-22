@@ -1,4 +1,3 @@
-import CRMUpsellCard from '../../components/marketing/CRMUpsellCard'
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
@@ -49,24 +48,7 @@ const INITIAL_FORM = {
 }
 
 export default function OfferBuilder() {
-  return (
-    <CRMUpsellCard
-      toolId="offer-builder"
-      toolName="Offer Builder"
-      toolIcon="💰"
-      tagline="Scope your services and price them properly — powered by your real job data from ProSuite."
-      whatItDoes={[
-        'Reads your won jobs and average ticket sizes from ProSuite',
-        'Identifies your most profitable service lines to double down on',
-        'Builds a scoped offer with tiered pricing and objection handlers',
-        'Flags services you\'re underpricing based on your actual margin data',
-      ]}
-      sampleOutput="Based on your last 40 demo jobs in ProSuite, your average ticket is $4,800 but your top 20% average $9,200. The gap is scope — you're leaving selective demo on the table and quoting full-gut instead. Here's a 3-tier offer structure that captures both buyer types."
-    />
-  )
 
-  // ProSuite gate — remove the early return above once ProSuite is connected.
-  // eslint-disable-next-line no-unreachable
   const { profile }          = useAuth()
   const navigate             = useNavigate()
   const [stage, setStage]    = useState('form')   // form | loading | result | saving
