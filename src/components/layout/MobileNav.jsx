@@ -50,13 +50,20 @@ const TABS = [
     ),
   },
   {
-    to: '/board',
-    label: 'Board',
+    // ⚠️ This was '/board' — Work Board — which the desktop sidebar does not
+    // list at all. The MAIN_NAV drawer below was corrected in an earlier pass
+    // (see its note); this tab bar is a SECOND list in the same file and was
+    // missed, so a phone still promoted a surface the product had dropped.
+    //
+    // The four tabs are now the first four of MAIN_NAV, in the same order. If
+    // you change one list, change all three: this, MAIN_NAV, and the desktop
+    // Sidebar. Three copies of an information architecture is how it drifts.
+    to: '/playbooks',
+    label: 'Playbooks',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <rect x="3" y="3" width="5" height="18" rx="1.5"/>
-        <rect x="9.5" y="3" width="5" height="12" rx="1.5"/>
-        <rect x="16" y="3" width="5" height="15" rx="1.5"/>
+        <path d="M4 4.5A1.5 1.5 0 015.5 3H18a1 1 0 011 1v15a1 1 0 01-1 1H5.5A1.5 1.5 0 014 18.5z"/>
+        <path d="M8 7.5h7M8 11h7M8 14.5h4"/>
       </svg>
     ),
   },
