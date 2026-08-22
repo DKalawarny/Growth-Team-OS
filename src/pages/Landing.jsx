@@ -217,11 +217,32 @@ function HeroSection() {
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             {TRIAL_DAYS}-day free trial — no credit card required
           </div>
-          <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-semibold px-4 py-1.5 rounded-full">
-            For Christian business owners
-          </div>
         </div>
 
+        {/* ⚠️ A second badge reading "For Christian business owners" used to sit
+            beside the trial pill. It is gone, and NOT replaced — see below.
+
+            ⭐ THE DECISION (22 Aug, Daniel): the marketing stays aimed at the
+            Christian market, but the product must not push anyone out. A label
+            at the top of the page is a door policy: a reader decides whether
+            he is in the category before he has understood what the thing does.
+            The behaviour is the better signal — "a Jesus mindset" rather than
+            an identity noun. Don't exploit an asymmetry of power, tell the
+            truth when it costs you, pay people properly. A non-Christian reads
+            that as good character. A Christian knows whose it is. Same words,
+            both audiences, nobody sorted at the door.
+
+            Nothing replaced it because nothing was left to say. The sub-line
+            below already carries the thesis — "believes the way you run this
+            matters, not only what it earns" — and the five chips carry the
+            capability. A third signal in the same eyeful is clutter.
+
+            ⚠️ THE SEO LAYER IS DELIBERATELY UNCHANGED. Meta titles and
+            descriptions still say "Christian business owners", because that is
+            what the right person actually types into Google. Keep the search
+            terms, change the on-page voice. About and the pilot agreement stay
+            fully explicit too — that is where someone curious goes looking, and
+            being findable is the point. This is attraction, not concealment. */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
           You carry this business<br />
           <span className="text-brand-400">on your own.</span>
