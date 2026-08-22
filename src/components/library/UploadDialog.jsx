@@ -4,6 +4,7 @@ import {
   uploadKnowledgeFile,
   validateFile,
   KIND_OPTIONS,
+  MAX_MB,
 } from '../../lib/knowledgeFiles'
 import CloudImportModal from './CloudImportModal'
 
@@ -164,7 +165,7 @@ export default function UploadDialog({ onClose, onUploaded }) {
                   Drop a file here, or click to browse
                 </div>
                 <div className="text-xs text-ink-400 mt-1">
-                  PDF, Excel, CSV, TXT, Markdown · up to 10 MB
+                  PDF, Word, Excel, CSV, TXT, Markdown · up to {MAX_MB} MB
                 </div>
                 <input
                   ref={inputRef}

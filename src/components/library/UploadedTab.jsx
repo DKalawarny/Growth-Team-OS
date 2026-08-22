@@ -10,6 +10,7 @@ import {
 } from '../../lib/knowledgeFiles'
 import { runLibraryAnalysis, getLibraryAnalysis } from '../../lib/libraryAnalysis'
 import UploadDialog from './UploadDialog'
+import { MAX_MB } from '../../lib/knowledgeFiles'
 import CloudImportModal from './CloudImportModal'
 import ManualFinancialsModal from './ManualFinancialsModal'
 
@@ -941,7 +942,7 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
         </p>
 
         <p className="text-[11px] text-ink-300 mt-5">
-          PDF, Word, Excel, CSV, text or Markdown · 15 MB max · only you and your team can see these
+          PDF, Word, Excel, CSV, text or Markdown · {MAX_MB} MB max · only you and your team can see these
         </p>
       </div>
 

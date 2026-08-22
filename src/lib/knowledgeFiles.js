@@ -24,7 +24,11 @@ import { indexKnowledgeFile }    from './rag/indexer'
  */
 
 const BUCKET            = 'knowledge-files'
-const MAX_BYTES         = 10 * 1024 * 1024  // 10MB
+// ⚠️ EXPORTED so the UI cannot drift from it. The empty state advertised
+// "15 MB max" against this 10MB ceiling — an owner with a 12MB scanned PDF was
+// told it would work and then rejected. Import MAX_MB; never retype a number.
+const MAX_BYTES         = 10 * 1024 * 1024
+export const MAX_MB     = MAX_BYTES / 1024 / 1024
 const ALLOWED_PREFIXES  = ['application/pdf', 'text/', 'application/vnd.openxmlformats']
 const ALLOWED_EXTS      = ['.pdf', '.docx', '.txt', '.md', '.markdown', '.csv', '.xlsx', '.xls']
 
@@ -52,7 +56,10 @@ export function validateFile(file) {
   const okType = ALLOWED_PREFIXES.some(p => type.startsWith(p))
   const okExt  = ALLOWED_EXTS.some(e => name.endsWith(e))
   if (!okType && !okExt) {
-    return 'Supported formats: PDF, Word (.docx), Excel, CSV, TXT, and Markdown.'
+    // Name the offending file. "Supported formats: ..." alone leaves the owner
+    // guessing which of the three files he just picked was the problem.
+    const ext = name.includes('.') ? name.slice(name.lastIndexOf('.')) : 'no extension'
+    return `${file.name} is ${ext} — supported formats are PDF, Word (.docx), Excel, CSV, TXT and Markdown.`
   }
   return null
 }
