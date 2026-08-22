@@ -26,6 +26,27 @@ the business run a particular way. The thesis, in Daniel's words: not everyone
 of God needs to be a minister; some are called to be that person inside an
 ordinary business. That axis cuts across every industry.
 
+⭐ **POSITIONING DECISION, 22 Aug 2026 — "the Creed principle".** Marketing stays
+aimed at the Christian market. The product must NOT push out non-Christians, and
+Daniel sees genuine upside in a non-Christian owner encountering it.
+
+The line that matters: **attraction, not persuasion.** The product never steers
+anyone toward anything. It behaves with conviction — refuses to flatter, cares
+how people are treated, asks what the business is for — and where that comes
+from is FINDABLE (About, the pilot agreement) but never pushed. A paying user is
+in an asymmetric relationship with the software; the same reasoning that bans
+Solomon from helping an owner press faith on employees applies to the product's
+own relationship with its user.
+
+Practically this means almost nothing changes: Solomon's scripture rule is
+already gated on two triggers and brevity-capped, so a non-Christian user simply
+never trips it, and the refusals and anti-prosperity section read as integrity to
+anyone. The onboarding "why do you run this business?" step is the mechanism —
+the owner states his own frame and Solomon meets him there.
+
+⚠️ Do not add anything that nudges, witnesses, or converts. It would cost the
+truthfulness the entire brand runs on.
+
 **Hard product rules, from Daniel, non-negotiable:**
 - This must NEVER read like a wealth-preacher app. No prosperity gospel in any
   dilution. Never imply faithfulness produces profit.
