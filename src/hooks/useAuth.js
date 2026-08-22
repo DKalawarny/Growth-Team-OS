@@ -28,6 +28,7 @@ import { getAdvisorMemberships } from '../lib/invites'
  */
 export function useAuth() {
   const [session, setSession]   = useState(undefined)
+  const [onboarded, setOnboarded] = useState(undefined)  // undefined = not yet known
   const [profile, setProfile]   = useState(undefined)
   const [company, setCompany]   = useState(undefined)
 
@@ -67,18 +68,36 @@ export function useAuth() {
 
     if (!profileRow) { setCompany(null); return }
 
-    // Fetch own company and advisor memberships in parallel
-    const [companyRes, memberships] = await Promise.all([
+    // Fetch own company, advisor memberships, and whether onboarding was
+    // actually completed — all in parallel.
+    //
+    // ⚠️ `onboarded` asks a narrow question on purpose: does a business_profiles
+    // row exist? Having a PROFILE was previously treated as proof of setup, but
+    // the profile is created at signup and the business profile at the END of
+    // onboarding. Anyone who closed the tab midway had one and not the other,
+    // landed on an empty dashboard forever with nothing prompting them to
+    // finish, and got a Solomon who knew almost nothing about their business.
+    // Thin answers, and the reasonable conclusion that the product is shallow.
+    //
+    // head:true means no rows come back — this costs a count, not a payload.
+    const [companyRes, memberships, bpRes] = await Promise.all([
       supabase
         .from('companies')
         .select('*')
         .eq('id', profileRow.company_id)
         .maybeSingle(),
       getAdvisorMemberships(userId).catch(() => []),
+      supabase
+        .from('business_profiles')
+        .select('company_id', { count: 'exact', head: true })
+        .eq('company_id', profileRow.company_id),
     ])
 
     setCompany(companyRes.data ?? null)
     setAdvisorClients(memberships)
+    // Fail OPEN: on a read error assume onboarded. Wrongly forcing someone who
+    // has finished back through onboarding is far worse than missing a prompt.
+    setOnboarded(bpRes.error ? true : (bpRes.count ?? 0) > 0)
   }
 
   async function refresh() {
@@ -124,6 +143,7 @@ export function useAuth() {
 
   return {
     session,
+    onboarded,
     profile: effectiveProfile,
     company,
     role:           profile?.role ?? null,

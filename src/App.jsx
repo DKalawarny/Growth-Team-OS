@@ -104,10 +104,17 @@ function AppLayout() {
 }
 
 function RequireAuth({ children }) {
-  const { session, profile, loading } = useAuth()
+  const { session, profile, onboarded, loading } = useAuth()
   if (loading) return <LoadingScreen />
   if (!session) return <Navigate to="/login" replace />
   if (!profile) return <Navigate to="/onboarding" replace />
+  // ⚠️ Having a profile is not proof of setup. The profile is created at
+  // signup; the business profile at the END of onboarding. Someone who closed
+  // the tab halfway had the first and not the second, and nothing ever sent
+  // them back — they simply used a product whose advisor knew nothing about
+  // them. `onboarded === false` is deliberate: undefined means not yet
+  // determined, and must not redirect.
+  if (onboarded === false) return <Navigate to="/onboarding" replace />
   return children
 }
 

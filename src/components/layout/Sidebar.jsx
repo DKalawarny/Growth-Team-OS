@@ -264,6 +264,28 @@ export default function Sidebar() {
 
       {/* Help + Settings — pinned above user section */}
       <div className="px-3 pb-1 space-y-0.5">
+        {/* ⭐ There was no way to report a problem from inside the product.
+            With ten friends in a pilot you hear about breakage socially; past
+            that it is silent churn — someone hits a wall, leaves, and nothing
+            records that it happened.
+
+            A mailto rather than a form on purpose: no table, no moderation, no
+            build. It also carries the page they were on, which is the single
+            most useful thing a bug report can include and the thing people
+            most often leave out. */}
+        <a
+          href={`mailto:support@leadeos.com?subject=${encodeURIComponent('GrowthOS — something is not right')}&body=${encodeURIComponent(`\n\n\n— — —\nWhere: ${typeof window !== 'undefined' ? window.location.pathname : ''}\nSent from inside GrowthOS. Tell us what you were doing and what happened.`)}`}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-500 hover:bg-white/70 hover:text-ink-900 transition-all duration-150"
+        >
+          <span className="text-ink-500" aria-hidden>
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
+              <path d="M10 13.5v.01M10 6.5v4" />
+              <circle cx="10" cy="10" r="7.25" />
+            </svg>
+          </span>
+          <span className="flex-1">Report a problem</span>
+        </a>
+
         <NavLink
           to="/help"
           className={({ isActive }) =>
