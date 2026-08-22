@@ -234,6 +234,9 @@ values
 with co as (select company_id as id from public.profiles limit 1)
 select
   (select name  from public.companies where id = (select id from co))                     as company,
+  -- ⚠️ FIRST, because this is the row that failed and nothing noticed. A
+  -- confirm query that omits the thing most likely to break is decoration.
+  (select count(*) from public.business_profiles     where company_id = (select id from co)) as business_profile,
   (select count(*) from public.milestones            where company_id = (select id from co)) as milestones,
   (select count(*) from public.staff_members         where company_id = (select id from co)) as people,
   (select count(*) from public.work_orders           where company_id = (select id from co)) as work_orders,
