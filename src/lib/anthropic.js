@@ -288,6 +288,8 @@ export async function streamClaude({
  * @throws {CapExceededError | SpendCapExceededError}
  */
 export async function runToolCall({
+  promptKey,
+  stableContext,
   companyId,
   userId     = null,
   toolId,
@@ -382,6 +384,8 @@ export async function runToolCall({
  * @param {Function} [opts.onChunk]
  */
 export async function streamToolCall({
+  promptKey,
+  stableContext,
   companyId,
   userId     = null,
   toolId,
@@ -399,6 +403,8 @@ export async function streamToolCall({
   ])
 
   const fullText = await streamClaudeRaw({
+    promptKey,
+    stableContext,
     systemPrompt,
     messages,
     maxTokens,

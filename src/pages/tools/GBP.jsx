@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, HAIKU } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { GBP_OPTIMIZER_PROMPT, GBP_OPTIMIZER_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import GBPAudit from '../../components/tools/GBPAudit'
@@ -179,7 +178,8 @@ export default function GBP() {
     try {
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${GBP_OPTIMIZER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'GBP_OPTIMIZER_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       // Build the current_listing blob the prompt expects. Either we synthesise
       // it from the Places snapshot, or we use the owner's manual paste
@@ -208,7 +208,8 @@ export default function GBP() {
         toolId:    'gbp-optimizer',
         kind:      'generate',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userMessage }],
         maxTokens:  16000,
         json:       true,
@@ -244,7 +245,8 @@ export default function GBP() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${GBP_OPTIMIZER_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'GBP_OPTIMIZER_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userPayload = JSON.stringify({
         original_brief: form,
@@ -262,7 +264,8 @@ export default function GBP() {
         toolId:    'gbp-optimizer',
         kind:      'refine',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userPayload }],
         maxTokens:  16000,
         json:       true,

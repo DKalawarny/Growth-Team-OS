@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, SONNET } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { OFFER_BUILDER_PROMPT, OFFER_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import OfferBuilderCard from '../../components/tools/OfferBuilderCard'
@@ -74,7 +73,8 @@ export default function OfferBuilder() {
     try {
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${OFFER_BUILDER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'OFFER_BUILDER_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userMessage = JSON.stringify({
         offer_name:         form.offer_name.trim(),
@@ -95,7 +95,8 @@ export default function OfferBuilder() {
         userId:    profile.id,
         toolId:    'offer-builder',
         kind:      'generate',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: userMessage }],
         maxTokens: 3000,
         json:      true,
@@ -131,7 +132,8 @@ export default function OfferBuilder() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${OFFER_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'OFFER_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userPayload = JSON.stringify({
         original_brief:  form,
@@ -149,7 +151,8 @@ export default function OfferBuilder() {
         userId:    profile.id,
         toolId:    'offer-builder',
         kind:      'refine',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: userPayload }],
         maxTokens: 3000,
         json:      true,

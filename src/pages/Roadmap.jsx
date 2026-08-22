@@ -6,7 +6,6 @@ import { sendTaskAssigned } from '../lib/email'
 import Tooltip from '../components/ui/Tooltip'
 import { getBookLink, AFFILIATE_DISCLOSURE } from '../lib/affiliateLinks'
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
-import { ROADMAP_SYSTEM_PROMPT } from '../lib/prompts'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { downloadICS } from '../lib/icsExport'
@@ -658,7 +657,7 @@ export default function Roadmap() {
 
       const raw = await callClaude({
         model: SONNET,
-        systemPrompt: ROADMAP_SYSTEM_PROMPT,
+        promptKey: 'ROADMAP_SYSTEM_PROMPT',
         messages: [{
           role: 'user',
           content: JSON.stringify({

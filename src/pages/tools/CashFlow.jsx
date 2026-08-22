@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, HAIKU } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { CASH_FLOW_PROMPT, CASH_FLOW_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import { listKnowledgeFiles } from '../../lib/knowledgeFiles'
@@ -122,7 +121,8 @@ export default function CashFlow() {
     try {
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${CASH_FLOW_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'CASH_FLOW_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       // QBO mode: signal live data, Claude reads from financial_snapshots in context.
       // Docs mode: signal uploaded docs, Claude reads from knowledge_files in context.
@@ -159,7 +159,8 @@ export default function CashFlow() {
         toolId:    'cash-flow',
         kind:      'generate',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: userMessage }],
         maxTokens: 4000,
         json:      true,
@@ -191,7 +192,8 @@ export default function CashFlow() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${CASH_FLOW_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'CASH_FLOW_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const raw = await runToolCall({
         companyId: profile.company_id,
@@ -199,7 +201,8 @@ export default function CashFlow() {
         toolId:    'cash-flow',
         kind:      'refine',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: JSON.stringify({
           original_brief: mode === 'qbo'  ? { data_source: 'quickbooks_live',   concerns }
                         : mode === 'docs' ? { data_source: 'uploaded_documents', concerns, doc_titles: financialDocs.map(f => f.title) }

@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, HAIKU } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { ROCKS_TRACKER_PROMPT, ROCKS_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import RocksPlan from '../../components/tools/RocksPlan'
@@ -74,7 +73,8 @@ export default function Rocks() {
     try {
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${ROCKS_TRACKER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'ROCKS_TRACKER_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userMessage = JSON.stringify({
         quarter_label:      form.quarter_label.trim(),
@@ -92,7 +92,8 @@ export default function Rocks() {
         toolId:    'rocks-tracker',
         kind:      'generate',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userMessage }],
         maxTokens:  3500,
         json:       true,
@@ -128,7 +129,8 @@ export default function Rocks() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${ROCKS_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'ROCKS_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userPayload = JSON.stringify({
         original_brief: form,
@@ -146,7 +148,8 @@ export default function Rocks() {
         toolId:    'rocks-tracker',
         kind:      'refine',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userPayload }],
         maxTokens:  3500,
         json:       true,

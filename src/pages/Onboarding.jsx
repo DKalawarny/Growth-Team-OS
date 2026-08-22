@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
-import { ROADMAP_SYSTEM_PROMPT, FIRST_SESSION_OPENER_PROMPT } from '../lib/prompts'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { REVENUE_OPTIONS } from '../lib/stageEngine'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
@@ -283,7 +282,7 @@ export default function Onboarding() {
 
       const raw = await callClaude({
         model: SONNET,
-        systemPrompt: ROADMAP_SYSTEM_PROMPT,
+        promptKey: 'ROADMAP_SYSTEM_PROMPT',
         messages: [{ role: 'user', content: JSON.stringify(buildProfilePayload(form, websiteContent)) }],
         maxTokens: 4000,
         json: true,
@@ -345,11 +344,12 @@ export default function Onboarding() {
           const ctx = await buildAdvisorContext(companyId, { userId: user.id })
           const ownerFirst = form.full_name?.split(' ')[0] ?? 'there'
           const systemPrompt = ctx
-            ? `${FIRST_SESSION_OPENER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}`
-            : FIRST_SESSION_OPENER_PROMPT
+            ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}`
+            : ''
           const opener = await callClaude({
             model: HAIKU,
-            systemPrompt,
+            promptKey,
+            stableContext,
             messages: [{ role: 'user', content: `Send your first ever message to ${ownerFirst}. They just finished setting up.` }],
             maxTokens: 350,
           })

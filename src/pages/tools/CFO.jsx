@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, SONNET } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { CFO_DASHBOARD_PROMPT, CFO_DASHBOARD_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import CFODashboardView from '../../components/tools/CFODashboardView'
@@ -221,7 +220,8 @@ export default function CFO() {
     try {
       const context      = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${CFO_DASHBOARD_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'CFO_DASHBOARD_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
       const userMessage  = JSON.stringify({
         period_label:       form.period_label.trim(),
         focus_area:         form.focus_area,
@@ -235,7 +235,8 @@ export default function CFO() {
         userId:       profile.id,
         toolId:       'cfo-dashboard',
         kind:         'generate',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:     [{ role: 'user', content: userMessage }],
         maxTokens:    3500,
         json:         true,
@@ -273,7 +274,8 @@ export default function CFO() {
 
     try {
       const context      = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${CFO_DASHBOARD_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'CFO_DASHBOARD_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
       const userPayload  = JSON.stringify({
         original_brief:    resultForm || form,
         current_dashboard: result,
@@ -287,7 +289,8 @@ export default function CFO() {
         userId:       profile.id,
         toolId:       'cfo-dashboard',
         kind:         'refine',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:     [{ role: 'user', content: userPayload }],
         maxTokens:    3500,
         json:         true,

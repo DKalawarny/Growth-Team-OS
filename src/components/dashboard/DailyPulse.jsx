@@ -15,7 +15,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { callClaude, HAIKU } from '../../lib/anthropic'
-import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
@@ -75,13 +74,14 @@ export default function DashboardChat({ userId, companyId, firstName }) {
     try {
       const context = await buildAdvisorContext(companyId, { userId })
       const systemPrompt = context
-        ? `${MORNING_OPENER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
-        : MORNING_OPENER_PROMPT
+        ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+        : ''
 
       const timeOfDay = new Date().toLocaleDateString('en-US', { weekday: 'long', hour: 'numeric', hour12: true })
       const opener = await callClaude({
         model: HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages: [{ role: 'user', content: `Open the check-in. Time context: ${greeting()} — ${timeOfDay}.` }],
         maxTokens: 120,
       })
@@ -169,16 +169,22 @@ export default function DashboardChat({ userId, companyId, firstName }) {
 
     try {
       const context = await buildAdvisorContext(companyId, { userId })
-      const systemPrompt = context
-        ? `${ADVISOR_SYSTEM_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
-        : ADVISOR_SYSTEM_PROMPT
+      const stableContext = context
+        ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+        : ''
 
       const historySlice = nextMessages.slice(-HISTORY_TURNS).map(m => ({
         role:    m.role === 'assistant' ? 'assistant' : 'user',
         content: m.content,
       }))
 
-      const reply = await callClaude({ model: HAIKU, systemPrompt, messages: historySlice, maxTokens: 600 })
+      const reply = await callClaude({
+        model: HAIKU,
+        promptKey: 'ADVISOR_SYSTEM_PROMPT',
+        stableContext,
+        messages: historySlice,
+        maxTokens: 600,
+      })
       if (!reply) throw new Error('empty')
 
       const { data: asstRow } = await supabase

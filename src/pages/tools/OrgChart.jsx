@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, SONNET } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { ORG_CHART_PROMPT, ORG_CHART_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import OrgChartView from '../../components/tools/OrgChartView'
@@ -70,7 +69,8 @@ export default function OrgChart() {
     try {
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${ORG_CHART_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'ORG_CHART_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userMessage = JSON.stringify({
         horizon:         form.horizon.trim(),
@@ -89,7 +89,8 @@ export default function OrgChart() {
         userId:    profile.id,
         toolId:    'org-chart',
         kind:      'generate',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: userMessage }],
         maxTokens: 3500,
         json:      true,
@@ -125,7 +126,8 @@ export default function OrgChart() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${ORG_CHART_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'ORG_CHART_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userPayload = JSON.stringify({
         original_brief: form,
@@ -142,7 +144,8 @@ export default function OrgChart() {
         userId:    profile.id,
         toolId:    'org-chart',
         kind:      'refine',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:  [{ role: 'user', content: userPayload }],
         maxTokens: 3500,
         json:      true,

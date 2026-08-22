@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, SONNET } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { DECISION_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import DecisionView from '../../components/tools/DecisionView'
@@ -42,7 +41,8 @@ export default function Decision() {
     try {
       const context = await buildAdvisorContext(profile.company_id, { query: form.decision })
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${DECISION_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'DECISION_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const raw = await runToolCall({
         model:     SONNET,
@@ -50,7 +50,8 @@ export default function Decision() {
         userId:    profile.id,
         toolId:    'decision',
         kind:      'generate',
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages: [{ role: 'user', content: JSON.stringify({
           decision: form.decision.trim(),
           stakes:   form.stakes.trim()   || null,

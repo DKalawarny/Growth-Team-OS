@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { useRef } from 'react'
 import { callClaude, SONNET } from '../../lib/anthropic'
-import { ROADMAP_SYSTEM_PROMPT } from '../../lib/prompts'
 import { fetchWebsiteContent } from '../../lib/websiteScraper'
 import { assignMilestoneDates, buildDependencyUpdates } from '../../lib/milestoneDates'
 
@@ -83,7 +82,7 @@ export default function DangerSettings() {
       // 3. Claude → new milestones.
       const raw = await callClaude({
         model:        SONNET,
-        systemPrompt: ROADMAP_SYSTEM_PROMPT,
+        promptKey: 'ROADMAP_SYSTEM_PROMPT',
         messages:     [{ role: 'user', content: JSON.stringify(buildPayload(bp, websiteContent)) }],
         maxTokens:    4000,
         json:         true,

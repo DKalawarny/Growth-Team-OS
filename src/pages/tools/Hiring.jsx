@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import { runToolCall, HAIKU } from '../../lib/anthropic'
 import { isCapExceeded } from '../../lib/usage'
-import { HIRING_SCORECARD_PROMPT, HIRING_REFINE_PROMPT } from '../../lib/prompts'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import HiringScorecard from '../../components/tools/HiringScorecard'
@@ -75,7 +74,8 @@ export default function Hiring() {
       // specific to this business, not a generic template.
       const context = await buildAdvisorContext(profile.company_id)
       setContextSummary(summarizeContext(context))
-      const systemPrompt = `${HIRING_SCORECARD_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'HIRING_SCORECARD_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       // User message is the owner's brief. Keep it as structured JSON so the
       // model doesn't have to guess which string is which field.
@@ -94,7 +94,8 @@ export default function Hiring() {
         toolId:    'hiring-scorecard',
         kind:      'generate',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userMessage }],
         maxTokens:  2000,
         json:       true,
@@ -145,7 +146,8 @@ export default function Hiring() {
 
     try {
       const context = await buildAdvisorContext(profile.company_id)
-      const systemPrompt = `${HIRING_REFINE_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+      const promptKey     = 'HIRING_REFINE_PROMPT'
+      const stableContext = `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
 
       const userPayload = JSON.stringify({
         original_brief:     form,
@@ -163,7 +165,8 @@ export default function Hiring() {
         toolId:    'hiring-scorecard',
         kind:      'refine',
         model:     HAIKU,
-        systemPrompt,
+        promptKey,
+        stableContext,
         messages:   [{ role: 'user', content: userPayload }],
         maxTokens:  2000,
         json:       true,
