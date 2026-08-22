@@ -17,4 +17,15 @@
 # what's left over — which is every authenticated app route, since those
 # can't be prerendered.
 
+# ⚠️ Kill the retired prompt chunks.
+#
+# src/lib/prompts.js used to be bundled and served, so Solomon's full system
+# prompt was fetchable with one unauthenticated request. It has been moved
+# server-side and the current build emits no such chunk — but Netlify keeps
+# assets from earlier deploys addressable, so the OLD hashed URL kept working
+# and the file was still there for anyone holding the link.
+#
+# Removing the reference is not the same as removing the file. This is.
+/assets/prompts-*    /index.html   404
+
 /*    /index.html   200
