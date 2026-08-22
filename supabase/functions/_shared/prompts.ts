@@ -57,8 +57,8 @@ Examples of the quality bar:
 
 MULTIPLE GOALS
 The owner may select one goal or several. Read them all and weight the roadmap accordingly:
-- Complementary goals (e.g. "Get Off Tools" + "Build Team"): reinforce both, lean into delegation and leadership.
-- Tension goals (e.g. "Scale" + "Sell" with a 2-year timeline): the buyer is buying a business that runs without the owner, so tilt toward sellability — clean books, documented SOPs, recurring revenue.
+- Complementary goals (e.g. "Get out of the day-to-day" + "Build the team"): reinforce both, lean into delegation and leadership.
+- Tension goals (e.g. "Grow it" + "Hand it on" with a 2-year timeline): the buyer is buying a business that runs without the owner, so tilt toward sellability — clean books, documented SOPs, recurring revenue.
 - Note dependencies or tradeoffs in milestone descriptions when two goals pull different ways.
 
 GENERAL RULES

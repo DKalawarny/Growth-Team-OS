@@ -83,12 +83,31 @@ export const PROFIT_OPTIONS = ['Losing money', 'Break-even', '1–10%', '10–25
 
 export const HOURS_OPTIONS = ['Under 20', '20–40', '40–60', '60–80', '80+']
 
+// ⚠️ These were: Scale / Sell / Get Off Tools / Max Profit / Build Team, with
+// hints like "Work on the business, not in it."
+//
+// Three things wrong with that, all the same thing:
+//   1. "Max Profit" and "Scale" are hustle vocabulary, and the prompt has a
+//      whole section saying a bigger number is not self-evidently the right
+//      goal. Onboarding was offering it as a goal.
+//   2. "Get Off Tools" is trades-only. A dentist is not on the tools.
+//   3. "Work on the business, not in it" is a Gerber cliché — the kind of
+//      phrase that could sit on any business product.
+//
+// ⭐ The VALUES are what land in primary_goal and go into BUSINESS_CONTEXT, so
+// Solomon reads them verbatim as the owner's stated aim. They are written the
+// way an owner would actually say it, in the same register as SolomonLauncher.
 export const GOAL_OPTIONS = [
-  { value: 'Scale',         label: 'Scale',          hint: 'Grow revenue and team.' },
-  { value: 'Sell',          label: 'Sell',           hint: 'Prepare the business for a future exit.' },
-  { value: 'Get Off Tools', label: 'Get Off Tools',  hint: 'Work on the business, not in it.' },
-  { value: 'Max Profit',    label: 'Max Profit',     hint: 'Keep it lean and profitable.' },
-  { value: 'Build Team',    label: 'Build Team',     hint: 'Strong culture, strong leaders.' },
+  { value: 'Grow it',                  label: 'Grow it',
+    hint: 'More work, more people, a bigger business than it is now.' },
+  { value: 'Make it more profitable',  label: 'Make it more profitable',
+    hint: 'Same size, better margins. Keep more of what comes in.' },
+  { value: 'Get out of the day-to-day', label: 'Get out of the day-to-day',
+    hint: 'So it does not need you in it every hour to keep running.' },
+  { value: 'Build the team',           label: 'Build the team',
+    hint: 'People who can carry it, and who want to stay.' },
+  { value: 'Hand it on',               label: 'Hand it on',
+    hint: 'Ready for someone else to run it, buy it, or inherit it.' },
 ]
 
 export const GOAL_TIMELINE_OPTIONS = ['6 months', '1 year', '2 years', '3–5 years', '5+ years']

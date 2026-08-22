@@ -41,7 +41,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'Your business,\nunderstood.',
-      sub: 'GrowthOS builds a live model of your company — not a generic template.',
+      sub: 'Ten minutes now, and Solomon stops giving you advice that could be for anyone.',
       bullets: [
         'Roadmap tailored to your industry and stage',
         'Advice grounded in your actual numbers',
@@ -50,12 +50,14 @@ const STEPS = [
     },
     fields: [
       { name: 'full_name',     label: 'Your full name',      type: 'text' },
-      { name: 'business_name', label: 'Company name',        type: 'text' },
+      { name: 'business_name', label: 'Company name',        type: 'text',
+        hint: 'However it appears on an invoice.' },
       { name: 'website',       label: 'Website (optional)',  type: 'text',
         placeholder: 'yourcompany.com',
         hint: "We'll read it so the roadmap is specific to your business.",
         optional: true },
-      { name: 'industry',      label: 'Industry',            type: 'select', options: INDUSTRY_OPTIONS },
+      { name: 'industry',      label: 'Industry',            type: 'select', options: INDUSTRY_OPTIONS,
+        hint: 'The closest fit is fine — it sets the benchmarks we compare you against.' },
     ],
   },
   {
@@ -67,18 +69,21 @@ const STEPS = [
       </svg>
     ),
     panel: {
-      headline: 'Scaled to your\nreality.',
-      sub: "Whether you're a solo operator or leading a team, the plan fits.",
+      headline: 'Sized to what you\nactually have.',
+      sub: "Whether it's just you or a crew of thirty, the plan fits the hours you really have.",
       bullets: [
-        'Milestones sized to your available hours',
-        'Team-aware recommendations',
-        'Local market context baked in',
+        'Steps that fit the time you actually have',
+        'Advice that accounts for who is already on the team',
+        'The right authority for your province, not a generic one',
       ],
     },
     fields: [
-      { name: 'location',       label: 'City / region',           type: 'text', placeholder: 'e.g. Calgary, AB' },
-      { name: 'team_size',      label: 'Team size',               type: 'select', options: TEAM_SIZE_OPTIONS },
-      { name: 'hours_per_week', label: 'Hours you work per week', type: 'select', options: HOURS_OPTIONS },
+      { name: 'location',       label: 'City / region',           type: 'text', placeholder: 'e.g. Calgary, AB',
+        hint: 'Where you mostly work. Decides which employment and safety authority we point you to.' },
+      { name: 'team_size',      label: 'Team size',               type: 'select', options: TEAM_SIZE_OPTIONS,
+        hint: 'Everyone you pay, including yourself and regular subcontractors.' },
+      { name: 'hours_per_week', label: 'Hours you work per week', type: 'select', options: HOURS_OPTIONS,
+        hint: 'Honestly, not contractually. Evenings and weekends count.' },
     ],
   },
   {
@@ -90,18 +95,21 @@ const STEPS = [
       </svg>
     ),
     panel: {
-      headline: 'Numbers that\ndrive decisions.',
-      sub: 'Revenue, margin, and trajectory — the three numbers that shape everything.',
+      headline: 'Rough is fine.\nHonest matters.',
+      sub: "Nobody is auditing this. A ballpark you believe beats a precise number you don't.",
       bullets: [
-        'Stage-matched benchmarks and targets',
-        'CFO-grade financial projections',
-        'Connect QuickBooks later for live data',
+        'Compared against businesses at your size, not a national average',
+        'Cash forecasting once he knows where you stand',
+        'Connect QuickBooks later and he uses the real figures instead',
       ],
     },
     fields: [
-      { name: 'last_revenue',    label: 'Last year revenue',    type: 'select', options: REVENUE_OPTIONS },
-      { name: 'current_revenue', label: 'Current revenue pace', type: 'select', options: REVENUE_OPTIONS },
-      { name: 'profit',          label: 'Profit margin',        type: 'select', options: PROFIT_OPTIONS },
+      { name: 'last_revenue',    label: 'Last year revenue',    type: 'select', options: REVENUE_OPTIONS,
+        hint: 'Total sales for your last full year, before any expenses come out.' },
+      { name: 'current_revenue', label: 'Where this year is tracking', type: 'select', options: REVENUE_OPTIONS,
+        hint: 'If the rest of the year looks like the last few months, what would the year total? Up on last year, pick the higher band.' },
+      { name: 'profit',          label: 'Profit margin',        type: 'select', options: PROFIT_OPTIONS,
+        hint: 'NET — what is left after everything, including your own pay. Most owner-operated businesses land between 5% and 15%. "Not sure" is a real answer and Solomon can help you find it.' },
     ],
   },
   {
@@ -116,15 +124,16 @@ const STEPS = [
       headline: 'A roadmap built\nfor your goals.',
       sub: 'Solomon sequences 8–12 milestones across your timeline — nothing generic.',
       bullets: [
-        'Prioritised by what moves the needle most',
-        'Balanced across your chosen goals',
-        'Dates set, dependencies wired, ready to run',
+        'Ordered so the things that unblock other things come first',
+        'Balanced across everything you picked, not just the loudest one',
+        'Real dates, so a slipped one is visible rather than quietly forgotten',
       ],
     },
     fields: [
       { name: 'primary_goal',  label: 'Primary goals',           type: 'goals',
         hint: 'Pick as many as apply — the roadmap will balance them.' },
-      { name: 'goal_timeline', label: 'Timeline for those goals', type: 'select', options: GOAL_TIMELINE_OPTIONS },
+      { name: 'goal_timeline', label: 'Timeline for those goals', type: 'select', options: GOAL_TIMELINE_OPTIONS,
+        hint: 'When you want this to be true by. It sets the dates on your roadmap, so pick something you would actually hold yourself to.' },
     ],
   },
   {
@@ -138,7 +147,7 @@ const STEPS = [
     // been handed a gimmick, and the brand rule is that we do not do gimmicks.
     // Blank is a perfectly good answer and costs him nothing.
     title:       'What this is for',
-    description: 'One question, in your words. Skip it if you would rather not.',
+    description: "One question, in your own words. Skip it if you'd rather not.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
         <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/>
@@ -149,14 +158,14 @@ const STEPS = [
       sub: 'Solomon reads this before every answer he gives you.',
       bullets: [
         'Why you run it the way you do',
-        'Lines you have decided you will not cross',
-        'What you want to be true of this in ten years',
+        "What you won't do, even when it costs you",
+        'What you want it to look like in ten years',
       ],
     },
     fields: [
       { name: 'why_statement', label: 'Why do you run this business?', type: 'textarea',
-        placeholder: 'What you want it to be for. Who it is meant to look after. Anything you have already decided you will not do to make it work.',
-        hint: 'Optional. Solomon keeps this and reads it on every answer — you can change or delete it later under Context.',
+        placeholder: "There's no wrong answer. Something like: it pays for four families, not just mine — and I want to be able to look anyone I've worked with in the eye afterwards.",
+        hint: 'Optional. He reads it before every answer — change or delete it any time under Context.',
         optional: true },
     ],
   },
