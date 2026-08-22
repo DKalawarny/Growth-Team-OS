@@ -6,6 +6,7 @@ import {
   getKnowledgeFile,
   deleteKnowledgeFile,
   getSignedUrl,
+  expandDroppedItems,
   KIND_OPTIONS,
 } from '../../lib/knowledgeFiles'
 import { runLibraryAnalysis, getLibraryAnalysis } from '../../lib/libraryAnalysis'
@@ -39,6 +40,9 @@ export default function UploadedTab({ onCountChange }) {
   const [selected, setSelected]  = useState(null)
   const [kindFilter, setKind]    = useState('all')
   const [showUpload, setShowUpload]               = useState(false)
+  // Files handed in by a drop on the empty-state card, so the dialog opens
+  // already holding them instead of asking for them again.
+  const [seedFiles, setSeedFiles]                 = useState([])
   const [showCloud,  setShowCloud]                = useState(false)
   const [showManualFinancials, setShowManualFinancials] = useState(false)
 
@@ -133,11 +137,14 @@ export default function UploadedTab({ onCountChange }) {
 
   // ---- upload ----
 
-  const onUploaded = (newRow) => {
+  // ⚠️ `analyze` defaults to true so the cloud-import and manual-entry callers
+  // keep their old behaviour. UploadDialog passes false for every file in a
+  // batch except the last — seven uploads used to mean seven library analyses
+  // of a library that was still changing under them.
+  const onUploaded = (newRow, { analyze = true } = {}) => {
     setFiles(prev => (prev ? [newRow, ...prev] : [newRow]))
     setSelected(newRow.id)
-    setShowUpload(false)
-    if (newRow.status === 'ready') handleAnalyze()
+    if (analyze && newRow.status === 'ready') handleAnalyze()
   }
 
   const onDelete = async (file) => {
@@ -253,7 +260,11 @@ export default function UploadedTab({ onCountChange }) {
 
       {/* File list — single card with dividers */}
       {files.length === 0 ? (
-        <EmptyState onUpload={() => setShowUpload(true)} onCloudImport={() => setShowCloud(true)} onManualEntry={() => setShowManualFinancials(true)} />
+        <EmptyState
+          onUpload={(dropped) => { setSeedFiles(Array.isArray(dropped) ? dropped : []); setShowUpload(true) }}
+          onCloudImport={() => setShowCloud(true)}
+          onManualEntry={() => setShowManualFinancials(true)}
+        />
       ) : visible.length === 0 ? (
         <div className="rounded-xl border border-dashed border-ink-200 p-8 text-center text-sm text-ink-400">
           No files in this category yet.
@@ -272,7 +283,11 @@ export default function UploadedTab({ onCountChange }) {
       )}
 
       {showUpload && (
-        <UploadDialog onClose={() => setShowUpload(false)} onUploaded={onUploaded} />
+        <UploadDialog
+          initialFiles={seedFiles}
+          onClose={() => { setShowUpload(false); setSeedFiles([]) }}
+          onUploaded={onUploaded}
+        />
       )}
 
       {showCloud && (
@@ -908,11 +923,21 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
           which repeated the "UPLOADED · Your knowledge files" header already
           sitting directly above — two labels, one section, no new information.
           It is gone, and the card is now a drop target rather than a poster
-          with buttons on it: dropping files is what people try first. */}
+          with buttons on it: dropping files is what people try first.
+
+          ⚠️ onDrop used to call onUpload() and never read e.dataTransfer — so
+          the card invited a drop, opened an EMPTY dialog, and made the owner
+          pick the same files a second time. Discarding a correct drop is
+          worse than not offering one. */}
       <div
         onDragOver={e => { e.preventDefault(); e.currentTarget.dataset.over = '1' }}
         onDragLeave={e => { delete e.currentTarget.dataset.over }}
-        onDrop={e => { e.preventDefault(); delete e.currentTarget.dataset.over; onUpload() }}
+        onDrop={async e => {
+          e.preventDefault()
+          delete e.currentTarget.dataset.over
+          const dropped = await expandDroppedItems(e.dataTransfer)
+          onUpload(dropped)
+        }}
         className="bg-white border-2 border-dashed border-ink-200 rounded-2xl p-10 text-center transition-colors data-[over]:border-brand-400 data-[over]:bg-brand-50/30"
       >
         <div className="text-4xl mb-3" aria-hidden>📚</div>

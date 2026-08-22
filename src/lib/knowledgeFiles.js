@@ -60,6 +60,17 @@ export const KIND_OPTIONS = [
  */
 export function validateFile(file) {
   if (!file) return 'No file selected.'
+  // ⚠️ A folder dropped onto a drop zone arrives as a zero-byte File with no
+  // type and no extension, so the extension check below used to reject it as
+  // "demo-docs is no extension" — describing a folder as a badly-named file,
+  // which tells the owner nothing about what to do next. Folders that reach
+  // here have already survived expandDroppedItems (which walks real
+  // directories), so this is the fallback for browsers without the entries
+  // API — and it doubles as the guard for genuinely empty files, which upload
+  // fine and then sit in the library with nothing in them.
+  if (file.size === 0) {
+    return `${file.name} is empty — if it's a folder, open it and add the files inside.`
+  }
   if (file.size > MAX_BYTES) {
     return `File is ${(file.size / 1024 / 1024).toFixed(1)}MB — max is ${MAX_BYTES / 1024 / 1024}MB.`
   }
@@ -74,6 +85,73 @@ export function validateFile(file) {
     return `${file.name} is ${ext} — supported formats are PDF, Word (.docx), Excel, CSV, TXT and Markdown.`
   }
   return null
+}
+
+/**
+ * Flatten whatever was dropped into a plain array of Files.
+ *
+ * ⭐ WHY THIS IS NOT JUST `[...dataTransfer.files]`
+ *
+ * Dragging a FOLDER is the obvious thing to do when you have a folder of
+ * documents, and `dataTransfer.files` represents that folder as a single
+ * zero-byte entry — so the naive read produced one unusable "file" named after
+ * the folder and silently lost everything inside it. The entries API
+ * (`webkitGetAsEntry`) is the only way to see through a directory, and it is
+ * available in every browser we support.
+ *
+ * Two constraints worth knowing:
+ *   - The entry list must be captured SYNCHRONOUSLY. `dataTransfer.items` is
+ *     emptied as soon as the drop handler yields, so we snapshot the entries
+ *     before the first await — awaiting first yields an empty list.
+ *   - Recursion is depth-capped and reader.readEntries() is called in a loop,
+ *     because it returns at most 100 entries per call. A single call looks
+ *     like it works right up until someone drops a folder with 101 files in it.
+ *
+ * Hidden files (.DS_Store and friends) are dropped — nobody means to upload
+ * them and they only produce confusing rejections.
+ */
+export async function expandDroppedItems(dataTransfer, { maxDepth = 5 } = {}) {
+  const entries = []
+  // Synchronous snapshot — see the note above.
+  for (const item of dataTransfer?.items ?? []) {
+    if (item.kind !== 'file') continue
+    const entry = item.webkitGetAsEntry?.()
+    if (entry) entries.push(entry)
+    else {
+      const f = item.getAsFile?.()
+      if (f) entries.push(f)   // no entries API — a plain File
+    }
+  }
+
+  if (!entries.length) return [...(dataTransfer?.files ?? [])]
+
+  const out = []
+  const readAll = (reader) => new Promise((resolve, reject) => {
+    const acc = []
+    const next = () => reader.readEntries((batch) => {
+      if (!batch.length) { resolve(acc); return }
+      acc.push(...batch)
+      next()               // readEntries caps at ~100 per call
+    }, reject)
+    next()
+  })
+
+  const walk = async (entry, depth) => {
+    if (entry instanceof File) { out.push(entry); return }
+    if (entry.name?.startsWith('.')) return
+    if (entry.isFile) {
+      const file = await new Promise((res) => entry.file(res, () => res(null)))
+      if (file) out.push(file)
+      return
+    }
+    if (entry.isDirectory && depth < maxDepth) {
+      const children = await readAll(entry.createReader())
+      for (const child of children) await walk(child, depth + 1)
+    }
+  }
+
+  for (const e of entries) await walk(e, 0)
+  return out
 }
 
 /**

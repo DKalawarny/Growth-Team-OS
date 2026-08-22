@@ -3,21 +3,35 @@ import { useAuth } from '../../hooks/useAuth'
 import {
   uploadKnowledgeFile,
   validateFile,
+  expandDroppedItems,
   KIND_OPTIONS,
   MAX_MB,
 } from '../../lib/knowledgeFiles'
 import CloudImportModal from './CloudImportModal'
 
 /**
- * UploadDialog — modal for adding a knowledge file.
+ * UploadDialog — modal for adding knowledge files.
  *
  * Flow:
- *   1. Owner drops / selects a file (MVP: one at a time — multi-file later)
- *   2. We validate client-side (size, type) and show any rejection inline
- *   3. Owner fills in title (default = filename), kind (default = General),
- *      optional notes, then hits Upload
- *   4. We show a progress bar: 5 → 25 (uploaded) → 70 (extracted) → 100 (saved)
- *   5. On success, parent re-queries + closes the modal
+ *   1. Owner drops / selects one or more files (or a whole folder)
+ *   2. We validate each client-side (size, type) and list any rejections
+ *      inline, by name, without discarding the ones that passed
+ *   3. Owner sets kind (default = General) and optional notes for the batch,
+ *      plus a title when there is exactly one file
+ *   4. We upload sequentially, showing "3 of 7 · service-call-sop.md"
+ *   5. Each success is handed to the parent as it lands; the dialog closes
+ *      itself when the batch finishes
+ *
+ * ⭐ MULTI-FILE, DELIBERATELY. This was one-at-a-time, and the cost only shows
+ * up with real usage: an owner's documents arrive as a folder of eight, and
+ * eight trips through a modal with a metadata form each time is enough
+ * friction that the library stays empty — which is the one thing that makes
+ * Solomon generic. The metadata is per-batch rather than per-file for the same
+ * reason: asking eight times for a field most people leave alone buys nothing.
+ *
+ * ⚠️ Sequential, not Promise.all. Extraction runs client-side (pdf.js on the
+ * main thread), so eight parallel extractions freeze the tab and race for the
+ * same memory. One at a time is slower on paper and finishes sooner in fact.
  */
 
 // ---- What to upload hints — shown in a collapsible helper panel ----
@@ -32,19 +46,53 @@ const UPLOAD_HINTS = [
   { label: 'Customer survey results',    icon: '🌟' },
 ]
 
-export default function UploadDialog({ onClose, onUploaded }) {
+/** Filename without its extension — the default title for a document. */
+const stem = (name) => name.replace(/\.[^.]+$/, '')
+
+/**
+ * Split a set of files into what we can take and what we cannot.
+ *
+ * ⭐ Rejections are collected BY NAME alongside the accepted files rather than
+ * replacing them. Dropping a folder of six good documents and one .pages file
+ * should queue the six and say which one was skipped — the old single-error
+ * path threw the whole drop away and named only the first problem.
+ */
+function partitionFiles(incoming) {
+  const accepted = []
+  const rejected = []
+  for (const f of incoming ?? []) {
+    const err = validateFile(f)
+    if (err) rejected.push({ name: f.name, reason: err })
+    else accepted.push(f)
+  }
+  return { accepted, rejected }
+}
+
+export default function UploadDialog({ onClose, onUploaded, initialFiles = [] }) {
   const { profile }         = useAuth()
-  const [file, setFile]     = useState(null)
+  // ⚠️ Files dropped on the card that opened this dialog are seeded as INITIAL
+  // state, not applied in an effect. An effect would render the dialog empty
+  // for a frame and then fill it, and React rightly flags setState in an
+  // effect body; a lazy initialiser runs once, before the first paint.
+  const [seed] = useState(() => partitionFiles(initialFiles))
+  const [files, setFiles]   = useState(seed.accepted)
+  const [rejected, setRej]  = useState(seed.rejected)
   const [showCloud, setShowCloud] = useState(false)
-  const [title, setTitle]   = useState('')
+  const [title, setTitle]   = useState(
+    seed.accepted.length === 1 ? stem(seed.accepted[0].name) : ''
+  )
   const [kind, setKind]     = useState('general')
   const [notes, setNotes]   = useState('')
   const [dragOver, setDrag] = useState(false)
   const [busy, setBusy]     = useState(false)
   const [progress, setPg]   = useState(0)
+  const [doneCount, setDone] = useState(0)
+  const [current, setCurrent] = useState(null)
   const [error, setError]   = useState(null)
   const [showHints, setShowHints] = useState(false)
   const inputRef            = useRef(null)
+
+  const single = files.length === 1
 
   // Close on Escape
   useEffect(() => {
@@ -53,40 +101,86 @@ export default function UploadDialog({ onClose, onUploaded }) {
     return () => document.removeEventListener('keydown', onKey)
   }, [busy, onClose])
 
-  const pickFile = (f) => {
-    const err = validateFile(f)
-    if (err) { setError(err); return }
+  /**
+   * Add files to the batch. Rejections are listed BY NAME alongside the
+   * accepted ones rather than replacing them — dropping a folder that holds
+   * six good documents and one .pages file should queue the six, not throw
+   * the whole drop away with a single error message.
+   */
+  const addFiles = (incoming) => {
+    const { accepted, rejected: bad } = partitionFiles(incoming)
+    // Dedupe on name+size — dropping the same folder twice is a common slip.
+    const seen = new Set(files.map(f => `${f.name}:${f.size}`))
+    const merged = [...files]
+    for (const f of accepted) {
+      const key = `${f.name}:${f.size}`
+      if (!seen.has(key)) { seen.add(key); merged.push(f) }
+    }
+    setRej(bad)
     setError(null)
-    setFile(f)
-    if (!title.trim()) setTitle(f.name.replace(/\.[^.]+$/, ''))
+    setFiles(merged)
+    if (merged.length === 1 && !title.trim()) setTitle(stem(merged[0].name))
   }
 
-  const onDrop = (e) => {
+  const onDrop = async (e) => {
     e.preventDefault()
     setDrag(false)
-    const f = e.dataTransfer?.files?.[0]
-    if (f) pickFile(f)
+    // expandDroppedItems must be handed the dataTransfer before we await —
+    // it snapshots .items synchronously for exactly this reason.
+    const dropped = await expandDroppedItems(e.dataTransfer)
+    if (dropped.length) addFiles(dropped)
   }
 
+  const removeAt = (i) => setFiles(prev => {
+    const next = prev.filter((_, idx) => idx !== i)
+    if (next.length !== 1) setTitle('')
+    return next
+  })
+
   const upload = async () => {
-    if (!file || busy) return
+    if (!files.length || busy) return
     setBusy(true)
     setError(null)
     setPg(0)
-    try {
-      const row = await uploadKnowledgeFile(file, {
-        companyId:  profile.company_id,
-        userId:     profile.id,
-        title:      title.trim(),
-        kind,
-        notes:      notes.trim(),
-        onProgress: setPg,
-      })
-      onUploaded(row)
-    } catch (err) {
-      setError(err.message || 'Upload failed.')
-      setBusy(false)
+    setDone(0)
+
+    const failures = []
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i]
+      setCurrent(f.name)
+      try {
+        const row = await uploadKnowledgeFile(f, {
+          companyId:  profile.company_id,
+          userId:     profile.id,
+          // Only honour the typed title in the single-file case; for a batch
+          // each file keeps its own name, which is the only thing that can
+          // tell them apart in the library afterwards.
+          title:      single ? title.trim() : f.name.replace(/\.[^.]+$/, ''),
+          kind,
+          notes:      notes.trim(),
+          onProgress: setPg,
+        })
+        // Hand each row up as it lands so the list fills in visibly, but hold
+        // the library re-analysis until the last one — otherwise a batch of
+        // seven kicks off seven analyses of a library that is still changing.
+        onUploaded(row, { analyze: i === files.length - 1 })
+        setDone(i + 1)
+      } catch (err) {
+        failures.push({ name: f.name, reason: err.message || 'Upload failed.' })
+      }
     }
+
+    setCurrent(null)
+    if (failures.length) {
+      // Keep the dialog open on partial failure — closing it would report
+      // success for a batch that was not fully successful.
+      setRej(failures)
+      setFiles([])
+      setError(`${failures.length} of ${files.length} could not be uploaded.`)
+      setBusy(false)
+      return
+    }
+    onClose()
   }
 
   return (
@@ -147,7 +241,7 @@ export default function UploadDialog({ onClose, onUploaded }) {
         {/* Body */}
         <div className="px-5 py-5 space-y-4">
           {/* Drop zone / file picker */}
-          {!file ? (
+          {!files.length ? (
             <div className="space-y-3">
               <div
                 onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
@@ -162,17 +256,18 @@ export default function UploadDialog({ onClose, onUploaded }) {
               >
                 <div className="text-3xl mb-2" aria-hidden>📥</div>
                 <div className="text-sm font-semibold text-ink-900">
-                  Drop a file here, or click to browse
+                  Drop files or a folder here, or click to browse
                 </div>
                 <div className="text-xs text-ink-400 mt-1">
-                  PDF, Word, Excel, CSV, text, Markdown or a photo · up to {MAX_MB} MB
+                  PDF, Word, Excel, CSV, text, Markdown or a photo · up to {MAX_MB} MB each
                 </div>
                 <input
                   ref={inputRef}
                   type="file"
+                  multiple
                   className="hidden"
                   accept=".pdf,.docx,.txt,.md,.markdown,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.gif,.heic,.heif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,image/*,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                  onChange={(e) => pickFile(e.target.files?.[0])}
+                  onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = '' }}
                 />
               </div>
 
@@ -187,24 +282,67 @@ export default function UploadDialog({ onClose, onUploaded }) {
               </button>
             </div>
           ) : (
-            <div className="rounded-xl border border-ink-100 bg-white p-3 flex items-center gap-3 shadow-sm">
-              <div className="text-2xl" aria-hidden>
-                {file.type.includes('pdf') ? '📕' : file.type.startsWith('text/') ? '📝' : '📄'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-ink-900 truncate">{file.name}</div>
-                <div className="text-xs text-ink-400">
-                  {(file.size / 1024).toFixed(0)} KB
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-semibold uppercase tracking-widest text-ink-500">
+                  {files.length} {files.length === 1 ? 'file' : 'files'} ready
                 </div>
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  disabled={busy}
+                  className="text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50 transition-colors"
+                >
+                  + Add more
+                </button>
+                <input
+                  ref={inputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  accept=".pdf,.docx,.txt,.md,.markdown,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.gif,.heic,.heif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,image/*,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                  onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = '' }}
+                />
               </div>
-              <button
-                type="button"
-                onClick={() => { setFile(null); setTitle(''); setError(null) }}
-                disabled={busy}
-                className="text-xs text-ink-400 hover:text-ink-700 disabled:opacity-50 transition-colors"
-              >
-                Change
-              </button>
+
+              <div className="rounded-xl border border-ink-100 bg-white shadow-sm max-h-52 overflow-y-auto divide-y divide-ink-50">
+                {files.map((f, i) => (
+                  <div key={`${f.name}:${f.size}`} className="p-2.5 flex items-center gap-2.5">
+                    <div className="text-lg shrink-0" aria-hidden>
+                      {f.type.includes('pdf') ? '📕' : f.type.startsWith('image/') ? '🖼️' : f.type.startsWith('text/') ? '📝' : '📄'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-ink-900 truncate">{f.name}</div>
+                      <div className="text-xs text-ink-400">{(f.size / 1024).toFixed(0)} KB</div>
+                    </div>
+                    {busy && i < doneCount && (
+                      <span className="text-xs text-brand-600 font-semibold shrink-0" aria-label="Uploaded">✓</span>
+                    )}
+                    {!busy && (
+                      <button
+                        type="button"
+                        onClick={() => removeAt(i)}
+                        aria-label={`Remove ${f.name}`}
+                        className="text-ink-300 hover:text-ink-700 text-lg leading-none shrink-0 transition-colors"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Files the batch could not take — named, so the owner knows which */}
+          {rejected.length > 0 && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-1">
+              <div className="text-xs font-semibold text-amber-900">
+                {rejected.length === 1 ? 'One file was skipped' : `${rejected.length} files were skipped`}
+              </div>
+              {rejected.map(r => (
+                <div key={r.name} className="text-xs text-amber-800 leading-relaxed">{r.reason}</div>
+              ))}
             </div>
           )}
 
@@ -215,19 +353,24 @@ export default function UploadDialog({ onClose, onUploaded }) {
           )}
 
           {/* Metadata */}
-          {file && (
+          {files.length > 0 && (
             <>
-              <Field label="Title">
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  disabled={busy}
-                  placeholder={file.name}
-                />
-              </Field>
+              {/* One file gets a title field. A batch does not: each file keeps
+                  its own name, which is what distinguishes them in the library,
+                  and one title applied to seven documents would erase that. */}
+              {single && (
+                <Field label="Title">
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    disabled={busy}
+                    placeholder={files[0].name}
+                  />
+                </Field>
+              )}
 
-              <Field label="What kind of document is this?">
+              <Field label={single ? 'What kind of document is this?' : 'What kind of documents are these?'}>
                 <select
                   value={kind}
                   onChange={(e) => setKind(e.target.value)}
@@ -257,9 +400,16 @@ export default function UploadDialog({ onClose, onUploaded }) {
           {/* Progress */}
           {busy && (
             <div>
-              <div className="flex items-center justify-between text-xs text-ink-500 mb-1">
-                <span>{progressLabel(progress)}</span>
-                <span>{progress}%</span>
+              <div className="flex items-center justify-between text-xs text-ink-500 mb-1 gap-3">
+                <span className="truncate">
+                  {files.length > 1 && (
+                    <span className="font-semibold text-ink-700">
+                      {Math.min(doneCount + 1, files.length)} of {files.length} ·{' '}
+                    </span>
+                  )}
+                  {current ? `${progressLabel(progress)} ${current}` : progressLabel(progress)}
+                </span>
+                <span className="shrink-0">{progress}%</span>
               </div>
               <div className="h-2 bg-ink-100 rounded-full overflow-hidden">
                 <div
@@ -280,10 +430,12 @@ export default function UploadDialog({ onClose, onUploaded }) {
             Cancel
           </button>
           <button
-            type="button" onClick={upload} disabled={!file || busy}
+            type="button" onClick={upload} disabled={!files.length || busy}
             className="px-5 py-2.5 rounded-lg bg-gold-gradient text-white text-sm font-bold tracking-wide glow-gold-sm hover:glow-gold disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
           >
-            {busy ? 'Uploading…' : 'Upload →'}
+            {busy
+              ? 'Uploading…'
+              : files.length > 1 ? `Upload ${files.length} files →` : 'Upload →'}
           </button>
         </div>
       </div>
