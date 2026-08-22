@@ -137,7 +137,7 @@ export default function MobileNav() {
       </header>
 
       {/* ── Bottom tab bar ─────────────────────────────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-ink-900 border-t border-ink-800 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#EDF1F1] border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {TABS.map(tab => {
           const isActive = location.pathname === tab.to || (tab.to !== '/' && location.pathname.startsWith(tab.to))
           const showDot  = tab.to === '/advisor' && hasOpener && !isActive
@@ -147,17 +147,17 @@ export default function MobileNav() {
               to={tab.to}
               className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 relative"
             >
-              <span className={`transition-colors ${isActive ? 'text-brand-400' : 'text-ink-500'}`}>
+              <span className={`transition-colors ${isActive ? 'text-brand-700' : 'text-ink-500'}`}>
                 {tab.icon}
               </span>
-              <span className={`text-[10px] font-semibold transition-colors ${isActive ? 'text-brand-300' : 'text-ink-600'}`}>
+              <span className={`text-[10px] font-semibold transition-colors ${isActive ? 'text-brand-800' : 'text-ink-600'}`}>
                 {tab.label}
               </span>
               {showDot && (
-                <span className="absolute top-2 right-1/4 w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
+                <span className="absolute top-2 right-1/4 w-2 h-2 rounded-full bg-brand-600 animate-pulse" />
               )}
               {isActive && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-400" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-600" />
               )}
             </NavLink>
           )
