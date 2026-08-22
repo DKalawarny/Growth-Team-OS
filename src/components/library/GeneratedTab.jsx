@@ -279,11 +279,10 @@ function SolomonSave({ data }) {
 function GeneratedEmpty() {
   return (
     <div className="bg-white border border-ink-100 rounded-2xl shadow-sm overflow-hidden">
-      <div className="bg-ink-900 px-6 py-4">
-        <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-          Generated documents
-        </span>
-      </div>
+      {/* ⚠️ The dark "GENERATED DOCUMENTS" bar that sat here repeated the
+          "Generated · Tool outputs" column header directly above it — two
+          labels for one section, and it made an empty column look busier than
+          a full one. Removed, same as on the uploaded side. */}
       <div className="p-10 text-center">
         <div className="text-4xl mb-3" aria-hidden>📄</div>
         <h2 className="text-lg font-bold text-ink-900 mb-1 tracking-tight">Nothing generated yet</h2>
@@ -297,7 +296,7 @@ function GeneratedEmpty() {
           Browse tools →
         </Link>
         <div className="mt-6 flex flex-wrap gap-2 justify-center">
-          {TOOLS.filter(t => t.status === 'available').map(t => (
+          {TOOLS.filter(t => t.status === 'available').slice(0, 5).map(t => (
             <Link
               key={t.id} to={t.route}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-ink-50 hover:bg-ink-100 text-ink-700 text-xs font-medium transition-colors border border-ink-100"

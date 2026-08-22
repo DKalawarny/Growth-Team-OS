@@ -191,6 +191,18 @@ export default function UploadedTab({ onCountChange }) {
         />
       )}
 
+      {/* ⚠️ BOTH OF THESE ARE GATED ON files.length > 0, AND THAT MATTERS.
+          They used to render unconditionally, above an EmptyState that carries
+          its own copy of each. On an empty library that produced FOUR upload
+          affordances on one screen — Upload and Import in this toolbar, plus
+          Upload from your computer and Import from Google Drive or OneDrive in
+          the empty state — and the "what should I upload?" panel twice over,
+          once collapsed here and once expanded below.
+
+          An empty state exists to give someone exactly one obvious next move.
+          Surrounding it with duplicates of itself is the opposite. */}
+      {files.length > 0 && (
+      <>
       {/* Upload guide — collapsed by default once files exist */}
       <UploadSuggestionsPanel defaultOpen={false} onManualEntry={() => setShowManualFinancials(true)} />
 
@@ -235,6 +247,8 @@ export default function UploadedTab({ onCountChange }) {
           </button>
         </div>
       </div>
+      </>
+      )}
 
       {/* File list — single card with dividers */}
       {files.length === 0 ? (
@@ -888,44 +902,47 @@ function FilterChip({ label, count, active, onClick }) {
 function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
   return (
     <div className="space-y-5">
-      <div className="bg-white border border-ink-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="bg-ink-900 px-6 py-4 relative overflow-hidden">
-          <div
-            className="absolute -top-8 -right-8 w-40 h-40 rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)' }}
-          />
-          <div className="relative">
-            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-              Knowledge library
-            </span>
-          </div>
-        </div>
-        <div className="p-8 text-center">
-          <div className="text-4xl mb-3" aria-hidden>📚</div>
-          <h2 className="text-xl font-bold text-ink-900 mb-2 tracking-tight">
-            Teach Solomon about your business
-          </h2>
-          <p className="text-sm text-ink-500 max-w-lg mx-auto mb-6 leading-relaxed">
-            Upload your documents and Solomon reads them all together to build a live intelligence picture of your business.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              type="button" onClick={onUpload}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-gold-gradient text-white text-sm font-bold tracking-wide glow-gold-sm hover:glow-gold transition-all duration-200"
-            >
-              <span aria-hidden>＋</span> Upload from your computer
-            </button>
-            <button
-              type="button" onClick={onCloudImport}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-ink-200 bg-white hover:border-brand-300 hover:bg-brand-50/20 text-sm text-ink-600 font-medium transition-colors"
-            >
-              <span aria-hidden>☁️</span> Import from Google Drive or OneDrive
-            </button>
-          </div>
-          <p className="text-xs text-ink-400 mt-3">
-            PDF, Word, TXT, Markdown · 15 MB max · only you and your team can see these
-          </p>
-        </div>
+      {/* ⭐ ONE primary action, one quiet alternative.
+          This card used to carry a dark "KNOWLEDGE LIBRARY" bar above it,
+          which repeated the "UPLOADED · Your knowledge files" header already
+          sitting directly above — two labels, one section, no new information.
+          It is gone, and the card is now a drop target rather than a poster
+          with buttons on it: dropping files is what people try first. */}
+      <div
+        onDragOver={e => { e.preventDefault(); e.currentTarget.dataset.over = '1' }}
+        onDragLeave={e => { delete e.currentTarget.dataset.over }}
+        onDrop={e => { e.preventDefault(); delete e.currentTarget.dataset.over; onUpload() }}
+        className="bg-white border-2 border-dashed border-ink-200 rounded-2xl p-10 text-center transition-colors data-[over]:border-brand-400 data-[over]:bg-brand-50/30"
+      >
+        <div className="text-4xl mb-3" aria-hidden>📚</div>
+        <h2 className="text-xl font-bold text-ink-900 mb-2 tracking-tight">
+          Teach Solomon about your business
+        </h2>
+        <p className="text-sm text-ink-500 max-w-md mx-auto mb-6 leading-relaxed">
+          Procedures, price lists, financials, contracts. He reads them together
+          as one picture rather than file by file, so even partial documents help.
+        </p>
+
+        <button
+          type="button" onClick={onUpload}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gold-gradient text-white text-sm font-bold tracking-wide glow-gold-sm hover:glow-gold transition-all duration-200"
+        >
+          <span aria-hidden>＋</span> Choose files
+        </button>
+
+        <p className="text-xs text-ink-400 mt-4">
+          or drop them here · or{' '}
+          <button
+            type="button" onClick={onCloudImport}
+            className="text-brand-700 font-semibold underline underline-offset-2 hover:text-brand-800"
+          >
+            import from Google Drive or OneDrive
+          </button>
+        </p>
+
+        <p className="text-[11px] text-ink-300 mt-5">
+          PDF, Word, TXT, Markdown · 15 MB max · only you and your team can see these
+        </p>
       </div>
 
       <UploadSuggestionsPanel defaultOpen={true} onManualEntry={onManualEntry} />
