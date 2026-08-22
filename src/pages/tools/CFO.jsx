@@ -648,7 +648,7 @@ const CFO_STEPS = [
   },
   {
     label: 'Benchmarking your numbers',
-    sub:   'Comparing against healthy home-service benchmarks',
+    sub:   'Comparing against healthy benchmarks for a business your size',
     delay: 10000,
   },
   {
@@ -741,7 +741,7 @@ function CFOLoadingView({ periodLabel }) {
 
       {/* Footer note */}
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Every number is benchmarked against what healthy home-service businesses actually look like.
+        Every number is benchmarked against what a healthy business your size actually looks like.
       </p>
     </div>
   )

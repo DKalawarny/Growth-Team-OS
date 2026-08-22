@@ -281,10 +281,10 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
             🎯 Hiring Planner
           </div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">
-            Hire the right person for your trade business
+            Hire the right person
           </h1>
           <p className="text-xs text-ink-500 mt-0.5">
-            Field tech, dispatcher, service manager — a scorecard built for home-service businesses.
+            Whether to hire at all, what the role really is, and what to look for in the person.
           </p>
         </div>
       </div>

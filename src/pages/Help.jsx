@@ -130,7 +130,7 @@ const TOOL_GUIDES = [
     steps: [
       'Upload (or list) every licence, certificate, WCB registration, insurance policy, and contract you\'re responsible for.',
       'GrowthOS reminds you 60 / 30 / 7 days before each expires.',
-      'Generates a safety meeting cadence and toolbox talk topics specific to your trade.',
+      'Generates a safety meeting cadence and talk topics specific to your work.',
       'If you operate in multiple provinces/states, it tracks per-jurisdiction.',
     ],
   },
