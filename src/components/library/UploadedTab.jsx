@@ -941,7 +941,7 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
         </p>
 
         <p className="text-[11px] text-ink-300 mt-5">
-          PDF, Word, TXT, Markdown · 15 MB max · only you and your team can see these
+          PDF, Word, Excel, CSV, text or Markdown · 15 MB max · only you and your team can see these
         </p>
       </div>
 

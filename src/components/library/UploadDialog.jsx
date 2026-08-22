@@ -170,7 +170,7 @@ export default function UploadDialog({ onClose, onUploaded }) {
                   ref={inputRef}
                   type="file"
                   className="hidden"
-                  accept=".pdf,.txt,.md,.markdown,.csv,.xlsx,.xls,application/pdf,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                  accept=".pdf,.docx,.txt,.md,.markdown,.csv,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                   onChange={(e) => pickFile(e.target.files?.[0])}
                 />
               </div>
