@@ -21,10 +21,10 @@ export default function Documents() {
     <div className="flex flex-col h-screen overflow-hidden">
 
       {/* ── Slim dark header ─────────────────────────────────────────────── */}
-      <div className="bg-ink-900 border-b border-ink-800 flex-shrink-0">
+      <div className="bg-white border-b border-ink-100 flex-shrink-0">
         <div className="px-8 py-4 flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-white leading-tight">Library</h1>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Library</h1>
             <p className="text-xs text-ink-500 mt-0.5">
               Your generated outputs and uploaded knowledge — always side by side.
             </p>

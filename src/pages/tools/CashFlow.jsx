@@ -293,11 +293,11 @@ export default function CashFlow() {
   // ── Form view — smart or manual ───────────────────────────────────────────
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">Cash Flow</div>
-          <h1 className="text-xl font-bold text-white leading-tight">13-week cash runway</h1>
-          <p className="text-xs text-ink-400 mt-0.5">See week-by-week when cash gets tight — and what to do about it.</p>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Cash Flow</div>
+          <h1 className="text-xl font-bold text-ink-900 leading-tight">13-week cash runway</h1>
+          <p className="text-xs text-ink-500 mt-0.5">See week-by-week when cash gets tight — and what to do about it.</p>
         </div>
       </div>
       <PageShell>
@@ -430,11 +430,11 @@ function ResultView({ result, saving, error, capError, messages, refining, conte
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">Cash Flow · 13-week projection</div>
-            <h1 className="text-xl font-bold text-white leading-tight">Your cash runway</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Cash Flow · 13-week projection</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Your cash runway</h1>
             {sourceLabel && <p className="text-xs text-green-400 mt-0.5">{sourceLabel}</p>}
           </div>
         </div>

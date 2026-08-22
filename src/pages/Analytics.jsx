@@ -120,9 +120,9 @@ export default function Analytics() {
   return (
     <div className="min-h-screen bg-ink-50">
       {/* Header */}
-      <div className="bg-ink-900 border-b border-ink-800 px-8 py-6">
+      <div className="bg-white border-b border-ink-100 px-8 py-6">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-bold text-white">Analytics</h1>
+          <h1 className="text-2xl font-bold text-ink-900">Analytics</h1>
           <p className="text-sm text-ink-400 mt-1">
             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · how you're using GrowthOS
           </p>
@@ -347,7 +347,7 @@ function ActivityGrid({ data }) {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800 px-8 py-6">
+      <div className="bg-white border-b border-ink-100 px-8 py-6">
         <div className="max-w-5xl mx-auto space-y-2">
           <div className="h-6 w-32 bg-ink-800 rounded animate-pulse" />
           <div className="h-4 w-48 bg-ink-800 rounded animate-pulse" />

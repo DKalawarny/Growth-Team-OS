@@ -275,15 +275,15 @@ export default function Hiring() {
 function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
             🎯 Hiring Planner
           </div>
-          <h1 className="text-xl font-bold text-white leading-tight">
+          <h1 className="text-xl font-bold text-ink-900 leading-tight">
             Hire the right person for your trade business
           </h1>
-          <p className="text-xs text-ink-400 mt-0.5">
+          <p className="text-xs text-ink-500 mt-0.5">
             Field tech, dispatcher, service manager — a scorecard built for home-service businesses.
           </p>
         </div>
@@ -468,11 +468,11 @@ function LoadingView({ role }) {
 function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">🎯 Hiring Planner · Scorecard</div>
-            <h1 className="text-xl font-bold text-white leading-tight">{form.role_title}</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">🎯 Hiring Planner · Scorecard</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.role_title}</h1>
           </div>
         </div>
       </div>

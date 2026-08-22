@@ -517,9 +517,9 @@ export default function Board() {
   if (setupNeeded) {
     return (
       <div className="min-h-screen bg-ink-50">
-        <div className="bg-ink-900 border-b border-ink-800 px-4 sm:px-8 py-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">Work Board</div>
-          <h1 className="text-xl font-bold text-white">Work Board</h1>
+        <div className="bg-white border-b border-ink-100 px-4 sm:px-8 py-6">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Work Board</div>
+          <h1 className="text-xl font-bold text-ink-900">Work Board</h1>
         </div>
         <div className="max-w-2xl mx-auto px-4 sm:px-8 py-12">
           <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-8 text-center">
@@ -596,11 +596,11 @@ alter table public.work_orders
     <div className="min-h-screen bg-ink-50">
 
       {/* Dark header */}
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">Work Board</div>
-            <h1 className="text-xl font-bold text-white leading-tight">Work Board</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Work Board</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Work Board</h1>
           </div>
           {/* Action cluster — collapses gracefully on mobile:
               - Field flags + Manage team hide their text labels (icon-only)

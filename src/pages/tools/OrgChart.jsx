@@ -243,15 +243,15 @@ export default function OrgChart() {
 function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
             🧩 Org Chart
           </div>
-          <h1 className="text-xl font-bold text-white leading-tight">
+          <h1 className="text-xl font-bold text-ink-900 leading-tight">
             Design the team you need next year, not the team you have today
           </h1>
-          <p className="text-xs text-ink-400 mt-0.5">
+          <p className="text-xs text-ink-500 mt-0.5">
             Hiring sequence, owner transition, and the seats that matter most.
           </p>
         </div>
@@ -380,11 +380,11 @@ function LoadingView({ horizon }) {
 function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">🧩 Org Chart</div>
-            <h1 className="text-xl font-bold text-white leading-tight">{form.horizon || '24-month'} target org</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">🧩 Org Chart</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.horizon || '24-month'} target org</h1>
           </div>
         </div>
       </div>

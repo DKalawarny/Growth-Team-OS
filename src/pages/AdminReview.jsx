@@ -228,13 +228,13 @@ export default function AdminReview() {
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <header className="bg-ink-900 border-b border-ink-800">
+      <header className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
               Internal — Admin only
             </div>
-            <h1 className="text-xl font-bold text-white leading-tight">Solomon chat review</h1>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Solomon chat review</h1>
             <p className="text-[11px] text-ink-400 mt-1 max-w-md leading-snug">
               Read the last {days} days of advisor conversations. Flag any answer that drifted out of scope, slipped tone, or made something up — then tighten the prompts.
             </p>
@@ -323,13 +323,13 @@ function CompanyView({ group, profiles, flags, onToggleFlag, onUpdateNote, onBac
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <header className="bg-ink-900 border-b border-ink-800 sticky top-0 z-10">
+      <header className="bg-white border-b border-ink-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <button onClick={onBack} className="text-[11px] font-bold text-brand-400 hover:underline mb-1">
+            <button onClick={onBack} className="text-[11px] font-bold text-brand-700 hover:underline mb-1">
               ← All companies
             </button>
-            <h1 className="text-base font-bold text-white truncate">{group.companyName}</h1>
+            <h1 className="text-base font-bold text-ink-900 truncate">{group.companyName}</h1>
             <p className="text-[10px] text-ink-400 mt-0.5">
               {group.convoCount} conversation{group.convoCount === 1 ? '' : 's'} · {group.messageCount} messages
             </p>

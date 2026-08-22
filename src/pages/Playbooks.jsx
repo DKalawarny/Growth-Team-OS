@@ -543,12 +543,12 @@ export default function Playbooks() {
 
 function PageHeader() {
   return (
-    <div className="bg-ink-900 border-b border-ink-800 px-8 py-6">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">
+    <div className="bg-white border-b border-ink-100 px-8 py-6">
+      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">
         Process Library
       </div>
-      <h1 className="text-xl font-bold text-white">Playbooks</h1>
-      <p className="text-xs text-ink-300 mt-1.5 max-w-2xl leading-relaxed">
+      <h1 className="text-xl font-bold text-ink-900">Playbooks</h1>
+      <p className="text-xs text-ink-500 mt-1.5 max-w-2xl leading-relaxed">
         Capture the steps you'd otherwise be explaining over the phone. Build
         a playbook once per repeating job and your crew gets a checklist on
         every work order — no more "what's next?" calls.

@@ -252,12 +252,12 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
     <div className="min-h-screen bg-ink-50">
 
       {/* ── Header ── */}
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-3xl mx-auto px-8 py-8">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-brand-400">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-brand-700">
             💰 Offer Builder
           </div>
-          <h1 className="text-2xl font-bold text-white leading-tight mb-2">
+          <h1 className="text-2xl font-bold text-ink-900 leading-tight mb-2">
             Turn what you do into a package that's easy to sell — and easy to price.
           </h1>
           <p className="text-sm text-ink-400 leading-relaxed">
@@ -276,7 +276,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
               <div key={i} className="flex items-start gap-2.5 bg-white/6 border border-white/10 rounded-xl px-4 py-3 min-w-0">
                 <span className="text-lg flex-shrink-0">{item.icon}</span>
                 <div>
-                  <p className="text-xs font-bold text-white">{item.label}</p>
+                  <p className="text-xs font-bold text-ink-900">{item.label}</p>
                   <p className="text-xs text-ink-500 mt-0.5">{item.sub}</p>
                 </div>
               </div>
@@ -487,12 +487,12 @@ function LoadingView({ name }) {
 function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">💰 Offer Builder</div>
-            <h1 className="text-xl font-bold text-white leading-tight">{form.offer_name || 'Your offer'}</h1>
-            <p className="text-xs text-ink-400 mt-0.5">Scope · Pricing · Sales responses — ready to use or refine below.</p>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">💰 Offer Builder</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.offer_name || 'Your offer'}</h1>
+            <p className="text-xs text-ink-500 mt-0.5">Scope · Pricing · Sales responses — ready to use or refine below.</p>
           </div>
         </div>
       </div>

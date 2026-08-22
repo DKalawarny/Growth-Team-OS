@@ -233,14 +233,14 @@ Return JSON only:
       <div className="min-h-screen bg-ink-50">
 
         {/* Page header */}
-        <div className="bg-ink-900 border-b border-ink-800">
+        <div className="bg-white border-b border-ink-100">
           <div className="max-w-3xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">
                 Team Newsletter
               </div>
-              <h1 className="text-lg font-bold text-white leading-tight">{period}</h1>
-              <p className="text-xs text-ink-400 mt-0.5">Click any text to edit before copying.</p>
+              <h1 className="text-lg font-bold text-ink-900 leading-tight">{period}</h1>
+              <p className="text-xs text-ink-500 mt-0.5">Click any text to edit before copying.</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
               <button
@@ -368,13 +368,13 @@ Return JSON only:
     <div className="min-h-screen bg-ink-50">
 
       {/* Page header */}
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-2xl mx-auto px-8 py-5">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400 mb-0.5">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">
             📰 Team Newsletter
           </div>
-          <h1 className="text-xl font-bold text-white leading-tight">Monthly team update</h1>
-          <p className="text-xs text-ink-400 mt-0.5">
+          <h1 className="text-xl font-bold text-ink-900 leading-tight">Monthly team update</h1>
+          <p className="text-xs text-ink-500 mt-0.5">
             What we built, what we're working on, what's next — no financials.
           </p>
         </div>

@@ -449,7 +449,7 @@ export default function Trajectories() {
     <div className="min-h-screen bg-ink-50">
 
       {/* ── Dark header ──────────────────────────────────────────────────────── */}
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-6xl mx-auto px-8 py-6">
           <div
             className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1"
@@ -457,7 +457,7 @@ export default function Trajectories() {
           >
             Growth Trajectories
           </div>
-          <h1 className="text-2xl font-bold text-white leading-tight">
+          <h1 className="text-2xl font-bold text-ink-900 leading-tight">
             Where your business is headed.
           </h1>
           <p className="text-sm text-ink-500 mt-1 max-w-2xl">

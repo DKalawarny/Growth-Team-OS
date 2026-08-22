@@ -372,13 +372,13 @@ export default function CFO() {
     <div className="min-h-screen bg-ink-50">
 
       {/* ── Dark page header ──────────────────────────────────────────────── */}
-      <div className="bg-ink-900 border-b border-ink-800">
+      <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-6 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-400">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
               CFO Dashboard
             </div>
-            <h1 className="text-xl font-bold text-white leading-tight">
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">
               Your financial read
             </h1>
           </div>

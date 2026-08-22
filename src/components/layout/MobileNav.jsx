@@ -116,16 +116,16 @@ export default function MobileNav() {
   return (
     <>
       {/* ── Top bar ────────────────────────────────────────────────────────── */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-ink-900 border-b border-ink-800 flex-shrink-0 z-30">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#EDF1F1] border-b border-ink-100 flex-shrink-0 z-30">
         <div className="flex items-center gap-2">
           <span className="text-lg font-black tracking-tight">
-            <span className="text-white">Growth</span>
+            <span className="text-ink-900">Growth</span>
             <span className="text-brand-400">OS</span>
           </span>
         </div>
         <button
           onClick={() => setOpen(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-lg text-ink-400 hover:text-white hover:bg-white/8 transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-ink-500 hover:text-ink-900 hover:bg-white transition-colors"
           aria-label="Open menu"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-5 h-5">

@@ -87,17 +87,31 @@ export function useAuth() {
         .eq('id', profileRow.company_id)
         .maybeSingle(),
       getAdvisorMemberships(userId).catch(() => []),
+      // ⚠️ A PLAIN SELECT, NOT head:true.
+      //
+      // This was `.select('company_id', { count: 'exact', head: true })`, which
+      // issues an HTTP HEAD. Against this project HEAD returns 503, and
+      // supabase-js surfaces that as { count: null, error: null } — no error to
+      // catch. So the fail-open branch never fired, (null ?? 0) > 0 evaluated
+      // false, and EVERY signed-in user was redirected into onboarding.
+      // Caught by loading the app, not by reading the code: it builds, it runs,
+      // and it silently means "nobody has onboarded".
       supabase
         .from('business_profiles')
-        .select('company_id', { count: 'exact', head: true })
-        .eq('company_id', profileRow.company_id),
+        .select('company_id')
+        .eq('company_id', profileRow.company_id)
+        .limit(1),
     ])
 
     setCompany(companyRes.data ?? null)
     setAdvisorClients(memberships)
-    // Fail OPEN: on a read error assume onboarded. Wrongly forcing someone who
-    // has finished back through onboarding is far worse than missing a prompt.
-    setOnboarded(bpRes.error ? true : (bpRes.count ?? 0) > 0)
+    // Fail OPEN on anything that is not a clear negative. Wrongly forcing
+    // someone who HAS finished back through setup is far worse than missing a
+    // prompt — and "not a clear negative" now covers a null/absent payload,
+    // which is exactly the case the count version got wrong.
+    setOnboarded(
+      bpRes.error || !Array.isArray(bpRes.data) ? true : bpRes.data.length > 0,
+    )
   }
 
   async function refresh() {
