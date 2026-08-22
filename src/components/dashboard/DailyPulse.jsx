@@ -73,15 +73,18 @@ export default function DashboardChat({ userId, companyId, firstName }) {
     setGeneratingOpen(true)
     try {
       const context = await buildAdvisorContext(companyId, { userId })
-      const systemPrompt = context
+      // ⚠️ Same bug as the reply call below, which I fixed and then missed this
+      // one: the migration rewrote the call site to promptKey/stableContext but
+      // left the local named systemPrompt, so both identifiers were undefined.
+      const openerContext = context
         ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
         : ''
 
       const timeOfDay = new Date().toLocaleDateString('en-US', { weekday: 'long', hour: 'numeric', hour12: true })
       const opener = await callClaude({
         model: HAIKU,
-        promptKey,
-        stableContext,
+        promptKey:     'MORNING_OPENER_PROMPT',
+        stableContext: openerContext,
         messages: [{ role: 'user', content: `Open the check-in. Time context: ${greeting()} — ${timeOfDay}.` }],
         maxTokens: 120,
       })

@@ -352,13 +352,20 @@ export default function Onboarding() {
         if (user?.id) {
           const ctx = await buildAdvisorContext(companyId, { userId: user.id })
           const ownerFirst = form.full_name?.split(' ')[0] ?? 'there'
-          const systemPrompt = ctx
+          // ⚠️ These were bare `promptKey, stableContext,` referencing variables
+          // that do not exist in this scope — my scripted prompt migration
+          // rewrote the call site but left the local named systemPrompt and
+          // never defined the two it started passing. The call failed, no
+          // opener was written, and a freshly onboarded owner landed in an old
+          // conversation with nothing acknowledging the setup he had just done.
+          // It builds and it runs; only finishing onboarding reveals it.
+          const openerContext = ctx
             ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}`
             : ''
           const opener = await callClaude({
             model: HAIKU,
-            promptKey,
-            stableContext,
+            promptKey:     'FIRST_SESSION_OPENER_PROMPT',
+            stableContext: openerContext,
             messages: [{ role: 'user', content: `Send your first ever message to ${ownerFirst}. They just finished setting up.` }],
             maxTokens: 350,
           })
