@@ -36,8 +36,9 @@
  *
  *   toolId:        string  — for usage tracking ('advisor', 'gbp-optimizer', ...)
  *   kind:          'generate' | 'refine'   — for usage tracking
- *   skipCaps:      boolean   — set true ONLY for non-billable internal calls
- *                              (Solomon greetings, no-op refinements). Off by default.
+ *   (skipCaps is GONE — it was client-settable and disabled the cap check.
+ *    Exemption from the per-tool COUNT is now decided server-side from toolId
+ *    via TOOL_CAP_EXEMPT. Nothing is ever exempt from the spend cap.)
  *
  * Required env vars (set in Supabase → Edge Functions → Secrets):
  *   ANTHROPIC_API_KEY        sk-ant-...   — production Anthropic key
@@ -63,6 +64,35 @@ function computeClaudeCost(tokensIn: number, tokensOut: number): number {
   const outCost = (tokensOut || 0) / 1_000_000 * CLAUDE_OUTPUT_PER_M
   return Number((inCost + outCost).toFixed(5))
 }
+
+// ⚠️ ABSOLUTE DAILY CEILING. Nothing skips this — not an internal call, not a
+// non-metered tool, not a read error on the usage table. It exists because
+// every other limit here has an escape hatch of some kind, and a runaway loop
+// at 3am should cost tens of dollars rather than thousands.
+const HARD_DAILY_USD = 25.00
+
+// Largest max_tokens any caller may request. The client used to be able to ask
+// for anything; a single request could be made arbitrarily expensive.
+const MAX_TOKENS_CEILING = 8192
+
+// ⭐ Tools exempt from the per-TOOL count cap (10 runs/month). They are NOT
+// exempt from the spend cap — nothing is.
+//
+// This replaces a `skipCaps` boolean that was read straight out of the request
+// body. The comment above the old check said "we re-check here because the
+// browser is untrusted code", and then trusted a flag from the browser to
+// disable the check. Any authenticated user could pass skipCaps:true and spend
+// without limit on our Anthropic key.
+//
+// The exemption now lives on the server and is keyed on what the call IS.
+// Conversation and internal bookkeeping should not burn a tool run; they must
+// still respect the money.
+const TOOL_CAP_EXEMPT = new Set([
+  'advisor',          // Solomon conversation — metered by spend, not by count
+  'morning-opener',   // generated greeting
+  'solomon-memory',   // memory extraction, fires after an exchange
+  'untagged',         // low-level calls with no declared tool
+])
 
 const DEFAULT_SPEND_CAP_USD = 10.00
 const DEFAULT_TOOL_CAP      = 10
@@ -121,7 +151,16 @@ async function assertCapsServerSide(
   const spendCap = company.monthly_spend_cap ?? DEFAULT_SPEND_CAP_USD
   const toolCap  = company.monthly_tool_cap  ?? DEFAULT_TOOL_CAP
 
-  // Sum spend. Fail open on read errors — same policy as browser.
+  // ⚠️ FAIL CLOSED. This used to proceed when the usage read errored, with the
+  // comment "fail open on read errors — same policy as browser". Failing open
+  // is right in the browser, where the server still backstops it, and wrong
+  // here, where nothing does: a transient database error became uncapped spend.
+  if (spendRes.error) {
+    const err = new Error('Could not verify usage against your plan — try again in a moment.')
+    ;(err as Error & { code?: string }).code = 'cap_check_failed'
+    throw err
+  }
+
   const spendRows = (spendRes.data ?? []) as Array<{ cost_usd: number | null }>
   const spent     = spendRows.reduce((s, r) => s + Number(r.cost_usd || 0), 0)
   if (spent >= spendCap) {
@@ -130,10 +169,51 @@ async function assertCapsServerSide(
     throw err
   }
 
-  const used = toolRes.count ?? 0
-  if (used >= toolCap) {
-    const err = new Error(`Monthly cap reached for ${toolId}: ${used}/${toolCap}`)
-    ;(err as Error & { code?: string }).code = 'cap_exceeded'
+  // Per-tool count cap. Conversation and internal calls are exempt from the
+  // COUNT but were already held to the spend cap above.
+  if (!TOOL_CAP_EXEMPT.has(toolId)) {
+    const used = toolRes.count ?? 0
+    if (used >= toolCap) {
+      const err = new Error(`Monthly cap reached for ${toolId}: ${used}/${toolCap}`)
+      ;(err as Error & { code?: string }).code = 'cap_exceeded'
+      throw err
+    }
+  }
+}
+
+/**
+ * The backstop. Independent of plan, of tool, and of every exemption above.
+ *
+ * Runs on EVERY request with no way to opt out, because each of the other
+ * limits has some legitimate escape and a bug or an abusive loop only needs
+ * one. Deliberately generous — a real business hammering the product all day
+ * will not reach it; a script will, within minutes.
+ */
+async function assertDailyCeiling(
+  admin: ReturnType<typeof serviceClient>,
+  companyId: string,
+): Promise<void> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const { data, error } = await admin
+    .from('usage_events')
+    .select('cost_usd')
+    .eq('company_id', companyId)
+    .gte('created_at', since)
+
+  // Fail closed here too. A backstop that opens under load is not a backstop.
+  if (error) {
+    const err = new Error('Could not verify recent usage — try again in a moment.')
+    ;(err as Error & { code?: string }).code = 'cap_check_failed'
+    throw err
+  }
+
+  const rows  = (data ?? []) as Array<{ cost_usd: number | null }>
+  const spent = rows.reduce((s, r) => s + Number(r.cost_usd || 0), 0)
+  if (spent >= HARD_DAILY_USD) {
+    const err = new Error(
+      `Daily limit reached ($${spent.toFixed(2)} in the last 24 hours). This resets automatically — get in touch if you need it raised.`,
+    )
+    ;(err as Error & { code?: string }).code = 'daily_limit_exceeded'
     throw err
   }
 }
@@ -280,7 +360,9 @@ Deno.serve(async (req) => {
       stream?:       boolean
       toolId?:       string
       kind?:         string
-      skipCaps?:     boolean
+      // ⚠️ skipCaps was here and is GONE. It let the caller disable the cap
+      // check from the request body. If you are tempted to re-add a client
+      // flag that turns off billing limits: that is the vulnerability.
     }
 
     if (!ANTHROPIC_KEY) {
@@ -290,24 +372,26 @@ Deno.serve(async (req) => {
     const admin    = serviceClient()
     const toolId   = body.toolId ?? 'untagged'
     const kind     = body.kind   ?? 'generate'
-    const maxTok   = body.maxTokens ?? 1024
+    // Clamped. An unbounded max_tokens makes any single request arbitrarily
+    // expensive, which defeats a spend cap that can only measure after the fact.
+    const maxTok   = Math.min(Math.max(1, body.maxTokens ?? 1024), MAX_TOKENS_CEILING)
     const model    = body.model     ?? 'claude-sonnet-4-6'
 
-    // Authoritative cap check. The browser does its own optimistic check
-    // for fast UX, but we re-check here because the browser is
-    // untrusted code. skipCaps is for internal non-billable calls (e.g.
-    // a Solomon greeting that the product decided shouldn't decrement
-    // the cap) — caller opts in deliberately.
-    if (!body.skipCaps) {
-      try {
-        await assertCapsServerSide(admin, user.companyId, toolId)
-      } catch (err) {
-        const code = (err as Error & { code?: string }).code
-        return json(
-          { error: (err as Error).message, code },
-          429,
-        )
-      }
+    // Authoritative cap check. The browser does its own optimistic check for
+    // fast UX; this one is the real thing, and it runs on EVERY request.
+    //
+    // There is no longer any caller-supplied way around it. Whether a call is
+    // exempt from the per-tool COUNT is decided here, from toolId, against
+    // TOOL_CAP_EXEMPT. Nothing is exempt from the money.
+    try {
+      await assertDailyCeiling(admin, user.companyId)
+      await assertCapsServerSide(admin, user.companyId, toolId)
+    } catch (err) {
+      const code = (err as Error & { code?: string }).code
+      return json(
+        { error: (err as Error).message, code },
+        429,
+      )
     }
 
     const system = buildSystem(body)
@@ -360,16 +444,24 @@ Deno.serve(async (req) => {
       // background work via waitUntil-style patterns, but a simple
       // fire-and-forget is fine here since the function lifecycle
       // hasn't returned the response yet.
-      if (!body.skipCaps) {
-        await recordUsage(admin, {
-          companyId: user.companyId,
-          userId:    user.userId,
-          toolId,
-          kind,
-          tokensIn,
-          tokensOut,
-        })
-      }
+      // ⚠️ ALWAYS RECORD. This was gated on !body.skipCaps, and streamClaude —
+      // the Solomon conversation — sends skipCaps:true. So the product's single
+      // largest cost driver wrote no usage_event at all, which meant the spend
+      // cap summed zero for it and could never fire.
+      //
+      // The bypass and the blindness compounded: an attacker did not even need
+      // the flag to spend freely, because ordinary conversation was already
+      // uncounted. Recording is now unconditional; what a call is EXEMPT from
+      // is decided by TOOL_CAP_EXEMPT, and that only ever waives the per-tool
+      // count, never the money.
+      await recordUsage(admin, {
+        companyId: user.companyId,
+        userId:    user.userId,
+        toolId,
+        kind,
+        tokensIn,
+        tokensOut,
+      })
 
       return json({
         text,
@@ -400,16 +492,16 @@ Deno.serve(async (req) => {
     // immediately. The observer runs in parallel; when it finishes
     // (i.e. when the upstream closes), it writes usage_events.
     const observerDone = observeUpstream(observe, observedUsage).then(async () => {
-      if (!body.skipCaps) {
-        await recordUsage(admin, {
-          companyId: user.companyId,
-          userId:    user.userId,
-          toolId,
-          kind,
-          tokensIn:  observedUsage.tokensIn,
-          tokensOut: observedUsage.tokensOut,
-        })
-      }
+      // Unconditional — see the note on the non-streaming path. This is the
+      // branch the Advisor actually uses, so it is the one that was silent.
+      await recordUsage(admin, {
+        companyId: user.companyId,
+        userId:    user.userId,
+        toolId,
+        kind,
+        tokensIn:  observedUsage.tokensIn,
+        tokensOut: observedUsage.tokensOut,
+      })
     }).catch((err) => {
       console.error('[claude] observer failed:', err)
     })

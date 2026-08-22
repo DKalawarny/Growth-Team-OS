@@ -154,11 +154,10 @@ function claudeFunctionUrl() {
  * @param {number}  [opts.maxTokens=1024]
  * @param {boolean} [opts.json=false]
  * @param {string}  [opts.model=SONNET]
- * @param {boolean} [opts.skipCaps=true]   default true here because the call
- *                                         is "low-level" — caller hasn't
- *                                         declared a toolId. The Edge
- *                                         Function won't decrement caps
- *                                         when skipCaps=true.
+ * ⚠️ There is no skipCaps option any more. It was sent in the request body and
+ * the edge function used it to disable its own cap check — meaning any signed-in
+ * user could spend without limit. Exemption from the per-tool count is now
+ * decided server-side from toolId; nothing is exempt from the spend cap.
  */
 export async function callClaude({
   systemPrompt,
@@ -167,7 +166,6 @@ export async function callClaude({
   maxTokens = 1024,
   json      = false,
   model     = SONNET,
-  skipCaps  = true,
 }) {
   const sys     = systemVolatile
     ? buildSplitSystemPayload(systemPrompt, systemVolatile)
@@ -184,7 +182,6 @@ export async function callClaude({
       model,
       json,
       stream: false,
-      skipCaps,
     }),
   })
 
@@ -225,11 +222,20 @@ export async function streamClaude({
   model     = SONNET,
   onChunk,
 }) {
-  // Streaming calls used to be considered "low-level" (no caps, no usage
-  // tracking). The new Edge Function makes the call go through the same
-  // gateway, so skipCaps=true preserves the old semantics — Advisor
-  // streams use streamToolCall instead when they want caps + tracking.
+  // Advisor conversation. Usage IS recorded and the spend cap DOES apply — it
+  // just does not burn one of the ten monthly runs a tool gets, because a
+  // conversation is not a tool run. That exemption lives server-side in
+  // TOOL_CAP_EXEMPT, keyed on toolId, where the browser cannot reach it.
+  //
+  // This path used to be treated as "low-level": no cap check and, worse, no
+  // usage recorded at all — so the product's biggest cost driver was invisible
+  // to its own spend cap.
   return streamClaudeRaw({
+    // Tagged so conversation spend is attributable in usage_events rather than
+    // landing in 'untagged'. Both are exempt from the per-tool COUNT; only this
+    // one tells you afterwards where the money went.
+    toolId: 'advisor',
+    kind:   'generate',
     systemPrompt,
     systemVolatile,
     // Streaming is the conversational path, so it gets the long entry.
@@ -238,7 +244,6 @@ export async function streamClaude({
     maxTokens,
     model,
     onChunk,
-    skipCaps: true,
   })
 }
 
@@ -313,7 +318,6 @@ export async function runToolCall({
       stream:    false,
       toolId,
       kind,
-      skipCaps:  false,
     }),
   })
 
@@ -392,7 +396,6 @@ export async function streamToolCall({
     toolId,
     kind,
     json,
-    skipCaps: false,
   })
 
   return json ? unwrapJson(fullText) : fullText
@@ -420,7 +423,6 @@ async function streamClaudeRaw({
   toolId,
   kind,
   json    = false,
-  skipCaps,
 }) {
   const sys     = systemVolatile
     ? buildSplitSystemPayload(systemPrompt, systemVolatile, cacheTtl)
@@ -439,7 +441,6 @@ async function streamClaudeRaw({
       toolId,
       kind,
       json,
-      skipCaps,
     }),
   })
 
