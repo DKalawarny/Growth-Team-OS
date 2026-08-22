@@ -24,6 +24,17 @@
  * clutter the homepage. Un-hide when we expand beyond home services.
  */
 
+// ⚠️ status 'preview' does NOT gate access — the card is still clickable and
+// opens the real tool. It only changes the badge and the CTA wording. So a
+// wrong value here is a labelling bug, not a lockout, which is exactly why it
+// went unnoticed.
+//
+// hiring-scorecard and offer-builder were 'preview' (badged "Needs ProSuite")
+// under the old plan to gate them behind a partner tier. The reposition
+// overtook that: SolomonLauncher links straight to both, and the pricing page
+// sells hiring scorecards as included. They were being marketed as included
+// and flagged as unavailable at the same time. Flipped to 'available', which
+// is what they actually are.
 export const TOOLS = [
   // ── High-frequency tools first ─────────────────────────────────────────────
   {
@@ -70,7 +81,7 @@ export const TOOLS = [
     name:        'Offer Builder',
     tagline:     'Build a scoped offer and a price that doesn\'t leave money on the table.',
     category:    'revenue',
-    status:      'preview',
+    status:      'available',
     icon:        '💰',
     requiresProSuite: true,
   },
@@ -80,7 +91,7 @@ export const TOOLS = [
     name:        'Hiring Planner',
     tagline:     'Turn "I need to hire someone" into a role scorecard you can actually interview against.',
     category:    'team',
-    status:      'preview',
+    status:      'available',
     icon:        '🎯',
     requiresProSuite: true,
   },
