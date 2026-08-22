@@ -65,11 +65,18 @@ function computeClaudeCost(tokensIn: number, tokensOut: number): number {
   return Number((inCost + outCost).toFixed(5))
 }
 
-// ⚠️ ABSOLUTE DAILY CEILING. Nothing skips this — not an internal call, not a
-// non-metered tool, not a read error on the usage table. It exists because
-// every other limit here has an escape hatch of some kind, and a runaway loop
-// at 3am should cost tens of dollars rather than thousands.
-const HARD_DAILY_USD = 25.00
+// ⚠️ DAILY BURN LIMIT — a FRACTION of the monthly cap, not a fixed figure.
+//
+// I first wrote this as a flat $25 and it was useless: the default monthly cap
+// is $10, so the monthly check always fired first and the backstop could never
+// trigger. A backstop set above the limit it is meant to sit behind is
+// decoration.
+//
+// Proportional works because it scales with whatever plan a company is on. At
+// the $10 default this is $4 a day — roughly 40-80 Solomon turns, far beyond
+// any real day's use, and minutes for a script.
+const DAILY_FRACTION   = 0.4
+const DAILY_FLOOR_USD  = 2.00   // so a very small cap still leaves room to work
 
 // Largest max_tokens any caller may request. The client used to be able to ask
 // for anything; a single request could be made arbitrarily expensive.
@@ -126,7 +133,9 @@ async function assertCapsServerSide(
 ): Promise<void> {
   const since = firstOfThisMonth().toISOString()
 
-  // Pull cap config + this month's usage in parallel.
+  // Pull cap config + this month's usage in parallel. created_at comes back so
+  // the last-24h window can be summed from the same rows — one query, both
+  // limits, rather than a second round trip on every single request.
   const [companyRes, spendRes, toolRes] = await Promise.all([
     admin
       .from('companies')
@@ -135,7 +144,7 @@ async function assertCapsServerSide(
       .maybeSingle(),
     admin
       .from('usage_events')
-      .select('cost_usd')
+      .select('cost_usd, created_at')
       .eq('company_id', companyId)
       .gte('created_at', since),
     admin
@@ -161,8 +170,24 @@ async function assertCapsServerSide(
     throw err
   }
 
-  const spendRows = (spendRes.data ?? []) as Array<{ cost_usd: number | null }>
+  const spendRows = (spendRes.data ?? []) as Array<{ cost_usd: number | null; created_at: string }>
   const spent     = spendRows.reduce((s, r) => s + Number(r.cost_usd || 0), 0)
+
+  // Daily burn, from the same rows. Checked BEFORE the monthly cap so a runaway
+  // loop is stopped within hours rather than after it has eaten the month.
+  const dayAgo    = Date.now() - 24 * 60 * 60 * 1000
+  const dailyCap  = Math.max(DAILY_FLOOR_USD, spendCap * DAILY_FRACTION)
+  const spentToday = spendRows
+    .filter(r => new Date(r.created_at).getTime() >= dayAgo)
+    .reduce((s, r) => s + Number(r.cost_usd || 0), 0)
+  if (spentToday >= dailyCap) {
+    const err = new Error(
+      `Daily limit reached ($${spentToday.toFixed(2)} of $${dailyCap.toFixed(2)} in the last 24 hours). It resets automatically — get in touch if you need it raised.`,
+    )
+    ;(err as Error & { code?: string }).code = 'daily_limit_exceeded'
+    throw err
+  }
+
   if (spent >= spendCap) {
     const err = new Error(`Monthly spend cap of $${spendCap.toFixed(2)} reached ($${spent.toFixed(2)} used)`)
     ;(err as Error & { code?: string }).code = 'spend_cap_exceeded'
@@ -181,42 +206,6 @@ async function assertCapsServerSide(
   }
 }
 
-/**
- * The backstop. Independent of plan, of tool, and of every exemption above.
- *
- * Runs on EVERY request with no way to opt out, because each of the other
- * limits has some legitimate escape and a bug or an abusive loop only needs
- * one. Deliberately generous — a real business hammering the product all day
- * will not reach it; a script will, within minutes.
- */
-async function assertDailyCeiling(
-  admin: ReturnType<typeof serviceClient>,
-  companyId: string,
-): Promise<void> {
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-  const { data, error } = await admin
-    .from('usage_events')
-    .select('cost_usd')
-    .eq('company_id', companyId)
-    .gte('created_at', since)
-
-  // Fail closed here too. A backstop that opens under load is not a backstop.
-  if (error) {
-    const err = new Error('Could not verify recent usage — try again in a moment.')
-    ;(err as Error & { code?: string }).code = 'cap_check_failed'
-    throw err
-  }
-
-  const rows  = (data ?? []) as Array<{ cost_usd: number | null }>
-  const spent = rows.reduce((s, r) => s + Number(r.cost_usd || 0), 0)
-  if (spent >= HARD_DAILY_USD) {
-    const err = new Error(
-      `Daily limit reached ($${spent.toFixed(2)} in the last 24 hours). This resets automatically — get in touch if you need it raised.`,
-    )
-    ;(err as Error & { code?: string }).code = 'daily_limit_exceeded'
-    throw err
-  }
-}
 
 // ── Usage write ───────────────────────────────────────────────────────────────
 
@@ -384,7 +373,6 @@ Deno.serve(async (req) => {
     // exempt from the per-tool COUNT is decided here, from toolId, against
     // TOOL_CAP_EXEMPT. Nothing is exempt from the money.
     try {
-      await assertDailyCeiling(admin, user.companyId)
       await assertCapsServerSide(admin, user.companyId, toolId)
     } catch (err) {
       const code = (err as Error & { code?: string }).code
