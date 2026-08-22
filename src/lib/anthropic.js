@@ -160,6 +160,8 @@ function claudeFunctionUrl() {
  * decided server-side from toolId; nothing is exempt from the spend cap.
  */
 export async function callClaude({
+  promptKey,
+  stableContext,
   systemPrompt,
   systemVolatile,
   messages,
@@ -167,9 +169,14 @@ export async function callClaude({
   json      = false,
   model     = SONNET,
 }) {
-  const sys     = systemVolatile
-    ? buildSplitSystemPayload(systemPrompt, systemVolatile)
-    : buildSystemPayload(systemPrompt)
+  // ⭐ promptKey path: the prompt text stays on the server. The caller sends a
+  // key and its own context; the edge function resolves the key and assembles
+  // the blocks. See supabase/functions/_shared/prompts.ts for why.
+  const sys = promptKey
+    ? { promptKey, stableContext, volatileContext: systemVolatile }
+    : systemVolatile
+      ? buildSplitSystemPayload(systemPrompt, systemVolatile)
+      : buildSystemPayload(systemPrompt)
   const headers = await authHeaders()
 
   const res = await fetch(claudeFunctionUrl(), {
@@ -215,6 +222,8 @@ export async function callClaude({
  * @returns {Promise<string>} full response text
  */
 export async function streamClaude({
+  promptKey,
+  stableContext,
   systemPrompt,
   systemVolatile,
   messages,
@@ -236,6 +245,8 @@ export async function streamClaude({
     // one tells you afterwards where the money went.
     toolId: 'advisor',
     kind:   'generate',
+    promptKey,
+    stableContext,
     systemPrompt,
     systemVolatile,
     // Streaming is the conversational path, so it gets the long entry.
@@ -413,6 +424,8 @@ export async function streamToolCall({
 //   data: {"type":"done","usage":{...}}
 
 async function streamClaudeRaw({
+  promptKey,
+  stableContext,
   systemPrompt,
   systemVolatile,
   cacheTtl,
@@ -424,7 +437,9 @@ async function streamClaudeRaw({
   kind,
   json    = false,
 }) {
-  const sys     = systemVolatile
+  const sys = promptKey
+    ? { promptKey, stableContext, volatileContext: systemVolatile, cacheTtl }
+    : systemVolatile
     ? buildSplitSystemPayload(systemPrompt, systemVolatile, cacheTtl)
     : buildSystemPayload(systemPrompt, cacheTtl)
   const headers = await authHeaders()

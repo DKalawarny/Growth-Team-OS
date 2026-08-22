@@ -48,6 +48,7 @@
 
 // deno-lint-ignore-file no-external-import
 import { corsHeaders, json, preflight } from '../_shared/cors.ts'
+import * as PROMPTS from '../_shared/prompts.ts'
 import { authedUser, serviceClient }    from '../_shared/supabase.ts'
 
 // ── Pricing (mirrors src/lib/usage.js — keep in sync) ─────────────────────────
@@ -247,8 +248,30 @@ async function recordUsage(
 // This mirrors the old browser logic so nothing breaks for tool-call sites
 // that toggle the flag.
 
+/**
+ * Resolve a promptKey to its text. Unknown keys throw rather than silently
+ * producing an empty system prompt — a Solomon with no instructions still
+ * answers, just as a generic assistant, which is the worst possible failure
+ * because it looks like it worked.
+ */
+function resolvePrompt(key: string): string {
+  const text = (PROMPTS as Record<string, unknown>)[key]
+  if (typeof text !== 'string' || !text) {
+    throw new Error(`Unknown promptKey: ${key}`)
+  }
+  return text
+}
+
 function buildSystem(
-  body: { systemPrompt?: string; systemBlocks?: unknown[]; json?: boolean },
+  body: {
+    promptKey?:       string
+    stableContext?:   string
+    volatileContext?: string
+    cacheTtl?:        string
+    systemPrompt?:    string
+    systemBlocks?:    unknown[]
+    json?:            boolean
+  },
 ): string | unknown[] {
   const jsonSuffix = '\n\nRespond with valid JSON only. Do not include any text outside the JSON. Do not wrap the JSON in markdown code fences.'
 
@@ -264,8 +287,41 @@ function buildSystem(
     return blocks
   }
 
-  // Plain string. Anthropic accepts string-or-array for `system`; we just
-  // pass the string through.
+  // ⭐ promptKey path — the prompt text never crosses the wire.
+  //
+  // The blocks are assembled HERE rather than on the client, because the cache
+  // marker has to sit at the end of the stable half and the stable half is
+  // prompt + context. If the client built the blocks it would need the prompt,
+  // which is the whole thing we are trying not to ship.
+  //
+  // Cache semantics are unchanged: one marked block containing prompt+context,
+  // then an unmarked volatile block. The cache key is the exact text up to and
+  // including the marker, so keeping this order preserves the ~90% saving.
+  if (body.promptKey) {
+    const prompt = resolvePrompt(body.promptKey)
+    const stable = prompt + (body.stableContext ?? '')
+
+    if (!body.volatileContext && !body.cacheTtl) {
+      return stable + (body.json ? jsonSuffix : '')
+    }
+
+    const blocks: Array<Record<string, unknown>> = [{
+      type: 'text',
+      text: stable,
+      cache_control: body.cacheTtl
+        ? { type: 'ephemeral', ttl: body.cacheTtl }
+        : { type: 'ephemeral' },
+    }]
+    if (body.volatileContext) {
+      blocks.push({ type: 'text', text: body.volatileContext + (body.json ? jsonSuffix : '') })
+    } else if (body.json) {
+      blocks[0].text = stable + jsonSuffix
+    }
+    return blocks
+  }
+
+  // Legacy plain-string path. Still accepted so a stale client mid-deploy does
+  // not break, but nothing in the app sends it any more.
   const text = (body.systemPrompt ?? '') + (body.json ? jsonSuffix : '')
   return text
 }
@@ -349,6 +405,10 @@ Deno.serve(async (req) => {
       stream?:       boolean
       toolId?:       string
       kind?:         string
+      promptKey?:       string
+      stableContext?:   string
+      volatileContext?: string
+      cacheTtl?:        string
       // ⚠️ skipCaps was here and is GONE. It let the caller disable the cap
       // check from the request body. If you are tempted to re-add a client
       // flag that turns off billing limits: that is the vulnerability.

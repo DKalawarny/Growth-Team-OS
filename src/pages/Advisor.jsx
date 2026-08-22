@@ -6,7 +6,6 @@ import { callClaude, streamClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
-import { ADVISOR_SYSTEM_PROMPT, MORNING_OPENER_PROMPT } from '../lib/prompts'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
@@ -109,9 +108,9 @@ export default function Advisor() {
       const context = await buildAdvisorContext(profile.company_id, { userId: profile.id })
 
       // Lightweight prompt — 200 tokens max. Reads context, asks one specific question.
-      const systemPrompt = context
-        ? `${MORNING_OPENER_PROMPT}\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
-        : MORNING_OPENER_PROMPT
+      const openerContext = context
+        ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
+        : ''
 
       const h = new Date().getHours()
       const tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
@@ -119,7 +118,8 @@ export default function Advisor() {
       const ownerFirst = profile?.name?.split(' ')[0] ?? 'there'
       const opener = await callClaude({
         model: HAIKU,
-        systemPrompt,
+        promptKey:     'MORNING_OPENER_PROMPT',
+        stableContext: openerContext,
         messages: [{ role: 'user', content: `Open the check-in. The owner's name is ${ownerFirst} — use ONLY this name in your greeting, no other names. Time context: ${tod} — ${dayStr}.` }],
         maxTokens: 120,
       })
@@ -295,7 +295,11 @@ export default function Advisor() {
       if (volKnowledge) volatileParts.push(`RELEVANT_FROM_YOUR_LIBRARY:\n${JSON.stringify(volKnowledge, null, 2)}`)
       if (volSafety)    volatileParts.push(`SAFETY_CONTEXT:\n${JSON.stringify(volSafety, null, 2)}`)
 
-      const systemPrompt   = `${ADVISOR_SYSTEM_PROMPT}${stableBlock}`
+      // ⭐ The prompt is no longer sent — only its KEY. ADVISOR_SYSTEM_PROMPT is
+      // 21k characters of Solomon and it used to ship to the browser, where
+      // anyone could fetch it unauthenticated. The edge function resolves the
+      // key and prepends the text to stableContext, so the cached block is the
+      // same string it always was and the ~90% caching saving is unchanged.
       const systemVolatile = volatileParts.length ? `\n\n${volatileParts.join('\n\n')}` : undefined
 
       // 4. Stream the reply — update the placeholder bubble on every chunk.
@@ -311,7 +315,8 @@ export default function Advisor() {
       }
       const reply = await streamClaude({
         model:     choice.model,
-        systemPrompt,
+        promptKey:     'ADVISOR_SYSTEM_PROMPT',
+        stableContext: stableBlock,
         systemVolatile,
         messages:  historySlice,
         maxTokens: 2000,
