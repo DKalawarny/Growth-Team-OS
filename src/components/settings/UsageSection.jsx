@@ -96,12 +96,33 @@ export default function UsageSection() {
 // Row
 // ----------------------------------------------------------------------------
 
+/**
+ * ⚠️ Mirrors TOOL_CAP_EXEMPT in supabase/functions/claude/index.ts. These
+ * buckets are metered by SPEND, not by run count, so rendering them against
+ * the per-tool cap is simply wrong — the panel was showing "untagged 7 / 10"
+ * with an almost-full amber-bound bar for a bucket that can never hit a cap.
+ * An owner reading that sees themselves three runs from being cut off.
+ *
+ * The server is the authority; if it grows a new exemption, add it here too.
+ */
+const CAP_EXEMPT = new Set(['advisor', 'morning-opener', 'solomon-memory', 'untagged', 'library-analysis'])
+
+// "untagged" is a server-side default, not a name for a person to read.
+const EXEMPT_LABELS = {
+  'advisor':         'Solomon conversations',
+  'morning-opener':  'Daily openers',
+  'solomon-memory':  'Remembering what you said',
+  'library-analysis':'Library analysis',
+  'untagged':        'Background work',
+}
+
 function ToolRow({ row, cap }) {
-  const tool = getToolById(row.tool_id)
-  const label = tool?.name ?? row.tool_id
-  const icon  = tool?.icon ?? '•'
-  const pct   = cap > 0 ? Math.min(100, Math.round((row.count / cap) * 100)) : 0
-  const atCap = row.count >= cap
+  const tool   = getToolById(row.tool_id)
+  const exempt = CAP_EXEMPT.has(row.tool_id)
+  const label  = EXEMPT_LABELS[row.tool_id] ?? tool?.name ?? row.tool_id
+  const icon   = exempt ? '∞' : (tool?.icon ?? '•')
+  const pct    = cap > 0 ? Math.min(100, Math.round((row.count / cap) * 100)) : 0
+  const atCap  = !exempt && row.count >= cap
 
   return (
     <li className="p-3 flex items-center gap-4">
@@ -111,15 +132,17 @@ function ToolRow({ row, cap }) {
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-sm font-medium text-gray-900 truncate">{label}</span>
           <span className={`text-xs font-mono flex-shrink-0 ${atCap ? 'text-amber-700' : 'text-gray-500'}`}>
-            {row.count} / {cap}
+            {exempt ? `${row.count} · no limit` : `${row.count} / ${cap}`}
           </span>
         </div>
-        <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all ${atCap ? 'bg-amber-500' : 'bg-brand-500'}`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        {!exempt && (
+          <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${atCap ? 'bg-amber-500' : 'bg-brand-500'}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        )}
       </div>
     </li>
   )

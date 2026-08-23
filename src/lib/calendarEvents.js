@@ -1,5 +1,6 @@
 import { parseDate, toDateString } from './milestoneDates'
 import { getToolById } from './tools'
+import { PAYMENTS_LIVE } from './pricing'
 
 /**
  * Calendar event shaping + month-grid math.
@@ -207,8 +208,15 @@ export function buildCalendarEvents({
   // once it's in the past it's just noise (the dashboard paywall tells
   // that story). A future trial-end is the nudge we want — it shows up in
   // the month it will land and the owner sees it coming.
+  //
+  // ⚠️ Gated on PAYMENTS_LIVE. During the free pilot the calendar was posting a
+  // "Free trial ends" landmark on a future date — a countdown to a charge that
+  // cannot happen and that the pilot agreement explicitly promises will not
+  // ("nothing will ever be charged to you during the pilot, and no payment
+  // details will be collected"). Billing, Paywall and checkout all honour the
+  // kill switch; this landmark was the one place that did not.
   {
-    const d = parseEventDate(trialEndsAt)
+    const d = PAYMENTS_LIVE ? parseEventDate(trialEndsAt) : null
     if (d && d.getTime() > Date.now()) {
       push({
         id:    'trial-end',

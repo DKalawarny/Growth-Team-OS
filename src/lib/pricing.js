@@ -46,6 +46,21 @@ export const PRICE_ANNUAL_DISPLAY   = `$${PRICE_ANNUAL_USD}/yr`
 export const ANNUAL_MONTHLY_EQUIV   = Math.round(PRICE_ANNUAL_USD / 12) // $123
 
 /**
+ * ⚠️ DERIVED, NEVER TYPED. The pricing page carried two different annual
+ * savings figures twenty pixels apart: the toggle badge computed
+ * `PRICE_MONTHLY_USD * 2` ($294) while the card underneath it read a hardcoded
+ * "pocket $194". $294 is correct — 12 × 147 − 1470. A visitor comparing the two
+ * numbers finds the page cannot do its own arithmetic, on the one page where
+ * that matters most.
+ *
+ * The badge's $294 was right only by coincidence: it multiplied the monthly
+ * price by two rather than subtracting the annual price, so it would have gone
+ * wrong the moment annual stopped being exactly ten months. Both now derive.
+ */
+export const ANNUAL_SAVINGS_USD = PRICE_MONTHLY_USD * 12 - PRICE_ANNUAL_USD   // 294
+export const ANNUAL_MONTHS_FREE = Math.round(ANNUAL_SAVINGS_USD / PRICE_MONTHLY_USD) // 2
+
+/**
  * ⚠️ Changing these numbers changes the COPY only.
  *
  * The actual charge comes from the Stripe price IDs in Supabase secrets

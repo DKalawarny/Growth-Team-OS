@@ -667,7 +667,7 @@ function PageFooter() {
       <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
         <div className="flex items-center gap-2">
           <span className="font-black text-white">Growth<span className="text-brand-400">OS</span></span>
-          <span>· The operating system for service businesses</span>
+          <span>· An advisor for owners who want it run a certain way</span>
         </div>
         <div className="flex items-center gap-5">
           <Link to="/demo" className="hover:text-white/60 transition-colors">See it work</Link>

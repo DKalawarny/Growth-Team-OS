@@ -10,7 +10,7 @@ import {
   faqPageSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE, ANNUAL_SAVINGS_USD, ANNUAL_MONTHS_FREE } from '../lib/pricing'
 
 /**
  * /pricing — public pricing page.
@@ -242,7 +242,7 @@ export default function Pricing() {
               <span className={`text-xs font-black px-2 py-0.5 rounded-full transition-colors ${
                 billing === ANNUAL ? 'bg-brand-500 text-white' : 'bg-brand-100 text-brand-700'
               }`}>
-                Save ${PRICE_MONTHLY_USD * 2}
+                Save ${ANNUAL_SAVINGS_USD}
               </span>
             </button>
           </div>
@@ -276,7 +276,7 @@ export default function Pricing() {
               {billing === ANNUAL ? (
                 <p className="text-brand-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD — 2 months completely free</p>
               ) : (
-                <p className="text-white/25 text-sm mt-2">Pay annually and pocket $194 — that's 2 months free</p>
+                <p className="text-white/25 text-sm mt-2">Pay annually and pocket ${ANNUAL_SAVINGS_USD} — that's {ANNUAL_MONTHS_FREE} months free</p>
               )}
             </div>
 
@@ -425,7 +425,7 @@ export default function Pricing() {
 
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
         <footer className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-400">
-          <span>© GrowthOS · The operating system for service businesses</span>
+          <span>© GrowthOS · An advisor for owners who want it run a certain way</span>
           <a href="mailto:support@leadeos.com" className="underline hover:text-gray-600">support@leadeos.com</a>
         </footer>
 
@@ -459,12 +459,30 @@ function OwnerCta({ billing, authState }) {
     )
   }
 
+  // ⚠️ During the pilot this rendered a live-looking "Upgrade now — $147 /
+  // month" button whose handler began `if (!PAYMENTS_LIVE) return` — so it
+  // looked enabled, showed no error, and did nothing at all when clicked. A
+  // dead primary CTA reads as a broken product, and it contradicts the pilot
+  // agreement it sits next to. Settings → Billing already handles this state
+  // properly; say the same thing here.
+  if (authState.isAuthed && !PAYMENTS_LIVE) {
+    return (
+      <div className="rounded-xl px-4 py-4 text-center bg-white/5 border border-white/15">
+        <p className="text-sm font-bold text-white/90">You're on the free pilot</p>
+        <p className="text-xs text-white/50 mt-1">
+          Nothing to pay and no card on file. If pricing is introduced you'll be
+          told before anything is charged.
+        </p>
+      </div>
+    )
+  }
+
   if (authState.isAuthed) {
     return (
       <div>
         <button
           type="button"
-          onClick={async () => { if (!PAYMENTS_LIVE) return; setErr(null); setClicking(true); try { await startCheckout(plan) } catch (e) { setErr(e.message || 'Could not start checkout'); setClicking(false) } }}
+          onClick={async () => { setErr(null); setClicking(true); try { await startCheckout(plan) } catch (e) { setErr(e.message || 'Could not start checkout'); setClicking(false) } }}
           disabled={clicking}
           className="w-full rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
         >

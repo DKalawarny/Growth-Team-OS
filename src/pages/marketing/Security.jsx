@@ -120,6 +120,7 @@ export default function Security() {
         <Section title="What we're still building">
           <p>Honest list of what's not done yet:</p>
           <ul className="mt-3 space-y-2">
+            <li>Self-serve data export (today: email us and we'll send it)</li>
             <li>Multi-factor authentication (planned: 2026)</li>
             <li>SOC 2 Type II audit (planned once we cross 100 customers)</li>
             <li>Single sign-on for agency / multi-team accounts (planned)</li>
@@ -144,11 +145,20 @@ export default function Security() {
         </Section>
 
         <Section title="Your rights">
+          {/* ⚠️ This claimed "you can export every piece of data ... at any
+              time, from /settings". There is no export in the product — the
+              Settings tabs are Business, Billing, Team, Integrations and Danger
+              zone. /help already told the truth ("not self-serve yet — email
+              me"), so the honest version was published on the support page and
+              the overstated one on the page a cautious buyer reads before
+              trusting us. That is the wrong way round for a product whose
+              entire pitch is that it does not overstate. */}
           <p>
-            You can export every piece of data we have about your business at any
-            time, from /settings. You can delete your account, which removes your
-            workspace and all its data within 30 days (the 30 day window is for
-            backup rotation — after that it's gone).
+            Ask us for an export any time — email {CONTACT_EMAIL} and we'll send
+            your data over. It isn't self-serve yet; built-in export is on the
+            list below. You can delete your workspace yourself from Settings →
+            Danger zone, which removes it and all its data within 30 days (the
+            30 day window is for backup rotation — after that it's gone).
           </p>
         </Section>
 

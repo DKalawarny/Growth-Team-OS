@@ -9,6 +9,7 @@ import { summarizeContext } from '../../lib/toolContextSummary'
 import DecisionView from '../../components/tools/DecisionView'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import BackToTools from '../../components/tools/BackToTools'
 
 /**
  * Work through a decision — /tools/decision
@@ -93,6 +94,11 @@ export default function Decision() {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="mx-auto w-full max-w-[720px] px-6 py-12 flex flex-col gap-8">
+
+        {/* Outside the stage check on purpose — this page had no route back to
+            /tools in either stage, and the result stage is exactly where you
+            most want one. */}
+        <BackToTools />
 
         {stage !== 'result' && (
           <>

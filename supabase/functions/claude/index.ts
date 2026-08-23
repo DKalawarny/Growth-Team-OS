@@ -99,6 +99,7 @@ const TOOL_CAP_EXEMPT = new Set([
   'advisor',          // Solomon conversation — metered by spend, not by count
   'morning-opener',   // generated greeting
   'solomon-memory',   // memory extraction, fires after an exchange
+  'library-analysis', // reads the whole library after an upload — internal
   'untagged',         // low-level calls with no declared tool
 ])
 

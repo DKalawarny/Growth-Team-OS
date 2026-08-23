@@ -86,6 +86,9 @@ export async function runLibraryAnalysis(companyId) {
     messages: [{ role: 'user', content: prompt }],
     maxTokens: ANALYSIS_MAX_TOKENS,
     json: true,
+    // Tagged so this stops landing in the server's 'untagged' bucket, which is
+    // what the usage panel was labelling for the owner as, literally, "untagged".
+    toolId: 'library-analysis',
   })
 
   const analysis = safeParseJson(raw)

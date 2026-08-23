@@ -5,6 +5,7 @@ import { runToolCall, HAIKU } from '../../lib/anthropic'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import { summarizeContext } from '../../lib/toolContextSummary'
+import BackToTools from '../../components/tools/BackToTools'
 import {
   uploadKnowledgeFile,
   listKnowledgeFiles,
@@ -268,6 +269,7 @@ export default function Safety() {
       {/* ── Dark header ───────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
+          <BackToTools className="mb-2.5" />
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
             Safety &amp; Compliance
           </div>

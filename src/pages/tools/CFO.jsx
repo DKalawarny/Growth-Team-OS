@@ -568,12 +568,12 @@ export default function CFO() {
             )}
 
             <form onSubmit={handleGenerate} className="space-y-4">
-              <Field required label="Which period are we looking at?" hint='"March 2026" or "Q1 2026" works.'>
+              <Field required label="Which period are we looking at?" hint='"Last month", "July 2026" or "Q2 2026" all work.'>
                 <input
                   type="text"
                   value={form.period_label}
                   onChange={e => setForm({ ...form, period_label: e.target.value })}
-                  placeholder="March 2026"
+                  placeholder="Last month"
                   className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
                 />
               </Field>

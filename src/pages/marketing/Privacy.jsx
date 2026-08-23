@@ -153,9 +153,12 @@ export default function Privacy() {
             <li>Export it in a machine-readable format.</li>
             <li>Withdraw consent for non-essential processing.</li>
           </ul>
+          {/* ⚠️ Said "most of these are self-serve in /settings". Only delete
+              is. Export does not exist in the product at all — see the matching
+              note on the security page. */}
           <p className="mt-3">
-            Most of these are self-serve in /settings. For anything you can't
-            do yourself, email{' '}
+            Deleting your workspace is self-serve, in Settings → Danger zone.
+            Export isn't built yet, so for that — or anything else here — email{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
             and we'll handle it within 30 days.
           </p>
