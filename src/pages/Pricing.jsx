@@ -10,7 +10,7 @@ import {
   faqPageSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE, ANNUAL_SAVINGS_USD, ANNUAL_MONTHS_FREE } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE, ANNUAL_SAVINGS_USD, ANNUAL_MONTHS_FREE, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE, PILOT_PRICE_BLURB } from '../lib/pricing'
 
 /**
  * /pricing — public pricing page.
@@ -32,8 +32,12 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  * existing 6 FAQs are well-written for this — minor wording, big lift.
  */
 const PRICING_META = buildPageMeta({
-  title:       `Pricing — GrowthOS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`,
-  description: `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`,
+  title:       SHOW_PUBLIC_PRICE
+    ? `Pricing — GrowthOS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
+    : 'Pricing — GrowthOS · free while in private pilot',
+  description: SHOW_PUBLIC_PRICE
+    ? `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
+    : 'GrowthOS is in private pilot and free to use — Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
   path:        '/pricing',
 })
 
@@ -200,7 +204,7 @@ export default function Pricing() {
         <div className="relative max-w-3xl mx-auto px-6">
           <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-            {TRIAL_DAYS}-day free trial — no credit card
+            {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS}-day free trial — no credit card` : 'Private pilot — free, no credit card'}
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
             One subscription.<br />
@@ -208,7 +212,9 @@ export default function Pricing() {
           </h1>
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
             An AI advisor who knows your numbers. A live CFO dashboard. A hiring coach. A marketing analyst. A compliance tracker. A growth planner.
-            All connected. All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span>
+            All connected. {SHOW_PUBLIC_PRICE
+              ? <>All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span></>
+              : <span className="text-white font-semibold">Free while we are in private pilot.</span>}
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/35">
             <span className="flex items-center gap-1.5"><Tick />No contracts</span>
@@ -221,7 +227,10 @@ export default function Pricing() {
 
       <main className="max-w-4xl mx-auto px-6 pb-24">
 
-        {/* ── Billing toggle ───────────────────────────────────────────────────── */}
+        {/* ── Billing toggle ───────────────────────────────────────────────────
+            Hidden while no price is published: a monthly/annual switch that
+            toggles between two things you cannot buy is just confusing. */}
+        {SHOW_PUBLIC_PRICE && (
         <div className="flex justify-center -mt-5 mb-8 relative z-10">
           <div className="inline-flex items-center bg-white border border-gray-200 rounded-xl p-1 shadow-lg">
             <button
@@ -247,6 +256,7 @@ export default function Pricing() {
             </button>
           </div>
         </div>
+        )}
 
         {/* ── Price card ───────────────────────────────────────────────────────── */}
         <section className="max-w-md mx-auto mb-4">
@@ -257,6 +267,7 @@ export default function Pricing() {
               </span>
             </div>
 
+            {SHOW_PUBLIC_PRICE ? (
             <div className="mt-2 mb-2">
               <div className="flex items-baseline justify-center gap-2">
                 <span className="text-7xl font-black text-white leading-none">
@@ -279,11 +290,17 @@ export default function Pricing() {
                 <p className="text-white/25 text-sm mt-2">Pay annually and pocket ${ANNUAL_SAVINGS_USD} — that's {ANNUAL_MONTHS_FREE} months free</p>
               )}
             </div>
+            ) : (
+            <div className="mt-2 mb-2">
+              <p className="text-4xl font-black text-white leading-tight">{PILOT_PRICE_LINE}</p>
+              <p className="text-white/40 text-sm mt-3 leading-relaxed">{PILOT_PRICE_BLURB}</p>
+            </div>
+            )}
 
             <div className="my-6 border-t border-white/8" />
 
             <OwnerCta billing={billing} authState={authState} />
-            <p className="text-white/20 text-xs mt-4">{TRIAL_DAYS}-day free trial · No credit card · Cancel anytime</p>
+            <p className="text-white/20 text-xs mt-4">{SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS}-day free trial · No credit card · Cancel anytime` : 'Free while in private pilot · No credit card · Cancel anytime'}</p>
           </div>
         </section>
 
@@ -343,7 +360,7 @@ export default function Pricing() {
         <section className="mb-20">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
-              What ${PRICE_MONTHLY_USD} replaces.
+              {SHOW_PUBLIC_PRICE ? `What $${PRICE_MONTHLY_USD} replaces.` : 'What it replaces.'}
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
               Most owners are already paying for this advice — just scattered, expensive, and slow.
@@ -372,7 +389,7 @@ export default function Pricing() {
                 <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
               </div>
               <div className="text-right">
-                <p className="text-brand-400 font-black text-2xl">${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></p>
+                <p className="text-brand-400 font-black text-2xl">{SHOW_PUBLIC_PRICE ? <>${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></> : <span className="text-lg">Free in pilot</span>}</p>
                 <p className="text-white/30 text-xs mt-0.5">vs. $1,480–$4,650/mo separately</p>
               </div>
             </div>
@@ -399,7 +416,7 @@ export default function Pricing() {
           <div className="relative">
             <p className="text-brand-400 text-sm font-bold uppercase tracking-widest mb-3">Start today</p>
             <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              {TRIAL_DAYS} days free. No card. No risk.
+              {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free. No card. No risk.` : 'Free while in pilot. No card. No risk.'}
             </h2>
             <p className="text-white/50 max-w-md mx-auto mb-8 leading-relaxed">
               Get your first AI report in under an hour. Ask Solomon anything about your business. See your financials clearly — maybe for the first time.
@@ -419,7 +436,7 @@ export default function Pricing() {
                 Have a question? Email us
               </a>
             </div>
-            <p className="mt-6 text-white/20 text-xs">${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts</p>
+            <p className="mt-6 text-white/20 text-xs">{SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts` : 'Free while in private pilot · Cancel anytime · No contracts'}</p>
           </div>
         </section>
 

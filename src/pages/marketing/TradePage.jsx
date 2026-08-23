@@ -2,7 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, softwareApplicationSchema, SITE_URL } from '../../lib/seo'
-import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE } from '../../lib/pricing'
 
 /**
  * /for/:trade — trade-specific landing pages.
@@ -151,7 +151,7 @@ export default function TradePage() {
 
   const meta = buildPageMeta({
     title:       `GrowthOS for ${data.label} — an advisor who knows ${data.h1Trade}`,
-    description: `An AI business advisor for Christian owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
+    description: `An AI business advisor for Christian owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. Currently free while in private pilot.`,
     path:        `/for/${trade}`,
   })
 
@@ -193,7 +193,7 @@ export default function TradePage() {
           <p className="text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
             Built around how {data.h1Trade} businesses actually run. Cash flow,
             hiring, the hard decisions, compliance — all in one place, all
-            connected, all for ${PRICE_MONTHLY_USD}/month.
+            connected — and free while we are in private pilot.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -256,7 +256,7 @@ export default function TradePage() {
         {/* ── Tools list ───────────────────────────────────────────────────── */}
         <section className="mb-16">
           <h2 className="text-3xl font-black text-gray-900 mb-3 text-center">
-            Everything you get — for ${PRICE_MONTHLY_USD}/month
+            Everything you get
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-center mb-10">
             One subscription, every tool. No tiers, no upsells, no per-seat fees.
@@ -301,7 +301,7 @@ export default function TradePage() {
             >
               Start free trial
             </Link>
-            <p className="mt-5 text-white/30 text-xs">${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts</p>
+            <p className="mt-5 text-white/30 text-xs">Free while in private pilot · Cancel anytime · No contracts</p>
           </div>
         </section>
 

@@ -36,7 +36,7 @@
 // Google and to AI assistants, so a hardcoded copy here silently becomes a
 // second source of truth — which is how it came to advertise $97 CAD long
 // after the price was $147 USD.
-import { PRICE_MONTHLY_USD } from './pricing'
+import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from './pricing'
 
 // ── Site constants ──────────────────────────────────────────────────────────
 
@@ -164,7 +164,6 @@ export const PUBLIC_PAGES = [
   { path: '/',                priority: '1.0', changefreq: 'weekly'  },
   { path: '/pricing',         priority: '0.9', changefreq: 'monthly' },
   { path: '/demo',            priority: '0.9', changefreq: 'monthly' },
-  { path: '/crm',             priority: '0.8', changefreq: 'monthly' },
   { path: '/about',           priority: '0.7', changefreq: 'monthly' },
   { path: '/security',        priority: '0.5', changefreq: 'yearly'  },
   { path: '/privacy',         priority: '0.4', changefreq: 'yearly'  },
@@ -263,6 +262,23 @@ export function organizationSchema() {
  */
 export function softwareApplicationSchema() {
   const price = String(PRICE_MONTHLY_USD)
+  // ⚠️ While SHOW_PUBLIC_PRICE is false nothing is for sale, so we publish no
+  // Offer at all rather than a number we expect to change. This schema is
+  // precisely what an AI assistant quotes when asked "how much does GrowthOS
+  // cost?" — publishing a price we do not stand behind is how a wrong answer
+  // gets cached across the whole answers channel.
+  const offers = SHOW_PUBLIC_PRICE ? {
+    '@type':         'Offer',
+    price,
+    priceCurrency:   'USD',
+    priceSpecification: {
+      '@type':       'UnitPriceSpecification',
+      price,
+      priceCurrency: 'USD',
+      unitText:      'MONTH',
+    },
+  } : undefined
+
   return {
     '@context':         'https://schema.org',
     '@type':            'SoftwareApplication',
@@ -271,17 +287,7 @@ export function softwareApplicationSchema() {
     operatingSystem:     'Web',
     description:         'An AI business advisor for Christian business owners, with tools for cash flow, finances, hiring, decisions, written procedures, compliance, and succession. Reads your real numbers, remembers your decisions, and argues the hard calls both ways.',
     url:                 SITE_URL,
-    offers: {
-      '@type':         'Offer',
-      price,
-      priceCurrency:   'USD',
-      priceSpecification: {
-        '@type':       'UnitPriceSpecification',
-        price,
-        priceCurrency: 'USD',
-        unitText:      'MONTH',
-      },
-    },
+    offers,
     aggregateRating: undefined, // add once we have real reviews — never fake this
   }
 }
@@ -301,13 +307,15 @@ export function productSchema({ name, description, price = PRICE_MONTHLY_USD, pr
       '@type': 'Brand',
       name:    SITE_NAME,
     },
-    offers: {
+    // Same reasoning as softwareApplicationSchema: no Offer while the price
+    // is unsettled. A Product with no offer still describes what this is.
+    offers: SHOW_PUBLIC_PRICE ? {
       '@type':         'Offer',
       price:           String(price),
       priceCurrency,
       availability:    'https://schema.org/InStock',
       url:             `${SITE_URL}/pricing`,
-    },
+    } : undefined,
   }
 }
 

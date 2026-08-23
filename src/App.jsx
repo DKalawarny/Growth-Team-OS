@@ -14,7 +14,6 @@ import Landing from './pages/Landing'
 // Small individually, but pulling them out of the main chunk also pulls out
 // every shared component they reference (PublicHeader, etc).
 const Pricing       = lazy(() => import('./pages/Pricing'))
-const CRMMarketing  = lazy(() => import('./pages/marketing/CRM'))
 const About         = lazy(() => import('./pages/marketing/About'))
 const Security      = lazy(() => import('./pages/marketing/Security'))
 const Privacy       = lazy(() => import('./pages/marketing/Privacy'))
@@ -171,7 +170,6 @@ export default function App() {
             revisiting it to share with a partner is a feature. */}
         <Route path="/"         element={<RedirectIfAuthed><Landing /></RedirectIfAuthed>} />
         <Route path="/pricing"  element={<LazyRoute><Pricing /></LazyRoute>} />
-        <Route path="/crm"      element={<LazyRoute><CRMMarketing /></LazyRoute>} />
         <Route path="/about"    element={<LazyRoute><About /></LazyRoute>} />
         <Route path="/security" element={<LazyRoute><Security /></LazyRoute>} />
         <Route path="/privacy"  element={<LazyRoute><Privacy /></LazyRoute>} />

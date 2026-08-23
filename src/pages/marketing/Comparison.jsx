@@ -2,7 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, SITE_URL } from '../../lib/seo'
-import { PRICE_MONTHLY_USD, TRIAL_DAYS } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, TRIAL_DAYS, SHOW_PUBLIC_PRICE } from '../../lib/pricing'
 
 /**
  * /vs/:competitor — head-to-head comparison page.
@@ -51,7 +51,7 @@ const COMPETITORS = {
       'Solomon (AI advisor) — pulls your numbers and tells you what to do, not just what happened',
       'Hiring, org planning and succession — Knowify is operations-only',
       'Remembers your decisions and constraints across months, not just this session',
-      `$${PRICE_MONTHLY_USD}/month flat — no per-seat math, no add-ons`,
+      SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month flat — no per-seat math, no add-ons` : 'One flat price when we launch — no per-seat math, no add-ons',
     ],
     competitorWins: [
       'Deeper job-costing detail if you live in the field every day',
@@ -85,7 +85,7 @@ const COMPETITORS = {
       'AI advisor that knows your business — Jobber has no equivalent',
       'CFO dashboard, cash flow forecasting, hiring planner — strategic tools Jobber doesn\'t build',
       'Succession planning and written playbooks',
-      `Flat $${PRICE_MONTHLY_USD}/month for everything`,
+      SHOW_PUBLIC_PRICE ? `Flat $${PRICE_MONTHLY_USD}/month for everything` : 'One flat price for everything — no tiers, no per-seat',
     ],
     competitorWins: [
       'Mature scheduling, dispatching, and customer-facing workflows',
@@ -153,7 +153,7 @@ const COMPETITORS = {
     growthOSWins: [
       'Built for owner-operators, not project managers',
       'AI advisor that thinks about strategy, not just project tracking',
-      `A fraction of the price ($${PRICE_MONTHLY_USD}/month vs. $400-1,100/month)`,
+      'Far cheaper than the bookkeeper or fractional CFO it stands beside ($400–1,100/month)',
       'No 2-week onboarding required',
       'Hiring, decisions, playbooks and succession built in',
     ],
@@ -225,14 +225,18 @@ export default function Comparison() {
           </div>
           <Row label="What it is" growth="AI advisor + business OS for owner-operators" them={data.tagline} />
           <Row label="Best for" growth="Specialty-trade owners, $500k–$15M revenue, 3–50 people" them={data.bestFor} />
-          <Row label="Pricing" growth={`$${PRICE_MONTHLY_USD}/month flat, all features, all users`} them={data.pricing} />
+          <Row label="Pricing" growth={SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month flat, all features, all users` : 'Free while in private pilot; one flat price at launch'} them={data.pricing} />
           <Row label="AI advisor" growth="Yes — Solomon, with long-term memory" them="No" />
           <Row label="CFO dashboard + cash flow forecast" growth="Yes" them={
             data.name === 'Knowify' ? 'Partial (job-costing only)' : 'No'
           } />
           <Row label="Hiring planner / scorecards" growth="Yes" them="No" />
           <Row label="Remembers your decisions" growth="Yes" them="No" />
-          <Row label="Field crew dispatching" growth="No (intentional — pair with our CRM or your existing tool)" them={
+          {/* ⚠️ This said "pair with our CRM", pointing prospects at a product
+              that does not exist and is not being built. Keep the answer
+              honest and complete: we don't do dispatching, on purpose, and the
+              tool you already use is the answer — not a promise from us. */}
+          <Row label="Field crew dispatching" growth="No — on purpose. Keep the tool you already use for that." them={
             data.name === 'Knowify' || data.name === 'Buildertrend' ? 'Limited' : 'Yes — strong'
           } last />
         </section>

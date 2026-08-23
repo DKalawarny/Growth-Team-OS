@@ -1,7 +1,7 @@
 # robots.txt — GrowthOS
 #
 # Posture:
-#   Public marketing pages (/, /pricing, /crm) are open to every crawler.
+#   Public marketing pages (/, /pricing) are open to every crawler.
 #   Auth pages and authenticated app surfaces (/dashboard, /tools, /admin,
 #   /onboarding, /settings) are explicitly disallowed — they have no SEO
 #   value and shouldn't appear in search results.

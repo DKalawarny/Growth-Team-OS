@@ -8,7 +8,7 @@ import {
   softwareApplicationSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE, PILOT_PRICE_BLURB, ANNUAL_SAVINGS_USD } from '../lib/pricing'
 
 /**
  * / — public marketing landing page.
@@ -31,7 +31,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
 
 const LANDING_META = buildPageMeta({
   title:       'GrowthOS — an advisor for Christian business owners',
-  description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. $${PRICE_MONTHLY_USD}/month, ${TRIAL_DAYS}-day free trial.`,
+  description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. Currently free while in private pilot.`,
   path:        '/',
 })
 
@@ -279,7 +279,7 @@ function HeroSection() {
         </div>
 
         <p className="text-white/30 text-sm">
-          No credit card · {TRIAL_DAYS} days free · Cancel anytime · ${PRICE_MONTHLY_USD}/month after trial
+          No credit card · Free while in private pilot · Cancel anytime
         </p>
       </div>
     </section>
@@ -549,15 +549,20 @@ function PriceSection() {
     <section className="bg-white py-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          ${PRICE_MONTHLY_USD} a month. One tier, everything in it.
+          {SHOW_PUBLIC_PRICE
+            ? `$${PRICE_MONTHLY_USD} a month. One tier, everything in it.`
+            : 'Free while we are in private pilot.'}
         </h2>
         <p className="text-gray-500 mb-10 max-w-lg mx-auto">
           A coach or a mastermind runs $500 to $2,500 a month, and most of them
-          will tell you what you want to hear. This is a fraction of that, and it
-          reads your actual numbers before it says anything.
+          will tell you what you want to hear.{' '}
+          {SHOW_PUBLIC_PRICE
+            ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
+            : 'This reads your actual numbers before it says anything — and we are setting the price with the first owners using it, rather than guessing at one now.'}
         </p>
 
-        {/* Toggle */}
+        {/* Toggle — only meaningful when a price is published */}
+        {SHOW_PUBLIC_PRICE && (
         <div className="inline-flex items-center bg-gray-100 rounded-xl p-1 mb-8">
           <button
             onClick={() => setAnnual(false)}
@@ -573,22 +578,32 @@ function PriceSection() {
             <span className="text-xs font-bold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">2 months free</span>
           </button>
         </div>
+        )}
 
         {/* Price card */}
         <div className="bg-gray-950 rounded-2xl p-10 text-white mb-6">
-          <div className="flex items-baseline justify-center gap-2 mb-2">
-            <span className="text-6xl font-black text-white">
-              {annual ? `$${ANNUAL_MONTHLY_EQUIV}` : `$${PRICE_MONTHLY_USD}`}
-            </span>
-            <div className="text-left">
-              <p className="text-white/40 text-lg leading-tight">USD / mo</p>
-              <p className="text-white/25 text-xs leading-tight">{annual ? `~$${Math.round(PRICE_ANNUAL_CAD_EST / 12)} CAD` : `~$${PRICE_MONTHLY_CAD_EST} CAD`}</p>
-            </div>
-          </div>
-          {annual ? (
-            <p className="text-brand-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${PRICE_MONTHLY_USD * 2}</p>
+          {SHOW_PUBLIC_PRICE ? (
+            <>
+              <div className="flex items-baseline justify-center gap-2 mb-2">
+                <span className="text-6xl font-black text-white">
+                  {annual ? `$${ANNUAL_MONTHLY_EQUIV}` : `$${PRICE_MONTHLY_USD}`}
+                </span>
+                <div className="text-left">
+                  <p className="text-white/40 text-lg leading-tight">USD / mo</p>
+                  <p className="text-white/25 text-xs leading-tight">{annual ? `~$${Math.round(PRICE_ANNUAL_CAD_EST / 12)} CAD` : `~$${PRICE_MONTHLY_CAD_EST} CAD`}</p>
+                </div>
+              </div>
+              {annual ? (
+                <p className="text-brand-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${ANNUAL_SAVINGS_USD}</p>
+              ) : (
+                <p className="text-white/30 mb-8">Switch to annual and save ${ANNUAL_SAVINGS_USD}/year</p>
+              )}
+            </>
           ) : (
-            <p className="text-white/30 mb-8">Switch to annual and save ${PRICE_MONTHLY_USD * 2}/year</p>
+            <>
+              <p className="text-4xl md:text-5xl font-black text-white mb-3">{PILOT_PRICE_LINE}</p>
+              <p className="text-white/40 text-sm max-w-md mx-auto mb-8">{PILOT_PRICE_BLURB}</p>
+            </>
           )}
 
           <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">

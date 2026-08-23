@@ -33,6 +33,40 @@
  */
 export const PAYMENTS_LIVE = false
 
+/**
+ * ⭐ PUBLIC PRICE SWITCH — separate from PAYMENTS_LIVE on purpose.
+ *
+ * PAYMENTS_LIVE answers "can we charge?". This answers "should we publish a
+ * number?", and during the pilot the honest answer is no.
+ *
+ * The site was advertising $147 on roughly thirteen indexed pages — /pricing,
+ * the landing page, six /for/<trade> pages, four /vs/<competitor> pages — plus
+ * Product JSON-LD built to be quoted back by search engines and AI assistants.
+ *
+ * Two problems with that, while nothing is actually for sale:
+ *
+ *   1. Daniel's own view is that $147 is probably too low; that is why the
+ *      pricing questionnaire exists. Publishing it anyway anchors the market
+ *      at a number we expect to abandon, and the answers-from-AI channel —
+ *      the only one that has ever brought this product a stranger — is busy
+ *      memorising and caching it.
+ *   2. Stripe is still wired to the old $97 prices, so the published number
+ *      was never the number a card would be charged.
+ *
+ * ⚠️ Flip to true when the questionnaire has settled the price AND the Stripe
+ * prices match it. Until then every public surface reads PILOT_PRICE_LINE and
+ * the schema publishes no offer at all.
+ *
+ * PRICE_MONTHLY_USD stays the single source of truth either way — this
+ * controls whether we say it out loud, not what it is.
+ */
+export const SHOW_PUBLIC_PRICE = false
+
+/** What public surfaces say instead of a number while the pilot runs. */
+export const PILOT_PRICE_LINE  = 'Free while in private pilot'
+export const PILOT_PRICE_BLURB =
+  'GrowthOS is in private pilot and free to use. We are setting the price with the first owners using it — you will be told well before anything is ever charged.'
+
 export const PRICE_MONTHLY_USD     = 147
 export const PRICE_ANNUAL_USD      = 1470
 export const PRICE_MONTHLY_CAD_EST = 202   // approximate, shown as "~$202 CAD"
