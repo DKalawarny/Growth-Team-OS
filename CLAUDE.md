@@ -70,10 +70,24 @@ Target buyer: owner-operators, $500k–$15M revenue, 3–50 people.
   long after the price changed, which is what an AI assistant quotes when
   someone asks what this costs. **Never write a price literal anywhere else.**
 
-⚠️ **THE PAGE SAYS $147 AND STRIPE STILL CHARGES $97.** Stripe prices are
-immutable, so going live at $147 means creating two NEW prices and updating
-`STRIPE_PRICE_ID_OWNER` and `STRIPE_PRICE_ID_OWNER_ANNUAL`. Until that happens
-the site advertises one number and bills another. This is the top open item.
+⭐ **NO PRICE IS PUBLISHED ANYWHERE RIGHT NOW (22 Aug 2026).**
+`SHOW_PUBLIC_PRICE = false` in [`src/lib/pricing.js`](src/lib/pricing.js), kept
+deliberately separate from `PAYMENTS_LIVE`: that one answers *can we charge*, this
+answers *should we publish a number*.
+
+$147 had been on ~13 indexed pages plus Product / SoftwareApplication JSON-LD
+built to be quoted back by AI assistants — while Daniel's own view is that $147 is
+probably too low (the reason the questionnaire exists) and Stripe is still wired to
+the old $97 prices. So the one channel that has ever brought this product a
+stranger was busy caching a number we expect to abandon and would not have charged
+anyway. Both schemas now publish **no Offer at all**; every public surface reads
+"free while in private pilot"; the monthly/annual toggles are hidden.
+
+⚠️ `PRICE_MONTHLY_USD` is still the single source of truth — this only controls
+whether we say it out loud. **Flip to true only when the questionnaire has settled
+the price AND two NEW Stripe prices exist at that figure with
+`STRIPE_PRICE_ID_OWNER` / `_ANNUAL` pointing at them** (Stripe prices are
+immutable, so they must be recreated, not edited).
 
 Stripe currently in **test mode** ("Leados sandbox" account
 `acct_1TWhOqAiDwj4YybG`).
@@ -128,11 +142,13 @@ chat**; use a separate terminal tab and verify with `supabase secrets list`
 (only shows digests). Current secrets that should be set:
 `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
 `STRIPE_PRICE_ID_OWNER`, `STRIPE_PRICE_ID_OWNER_ANNUAL`, `STAFF_LINK_SECRET`,
-`RESEND_API_KEY`, `OPENAI_API_KEY`, `APP_URL`, plus the QBO credentials.
+`RESEND_API_KEY`, `APP_URL`, plus the QBO credentials.
+⚠️ `OPENAI_API_KEY` is NOT in that list on purpose — OpenAI was removed entirely
+(migration 029) and the secret should be **unset**, not rotated. See parked item 3.
 
 ## Migrations
 
-Live in `supabase/migrations/` numbered 001–024. Apply with `supabase db push`.
+Live in `supabase/migrations/` numbered 001–031. Apply with `supabase db push`.
 
 Every customer-facing table is RLS-scoped by `company_id`. If a migration
 was previously applied manually via the SQL editor (and the cloud history
@@ -158,6 +174,69 @@ before pushing.
 - **Pricing decisions are his call.** I (Claude) had recommended $147 at
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
+
+## What just shipped (2026-08-22 — audit + uploads session)
+
+Everything below was found by RUNNING the product in a browser, not by reading
+source. Each one was invisible in review and obvious within seconds of a real file
+or a real click. That is the lesson worth carrying, more than any individual fix.
+
+⭐ **WHAT THIS PRODUCT IS — settled.** It is an **advisor, not a CRM.** The
+companion CRM depended on a partner's job-management system and **that idea is
+dead**, so `/crm` is deleted (page, route, sitemap, robots, and the `/vs/jobber`
+row that said "pair with our CRM"). It had been public and indexed with its
+internal notes still in it: *"Pricing TBD … replace with real tier pricing once the
+market study lands"* and `$XXX / month · placeholder`.
+
+The Board is **not** a half-built CRM: `work_orders` and `staff_members` feed
+`buildAdvisorContext`, so it exists to keep Solomon current, same as check-ins.
+
+⭐ **THE TEST FOR ANY NEW FEATURE:** *does it tell Solomon something true about the
+business, or does it act on what Solomon said? If neither, it is out.*
+
+🔴 **Every upload in the app had been failing.** `lib/knowledgeFiles.js` writes
+`milestone_id` and `listFilesForMilestone()` filters on it, but **no migration ever
+created the column**. PostgREST refused the insert, and `uploadKnowledgeFile` treats
+that as fatal — it deletes the Storage object it just wrote and throws. The file
+uploaded, the text extracted, then the row was refused and the blob rolled back,
+leaving no trace anything had been attempted. Migration **031**. Hit both the
+Library dialog and the Roadmap's "attach completion evidence".
+
+🔴 **The RAG chunker silently indexed ~7% of any file without blank lines.**
+`chunkText` split on `/\n{2,}/` and its overflow branch is guarded on
+`current.length > 0` — false for the first paragraph. A CSV has no blank lines, so
+the whole file came back as ONE paragraph: a 500-row export measured one chunk,
+29,266 chars. `embed` slices at 8,000 and gte-small's window is ~512 tokens, so the
+stored vector described the first 7% while it logged "1 text chunk" and looked
+indexed. ⚠️ Not a CSV bug — a *no-blank-lines* bug; continuous PDF extractions hit
+it identically. Fixed with `splitOversized` (general) + `splitDelimited` (CSVs
+chunk by row with the header repeated on every chunk).
+
+**Library Intelligence was never a parser bug — it was a token cap.**
+`output_tokens` landed exactly on `maxTokens: 1500` and the JSON stopped mid-word.
+Raised to 4,000. ⭐ Diagnosing this: patch `window.fetch` in the page, clone the
+response, and read `usage.output_tokens`; equal to `maxTokens` means truncation.
+
+**Uploads rebuilt**: multi-file batches, folder drops expanded via the entries API,
+per-file rejections, failed files stay queued for retry, one library analysis at the
+end instead of one per file.
+
+**Site audit fixes** (all verified live): `/security` and `/privacy` claimed a
+self-serve data export **that does not exist** (`/help` had it right all along);
+`/pricing` showed two different annual savings 20px apart ($294 vs a hardcoded
+$194); a dead "Upgrade now" CTA that looked live and did nothing; a "Free trial
+ends" calendar landmark contradicting the pilot agreement; Settings→Usage rendering
+a cap-EXEMPT bucket as a nearly-full `untagged 7 / 10`; the stale "operating system
+for service businesses" footer; `BackToTools` on Decision and Safety.
+
+⚠️ **`scripts/prerender.mjs` keeps its OWN route list with `<title>` assertions.**
+Deleting `/crm` without removing its entry there failed the Netlify build. Update
+it whenever a public page or its title changes.
+
+⚠️ **Verify by exit code and by reading the artifact — never by grepping for a
+success string.** `npm run build | grep -E "^error|✓ built"` reported green while
+the prerender step was failing, because it matched vite's "✓ built" from the
+bundling step above the failure.
 
 ## What just shipped (2026-08 reposition)
 
@@ -298,16 +377,24 @@ In rough order of priority.
    $1,470, not $97), create the live webhook endpoint, update the four
    `STRIPE_*` secrets, and do a real $1 charge + refund.
 
-5. **Two marketing pages are still on the old positioning, deliberately left
-   for Daniel to decide rather than deleted:**
-   - `/crm` — markets a companion operations CRM at $699 that does not exist
-     yet (it depends on the partner's job-management system, item 6).
-     Currently indexed and in the sitemap.
-   - `/free-gbp-audit` — a working lead-gen funnel (form → `gbp_audit_requests`
-     → trigger → email). It promises a GBP audit deliverable, and the GBP tool
-     is no longer part of the product story. If nobody is fulfilling those
-     audits, it is a promise being made and not kept.
-   Neither was removed unilaterally. Both are live right now.
+5. **`/free-gbp-audit` promises something nobody may be delivering.** A working
+   lead-gen funnel (form → `gbp_audit_requests` → trigger → email) that collects a
+   real name and email and promises a scored Google Business Profile audit back —
+   while the GBP tool is legacy and surfaced nowhere. **Ask Daniel whether anyone
+   fulfils these.** If not, it must stop promising one. Not removed unilaterally
+   because it is the only lead capture on the site.
+
+   (`/crm`, formerly listed here, was deleted on 22 Aug — see the 8/22 section.)
+
+5b. **Ten indexed pages still sell the pre-reposition sector wedge:** four
+   `/vs/<competitor>` pages comparing GrowthOS to field-service CRMs (Jobber,
+   Knowify, Housecall Pro, Buildertrend) and six `/for/<trade>` pages. Comparing
+   yourself to four CRMs is a claim about what you are, and invites scoring on
+   dispatching — which we deliberately do not do. `/about` meanwhile says the buyer
+   is defined by conviction, not sector. ⭐ `/pricing`'s "what it replaces" section
+   already frames the real alternatives, and they are not software: coach
+   $500–2,000, bookkeeper $400–800, fractional CFO $500–1,500. Daniel's call —
+   they are real SEO traffic, so do not delete them blind.
 
 6. **`/tools/gbp` still exists as a route** but is surfaced nowhere — not in
    the sidebar, not in SolomonLauncher. All marketing claims about it were
@@ -317,17 +404,43 @@ In rough order of priority.
    https://console.anthropic.com/settings/keys. It was shipped to the browser
    pre-rewrite — assume it is leaked.
 
-8. **Offer Builder + Hiring Planner as partner add-on** — kept in the app,
-   gated behind a second tier once the partner's job-management system exists.
+8. ~~Offer Builder + Hiring Planner as a partner add-on~~ — **DEAD (22 Aug).**
+   This was gated behind "once the partner's job-management system exists", and
+   that idea is gone. Both tools are simply part of the product; nothing to gate.
+   The same decision is what killed `/crm`.
 
 9. **Tool-use for Solomon.** He currently SEEDS a conversation from the
    launcher rather than running tools himself. This is the biggest remaining
    product gap.
 
-10. **Netlify**: Daniel is on the Personal plan and intends to cancel — confirm
-   it ends Sep 13 rather than immediately, or deploys stop. Deploys are
-   credit-metered (300/mo free ≈ 20 deploys at 15 credits each), so batch
-   changes rather than pushing one fix at a time.
+10. ⚠️ **Netlify — over 75% of the monthly credit allowance as of 22 Aug**, after
+   six deploys in one day. Personal plan, **1 concurrent build**, and Daniel
+   intends to cancel — confirm it ends Sep 13 rather than immediately, or deploys
+   stop. Batch changes rather than pushing one fix at a time.
+   ⭐ When a deploy probe times out, check app.netlify.com → **Builds** before
+   assuming latency: a build can FAIL, not merely be slow. And always `curl -L` —
+   marketing routes 301 to their trailing-slash form, so a bare curl returns
+   nothing and looks like a stalled deploy.
+
+11. **Three built features are effectively unreachable.** The dashboard rewrite
+   left `QuickActions`, `DashboardCalendar`, `TrajectorySection` and `KpiRow`
+   rendered nowhere, and they carried the navigation. `/calendar` and `/analytics`
+   now have ZERO live inbound links; `/board` — the whole work-order and staff
+   portal system — is reachable only from a link inside a `/help` article. Where
+   they belong in the nav is a design call.
+
+12. **Sector language survives in core app copy**: Playbooks says "your crew" and
+   "work order"; Board is "Work Board" with "Field flags". Fine for a trade, wrong
+   for the other 45 industries onboarding now offers.
+
+13. **Sentry is built but NOT live** (no DSN in any production chunk). ⚠️ The moment
+   `VITE_SENTRY_DSN` is set, Sentry becomes a data processor and must be added to
+   the vendor lists on `/privacy` and `/security` — both of which currently claim
+   to be exhaustive ("that's the full list") and promise to notify on change.
+
+14. **Back navigation** exists on only two tool pages (`BackToTools`, on Decision
+   and Safety). The other nine still rely on a "Cancel" at the bottom of the form,
+   which is below the fold and disappears entirely once a result renders.
 
 ## Common commands
 
@@ -354,18 +467,28 @@ supabase secrets list                             # digests only, values stay hi
 
 ## Where Daniel's auto-memory lives
 
+⭐ **Current location (as of 22 Aug 2026):**
+`~/.claude/projects/-Users-danielkalawarny/memory/`
+
+⚠️ Memory is keyed to the worktree the session was opened in, so a session
+started somewhere else gets a DIFFERENT directory and will not see this one.
+That is why this file exists — CLAUDE.md travels with the repo and memory does
+not. **When something important is decided, write it in both.**
+
+The GrowthOS-relevant files there:
+
+- `project_growthos.md` — project context + ⭐ **the refreshed open list**
+- `project_growthos_audit_2026_08_22.md` — the 8/22 session in full: broken
+  uploads, the all-45-route browser audit, the RAG chunker, /crm, the price
+  decision, the Teams / CRM-integration / meetings calls, and the verification
+  lessons
+- `MEMORY.md` — the index loaded at session start
+- `user_daniel.md`, `feedback_working_style.md` — how he works
+
+⚠️ Most other files there are **kinwove**, his other product. Do not assume a
+memory entry is about GrowthOS — see the note at the top of `project_growthos.md`
+about the day "growth" was answered with a kinwove strategy.
+
+An older directory exists at
 `~/.claude/projects/-Users-danielkalawarny-Desktop-untitled-folder-2/memory/`
-
-That memory is keyed to the worktree path it was created in — a fresh
-Claude Code session opened directly in `/Users/danielkalawarny/growthOS`
-will get its **own** memory directory and won't see the prior one
-automatically. The relevant project memories from that location:
-
-- `project_growthos.md` — GrowthOS project context (mirror of much of this file)
-- `growthos_parked_followups.md` — the parked list above
-- `user_profile.md` — Daniel's working style
-- `feedback_invite_copy_tone.md` — copy tone for invites/shares
-- `project_the_way.md`, `project_deconstructors.md` — his other projects
-
-If you need to pull those into this session's memory, read them once and
-write equivalent entries here.
+from when the repo lived elsewhere. Treat it as historical.
