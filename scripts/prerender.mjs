@@ -53,7 +53,6 @@ const ROUTES = [
   { path: '/',                titleContains: 'advisor for Christian business owners' },
   { path: '/pricing',         titleContains: 'Pricing — GrowthOS' },
   { path: '/demo',            titleContains: 'See it work' },
-  { path: '/crm',             titleContains: 'CRM for contractors' },
   { path: '/about',           titleContains: 'About GrowthOS' },
   { path: '/security',        titleContains: 'Security & data handling' },
   { path: '/privacy',         titleContains: 'Privacy policy' },
@@ -199,7 +198,7 @@ async function main() {
       // De-dupe <head>. The static index.html ships a fallback head; Helmet
       // appends its own copy of every overridden tag, so a naive snapshot
       // contains both. Crawlers reading the first occurrence would see the
-      // home-page meta on /pricing and /crm. Keep only the last instance of
+      // home-page meta on /pricing and /about. Keep only the last instance of
       // each unique name/property/rel — that's the Helmet-injected (correct)
       // version. Title and JSON-LD scripts get the same treatment.
       await page.evaluate(() => {
