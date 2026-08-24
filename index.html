@@ -61,7 +61,17 @@
 
     <!-- Default Organization JSON-LD — present even before React mounts so
          crawlers without JS still know who runs the site. Per-page schemas
-         (SoftwareApplication, Product, FAQPage) are added by Helmet. -->
+         (SoftwareApplication, Product, FAQPage) are added by Helmet.
+
+         ⚠️ KEEP THIS IN STEP WITH organizationSchema() in src/lib/seo.js.
+         It drifted once and nobody noticed: this description still defined
+         GrowthOS by SECTOR — a tool for one set of trades — months after the
+         reposition put the buyer on conviction instead. It is the FIRST thing
+         every crawler reads and the last thing anyone thinks to check, the
+         same failure as the JSON-LD that went on advertising an old price.
+         (Comments ship to the browser, so don't quote the wrong copy here
+         either — this one did, and put the stale phrase straight back into
+         the artifact it was cleaning up.) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -70,7 +80,7 @@
         "url": "https://leadeos.com",
         "logo": "https://leadeos.com/favicon.svg",
         "email": "support@leadeos.com",
-        "description": "AI-powered operating system for home-services and specialty-trade contractors — combining an AI business advisor with tools for cash flow, hiring, marketing, compliance, and operations."
+        "description": "An AI business advisor for Christian business owners — one who reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering, not only what it earns."
       }
     </script>
   </head>

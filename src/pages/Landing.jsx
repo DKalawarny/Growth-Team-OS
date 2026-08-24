@@ -128,6 +128,7 @@ export default function Landing() {
       <HeroSection />
       <VideoSection />
       <ProblemSection />
+      <ConvictionSection />
       <SolomonSection />
       <ToolsSection />
       <IntegrationsSection />
@@ -325,6 +326,75 @@ function ProblemSection() {
 
 // ── Solomon showcase ──────────────────────────────────────────────────────────
 
+// ── What it's for ─────────────────────────────────────────────────────────────
+//
+// ⭐ THE ONE SECTION THAT SEPARATES THIS FROM THE NEXT BUSINESS TOOL.
+//
+// The page was flat, and the reason was specific: every differentiator on it
+// was a claim about SOFTWARE — reads your books, remembers your decisions,
+// argues both ways — and any AI tool with your books connected can claim four
+// of the five. The thing that actually separates GrowthOS appeared three times
+// and all three were hedged: a subordinate clause in the hero, a promise about
+// what Solomon WON'T do, and a footer saying "run a certain way", which is a
+// euphemism.
+//
+// So this section states it, and states it POSITIVELY. It is the product's own
+// thesis (ADVISOR_SYSTEM_PROMPT, "WHAT THE BUSINESS IS FOR") in Daniel's words
+// — the business is not a funding mechanism for the real thing, it IS the
+// thing — pitched at the level of CONDUCT rather than creed.
+//
+// ⚠️ That last part is load-bearing and deliberate. The Creed principle: the
+// marketing is aimed at the Christian market, but the product must never push
+// anyone out, and attraction beats persuasion. Conduct is legible to everyone —
+// "someone who shares none of your convictions" is the whole principle in one
+// clause — so a non-Christian owner reads integrity and can follow it exactly
+// as far as he wants, while a Christian owner knows precisely what it is.
+// Where it comes from stays FINDABLE (the /about link) and is never asserted.
+// Do not add religious vocabulary here. It would cost the truthfulness the
+// brand runs on, and it would push out the reader this is written for.
+//
+// Typographically quiet on purpose: no icon list, no checkmarks, no third
+// bulleted grid. The page has three of those already, which is part of why it
+// read flat. This is the one place it slows down and says something.
+function ConvictionSection() {
+  return (
+    <section className="bg-white py-24 border-b border-gray-100">
+      <div className="max-w-2xl mx-auto px-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+          What you&rsquo;re building is the thing.<br />
+          <span className="text-gray-400">Not the money for the thing.</span>
+        </h2>
+
+        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
+          <p>
+            Most business advice treats the company as a machine for producing a
+            number, and everything else &mdash; the wages, the estimates, whether
+            the shop is a decent place to work &mdash; as overhead on the way there.
+          </p>
+          <p>
+            Solomon will hold you to your margins as hard as any CFO would. He will
+            also notice how the customer who is never going to check the invoice
+            gets treated, and whether someone who shares none of your convictions
+            still wants to work here in a year.
+          </p>
+          <p className="text-gray-900 font-medium">
+            He won&rsquo;t tell you that running it this way makes it more profitable.
+            Nobody can promise that. He&rsquo;ll tell you what it costs, and whether
+            you can afford it.
+          </p>
+        </div>
+
+        <Link
+          to="/about"
+          className="inline-block mt-8 text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+        >
+          Why it&rsquo;s built this way &rarr;
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 function SolomonSection() {
   const [visible, setVisible] = useState(0)
 
@@ -354,10 +424,11 @@ function SolomonSection() {
               genuinely disagree, then says where he lands &mdash; and what he can&rsquo;t
               see from where he sits.
             </p>
-            <p className="text-white/60 leading-relaxed mb-6">
-              He will not tell you that being faithful makes a business profitable.
-              Nobody can promise you that, and you have heard enough people try.
-            </p>
+            {/* The anti-prosperity line used to sit here as a refusal. It now
+                lives in ConvictionSection, stated as a promise — "he'll tell you
+                what it costs, and whether you can afford it" — which is the same
+                move the product's disclaimer rule makes everywhere else: state
+                the limit, never apologise for the product. */}
             <ul className="space-y-3">
               {[
                 'Reads your finances, roadmap, and team check-ins daily',
@@ -682,7 +753,11 @@ function PageFooter() {
       <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
         <div className="flex items-center gap-2">
           <span className="font-black text-white">Growth<span className="text-brand-400">OS</span></span>
-          <span>· An advisor for owners who want it run a certain way</span>
+          {/* "run a certain way" was a euphemism doing the work a tagline
+              should do. It said nothing, standing alone in a footer with
+              nothing to explain it — unlike /about, where the same phrase is
+              immediately unpacked and earns its place. */}
+          <span>· An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
         </div>
         <div className="flex items-center gap-5">
           <Link to="/demo" className="hover:text-white/60 transition-colors">See it work</Link>

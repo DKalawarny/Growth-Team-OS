@@ -442,7 +442,7 @@ export default function Pricing() {
 
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
         <footer className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-400">
-          <span>© GrowthOS · An advisor for owners who want it run a certain way</span>
+          <span>© GrowthOS · An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
           <a href="mailto:support@leadeos.com" className="underline hover:text-gray-600">support@leadeos.com</a>
         </footer>
 
