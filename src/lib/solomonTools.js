@@ -90,7 +90,13 @@ const RUNNABLE = {
     label:     'Building the 13-week cash flow',
     promptKey: 'CASH_FLOW_PROMPT',
     model:     HAIKU,
-    maxTokens: 4000,
+    // ⚠️ 6000, not the 4000 the tool page uses. A real run measured here fills
+    // thirteen week objects each carrying a sentence-long note, plus the
+    // assessment, key events, risks and actions — close enough to 4000 that a
+    // wordy month tips over, and a JSON answer that stops mid-word saves
+    // nothing at all. max_tokens is a ceiling, not a spend: the headroom costs
+    // nothing on the runs that don't need it.
+    maxTokens: 6000,
     title:     r => `Cash Flow${r?.runway_weeks != null ? ` · ${r.runway_weeks}wk runway` : ''} · ${monthYear()}`,
   },
   'cfo-dashboard': {
@@ -388,7 +394,11 @@ async function doRunTool({ companyId, userId, context, input }) {
       noCache:   true,
     })
   } catch (err) {
-    if (isCapExceeded(err) || isSpendCapExceeded(err)) {
+    // Expected failures come back as a tool_result Solomon can explain, not as
+    // an exception that kills the turn: a cap he should tell the owner about,
+    // and a run cut off by its token budget. Everything else is a real fault
+    // and belongs in the outer handler.
+    if (isCapExceeded(err) || isSpendCapExceeded(err) || err?.code === 'max_tokens') {
       return { error: err.message, payload: { ran: false, reason: err.message } }
     }
     throw err

@@ -216,6 +216,29 @@ Artifacts persist in `chat_messages.source_documents` — the column already
 existed, defaulted to `'[]'`, and is exactly the right shape, so the chips
 survive a reload with no migration.
 
+**Verified live**, not just built: Solomon announced the run, named the input he
+did NOT have rather than inventing a bank balance, called `run_tool`, and the
+artifact rendered in the Library through the existing `cash-flow` renderer with
+thirteen weeks that reconcile ($60,000 → 63,500 → 61,700 → 53,500 → …) and notes
+citing real AR. Chip survived a reload. Two turns cost $0.21.
+
+⚠️ **One of the two runs failed and the cause was never established** — console
+and network capture were not armed for it, and it did not reproduce. Solomon
+handled it correctly (said so plainly, offered to continue in prose) but the
+underlying fault is unknown. Two changes so the next one names itself rather
+than needing a diagnosis:
+- `runToolCall` now throws on `stop_reason === 'max_tokens'` instead of letting
+  the truncated JSON fail at `JSON.parse`, where the message blames the parser
+  for our token budget. This is the 22 Aug Library Intelligence lesson made
+  structural — the edge function forwards `stop_reason` now, so the condition
+  can be named instead of diagnosed.
+- Cash flow gets 6000 tokens on the Solomon path. A measured run fills 13 week
+  objects each with a sentence-long note plus assessment, key events, risks and
+  actions — close enough to 4000 that a wordy month tips over, and truncated
+  JSON saves nothing. ⚠️ **The tool PAGE still uses 4000** and carries the same
+  risk; left alone because the cause is unproven and changing eight pages on a
+  guess is how you break things.
+
 🔴 **Found on the way: every tool generate had been running with NO system
 prompt.** `runToolCall` accepted `promptKey` / `stableContext` and never put
 them in the request body — it still built from `systemPrompt`, which the tool

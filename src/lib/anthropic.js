@@ -408,6 +408,26 @@ export async function runToolCall({
   }
 
   const data = await res.json()
+
+  // ⭐ CUT OFF, or UNREADABLE? Say which.
+  //
+  // A tool that hits max_tokens returns JSON that stops mid-word, so the very
+  // next thing to fail is JSON.parse — and the message the owner sees blames
+  // the parser, or the model, for what is actually our token budget. That is
+  // exactly how Library Intelligence burned a session on 22 Aug: output_tokens
+  // sitting precisely on maxTokens while `safeParseJson` looked guilty and was
+  // entirely correct.
+  //
+  // The edge function now forwards stop_reason, so the condition can be named
+  // instead of diagnosed. Raise the caller's maxTokens when you see this.
+  if (json && data.stop_reason === 'max_tokens') {
+    const err = new Error(
+      `The ${toolId ?? 'tool'} ran out of room at ${maxTokens} tokens and its answer was cut off mid-way, so nothing could be saved. Try again — if it keeps happening the budget for this tool needs raising.`,
+    )
+    err.code = 'max_tokens'
+    throw err
+  }
+
   const text = json ? unwrapJson(data.text ?? '') : (data.text ?? '')
 
   // Usage is now logged inside the Edge Function — no second client call.
