@@ -10,13 +10,26 @@
  *
  * One endpoint, two modes:
  *
- *   stream: false  → returns { text, usage: { input_tokens, output_tokens } }
+ *   stream: false  → returns { text, content, stop_reason, usage: { input_tokens, output_tokens } }
  *   stream: true   → returns text/event-stream of normalized chunks:
  *                      data: {"type":"chunk","text":"..."}
+ *                      data: {"type":"tool_use","id":"toolu_…","name":"run_tool","input":{…}}
  *                      ...
- *                      data: {"type":"done","usage":{"input_tokens":n,"output_tokens":n}}
+ *                      data: {"type":"done","stop_reason":"tool_use","usage":{"input_tokens":n,"output_tokens":n}}
  *                    or on error:
  *                      data: {"type":"error","message":"..."}
+ *
+ * ⭐ TOOL USE. `tools` is forwarded to Anthropic verbatim and tool_use blocks
+ * come back through both modes. The loop itself lives in the BROWSER, not here
+ * — see src/lib/solomonTools.js. That is deliberate: every tool Solomon can run
+ * is a thing the app already does with the owner's own session, under RLS,
+ * reusing the existing tool prompts. Running the loop server-side would mean
+ * re-implementing all of that with the service-role key, which is both more
+ * code and strictly less safe.
+ *
+ * Each leg of a tool loop is a separate request through here, so the cap check
+ * and the usage write happen per leg. A runaway loop costs money at the same
+ * rate as a runaway conversation and is stopped by the same limits.
  *
  * The normalized SSE format is deliberately simpler than Anthropic's
  * wire format. Browser only cares about text deltas; everything else
@@ -406,6 +419,8 @@ Deno.serve(async (req) => {
       stream?:       boolean
       toolId?:       string
       kind?:         string
+      tools?:        unknown[]
+      toolChoice?:   unknown
       promptKey?:       string
       stableContext?:   string
       volatileContext?: string
@@ -445,12 +460,23 @@ Deno.serve(async (req) => {
 
     const system = buildSystem(body)
 
+    // Tools ride in front of `system` in Anthropic's request, which means they
+    // are part of the cached prefix. Keep the list stable and byte-identical
+    // between turns (it is a module-level const on the client) or every turn
+    // pays to write the cache again.
+    const tools = Array.isArray(body.tools) && body.tools.length ? body.tools : null
+
     const anthropicReq = {
       model,
       max_tokens: maxTok,
       system,
       messages:   body.messages ?? [],
       stream:     !!body.stream,
+      ...(tools ? { tools } : {}),
+      // `tool_choice: {type:'none'}` is how a caller ends a tool loop. Dropping
+      // `tools` instead would fail: a conversation whose history already holds
+      // tool_use blocks must still declare the tools those blocks refer to.
+      ...(tools && body.toolChoice ? { tool_choice: body.toolChoice } : {}),
     }
 
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {
@@ -481,10 +507,18 @@ Deno.serve(async (req) => {
     // ── Non-streaming path ────────────────────────────────────────────────
     if (!body.stream) {
       const data = await upstream.json() as {
-        content?: Array<{ type: string; text?: string }>
-        usage?:   { input_tokens?: number; output_tokens?: number }
+        content?:     Array<{ type: string; text?: string }>
+        stop_reason?: string
+        usage?:       { input_tokens?: number; output_tokens?: number }
       }
-      const text = (data.content ?? []).map(c => c.text ?? '').join('')
+      // Only text blocks concatenate into `text`. A tool_use block has no
+      // `.text`, and joining it in would have produced an empty string that
+      // looked like a normal (if unhelpful) answer — callers that use tools
+      // read `content` and `stop_reason` instead.
+      const text = (data.content ?? [])
+        .filter(c => c.type === 'text')
+        .map(c => c.text ?? '')
+        .join('')
       const tokensIn  = data.usage?.input_tokens  ?? 0
       const tokensOut = data.usage?.output_tokens ?? 0
 
@@ -514,6 +548,8 @@ Deno.serve(async (req) => {
 
       return json({
         text,
+        content:     data.content ?? [],
+        stop_reason: data.stop_reason ?? null,
         usage: { input_tokens: tokensIn, output_tokens: tokensOut },
       })
     }
@@ -556,17 +592,26 @@ Deno.serve(async (req) => {
     })
 
     // Translate Anthropic SSE → normalized SSE on the fly.
+    //
+    // Parser state lives in closure variables rather than on `this`. Both are
+    // per-request (the TransformStream is constructed inside the handler), and
+    // a tool_use block needs three pieces of state that arrive across three
+    // different event types — readable beats clever here.
     const enc = new TextEncoder()
+    let sseBuffer  = ''
+    let stopReason: string | null = null
+
+    // A tool call arrives in pieces: content_block_start carries id + name with
+    // an empty input, then the arguments stream in as input_json_delta
+    // fragments, then content_block_stop closes it. Keyed by block index
+    // because parallel tool calls interleave.
+    const openTools = new Map<number, { id: string; name: string; json: string }>()
+
     const transformer = new TransformStream<Uint8Array, Uint8Array>({
-      start() {
-        // initialize per-stream parser state
-        (this as unknown as { buffer: string }).buffer = ''
-      },
       transform(chunk, controller) {
-        const self = this as unknown as { buffer: string }
-        self.buffer += new TextDecoder().decode(chunk, { stream: true })
-        const events = self.buffer.split('\n\n')
-        self.buffer  = events.pop() ?? ''
+        sseBuffer += new TextDecoder().decode(chunk, { stream: true })
+        const events = sseBuffer.split('\n\n')
+        sseBuffer    = events.pop() ?? ''
         for (const ev of events) {
           for (const line of ev.split('\n')) {
             if (!line.startsWith('data:')) continue
@@ -574,14 +619,49 @@ Deno.serve(async (req) => {
             if (!payload) continue
             try {
               const data = JSON.parse(payload)
-              if (
-                data.type === 'content_block_delta' &&
-                data.delta?.type === 'text_delta' &&
-                typeof data.delta.text === 'string'
-              ) {
-                const out = `data: ${JSON.stringify({ type: 'chunk', text: data.delta.text })}\n\n`
+
+              if (data.type === 'content_block_start' && data.content_block?.type === 'tool_use') {
+                openTools.set(data.index, {
+                  id:   data.content_block.id,
+                  name: data.content_block.name,
+                  json: '',
+                })
+              }
+
+              if (data.type === 'content_block_delta') {
+                if (data.delta?.type === 'text_delta' && typeof data.delta.text === 'string') {
+                  const out = `data: ${JSON.stringify({ type: 'chunk', text: data.delta.text })}\n\n`
+                  controller.enqueue(enc.encode(out))
+                }
+                if (data.delta?.type === 'input_json_delta' && typeof data.delta.partial_json === 'string') {
+                  const open = openTools.get(data.index)
+                  if (open) open.json += data.delta.partial_json
+                }
+              }
+
+              if (data.type === 'content_block_stop' && openTools.has(data.index)) {
+                const open = openTools.get(data.index)!
+                openTools.delete(data.index)
+                // A tool with no arguments streams no input_json_delta at all,
+                // so an empty accumulator means `{}`, not a parse failure.
+                let input: unknown = {}
+                let parseFailed = false
+                if (open.json.trim()) {
+                  try { input = JSON.parse(open.json) } catch { parseFailed = true }
+                }
+                const out = parseFailed
+                  ? `data: ${JSON.stringify({ type: 'error', message: `Could not read the arguments for ${open.name}.` })}\n\n`
+                  : `data: ${JSON.stringify({ type: 'tool_use', id: open.id, name: open.name, input })}\n\n`
                 controller.enqueue(enc.encode(out))
               }
+
+              // Why the reply ended. `tool_use` here is what tells the client
+              // to run the tools and come back rather than treat the turn as
+              // finished — without it a tool call looks like a short answer.
+              if (data.type === 'message_delta' && data.delta?.stop_reason) {
+                stopReason = data.delta.stop_reason
+              }
+
               if (data.type === 'error') {
                 const out = `data: ${JSON.stringify({ type: 'error', message: data.error?.message ?? 'unknown error' })}\n\n`
                 controller.enqueue(enc.encode(out))
@@ -599,7 +679,8 @@ Deno.serve(async (req) => {
         // server-side "usage logged" signal.
         try { await observerDone } catch { /* already logged */ }
         const out = `data: ${JSON.stringify({
-          type:  'done',
+          type:        'done',
+          stop_reason: stopReason,
           usage: { input_tokens: observedUsage.tokensIn, output_tokens: observedUsage.tokensOut },
         })}\n\n`
         controller.enqueue(enc.encode(out))

@@ -12,11 +12,16 @@ import { Link } from 'react-router-dom'
  * So: everything stays visible, but clicking seeds the CONVERSATION instead
  * of opening a page. Discoverability without the sprawl.
  *
- * Honest limitation, worth knowing before this reads as finished: Solomon
- * answers these conversationally, he does not yet RUN the tool and hand back
- * the structured artifact. That needs tool-use wired into the claude Edge
- * Function. Until then each row also offers "open the full tool", so nothing
- * that worked before stops working.
+ * ⭐ These now genuinely run. Clicking a row still only seeds the conversation
+ * — Solomon decides whether the question wants a tool or an answer — but when
+ * it does want one he runs the real tool and the artifact lands in the Library.
+ * See lib/solomonTools.js.
+ *
+ * Two rows are still conversation-only, and deliberately so: "Draft an update
+ * for the team" (the newsletter prompt is still built inline in Newsletter.jsx,
+ * so there is no promptKey to run) and "Write down a repeating job" (Playbooks
+ * is a page, not a generate). Each row keeps its "open the full tool" link
+ * regardless, so nothing that worked before stops working.
  */
 
 const GROUPS = [

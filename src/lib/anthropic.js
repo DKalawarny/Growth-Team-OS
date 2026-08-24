@@ -75,6 +75,7 @@ const MIN_CACHE_CHARS = 500
 // Tools keep the 5-minute default: they are one-shot generates, and the only
 // follow-up (a refine) lands within seconds.
 const TTL_CONVERSATION = '1h'
+const TTL_TOOL         = '5m'
 
 function buildSystemPayload(text, ttl) {
   if (!text || text.length < MIN_CACHE_CHARS) {
@@ -239,7 +240,7 @@ export async function streamClaude({
   // This path used to be treated as "low-level": no cap check and, worse, no
   // usage recorded at all — so the product's biggest cost driver was invisible
   // to its own spend cap.
-  return streamClaudeRaw({
+  const { text } = await streamClaudeRaw({
     // Tagged so conversation spend is attributable in usage_events rather than
     // landing in 'untagged'. Both are exempt from the per-tool COUNT; only this
     // one tells you afterwards where the money went.
@@ -252,6 +253,49 @@ export async function streamClaude({
     // Streaming is the conversational path, so it gets the long entry.
     cacheTtl: TTL_CONVERSATION,
     messages,
+    maxTokens,
+    model,
+    onChunk,
+  })
+  return text
+}
+
+/**
+ * ⭐ Streaming Advisor turn WITH TOOLS — one leg of the loop.
+ *
+ * Same wire path as streamClaude, but the caller gets back everything it needs
+ * to decide whether the turn is finished:
+ *
+ *   { text, toolUses: [{ id, name, input }], stopReason }
+ *
+ * `stopReason === 'tool_use'` means Solomon asked to run something and is
+ * waiting on the result — run it, append the tool_result, and call this again.
+ * The loop itself lives in the caller (see Advisor.jsx and lib/solomonTools.js)
+ * so tools execute in the browser under the owner's own session and RLS.
+ */
+export async function streamClaudeTurn({
+  promptKey,
+  stableContext,
+  systemPrompt,
+  systemVolatile,
+  messages,
+  tools,
+  toolChoice,
+  maxTokens = 2000,
+  model     = SONNET,
+  onChunk,
+}) {
+  return streamClaudeRaw({
+    toolId: 'advisor',
+    kind:   'generate',
+    promptKey,
+    stableContext,
+    systemPrompt,
+    systemVolatile,
+    cacheTtl: TTL_CONVERSATION,
+    messages,
+    tools,
+    toolChoice,
     maxTokens,
     model,
     onChunk,
@@ -316,7 +360,21 @@ export async function runToolCall({
     if (cached) return cached
   }
 
-  const sys     = buildSystemPayload(systemPrompt)
+  // 🔴 This function ACCEPTED promptKey and stableContext and then dropped
+  // them on the floor — it built the body from `systemPrompt`, which the tool
+  // pages stopped sending when the prompts moved server-side. So the edge
+  // function fell through to its legacy string path and every tool generate
+  // ran with a system prompt of "" plus the respond-in-JSON suffix. The model
+  // still returned parseable JSON, the page still rendered it, and nothing
+  // anywhere said the prompt was missing.
+  //
+  // ⚠️ The shape to watch for, same as the milestone_id column: two sides each
+  // internally coherent, disagreeing with each other, and no error in between.
+  // The unused-parameter warning was the only signal and it was in the linter,
+  // not the product. See anthropic.test.js.
+  const sys = promptKey
+    ? { promptKey, stableContext, cacheTtl: TTL_TOOL }
+    : buildSystemPayload(systemPrompt, TTL_TOOL)
   const headers = await authHeaders()
 
   const res = await fetch(claudeFunctionUrl(), {
@@ -402,7 +460,7 @@ export async function streamToolCall({
     assertWithinSpendCap(companyId),
   ])
 
-  const fullText = await streamClaudeRaw({
+  const { text } = await streamClaudeRaw({
     promptKey,
     stableContext,
     systemPrompt,
@@ -415,7 +473,7 @@ export async function streamToolCall({
     json,
   })
 
-  return json ? unwrapJson(fullText) : fullText
+  return json ? unwrapJson(text) : text
 }
 
 // ── Internal: streaming fetch + SSE parser ────────────────────────────────────
@@ -426,8 +484,12 @@ export async function streamToolCall({
 //
 // Wire format we expect, one event per `\n\n`-delimited block:
 //   data: {"type":"chunk","text":"..."}
+//   data: {"type":"tool_use","id":"toolu_…","name":"…","input":{…}}
 //   data: {"type":"error","message":"..."}
-//   data: {"type":"done","usage":{...}}
+//   data: {"type":"done","stop_reason":"tool_use","usage":{...}}
+//
+// Returns { text, toolUses, stopReason }. Callers that predate tool use take
+// `.text` and ignore the rest.
 
 async function streamClaudeRaw({
   promptKey,
@@ -436,6 +498,8 @@ async function streamClaudeRaw({
   systemVolatile,
   cacheTtl,
   messages,
+  tools,
+  toolChoice,
   maxTokens,
   model,
   onChunk,
@@ -462,6 +526,8 @@ async function streamClaudeRaw({
       toolId,
       kind,
       json,
+      ...(tools?.length ? { tools } : {}),
+      ...(tools?.length && toolChoice ? { toolChoice } : {}),
     }),
   })
 
@@ -482,12 +548,14 @@ async function streamClaudeRaw({
 
   const reader  = res.body.getReader()
   const decoder = new TextDecoder()
-  let buffer    = ''
-  let fullText  = ''
+  let buffer     = ''
+  let fullText   = ''
+  let stopReason = null
+  const toolUses = []
 
   // Iterate SSE events. We accumulate decoded bytes into `buffer`, split
   // on `\n\n`, and parse each event's `data:` line. `chunk` events drive
-  // onChunk; `error` events throw; `done` is the natural terminator.
+  // onChunk; `error` events throw; `done` carries the stop reason.
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
@@ -505,10 +573,13 @@ async function streamClaudeRaw({
           if (data.type === 'chunk' && typeof data.text === 'string') {
             fullText += data.text
             onChunk?.(data.text, fullText)
+          } else if (data.type === 'tool_use') {
+            toolUses.push({ id: data.id, name: data.name, input: data.input ?? {} })
+          } else if (data.type === 'done') {
+            stopReason = data.stop_reason ?? null
           } else if (data.type === 'error') {
             throw new Error(data.message || 'Stream error')
           }
-          // `done` is informational — we end naturally when the reader closes
         } catch (e) {
           if (e instanceof SyntaxError) continue   // skip malformed line
           throw e
@@ -517,7 +588,7 @@ async function streamClaudeRaw({
     }
   }
 
-  return fullText
+  return { text: fullText, toolUses, stopReason }
 }
 
 // ── JSON fence cleanup ────────────────────────────────────────────────────────

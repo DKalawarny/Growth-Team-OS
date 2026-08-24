@@ -2,7 +2,8 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { callClaude, streamClaude, SONNET, HAIKU } from '../lib/anthropic'
+import { callClaude, streamClaudeTurn, SONNET, HAIKU } from '../lib/anthropic'
+import { SOLOMON_TOOLS, runSolomonTool, describeToolUse } from '../lib/solomonTools'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
@@ -34,6 +35,18 @@ import { rememberFromExchange } from '../lib/memory'
  */
 
 const HISTORY_TURNS_SENT = 20
+
+// ⭐ How many times Solomon may run tools before he has to answer in words.
+//
+// After this many rounds the next call goes out with no tools attached at all,
+// which forces a written answer rather than another tool call. A ceiling that
+// merely stops the loop would leave the owner staring at a bubble that never
+// resolves; this one guarantees the turn ends with something to read.
+//
+// Three is not a cost decision — the spend cap is — it is a shape decision.
+// A conversational answer that needed four rounds of tools was the wrong shape
+// for a conversation.
+const MAX_TOOL_ROUNDS = 3
 
 // ── localStorage helper for morning opener tracking ──────────────────────────
 
@@ -84,6 +97,7 @@ export default function Advisor() {
   const [loading,         setLoading]         = useState(true)
   const [sending,         setSending]         = useState(false)
   const [generatingOpen,  setGeneratingOpen]  = useState(false) // morning opener in flight
+  const [toolActivity,    setToolActivity]    = useState(null)  // "Building the 13-week cash flow"
   const [error,           setError]           = useState(null)
   const [spendInfo,       setSpendInfo]       = useState(null)  // { used, cap }
 
@@ -158,7 +172,7 @@ export default function Advisor() {
     ;(async () => {
       const { data } = await supabase
         .from('chat_messages')
-        .select('id, role, content, created_at')
+        .select('id, role, content, source_documents, created_at')
         .eq('company_id', profile.company_id)
         .eq('user_id', profile.id)
         .eq('chat_type', 'advisor')
@@ -200,7 +214,7 @@ export default function Advisor() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length, sending, generatingOpen])
+  }, [messages.length, sending, generatingOpen, toolActivity])
 
   // ── Send message ──────────────────────────────────────────────────────────
 
@@ -313,19 +327,88 @@ export default function Advisor() {
         // eslint-disable-next-line no-console
         console.log(`[advisor] model=${choice.model.split('-')[1]} reason=${choice.reason}`)
       }
-      const reply = await streamClaude({
-        model:     choice.model,
-        promptKey:     'ADVISOR_SYSTEM_PROMPT',
-        stableContext: stableBlock,
-        systemVolatile,
-        messages:  historySlice,
-        maxTokens: 2000,
-        onChunk: (_chunk, fullText) => {
-          setMessages(prev => prev.map(m =>
-            m.id === STREAM_ID ? { ...m, content: fullText } : m
-          ))
-        },
-      })
+      // ⭐ THE TOOL LOOP. Solomon can now run the tools himself rather than
+      // only talking about them — see lib/solomonTools.js for what he can run
+      // and why the loop lives here in the browser instead of in the Edge
+      // Function.
+      //
+      // Each pass streams into the same bubble. `parts` holds the text from
+      // completed passes so a sentence he wrote before reaching for a tool
+      // ("Let me pull the actual numbers") is still on screen while the tool
+      // runs, and survives into what gets saved.
+      const convo     = [...historySlice]
+      const parts     = []
+      const artifacts = []
+
+      for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
+        // The last pass can no longer call anything — tool_choice 'none'. The
+        // tools stay DECLARED: a conversation whose history already contains
+        // tool_use blocks must still define the tools they refer to, and
+        // keeping the list identical also keeps the cached prefix intact.
+        const lastRound = round === MAX_TOOL_ROUNDS
+        const prefix    = parts.length ? `${parts.join('\n\n')}\n\n` : ''
+
+        const leg = await streamClaudeTurn({
+          model:     choice.model,
+          promptKey:     'ADVISOR_SYSTEM_PROMPT',
+          stableContext: stableBlock,
+          systemVolatile,
+          messages:  convo,
+          tools:      SOLOMON_TOOLS,
+          toolChoice: lastRound ? { type: 'none' } : undefined,
+          maxTokens: 2000,
+          onChunk: (_chunk, fullText) => {
+            setMessages(prev => prev.map(m =>
+              m.id === STREAM_ID ? { ...m, content: prefix + fullText } : m
+            ))
+          },
+        })
+
+        if (leg.text.trim()) parts.push(leg.text.trim())
+
+        // The presence of tool_use blocks is the signal, not stop_reason. They
+        // agree in practice, but if the `done` event ever arrives without a
+        // stop reason, trusting it would drop a tool call on the floor and
+        // leave the owner an answer that quietly skipped the work.
+        if (leg.toolUses.length === 0) break
+
+        // Replay the assistant turn exactly as it was issued — the tool_use
+        // blocks have to come back with their ids or the tool_results below
+        // have nothing to attach to. An empty text block is rejected by the
+        // API, so it is included only when he actually said something.
+        convo.push({
+          role: 'assistant',
+          content: [
+            ...(leg.text.trim() ? [{ type: 'text', text: leg.text }] : []),
+            ...leg.toolUses.map(t => ({ type: 'tool_use', id: t.id, name: t.name, input: t.input })),
+          ],
+        })
+
+        // Run them in order. Sequential rather than parallel on purpose: a
+        // tool run is a Claude call of its own, and firing several at once
+        // races them against the same spend cap with no way to say which one
+        // tripped it.
+        const results = []
+        for (const toolUse of leg.toolUses) {
+          setToolActivity(describeToolUse(toolUse))
+          const outcome = await runSolomonTool({
+            toolUse,
+            companyId: profile.company_id,
+            userId:    profile.id,
+            context,
+          })
+          results.push(outcome.block)
+          if (outcome.artifact) artifacts.push(outcome.artifact)
+        }
+        setToolActivity(null)
+
+        // Every tool_result for a turn goes back in ONE user message. Splitting
+        // them teaches the model to stop asking for more than one at a time.
+        convo.push({ role: 'user', content: results })
+      }
+
+      setToolActivity(null)
+      const reply = parts.join('\n\n')
 
       if (!reply) throw new Error('Empty response from Claude.')
 
@@ -351,6 +434,10 @@ export default function Advisor() {
           chat_type:  'advisor',
           role:       'assistant',
           content:    reply,
+          // Anything Solomon built this turn. The column already existed and
+          // was always '[]' — it is exactly the right shape for this, so the
+          // artifact chips survive a reload without a migration.
+          source_documents: artifacts,
         })
         .select()
         .single()
@@ -371,6 +458,7 @@ export default function Advisor() {
       setMessages(prev => prev.filter(m => m.id !== STREAM_ID))
       setError(isSpendCapExceeded(err) ? err : (err.message ?? 'Something went wrong.'))
     } finally {
+      setToolActivity(null)
       setSending(false)
       inputRef.current?.focus()
     }
@@ -414,11 +502,21 @@ export default function Advisor() {
           ) : (
             <div className="space-y-1.5">
               {messages.map(m => (
-                <Bubble key={m.id} role={m.role} content={m.content} streaming={m.id === '__streaming__'} onSave={handleSaveMessage} />
+                <Bubble
+                  key={m.id}
+                  role={m.role}
+                  content={m.content}
+                  artifacts={m.source_documents}
+                  streaming={m.id === '__streaming__'}
+                  onSave={handleSaveMessage}
+                />
               ))}
               {generatingOpen && <MorningThinkingBubble />}
+              {/* What he's off doing. Sits under the bubble so the sentence he
+                  wrote before reaching for the tool stays readable. */}
+              {toolActivity && <ToolActivity label={toolActivity} />}
               {/* ThinkingBubble only shows before first chunk arrives */}
-              {sending && !messages.some(m => m.id === '__streaming__' && m.content) && <ThinkingBubble />}
+              {sending && !toolActivity && !messages.some(m => m.id === '__streaming__' && m.content) && <ThinkingBubble />}
             </div>
           )}
           <div ref={bottomRef} />
@@ -578,7 +676,56 @@ function WelcomeBlock({ profile, onPick }) {
   )
 }
 
-function Bubble({ role, content, streaming = false, onSave }) {
+/**
+ * What Solomon is doing while he isn't writing.
+ *
+ * Deliberately a plain line rather than a spinner with a percentage: a tool run
+ * takes as long as it takes, and a fake progress bar is a small lie in a
+ * product whose whole argument is that it doesn't tell them any.
+ */
+function ToolActivity({ label }) {
+  return (
+    <div className="flex justify-start pl-1 pt-1">
+      <div className="flex items-center gap-2 text-[12px]" style={{ color: 'rgba(13,20,19,0.40)' }}>
+        <span className="flex gap-1" aria-hidden>
+          {[0, 150, 300].map(d => (
+            <span key={d} className="w-1 h-1 rounded-full animate-bounce" style={{ background: 'rgba(20,166,123,0.65)', animationDelay: `${d}ms` }} />
+          ))}
+        </span>
+        <span>{label}…</span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Artifacts Solomon produced on this turn. The document is already saved and
+ * formatted in the Library — this is the way back to it, so a thing he built
+ * doesn't disappear the moment the conversation scrolls.
+ */
+function ArtifactChips({ artifacts }) {
+  if (!Array.isArray(artifacts) || artifacts.length === 0) return null
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {artifacts.map(a => (
+        <Link
+          key={a.id ?? a.title}
+          to={`/documents?tool=${encodeURIComponent(a.tool_id)}`}
+          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] font-medium transition-colors"
+          style={{ background: 'rgba(20,166,123,0.10)', border: '1px solid rgba(20,166,123,0.28)', color: '#0f7a5a' }}
+        >
+          <svg viewBox="0 0 16 16" className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 2h8l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" /><path d="M11 2v4H5V2" />
+          </svg>
+          <span className="truncate max-w-[220px]">{a.title}</span>
+          <span aria-hidden>→</span>
+        </Link>
+      ))}
+    </div>
+  )
+}
+
+function Bubble({ role, content, artifacts, streaming = false, onSave }) {
   const isUser = role === 'user'
   const [saved, setSaved] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -619,6 +766,7 @@ function Bubble({ role, content, streaming = false, onSave }) {
             : <MarkdownContent text={content} streaming={streaming} />
           }
         </div>
+        {!isUser && !streaming && <ArtifactChips artifacts={artifacts} />}
         {/* Save button — only on assistant messages, not while streaming */}
         {!isUser && !streaming && content && (
           <button

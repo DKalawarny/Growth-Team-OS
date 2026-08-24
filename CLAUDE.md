@@ -175,6 +175,62 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## What just shipped (2026-08-24 — Solomon runs the tools)
+
+⭐ **Solomon can now run the tools himself.** He was only ever able to SEED one:
+the launcher dropped a sentence into the composer and he answered it in prose.
+He could talk about a thirteen-week cash position; he could not produce one.
+
+Two tools, each held to the same test as any other feature — *does it tell
+Solomon something true about the business, or does it act on what Solomon said?*
+
+- **`search_library`** — the library, searched again, mid-conversation. The
+  advisor context already ran one semantic search per turn, but only ever
+  against the owner's own last message; four turns in, retrieval was answering
+  a question nobody was asking any more.
+- **`run_tool`** — the real tool, the real prompt, the real structured
+  artifact, saved to the Library where the existing `tool_id` renderer already
+  knows how to draw it. Eight are runnable: cash-flow, cfo-dashboard,
+  hiring-scorecard, org-chart, offer-builder, decision, rocks-tracker,
+  exit-readiness.
+
+⭐ **The loop runs in the BROWSER, not the Edge Function** (`lib/solomonTools.js`,
+driven from `Advisor.jsx`). Every tool is something the app already does with the
+owner's own session: RLS scopes it, the existing tool prompts drive it, the
+existing caps meter it. Running the loop server-side would mean rebuilding all of
+that against the service-role key. The Edge Function only gained tool passthrough
+and `tool_use` in its normalized SSE.
+
+A run costs one of the ten monthly runs for that tool, exactly as clicking the
+tool page would — the chat is a different door onto the same thing, not a way
+around the meter. Three tool rounds max, then the next call goes out with
+`tool_choice: {type:'none'}` so the turn always ends in words.
+
+⚠️ **Tools are declared even on that last round.** A conversation whose history
+holds `tool_use` blocks must still define the tools they refer to — dropping the
+list would 400, and would also change the cached prefix. `tools` renders BEFORE
+`system`, so `SOLOMON_TOOLS` must stay a module constant with stable key order or
+every Advisor turn re-writes the cache.
+
+Artifacts persist in `chat_messages.source_documents` — the column already
+existed, defaulted to `'[]'`, and is exactly the right shape, so the chips
+survive a reload with no migration.
+
+🔴 **Found on the way: every tool generate had been running with NO system
+prompt.** `runToolCall` accepted `promptKey` / `stableContext` and never put
+them in the request body — it still built from `systemPrompt`, which the tool
+pages stopped sending in b3a3b2f when the prompts moved server-side. The Edge
+Function fell through to its legacy branch and got `""` plus the respond-in-JSON
+suffix. The model still returned parseable JSON and the pages still rendered it,
+so nothing looked wrong from either end. Broken 22 Aug → 24 Aug, all eight
+promptKey tools; Newsletter was unaffected because its prompt is inline.
+
+⭐ **The only signal was an unused-parameter warning in the linter, not in the
+product.** Same shape as the `knowledge_files.milestone_id` column: two sides
+each internally coherent, disagreeing with each other, no error in between.
+`src/lib/anthropic.test.js` now asserts the WIRE — and the assertions were
+verified to FAIL against the old code before being kept.
+
 ## What just shipped (2026-08-22 — audit + uploads session)
 
 Everything below was found by RUNNING the product in a browser, not by reading
@@ -409,9 +465,12 @@ In rough order of priority.
    that idea is gone. Both tools are simply part of the product; nothing to gate.
    The same decision is what killed `/crm`.
 
-9. **Tool-use for Solomon.** He currently SEEDS a conversation from the
-   launcher rather than running tools himself. This is the biggest remaining
-   product gap.
+9. ✅ **Tool-use for Solomon — SHIPPED (24 Aug 2026).** See the section below.
+   What is left of it: `team-newsletter` still can't be run (its prompt is
+   built inline in `Newsletter.jsx` with the tone interpolated into the
+   string, so there is no promptKey to point at — moving it to
+   `_shared/prompts.ts` with tone as an input is what unblocks it), and
+   `gbp-optimizer` is deliberately excluded while its fate is undecided.
 
 10. ⚠️ **Netlify — over 75% of the monthly credit allowance as of 22 Aug**, after
    six deploys in one day. Personal plan, **1 concurrent build**, and Daniel
