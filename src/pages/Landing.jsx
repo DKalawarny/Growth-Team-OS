@@ -552,8 +552,14 @@ function IntegrationsSection() {
           <div className="flex flex-wrap items-center justify-center gap-6">
             {[
               { name: 'QuickBooks Online', logo: '/logos/quickbooks.svg', note: 'Live financials' },
-              { name: 'Google Drive', logo: '/logos/google-drive.svg', note: 'Your documents' },
-              { name: 'OneDrive', logo: '/logos/onedrive.svg', note: 'Your files' },
+              // ⚠️ "Import", not "sync". Drive and OneDrive are a one-time
+              // picker: the owner chooses files, they are copied into the
+              // Library, and nothing re-checks them afterwards. Settings has
+              // always said this correctly; this row and the line below it
+              // implied a standing connection. Same shape as /security
+              // advertising a self-serve export that did not exist.
+              { name: 'Google Drive', logo: '/logos/google-drive.svg', note: 'Import documents' },
+              { name: 'OneDrive', logo: '/logos/onedrive.svg', note: 'Import files' },
               { name: 'Google Business Profile', logo: '/logos/google.svg', note: 'Your local presence' },
               { name: 'Your answers', icon: '💬', note: 'Goals, team, challenges' },
             ].map(({ name, logo, icon, note }) => (
@@ -568,7 +574,10 @@ function IntegrationsSection() {
             ))}
           </div>
           <p className="text-sm text-gray-500 mt-8 max-w-lg mx-auto">
-            Connect once. Solomon reads your real numbers, your documents, and your goals — so every answer is specific to <em>your</em> business, not a generic template.
+            QuickBooks connects once and stays current. Files you bring from Drive
+            or OneDrive are a copy he keeps &mdash; bring a fresh one when it changes.
+            Either way every answer is specific to <em>your</em> business, not a
+            generic template.
           </p>
         </div>
       </section>

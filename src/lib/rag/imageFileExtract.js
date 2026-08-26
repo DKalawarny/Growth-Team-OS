@@ -18,7 +18,7 @@
  * see toSupportedBase64.
  */
 
-import { callClaude, HAIKU } from '../anthropic'
+import { callClaude, SONNET } from '../anthropic'
 
 // What Anthropic will take directly.
 const NATIVE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -82,7 +82,7 @@ export async function extractImage(file) {
   if (!payload) return null
 
   const text = await callClaude({
-    model:     HAIKU,
+    model:     SONNET,
     maxTokens: 700,
     systemPrompt: '',
     messages: [{
@@ -99,9 +99,8 @@ export async function extractImage(file) {
 - Note anything that looks like a figure, date, name or deadline — those matter most.
 
 DIGITS ARE THE POINT, AND A MISREAD ONE IS WORSE THAN A MISSING ONE.
-A real read of this got "2026-08-24" back as "2026-03-24" and then restated it
-confidently as "March 24" in its own summary — a wrong date on a quote, entering
-the owner's library as a fact his advisor will later cite.
+A wrong figure here does not stay here — it enters the owner's document library
+as a fact his advisor will later quote back to him as his own number.
 
 - Read every digit character by character. Do not infer a number from what would
   be plausible, and never tidy one up.
