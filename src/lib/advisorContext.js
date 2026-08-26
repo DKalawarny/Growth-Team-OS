@@ -546,6 +546,28 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
         ? bp.financial_settings.cc_limit - bp.financial_settings.cc_balance
         : null,
     } : null,
+    // ⭐ Money in the account that is not the owner's. The prompt-only version
+    // of this held inside the cash-flow tool and failed in conversation — one
+    // instruction competing with twenty thousand characters of other
+    // instruction. A stored figure does not have to win an argument for
+    // attention. Null when he has not told us, which is itself the useful
+    // signal: Solomon then knows to ask rather than to assume there are none.
+    remittances: (bp.financial_settings?.gst_frequency || bp.financial_settings?.payroll_deductions_frequency)
+      ? {
+          gst_hst: bp.financial_settings.gst_frequency
+            ? {
+                frequency:       bp.financial_settings.gst_frequency,
+                typical_amount:  bp.financial_settings.gst_typical ?? null,
+              }
+            : null,
+          payroll_deductions: bp.financial_settings.payroll_deductions_frequency
+            ? {
+                frequency:       bp.financial_settings.payroll_deductions_frequency,
+                typical_amount:  bp.financial_settings.payroll_deductions_typical ?? null,
+              }
+            : null,
+        }
+      : null,
     roadmap: {
       total:               allMiles.length,
       completed:           completedCount,
