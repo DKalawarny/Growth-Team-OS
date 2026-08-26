@@ -175,6 +175,63 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## What just shipped (2026-08-26)
+
+🔴 **`useAuth` WAS A PLAIN HOOK, NOT A CONTEXT.** 44 components call it, and each
+one independently ran `getSession()`, fetched profiles + company_members +
+companies + business_profiles, and opened its own `onAuthStateChange`. Measured
+on `/settings/business`: **68 Supabase requests per page load, the same profiles
+row 18 times**, traffic never settling — which is why that page never reached
+idle. Now one `AuthProvider` in App.jsx: **22 requests, profiles 3×** (the rest
+is dev StrictMode). ⭐ **All 44 call sites are unchanged** — same export, same
+shape, which is the only reason a change this central was safe.
+⚠️ Verified pre-existing by stashing and reloading HEAD first. ⚠️ NOT click-tested
+on every route; the evidence it works is that authenticated reads still return
+200, which needs a resolved session and RLS.
+
+⭐ **THE MODEL WAS THE FIX, NOT THE PROMPT.** Haiku vision misread a quote date
+and restated it confidently. Prompt hardening did not help — the identical wrong
+date came back on a re-run, which also rules out "run it twice and compare".
+Sonnet read it correctly and flagged the genuinely ambiguous field instead of
+guessing. `extractImage` is now SONNET. ⚠️ My first prompt fix quoted the correct
+date inside the instructions; a test that leaks the answer certifies rather than
+checks.
+
+**Images in the Solomon chat** — paperclip + paste, real vision (not a
+description), HEIC handled, and "Keep this in my documents" promotes one into the
+Library where it is described, chunked and searchable. Image rides on its own
+turn only; see `lib/chatImages.js` for why.
+
+**"Show him the business"** — onboarding step 6, after roadmap generation. A list
+of what Solomon CANNOT tell you yet, each naming the document that unlocks it.
+⚠️ Built but unverified in a browser: only reachable via a fresh signup.
+
+**Drive/OneDrive are an IMPORT, not a sync** — deliberate (a standing
+account-wide read grant is a bigger consent and a bigger breach surface, and
+indexing everything makes retrieval worse). Migration **032** records provenance;
+a **Check Drive** button reports what has changed since. Landing page no longer
+claims otherwise.
+
+**Freshness and remittances.** `financials_freshness` does the arithmetic on how
+old a QuickBooks sync is (there is no cron, by design — migration 008), and a
+refresh strip appears in the Advisor when stale. GST/HST and payroll deductions
+are now stored inputs on `financial_settings`, fed in as `remittances`; Solomon
+names or subtracts them and never calculates what is owed. 🔴 The conversational
+version of that rule did NOT fire on its own — one instruction losing against a
+21k-char prompt, which is why it became a stored field instead.
+
+**Library Intelligence** now reports `library_total` and `omitted` alongside
+`file_count`; it reads the 12 newest files and used to present that as the whole
+library.
+
+⚠️ **The per-tool disclaimer did not reach the chat** — tool pages and the Library
+both render it, tools run from the conversation went around both. Fixed.
+
+🔴 **NETLIFY PAUSED THE SITE mid-session** (`usage_exceeded`, 503). Personal plan
+is 1,000 credits/month; usage went 1.8 → 739 → 516-and-tripped across three
+cycles. ⭐ **Working rule on this repo now: commit locally by default, batch, and
+ASK before pushing.** Six deploys in a day is what did it.
+
 ## What just shipped (2026-08-24 — Solomon runs the tools)
 
 ⭐ **Solomon can now run the tools himself.** He was only ever able to SEED one:
