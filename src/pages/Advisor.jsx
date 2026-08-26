@@ -1104,16 +1104,40 @@ function MarkdownContent({ text, streaming }) {
     }
 
     // Numbered list item
-    const numMatch = line.match(/^\d+\.\s+(.+)/)
+    //
+    // ⚠️ RENDERED AS "1. 1. 1." — visible in the product for who knows how long.
+    // Items separated by a blank line ended the run, so each one became its own
+    // <ol> and restarted the counter. Solomon writes exactly that way, so every
+    // numbered answer he gave was numbered wrong.
+    //
+    // Two fixes: carry on across a blank line when the next non-empty line is
+    // also numbered, and honour the number the author actually wrote via `start`
+    // — so even a genuinely separate list continues from where it should.
+    const numMatch = line.match(/^(\d+)\.\s+(.+)/)
     if (numMatch) {
       flushPara()
+      const startNum = parseInt(numMatch[1], 10) || 1
       const items = []
-      while (i < lines.length && lines[i].match(/^\d+\.\s+(.+)/)) {
+      while (i < lines.length) {
         const m = lines[i].match(/^\d+\.\s+(.+)/)
-        items.push(<li key={i} className="mb-0.5">{inlineRender(m[1])}</li>)
-        i++
+        if (m) {
+          items.push(<li key={i} className="mb-0.5">{inlineRender(m[1])}</li>)
+          i++
+          continue
+        }
+        // A single blank line inside a numbered run is a paragraph break
+        // between items, not the end of the list.
+        if (lines[i].trim() === '' && lines[i + 1]?.match(/^\d+\.\s+(.+)/)) {
+          i++
+          continue
+        }
+        break
       }
-      nodes.push(<ol key={nodes.length} className="list-decimal list-inside my-1.5 space-y-0.5 text-sm" style={{ color: '#1B2422' }}>{items}</ol>)
+      nodes.push(
+        <ol key={nodes.length} start={startNum} className="list-decimal list-inside my-1.5 space-y-0.5 text-sm" style={{ color: '#1B2422' }}>
+          {items}
+        </ol>
+      )
       continue
     }
 
