@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from './hooks/useAuth'
+import { useAuth, AuthProvider } from './hooks/useAuth'
 
 // Landing stays synchronous — it's the most common entry point and we want
 // the fastest possible first paint. Every other page is lazy-loaded so a
@@ -157,6 +157,11 @@ function LazyRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      {/* ⚠️ AuthProvider must sit ABOVE the routes: every page below calls
+          useAuth(), and before this existed each of those 44 call sites ran its
+          own session lookup and its own profile/company fetch. One page load
+          measured 68 Supabase requests. One provider, one fetch. */}
+      <AuthProvider>
       {/* ErrorBoundary lives INSIDE BrowserRouter so its "Go to dashboard"
           fallback can rely on the router being mounted. A render-time throw
           anywhere below this — in a page, a tool, a Suspense fallback —
@@ -266,6 +271,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </ErrorBoundary>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

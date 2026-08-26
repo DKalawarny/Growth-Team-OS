@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createContext, createElement, useContext, useEffect, useState } from 'react'
 import { identify } from '../lib/monitoring'
 import { supabase } from '../lib/supabase'
 import { getAdvisorMemberships } from '../lib/invites'
@@ -26,8 +26,47 @@ import { getAdvisorMemberships } from '../lib/invites'
  *   enterClient(id)  — switch into a client's workspace (read-only)
  *   exitClient()     — return to advisor portal
  *   refresh          — manual refetch
+ *
+ * ⚠️⚠️ THIS IS A CONTEXT, AND IT HAS TO BE.
+ *
+ * It used to be a plain hook. 44 components call useAuth(), so on any given
+ * page every one of them independently ran getSession(), fetched profiles,
+ * company_members, companies and business_profiles, AND opened its own
+ * onAuthStateChange subscription — which then made all of them refetch together
+ * on every token refresh.
+ *
+ * Measured on /settings/business: 68 Supabase requests for one page load, the
+ * same profiles row fetched eighteen times, and the page never reaching idle
+ * because the traffic never stopped. Multiply that by every page, every load,
+ * every user.
+ *
+ * The state now lives in ONE provider. useAuth() reads it. No call site
+ * changed — the 44 components still import the same name and get the same
+ * shape, which is the only reason this was a safe change to make.
  */
+
+const AuthContext = createContext(null)
+
+/**
+ * Wraps the app once, in App.jsx. Everything below it shares one session, one
+ * profile fetch and one auth subscription.
+ */
+export function AuthProvider({ children }) {
+  const value = useAuthState()
+  return createElement(AuthContext.Provider, { value }, children)
+}
+
 export function useAuth() {
+  const ctx = useContext(AuthContext)
+  // Fail loudly rather than silently returning undefined and letting a page
+  // render as though the user were signed out.
+  if (ctx === null) {
+    throw new Error('useAuth() was called outside <AuthProvider>. Wrap the app in App.jsx.')
+  }
+  return ctx
+}
+
+function useAuthState() {
   const [session, setSession]   = useState(undefined)
   const [onboarded, setOnboarded] = useState(undefined)  // undefined = not yet known
   const [profile, setProfile]   = useState(undefined)
