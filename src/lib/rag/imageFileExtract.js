@@ -31,8 +31,14 @@ const JPEG_Q   = 0.85
 /**
  * Convert any browser-decodable image into a base64 JPEG/PNG Anthropic accepts.
  * Returns { base64, mediaType } or null if the browser cannot decode it.
+ *
+ * ⭐ Exported because the Advisor chat sends images to Solomon DIRECTLY — he
+ * looks at the photo rather than reading a description of it — and needs the
+ * same HEIC handling and the same long-edge cap. Duplicating this was the
+ * obvious mistake: the iPhone problem is easy to forget and expensive to
+ * rediscover.
  */
-async function toSupportedBase64(file) {
+export async function toSupportedBase64(file) {
   const bitmap = await createImageBitmap(file).catch(() => null)
   if (!bitmap) return null   // HEIC on a browser without decode support, corrupt file, etc.
 

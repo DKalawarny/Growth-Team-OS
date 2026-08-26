@@ -7,6 +7,7 @@ import { buildAdvisorContext } from '../lib/advisorContext'
 import { REVENUE_OPTIONS } from '../lib/stageEngine'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { assignMilestoneDates, buildDependencyUpdates } from '../lib/milestoneDates'
+import ShowHimTheBusiness from '../components/onboarding/ShowHimTheBusiness'
 import {
   INDUSTRY_OPTIONS,
   TEAM_SIZE_OPTIONS,
@@ -189,6 +190,12 @@ export default function Onboarding() {
   const [phase, setPhase]           = useState('form')     // 'form' | 'generating' | 'error'
   const [genStatus, setGenStatus]   = useState('')
   const [genStep, setGenStep]       = useState(0)          // 0-4 for the generating progress steps
+  // ⚠️ companyId is created inside handleGenerate (the create_company RPC), and
+  // useAuth() here only carries { refresh, session } — there is no `profile` in
+  // scope on this page. The document screen needs both ids, so they are parked
+  // here on the way past rather than re-derived from a context that may not
+  // have refreshed yet.
+  const [docsCtx, setDocsCtx]       = useState(null)       // { companyId, userId }
   const [error, setError]           = useState(null)
   const [direction, setDirection]   = useState('forward')  // for slide animation hint
 
@@ -413,7 +420,15 @@ export default function Onboarding() {
         } catch { /* non-fatal — email is a nice-to-have, not a blocker */ }
       })()
 
-      navigate('/advisor')
+      // ⭐ One more screen before the advisor: ask for documents.
+      //
+      // Placed AFTER generation on purpose. The roadmap already exists, so the
+      // ask lands on someone who has just been given something rather than
+      // someone still paying an entry fee — and the library analysis can feed a
+      // roadmap that is already there. Putting it earlier would have delayed
+      // the payoff behind a chore, which is how upload steps get skipped.
+      setDocsCtx({ companyId, userId: session?.user?.id ?? null })
+      setPhase('documents')
     } catch (err) {
       // Always log the underlying error so a failed onboarding is debuggable.
       // The user-facing message stays plain English — but engineers reading
@@ -431,6 +446,16 @@ export default function Onboarding() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (phase === 'generating') return <GeneratingScreen status={genStatus} genStep={genStep} />
+
+  if (phase === 'documents' && docsCtx?.companyId) {
+    return (
+      <ShowHimTheBusiness
+        companyId={docsCtx.companyId}
+        userId={docsCtx.userId}
+        onDone={() => navigate('/advisor')}
+      />
+    )
+  }
 
   if (phase === 'error') {
     return (

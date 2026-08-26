@@ -1,9 +1,10 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, streamClaudeTurn, SONNET, HAIKU } from '../lib/anthropic'
 import { SOLOMON_TOOLS, runSolomonTool, describeToolUse } from '../lib/solomonTools'
+import { prepareChatImage, chatImageUrl, isImageFile, ACCEPTED_IMAGE_TYPES } from '../lib/chatImages'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
@@ -98,6 +99,7 @@ export default function Advisor() {
   const [sending,         setSending]         = useState(false)
   const [generatingOpen,  setGeneratingOpen]  = useState(false) // morning opener in flight
   const [toolActivity,    setToolActivity]    = useState(null)  // "Building the 13-week cash flow"
+  const [attachment,      setAttachment]      = useState(null)  // File pending on the next send
   const [error,           setError]           = useState(null)
   const [spendInfo,       setSpendInfo]       = useState(null)  // { used, cap }
 
@@ -221,7 +223,10 @@ export default function Advisor() {
   async function handleSend(e) {
     e?.preventDefault()
     const text = input.trim()
-    if (!text || sending || !profile?.company_id) return
+    // ⭐ An attached image is a complete message on its own. Requiring text
+    // alongside it would mean an owner holding up a quote has to caption his
+    // own photograph before Solomon will look at it.
+    if ((!text && !attachment) || sending || !profile?.company_id) return
 
     setError(null)
     setSending(true)
@@ -236,7 +241,30 @@ export default function Advisor() {
       return
     }
 
+    // 0b. Prepare the attachment, if there is one. Done BEFORE the user turn is
+    // written so a failure (HEIC a browser can't decode, oversized file) leaves
+    // no half-message in the thread — the composer keeps the image and says why.
+    let image = null
+    if (attachment) {
+      try {
+        image = await prepareChatImage(attachment, { companyId: profile.company_id })
+      } catch (err) {
+        setError(err.message ?? 'Could not read that image.')
+        setSending(false)
+        return
+      }
+    }
+
     // 1. Persist user turn.
+    //
+    // The stored content keeps a plain marker for the image. `content` is text
+    // and the replayed history is text-only, so without this an image-only turn
+    // would persist as an empty string — a blank bubble on reload, and a gap in
+    // the history Solomon reads back.
+    const storedContent = image
+      ? [text, `[image: ${image.name}]`].filter(Boolean).join('\n\n')
+      : text
+
     const { data: userRow, error: userErr } = await supabase
       .from('chat_messages')
       .insert({
@@ -244,7 +272,12 @@ export default function Advisor() {
         user_id:    profile.id,
         chat_type:  'advisor',
         role:       'user',
-        content:    text,
+        content:    storedContent,
+        // Reuses the column the artifact chips ride in. Shape is discriminated
+        // by `type`, so a turn can carry an image, an artifact, or both.
+        source_documents: image?.storagePath
+          ? [{ type: 'image', path: image.storagePath, name: image.name }]
+          : [],
       })
       .select()
       .single()
@@ -258,6 +291,7 @@ export default function Advisor() {
     const nextMessages = [...messages, userRow]
     setMessages(nextMessages)
     setInput('')
+    setAttachment(null)
 
     // Streaming placeholder — shown while Claude streams the reply.
     // We render it as a special 'streaming' message so the bubble updates live.
@@ -273,6 +307,27 @@ export default function Advisor() {
         role:    m.role === 'assistant' ? 'assistant' : 'user',
         content: m.content,
       }))
+
+      // ⭐ The image rides on THIS turn only, as real content blocks — Solomon
+      // looks at the photograph rather than reading a description of it.
+      //
+      // ⚠️ Deliberately not replayed on later turns. History is text-only, and
+      // re-attaching every past image would make an owner who shared four
+      // photos pay for all four on every message after. What carries forward is
+      // Solomon's own reply plus the [image: …] marker. See lib/chatImages.js.
+      if (image && historySlice.length) {
+        const last = historySlice[historySlice.length - 1]
+        historySlice[historySlice.length - 1] = {
+          role: 'user',
+          content: [
+            image.block,
+            // An image with no caption still needs a text block — a bare image
+            // gives the model nothing to answer.
+            { type: 'text', text: text || 'Take a look at this and tell me what you make of it.' },
+          ],
+        }
+        void last
+      }
       const ownerFirst  = profile?.name?.split(' ')[0] ?? 'there'
 
       // Split the system payload so prompt caching can actually hit.
@@ -538,6 +593,8 @@ export default function Advisor() {
         onSend={handleSend}
         disabled={sending || generatingOpen}
         error={error}
+        attachment={attachment}
+        onAttach={f => { setError(null); setAttachment(f) }}
       />
     </div>
   )
@@ -703,11 +760,51 @@ function ToolActivity({ label }) {
  * formatted in the Library — this is the way back to it, so a thing he built
  * doesn't disappear the moment the conversation scrolls.
  */
+/**
+ * An image the owner shared, rendered back in their own bubble.
+ *
+ * The file lives in Storage under the company prefix, so the URL has to be
+ * signed — a bare public URL would make one owner's photographs readable by
+ * anyone who guessed the path.
+ */
+function SharedImage({ path, name }) {
+  const [url, setUrl] = useState(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    chatImageUrl(path)
+      .then(u => { if (!cancelled) { u ? setUrl(u) : setFailed(true) } })
+      .catch(() => { if (!cancelled) setFailed(true) })
+    return () => { cancelled = true }
+  }, [path])
+
+  if (failed) {
+    return <p className="text-[11px] mt-1.5 text-white/50">{name} — image unavailable</p>
+  }
+  if (!url) {
+    return <div className="mt-1.5 h-32 w-44 rounded-xl bg-white/10 animate-pulse" />
+  }
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className="block mt-1.5">
+      <img
+        src={url}
+        alt={name || 'Shared image'}
+        className="rounded-xl max-h-64 w-auto border border-white/15"
+      />
+    </a>
+  )
+}
+
 function ArtifactChips({ artifacts }) {
-  if (!Array.isArray(artifacts) || artifacts.length === 0) return null
+  // source_documents carries two shapes now — artifacts Solomon produced and
+  // images the owner shared. Filter, don't assume: an image entry has no
+  // tool_id, and rendering it as a chip would link nowhere.
+  const docs = Array.isArray(artifacts) ? artifacts.filter(a => a?.tool_id) : []
+  if (docs.length === 0) return null
   return (
     <div className="flex flex-wrap gap-1.5 mt-2">
-      {artifacts.map(a => (
+      {docs.map(a => (
         <Link
           key={a.id ?? a.title}
           to={`/documents?tool=${encodeURIComponent(a.tool_id)}`}
@@ -723,6 +820,18 @@ function ArtifactChips({ artifacts }) {
       ))}
     </div>
   )
+}
+
+/**
+ * The stored text of an image turn carries a `[image: name]` marker so the
+ * replayed history — which is text-only — does not lose the fact that a
+ * picture was shared. That marker is for the model, not the owner: he can see
+ * his own photograph rendered directly underneath. Showing him a filename in
+ * brackets on top of it is just leaking our plumbing into his conversation.
+ */
+function stripImageMarker(text) {
+  if (typeof text !== 'string') return text
+  return text.replace(/\n*\[image:[^\]]*\]\s*$/i, '').trim()
 }
 
 function Bubble({ role, content, artifacts, streaming = false, onSave }) {
@@ -762,9 +871,12 @@ function Bubble({ role, content, artifacts, streaming = false, onSave }) {
           }
         >
           {isUser
-            ? <span className="whitespace-pre-wrap">{content}</span>
+            ? <span className="whitespace-pre-wrap">{stripImageMarker(content)}</span>
             : <MarkdownContent text={content} streaming={streaming} />
           }
+          {isUser && (Array.isArray(artifacts) ? artifacts : [])
+            .filter(a => a?.type === 'image')
+            .map(a => <SharedImage key={a.path} path={a.path} name={a.name} />)}
         </div>
         {!isUser && !streaming && <ArtifactChips artifacts={artifacts} />}
         {/* Save button — only on assistant messages, not while streaming */}
@@ -960,12 +1072,36 @@ function ThinkingBubble() {
 }
 
 const Composer = forwardRef(function Composer(
-  { value, onChange, onKeyDown, onSend, disabled, error },
+  { value, onChange, onKeyDown, onSend, disabled, error, attachment, onAttach },
   ref,
 ) {
+  const fileRef = useRef(null)
+  const previewUrl = useMemo(
+    () => (attachment ? URL.createObjectURL(attachment) : null),
+    [attachment],
+  )
+  // Object URLs are a leak if you never revoke them, and a chat is exactly the
+  // surface where someone attaches and clears twenty times in a sitting.
+  useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl) }, [previewUrl])
+
   return (
     <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background: '#FFFFFF', borderTop: '1px solid rgba(13,20,19,0.08)' }}>
       <div className="max-w-3xl mx-auto">
+        {attachment && (
+          <div className="mb-2 flex items-center gap-3 rounded-xl border border-ink-100 bg-ink-50 px-3 py-2">
+            {previewUrl && (
+              <img src={previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover flex-shrink-0" />
+            )}
+            <span className="text-xs text-ink-600 truncate flex-1">{attachment.name}</span>
+            <button
+              type="button"
+              onClick={() => onAttach(null)}
+              className="text-xs font-semibold text-ink-400 hover:text-ink-700 transition-colors flex-shrink-0"
+            >
+              Remove
+            </button>
+          </div>
+        )}
         {error && (
           typeof error === 'object' && error.code === 'spend_cap_exceeded'
             ? <div className="mb-2"><SpendCapBanner err={error} /></div>
@@ -976,6 +1112,29 @@ const Composer = forwardRef(function Composer(
             )
         )}
         <form onSubmit={onSend} className="flex items-end gap-2">
+          {/* Attach. Deliberately a plain paperclip rather than a labelled
+              button — the composer is the one place in this product where
+              chrome should get out of the way. */}
+          <input
+            ref={fileRef}
+            type="file"
+            accept={ACCEPTED_IMAGE_TYPES}
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) onAttach(f); e.target.value = '' }}
+          />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={disabled}
+            aria-label="Attach an image"
+            title="Attach an image"
+            className="rounded-xl p-2.5 min-h-[44px] flex items-center justify-center transition-colors disabled:opacity-30 flex-shrink-0"
+            style={{ color: 'rgba(13,20,19,0.45)', background: 'rgba(13,20,19,0.04)', border: '1px solid rgba(13,20,19,0.10)' }}
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </button>
           <textarea
             ref={ref}
             rows={1}
@@ -983,6 +1142,13 @@ const Composer = forwardRef(function Composer(
             onChange={e => onChange(e.target.value)}
             onKeyDown={onKeyDown}
             disabled={disabled}
+            // Paste a screenshot straight in. This is how most people will
+            // actually use it — cmd-shift-4, cmd-v — and making them save to
+            // disk first would be the difference between using it and not.
+            onPaste={e => {
+              const file = Array.from(e.clipboardData?.files || []).find(isImageFile)
+              if (file) { e.preventDefault(); onAttach(file) }
+            }}
             placeholder="Reply to your advisor…"
             className="flex-1 rounded-xl px-4 py-2.5 text-base sm:text-sm resize-none focus:outline-none transition-colors disabled:opacity-50"
             style={{
@@ -999,7 +1165,7 @@ const Composer = forwardRef(function Composer(
           />
           <button
             type="submit"
-            disabled={disabled || !value.trim()}
+            disabled={disabled || (!value.trim() && !attachment)}
             aria-label="Send"
             className="rounded-xl px-4 py-2.5 text-sm font-bold text-ink-900 disabled:opacity-30 transition-opacity flex-shrink-0 min-h-[44px]"
             style={{ background: '#14a67b' }}
