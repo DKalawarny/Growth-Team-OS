@@ -8,6 +8,7 @@ import { prepareChatImage, chatImageUrl, saveChatImageToLibrary, isImageFile, AC
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
+import ToolDisclaimer from '../components/tools/ToolDisclaimer'
 import { buildAdvisorContext } from '../lib/advisorContext'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
@@ -832,7 +833,16 @@ function ArtifactChips({ artifacts }) {
   // tool_id, and rendering it as a chip would link nowhere.
   const docs = Array.isArray(artifacts) ? artifacts.filter(a => a?.tool_id) : []
   if (docs.length === 0) return null
+  // ⚠️ Every tool PAGE renders its disclaimer under the result, and so does the
+  // Library, because the note lives inside each result component. Running the
+  // tool from the conversation went around both: Solomon narrated a hiring
+  // scorecard in prose with nothing saying "this is hiring strategy, not
+  // employment law". The chat became the one door onto these tools with no
+  // limit attached to it, which is precisely the door an owner is most likely
+  // to act straight out of.
+  const toolIds = [...new Set(docs.map(d => d.tool_id))]
   return (
+    <>
     <div className="flex flex-wrap gap-1.5 mt-2">
       {docs.map(a => (
         <Link
@@ -849,6 +859,10 @@ function ArtifactChips({ artifacts }) {
         </Link>
       ))}
     </div>
+    {toolIds.map(id => (
+      <ToolDisclaimer key={id} toolId={id} className="!mt-2 !pt-2 max-w-[520px]" />
+    ))}
+    </>
   )
 }
 

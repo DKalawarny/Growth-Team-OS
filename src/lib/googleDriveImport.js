@@ -75,7 +75,13 @@ async function loadGoogleApis() {
 
 // ── OAuth ─────────────────────────────────────────────────────────────────────
 
-async function getAccessToken() {
+/**
+ * ⭐ Exported for the freshness check (lib/cloudFreshness.js), which needs a
+ * token to ask Drive whether an imported file has changed. Deliberately not
+ * cached anywhere: no token is stored, so there is no moment at which this app
+ * can read the owner's Drive without him having just authorised it.
+ */
+export async function getAccessToken() {
   return new Promise((resolve, reject) => {
     const client = window.google.accounts.oauth2.initTokenClient({
       client_id: GD_CLIENT_ID,
@@ -126,6 +132,10 @@ export async function openGoogleDrivePicker() {
             name:      f.name,
             mimeType:  f.mimeType,
             sizeBytes: f.sizeBytes ?? 0,
+            // The picker hands back the last edit time. Capturing it at import
+            // is what later makes "has this changed in Drive?" answerable with
+            // one metadata call instead of a standing sync.
+            modifiedAt: f.lastEditedUtc ? new Date(f.lastEditedUtc).toISOString() : null,
             provider:  'google',
           }))
           resolve({ files, token })

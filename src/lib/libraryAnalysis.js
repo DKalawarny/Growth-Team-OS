@@ -54,14 +54,32 @@ const ANALYSIS_MAX_TOKENS = 4_000
  */
 export async function runLibraryAnalysis(companyId) {
   // 1. Pull ready files WITH extracted text (not part of the list query)
-  const { data: files, error: filesErr } = await supabase
-    .from('knowledge_files')
-    .select('id, title, kind, notes, extracted_text')
-    .eq('company_id', companyId)
-    .eq('status', 'ready')
-    .not('extracted_text', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(MAX_FILES)
+  //
+  // ⚠️ SILENT TRUNCATION. This reads the MAX_FILES most recent files and then
+  // presents its output as "the picture that emerges from reading ALL your
+  // documents together". At twelve files those are the same sentence. At three
+  // hundred they are not, and nothing anywhere said so — the owner got a
+  // confident executive summary built from the newest 4% of his library and
+  // was told it was the whole thing.
+  //
+  // The cheap half of the fix is counting what we did NOT read, and saying it.
+  // No extra tokens, no extra call: one more query that returns a number.
+  const [{ data: files, error: filesErr }, { count: readyTotal }] = await Promise.all([
+    supabase
+      .from('knowledge_files')
+      .select('id, title, kind, notes, extracted_text')
+      .eq('company_id', companyId)
+      .eq('status', 'ready')
+      .not('extracted_text', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(MAX_FILES),
+    supabase
+      .from('knowledge_files')
+      .select('id', { count: 'exact', head: true })
+      .eq('company_id', companyId)
+      .eq('status', 'ready')
+      .not('extracted_text', 'is', null),
+  ])
 
   if (filesErr) throw new Error(filesErr.message)
   if (!files || files.length === 0) return null
@@ -105,10 +123,18 @@ export async function runLibraryAnalysis(companyId) {
     )
   }
 
-  // Attach metadata
-  analysis.file_ids    = files.map(f => f.id)
-  analysis.file_count  = files.length
-  analysis.analyzed_at = new Date().toISOString()
+  // Attach metadata.
+  //
+  // `file_count` is what was actually READ, and `library_total` is what exists.
+  // Keeping them as separate numbers is the point: every consumer downstream —
+  // the Library header, the advisor context — can now tell the difference
+  // between "read your 9 documents" and "read 12 of your 340", and neither has
+  // to guess which one it is looking at.
+  analysis.file_ids      = files.map(f => f.id)
+  analysis.file_count    = files.length
+  analysis.library_total = readyTotal ?? files.length
+  analysis.omitted       = Math.max(0, (readyTotal ?? files.length) - files.length)
+  analysis.analyzed_at   = new Date().toISOString()
 
   // 4. Replace old analysis row (delete + insert — no unique constraint needed)
   await supabase

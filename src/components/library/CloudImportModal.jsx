@@ -153,6 +153,11 @@ export default function CloudImportModal({ companyId, userId, onClose, onUploade
           title: driveFile.name.replace(/\.[^.]+$/, ''),
           kind:  'general',
           notes: `Imported from ${driveFile.provider === 'google' ? 'Google Drive' : 'OneDrive'}`,
+          source: {
+            provider:   driveFile.provider,
+            fileId:     driveFile.id,
+            modifiedAt: driveFile.modifiedAt ?? null,
+          },
           onProgress: () => {},
         })
 

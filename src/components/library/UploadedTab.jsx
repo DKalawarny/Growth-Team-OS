@@ -10,6 +10,7 @@ import {
   KIND_OPTIONS,
 } from '../../lib/knowledgeFiles'
 import { runLibraryAnalysis, getLibraryAnalysis } from '../../lib/libraryAnalysis'
+import { checkGoogleFreshness, describeFreshness } from '../../lib/cloudFreshness'
 import UploadDialog from './UploadDialog'
 import { MAX_MB } from '../../lib/knowledgeFiles'
 import CloudImportModal from './CloudImportModal'
@@ -44,6 +45,12 @@ export default function UploadedTab({ onCountChange }) {
   // already holding them instead of asking for them again.
   const [seedFiles, setSeedFiles]                 = useState([])
   const [showCloud,  setShowCloud]                = useState(false)
+  // Drive freshness. `null` = never checked this session — deliberately not run
+  // on mount: checking needs a Google authorisation, and popping a consent
+  // prompt at somebody who just opened their Library is how you teach people to
+  // dismiss consent prompts.
+  const [freshness, setFreshness]                 = useState(null)
+  const [checking,  setChecking]                  = useState(false)
   const [showManualFinancials, setShowManualFinancials] = useState(false)
 
   // Intelligence panel state
@@ -141,6 +148,19 @@ export default function UploadedTab({ onCountChange }) {
   // keep their old behaviour. UploadDialog passes false for every file in a
   // batch except the last — seven uploads used to mean seven library analyses
   // of a library that was still changing under them.
+  async function handleCheckDrive() {
+    if (checking) return
+    setChecking(true)
+    try {
+      const result = await checkGoogleFreshness(profile.company_id)
+      setFreshness({ ...result, message: describeFreshness(result) })
+    } catch (err) {
+      setFreshness({ error: err.message || 'Could not check Google Drive.' })
+    } finally {
+      setChecking(false)
+    }
+  }
+
   const onUploaded = (newRow, { analyze = true } = {}) => {
     setFiles(prev => (prev ? [newRow, ...prev] : [newRow]))
     setSelected(newRow.id)
@@ -239,6 +259,16 @@ export default function UploadedTab({ onCountChange }) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={handleCheckDrive}
+            disabled={checking}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 hover:bg-brand-50/20 text-sm text-ink-600 font-medium transition-colors disabled:opacity-50"
+            title="Ask Google Drive whether any imported file has changed since you imported it"
+          >
+            <span aria-hidden>⟳</span>
+            <span className="hidden sm:inline">{checking ? 'Checking…' : 'Check Drive'}</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setShowCloud(true)}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 hover:bg-brand-50/20 text-sm text-ink-600 font-medium transition-colors"
             title="Import from Google Drive or OneDrive"
@@ -255,6 +285,40 @@ export default function UploadedTab({ onCountChange }) {
           </button>
         </div>
       </div>
+
+      {/* Freshness result. Deliberately plain text rather than badges on rows:
+          the honest answer is often "nothing changed", and a UI that only ever
+          renders when something IS wrong trains people to read silence as
+          confirmation — which it is not, because nothing checks on its own. */}
+      {freshness && (
+        <div
+          className="mt-3 rounded-xl border px-4 py-3 text-[13px] leading-relaxed"
+          style={{
+            background:  freshness.error ? 'rgba(239,68,68,0.06)' : 'rgba(20,166,123,0.06)',
+            borderColor: freshness.error ? 'rgba(239,68,68,0.25)' : 'rgba(20,166,123,0.25)',
+            color:       freshness.error ? '#b91c1c' : '#0f7a5a',
+          }}
+        >
+          <p>{freshness.error ?? freshness.message}</p>
+          {freshness.stale?.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {freshness.stale.map(f => (
+                <li key={f.id} className="text-ink-600">
+                  <span className="font-semibold">{f.title}</span>
+                  {' — changed '}
+                  {new Date(f.upstream_modified_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </li>
+              ))}
+            </ul>
+          )}
+          {freshness.stale?.length > 0 && (
+            <p className="mt-2 text-ink-500">
+              Import them again to bring Solomon&rsquo;s copy up to date &mdash; the
+              old one stays until you do.
+            </p>
+          )}
+        </div>
+      )}
       </>
       )}
 

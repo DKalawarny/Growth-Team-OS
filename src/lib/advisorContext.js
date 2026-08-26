@@ -546,6 +546,13 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       gaps:          analysis.gaps          ?? [],
       opportunities: analysis.opportunities ?? [],
       file_count:    analysis.file_count    ?? 0,
+      // ⚠️ What this analysis actually read, versus what is in the library.
+      // Without these two numbers Solomon quotes a summary built from the
+      // twelve newest documents as though it were the whole picture — which
+      // is a confident overstatement about the owner's own business, made
+      // with data we had and did not pass on.
+      library_total: analysis.library_total ?? analysis.file_count ?? 0,
+      omitted:       analysis.omitted       ?? 0,
       analyzed_at:   analysis.analyzed_at   ?? null,
     } : null,
     recent_checkins: checkins.map(c => ({

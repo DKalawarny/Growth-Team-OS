@@ -165,10 +165,12 @@ export async function expandDroppedItems(dataTransfer, { maxDepth = 5 } = {}) {
  * @param {string} opts.kind         one of KIND_OPTIONS values
  * @param {string} opts.notes        optional owner note
  * @param {string} opts.milestoneId  optional — links file to a specific milestone
+ * @param {object} opts.source       optional — { provider, fileId, modifiedAt } for
+ *                                   cloud imports, so staleness can be checked later
  * @param {(p:number)=>void} opts.onProgress 0..100 — coarse: 20 upload, 60 extract, 100 done
  */
 export async function uploadKnowledgeFile(file, opts) {
-  const { companyId, userId, title, kind, notes, milestoneId, onProgress } = opts
+  const { companyId, userId, title, kind, notes, milestoneId, source, onProgress } = opts
   const report = (p) => { try { onProgress?.(p) } catch { /* ignore */ } }
 
   const validationError = validateFile(file)
@@ -212,6 +214,11 @@ export async function uploadKnowledgeFile(file, opts) {
       extracted_text: extraction.text,
       status:         extraction.status,
       milestone_id:   milestoneId ?? null,
+      // Provenance for imported files, so the Library can later tell the owner
+      // his copy has gone stale. Null for ordinary uploads — see migration 032.
+      source_provider:    source?.provider   ?? null,
+      source_file_id:     source?.fileId     ?? null,
+      source_modified_at: source?.modifiedAt ?? null,
     })
     .select()
     .single()
