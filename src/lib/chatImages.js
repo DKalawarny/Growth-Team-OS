@@ -30,7 +30,8 @@
  */
 
 import { supabase } from './supabase'
-import { toSupportedBase64 } from './rag/imageFileExtract'
+import { toSupportedBase64, extractImage } from './rag/imageFileExtract'
+import { indexKnowledgeFile } from './rag/indexer'
 
 const BUCKET = 'knowledge-files'
 
@@ -99,4 +100,74 @@ export async function chatImageUrl(storagePath, expiresInSeconds = 3600) {
   if (!storagePath) return null
   const { data } = await supabase.storage.from(BUCKET).createSignedUrl(storagePath, expiresInSeconds)
   return data?.signedUrl ?? null
+}
+
+/**
+ * Keep a shared image: promote it from a chat attachment into the Library.
+ *
+ * ⭐ This is also the fix for the limitation at the top of this file. A chat
+ * image is seen once and never replayed; a LIBRARY image is described,
+ * chunked and embedded, so `search_library` can pull it back weeks later. A
+ * quote the owner showed Solomon in August becomes something he can find in
+ * October — which is the difference between a glance and a memory.
+ *
+ * ⚠️ The blob is COPIED to a fresh library path rather than the row pointing
+ * at the chat object. They have separate lifecycles: deleting the Library
+ * entry calls deleteKnowledgeFile, which removes the storage object — and if
+ * both pointed at the same blob, tidying the Library would silently blank the
+ * image still sitting in the conversation.
+ */
+export async function saveChatImageToLibrary({ path, name, companyId, userId }) {
+  if (!path || !companyId) throw new Error('Nothing to save.')
+
+  const { data: blob, error: dlErr } = await supabase.storage.from(BUCKET).download(path)
+  if (dlErr || !blob) throw new Error('Could not read the image back from storage.')
+
+  const safe = (name || 'image').replace(/[^\w.-]+/g, '_').slice(-80)
+  const libraryPath = `${companyId}/${crypto.randomUUID()}-${safe}`
+
+  const { error: copyErr } = await supabase.storage.from(BUCKET).copy(path, libraryPath)
+  if (copyErr) {
+    // Older storage-js, or a copy that the policy refuses — re-upload instead.
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(libraryPath, blob, { contentType: blob.type || 'image/jpeg', upsert: false })
+    if (upErr) throw new Error('Could not save a copy of the image.')
+  }
+
+  // Vision description, so it is searchable as text rather than an opaque blob.
+  const file = new File([blob], name || 'image', { type: blob.type || 'image/jpeg' })
+  const description = await extractImage(file).catch(() => null)
+
+  const { data: row, error: insErr } = await supabase
+    .from('knowledge_files')
+    .insert({
+      company_id:     companyId,
+      uploaded_by:    userId,
+      title:          name || 'Shared image',
+      notes:          'Shared with Solomon in conversation.',
+      file_path:      libraryPath,
+      mime_type:      blob.type || 'image/jpeg',
+      size_bytes:     blob.size,
+      kind:           'general',
+      extracted_text: description,
+      // Honest status: an image Solomon could not describe is stored but not
+      // readable, and the Library already renders that state correctly.
+      status:         description ? 'ready' : 'failed',
+    })
+    .select()
+    .single()
+
+  if (insErr) {
+    await supabase.storage.from(BUCKET).remove([libraryPath]).catch(() => null)
+    throw new Error(`Could not save: ${insErr.message}`)
+  }
+
+  if (description) {
+    indexKnowledgeFile(row, file).catch(err =>
+      console.warn('[chatImages] indexing failed for', row.title, err),
+    )
+  }
+
+  return row
 }

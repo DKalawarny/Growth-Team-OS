@@ -98,6 +98,19 @@ export async function extractImage(file) {
 - If it is a photograph of a whiteboard, notes or a document page, treat it as text first and description second.
 - Note anything that looks like a figure, date, name or deadline — those matter most.
 
+DIGITS ARE THE POINT, AND A MISREAD ONE IS WORSE THAN A MISSING ONE.
+A real read of this got "2026-08-24" back as "2026-03-24" and then restated it
+confidently as "March 24" in its own summary — a wrong date on a quote, entering
+the owner's library as a fact his advisor will later cite.
+
+- Read every digit character by character. Do not infer a number from what would
+  be plausible, and never tidy one up.
+- Where a character is genuinely ambiguous, write it as best you can and add
+  "(unclear)" immediately after that value. An unclear figure is useful; a
+  confident wrong one is not.
+- Do not restate a date or an amount in a different format later in your answer.
+  Re-typing is where a good read turns into a bad one.
+
 Be complete rather than brief. If the image carries no business information, say "no business content".`,
         },
       ],

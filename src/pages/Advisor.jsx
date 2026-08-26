@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, streamClaudeTurn, SONNET, HAIKU } from '../lib/anthropic'
 import { SOLOMON_TOOLS, runSolomonTool, describeToolUse } from '../lib/solomonTools'
-import { prepareChatImage, chatImageUrl, isImageFile, ACCEPTED_IMAGE_TYPES } from '../lib/chatImages'
+import { prepareChatImage, chatImageUrl, saveChatImageToLibrary, isImageFile, ACCEPTED_IMAGE_TYPES } from '../lib/chatImages'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
@@ -564,6 +564,8 @@ export default function Advisor() {
                   artifacts={m.source_documents}
                   streaming={m.id === '__streaming__'}
                   onSave={handleSaveMessage}
+                  companyId={profile?.company_id}
+                  userId={profile?.id}
                 />
               ))}
               {generatingOpen && <MorningThinkingBubble />}
@@ -767,9 +769,10 @@ function ToolActivity({ label }) {
  * signed — a bare public URL would make one owner's photographs readable by
  * anyone who guessed the path.
  */
-function SharedImage({ path, name }) {
+function SharedImage({ path, name, companyId, userId }) {
   const [url, setUrl] = useState(null)
   const [failed, setFailed] = useState(false)
+  const [saveState, setSaveState] = useState('idle')  // idle | saving | saved | error
 
   useEffect(() => {
     let cancelled = false
@@ -779,6 +782,17 @@ function SharedImage({ path, name }) {
     return () => { cancelled = true }
   }, [path])
 
+  async function handleKeep() {
+    if (saveState !== 'idle') return
+    setSaveState('saving')
+    try {
+      await saveChatImageToLibrary({ path, name, companyId, userId })
+      setSaveState('saved')
+    } catch {
+      setSaveState('error')
+    }
+  }
+
   if (failed) {
     return <p className="text-[11px] mt-1.5 text-white/50">{name} — image unavailable</p>
   }
@@ -786,13 +800,29 @@ function SharedImage({ path, name }) {
     return <div className="mt-1.5 h-32 w-44 rounded-xl bg-white/10 animate-pulse" />
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer" className="block mt-1.5">
-      <img
-        src={url}
-        alt={name || 'Shared image'}
-        className="rounded-xl max-h-64 w-auto border border-white/15"
-      />
-    </a>
+    <div className="mt-1.5">
+      <a href={url} target="_blank" rel="noreferrer" className="block">
+        <img
+          src={url}
+          alt={name || 'Shared image'}
+          className="rounded-xl max-h-64 w-auto border border-white/15"
+        />
+      </a>
+      {/* Keeping it moves the image into the Library, where it gets described,
+          indexed and findable later — the difference between Solomon glancing
+          at something once and being able to look it up in October. */}
+      <button
+        type="button"
+        onClick={handleKeep}
+        disabled={saveState !== 'idle'}
+        className="mt-1.5 text-[11px] font-medium text-white/50 hover:text-white/90 transition-colors disabled:cursor-default"
+      >
+        {saveState === 'saving' ? 'Saving…'
+       : saveState === 'saved'  ? '✓ Kept in your documents'
+       : saveState === 'error'  ? 'Could not save — try again'
+       :                          'Keep this in my documents'}
+      </button>
+    </div>
   )
 }
 
@@ -834,7 +864,7 @@ function stripImageMarker(text) {
   return text.replace(/\n*\[image:[^\]]*\]\s*$/i, '').trim()
 }
 
-function Bubble({ role, content, artifacts, streaming = false, onSave }) {
+function Bubble({ role, content, artifacts, streaming = false, onSave, companyId, userId }) {
   const isUser = role === 'user'
   const [saved, setSaved] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -876,7 +906,15 @@ function Bubble({ role, content, artifacts, streaming = false, onSave }) {
           }
           {isUser && (Array.isArray(artifacts) ? artifacts : [])
             .filter(a => a?.type === 'image')
-            .map(a => <SharedImage key={a.path} path={a.path} name={a.name} />)}
+            .map(a => (
+              <SharedImage
+                key={a.path}
+                path={a.path}
+                name={a.name}
+                companyId={companyId}
+                userId={userId}
+              />
+            ))}
         </div>
         {!isUser && !streaming && <ArtifactChips artifacts={artifacts} />}
         {/* Save button — only on assistant messages, not while streaming */}
