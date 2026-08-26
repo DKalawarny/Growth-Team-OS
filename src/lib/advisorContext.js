@@ -71,6 +71,11 @@ const MAX_RECENT_CHECKINS    = 5
 //   - MAX_SNAPSHOT_CHARS:  ceiling per-snapshot. normalized_text is already
 //                          terse (~1-2KB) but this is the safety belt.
 const MAX_SNAPSHOTS        = 4
+
+// Past this, a QuickBooks sync is describing a month that has already closed.
+// Exported so the Advisor's "refresh" strip and Solomon's own wording agree —
+// two different numbers for "old" is how a UI ends up contradicting the model.
+export const STALE_FINANCIALS_DAYS = 35
 const MAX_SNAPSHOT_CHARS   = 4000
 
 // Knowledge file budget.
@@ -291,6 +296,32 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     usedChars += excerpt.length
   }
   const snapshots = fsRes.data ?? []
+
+  // ⭐ HOW OLD ARE THE BOOKS?
+  //
+  // QuickBooks syncs only when somebody clicks Sync now — there is no cron, by
+  // deliberate design (migration 008 names the exact trap: "no stale-data-but-
+  // thinks-it's-fresh footgun"). The provenance was already passed through, so
+  // Solomon could say "your QuickBooks sync to 18 August". What he had no way
+  // to know was whether 18 August was yesterday or six weeks ago — so a stale
+  // sync arrived looking exactly like this morning's, and a thirteen-week cash
+  // forecast could be built on it without a word.
+  //
+  // A date he must subtract from today is not the same as being told it is old.
+  // This does the arithmetic for him.
+  const newestSync = snapshots
+    .map(s => Date.parse(s.synced_at ?? ''))
+    .filter(Number.isFinite)
+    .sort((a, b) => b - a)[0] ?? null
+  const financialsFreshness = newestSync
+    ? {
+        synced_at: new Date(newestSync).toISOString(),
+        days_old:  Math.floor((Date.now() - newestSync) / 86_400_000),
+        // A month plus a few days: monthly books close on a cycle, so anything
+        // past roughly one closed month is describing a period that has ended.
+        stale:     (Date.now() - newestSync) / 86_400_000 > STALE_FINANCIALS_DAYS,
+      }
+    : null
   // RAG: format semantic search results using file metadata for titles/kinds.
   // If empty (no query, no key, or no relevant chunks), falls through to naive.
   const ragResults    = ragChunks?.length
@@ -501,6 +532,8 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // Credit & liquidity — set once in Settings, always included so every tool
     // and the Advisor can reason about the owner's true available capital without
     // them having to re-enter it each time.
+    // How old the books are. Null when nothing has ever been synced.
+    financials_freshness: financialsFreshness,
     credit_facilities: bp.financial_settings ? {
       overdraft_limit:    bp.financial_settings.overdraft_limit  ?? null,
       overdraft_drawn:    bp.financial_settings.overdraft_used   ?? null,

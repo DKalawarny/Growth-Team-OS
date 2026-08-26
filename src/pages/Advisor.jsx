@@ -9,7 +9,8 @@ import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
 import ToolDisclaimer from '../components/tools/ToolDisclaimer'
-import { buildAdvisorContext } from '../lib/advisorContext'
+import { buildAdvisorContext, STALE_FINANCIALS_DAYS } from '../lib/advisorContext'
+import { fetchLatestSnapshots, syncQuickBooks, fetchIntegration } from '../lib/quickbooks'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
 import { rememberFromExchange } from '../lib/memory'
@@ -103,6 +104,11 @@ export default function Advisor() {
   const [attachment,      setAttachment]      = useState(null)  // File pending on the next send
   const [error,           setError]           = useState(null)
   const [spendInfo,       setSpendInfo]       = useState(null)  // { used, cap }
+  // Age of the accounting sync. Null until checked; { daysOld } only when it is
+  // actually stale — a strip that renders on fresh data is noise, and noise is
+  // how a real warning gets ignored.
+  const [staleBooks,      setStaleBooks]      = useState(null)
+  const [syncing,         setSyncing]         = useState(false)
 
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
@@ -115,6 +121,43 @@ export default function Advisor() {
       setSpendInfo({ used: summary.totalCost, cap: summary.cap ?? DEFAULT_SPEND_CAP_USD })
     }).catch(() => {})
   }, [profile?.company_id])
+
+  // ── How old are the books? ─────────────────────────────────────────────────
+  //
+  // QuickBooks syncs only when somebody clicks it — there is no cron, by
+  // design. So the one place the owner is actually reading numbers is the one
+  // place that never told him how old they were.
+
+  useEffect(() => {
+    if (!profile?.company_id) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const integration = await fetchIntegration(profile.company_id)
+        if (cancelled || integration?.status !== 'connected') return
+        const snaps = await fetchLatestSnapshots(profile.company_id, { limit: 1 })
+        if (cancelled) return
+        const syncedAt = Date.parse(snaps?.[0]?.synced_at ?? '')
+        if (!Number.isFinite(syncedAt)) return
+        const daysOld = Math.floor((Date.now() - syncedAt) / 86_400_000)
+        setStaleBooks(daysOld > STALE_FINANCIALS_DAYS ? { daysOld } : null)
+      } catch { /* non-fatal — the strip is a courtesy, not a gate */ }
+    })()
+    return () => { cancelled = true }
+  }, [profile?.company_id])
+
+  async function handleSyncBooks() {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      await syncQuickBooks()
+      setStaleBooks(null)
+    } catch (err) {
+      setError(err.message || 'Could not refresh from QuickBooks.')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   // ── Generate and save the morning opener ──────────────────────────────────
 
@@ -547,6 +590,31 @@ export default function Advisor() {
   return (
     <div className="flex flex-col h-screen" style={{ background: '#F6F8F8' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} />
+
+      {/* The refresh sits HERE — in the room where the numbers get used —
+          rather than only in Settings and on the CFO page, which is where it
+          lived and where nobody is standing when Solomon quotes a figure.
+          Appears only when the sync is genuinely stale, so it means something
+          when it does. */}
+      {staleBooks && (
+        <div
+          className="px-4 sm:px-6 py-2 flex-shrink-0 flex items-center justify-center gap-3 text-[12.5px]"
+          style={{ background: 'rgba(245,158,11,0.10)', borderBottom: '1px solid rgba(245,158,11,0.25)' }}
+        >
+          <span style={{ color: '#8a5a00' }}>
+            Your books were last synced {staleBooks.daysOld} days ago.
+          </span>
+          <button
+            type="button"
+            onClick={handleSyncBooks}
+            disabled={syncing}
+            className="font-semibold underline underline-offset-2 disabled:opacity-50"
+            style={{ color: '#8a5a00' }}
+          >
+            {syncing ? 'Refreshing…' : 'Refresh from QuickBooks'}
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 min-h-0 flex">
        <div className="flex-1 overflow-y-auto">
