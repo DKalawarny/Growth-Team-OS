@@ -269,11 +269,55 @@ every previously imported calendar event duplicate on the owner's calendar.
 ⭐ Fixed in passing: `buildInviteUrl` fell back to `https://app.growthos.com` —
 a domain registered to a stranger on NameCheap since 2018.
 
-🔴 STILL DANIEL'S TO DO: point eliv8os.com at the Netlify site and keep
-leadeos.com attached as an alias so Netlify 301s it — `leadeos.com` holds the
-indexed pages, and `utm_source=chatgpt` is the only channel that has ever
-brought this product a stranger. Also: email on the new domain, Stripe product
-name, Supabase project name.
+### Domain repointing — IN PROGRESS (27 Aug 2026)
+
+⭐ The ordering rule the whole switch runs on: **do the additive steps now, the
+cutover steps only once DNS actually resolves.** Flipping `APP_URL` or the
+Supabase Site URL at a domain that isn't serving yet breaks Stripe returns and
+password resets in the meantime, for no gain.
+
+✅ **DONE — Supabase → Auth → URL Configuration.** Four redirect URLs added:
+`https://eliv8os.com/**`, `https://www.eliv8os.com/**`, `https://leadeos.com/**`,
+`https://www.leadeos.com/**`. ⭐ The list had been **completely empty**, which
+means the only allowed redirect was ever the bare Site URL — so `/reset-password`
+could not have worked from an email link on any domain. Additive; nothing to
+break. **Site URL deliberately left at `https://leadeos.com`.**
+
+✅ **DONE — Netlify → Domain management.** `eliv8os.com` and `www.eliv8os.com`
+added as **domain aliases**, both "Pending DNS verification" (correct — GoDaddy
+still points them at parking). Primary is still `leadeos.com`.
+
+🔴 **NEXT, DANIEL'S — GoDaddy DNS for eliv8os.com.** ⚠️ `dcc.godaddy.com` is
+**blocked for browser automation**, so this cannot be driven from a session; it
+is his to click. Netlify's own instructions, read off the dashboard:
+  - **A** · Host `@` · → `75.2.60.5` — *replace* the two parking A records
+    (`15.197.225.128`, `3.33.251.168`)
+  - **CNAME** · Host `www` · → `fabulous-boba-bd78c9.netlify.app` — currently
+    points at `@`
+  ⭐ Netlify *recommends* ALIAS/ANAME → `apex-loadbalancer.netlify.com`, but
+  **GoDaddy does not support ALIAS at the apex** — the A record is the documented
+  fallback, and it is what leadeos.com already uses, which is the corroboration.
+  ⚠️ **Do not touch leadeos.com's DNS.** It keeps pointing at Netlify; the 301
+  comes from the primary-domain flip below, not from DNS.
+
+🔴 **THEN, IN THIS ORDER, once `dig +short eliv8os.com` returns 75.2.60.5:**
+  1. Netlify → Domain management → make **eliv8os.com the primary domain**. This
+     is what turns leadeos.com into an automatic 301 and preserves the indexed
+     pages + the `utm_source=chatgpt` channel — the only one that has ever brought
+     this product a stranger.
+  2. Netlify → HTTPS → **Renew certificate**. ⚠️ The Let's Encrypt cert covers
+     **`leadeos.com, www.leadeos.com` ONLY** (issued 16 May). Until it is
+     reissued, HTTPS on eliv8os.com fails — a cert error is worse than a domain
+     that doesn't resolve, because the visitor is already there.
+  3. `supabase secrets set APP_URL=https://eliv8os.com`
+  4. Supabase → Auth → URL Configuration → **Site URL** → `https://eliv8os.com`
+  5. Google Cloud console → OAuth client → authorized JS origins + redirect URIs
+  6. Resend → verify the new sending domain, then `RESEND_FROM`
+  7. A `support@eliv8os.com` mailbox must EXIST before it is advertised — it is
+     already written into `seo.js` as `CONTACT_EMAIL` and shipped on public pages.
+
+Also still open: Stripe product name, Supabase project name (still "Growth Team
+OS").
 
 🔴 PRE-EXISTING BUG FOUND: `OG_DEFAULT_IMAGE` points at `/og-default.png` and
 **that file does not exist in public/**. Every link preview the site has ever
