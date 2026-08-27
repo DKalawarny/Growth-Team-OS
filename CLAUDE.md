@@ -175,6 +175,78 @@ before pushing.
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
 
+## ⭐⭐ SOLOMON'S VOICE — the rule the register turns on (26 Aug)
+
+Daniel on a live reply: convoluted, too much lingo, *"people will want to have
+peace when using this"*, *"we need a personality"*. Three causes were mechanical,
+one was self-inflicted that same morning: the instruction "say the two or three
+things that matter" came back as the literal sentence **"Three things that change
+what you do next:"** with a bolded numbered list, reply after reply. ⚠️ **A number
+in an instruction becomes a template.**
+
+⭐⭐ **DIRECT ABOUT THE SITUATION. NEVER DIRECTIVE ABOUT THE PERSON.**
+His catch, and the whole voice turns on it. He read *"part of that balance was
+never yours to spend"* as rude — because it is a **verdict on him**, not a fact
+about money. *"Some of that $60k might be GST you're holding"* says the same
+thing without correcting him. "The money's not quite there yet" is about the
+plan; "you shouldn't hire yet" is about him. Facts stay as hard as they need to
+be; the owner is never the one being corrected. This does NOT soften him — the
+rule that he be as sharp as the best secular advisor is unchanged.
+
+Also: a new `HOW YOU SOUND` section (the prompt previously said a great deal
+about what NOT to sound like and nothing about who he IS — negative rules produce
+a competent void, which was the missing personality); FORMAT rewritten to prose,
+usually under ~120 words, no bolded lead-ins, no numbered findings; and a hard
+rule to **never mention his own machinery** ("the tool flagged…" was the software
+narrating its own plumbing).
+
+⚠️ Fixed alongside: numbered lists rendered **"1. 1. 1."** — a blank line between
+items ended the `<ol>` and restarted the counter, and Solomon writes exactly that
+way, so every numbered answer he ever gave was numbered wrong.
+
+## ⭐ VOICE I/O — built, NOT yet keyed (26 Aug)
+
+`supabase/functions/tts` (ElevenLabs) + `src/lib/voice.js`. **Listen is a button,
+never auto-speak**: 30k credits ÷ ~550 chars ≈ **54 spoken replies a MONTH across
+all users**. Degrades to the device voice on 401/429 and SAYS so, rather than
+letting the owner think the robot is Solomon. Dictation uses the browser's own
+recognition — free, no new billing relationship.
+
+🔴 **NEEDS `supabase secrets set ELEVENLABS_API_KEY` then `supabase functions
+deploy tts`.**
+⚠️ **ITS OWN ELEVENLABS ACCOUNT — not kinwove's.** A shared credit pool means
+this product silently drains kinwove's Bible narration; that already happened
+once, on 1 Aug.
+⚠️ **ElevenLabs FREE FORBIDS COMMERCIAL USE.** Starter ($6/mo, 30k credits) is
+the first tier with a commercial licence — verified against their pricing page.
+⭐ Cost: ElevenLabs ~5–11¢ a reply vs ~0.08¢ on Google/Deepgram (60–100×). Right
+at pilot scale; the vendor lives entirely behind the edge function, so switching
+is one file.
+
+## ⭐⭐ THE CREED PRINCIPLE, APPLIED PROPERLY (26 Aug)
+
+⚠️ It had been **HALF-APPLIED**, which is worse than either choice. The "For
+Christian business owners" badge came off the landing page on 22 Aug — and the
+identical label stayed in the `<title>`, meta description, OG tags, both JSON-LD
+schemas, `llms.txt`, and the /pricing, /about and /signup descriptions. Every one
+of those is **louder** than the badge: the browser tab, the search result, the
+link preview, and the exact text an AI assistant quotes back.
+
+⭐⭐ Daniel then went **further than the 22 Aug decision**: *"it doesn't bring in
+non-Christians. I want this open to everyone. It's the fundamentals, the hidden
+code, that is Christian."* So all identity targeting is gone from the keyword
+arrays too — **sorting by identity is still sorting even where nobody can see
+it**, and it selects against exactly the owner this could reach first.
+
+✅ **Nothing underneath was touched, and he asked directly.** Solomon's prompt
+keeps THE OWNER'S FRAME, WHAT THE BUSINESS IS FOR (his thesis verbatim), WHEN
+FAITH BELONGS IN THE ANSWER, REFERENCING BOOKS and both anti-prosperity halves;
+the 13-book canon; onboarding's "why do you run this business" → `solomon_memory`,
+read every turn; the landing ConvictionSection; /about; /terms.
+**The hidden code is Christian. Nothing announces it at the door.**
+⚠️ Do not re-add identity wording to any title, description or keyword — the
+reasoning is written into `seo.js` in his words.
+
 ## ⭐ RENAMED — GrowthOS / Leadeos → Eliv8 OS (26 Aug 2026)
 
 **Eliv8** — El (God), live, and the eternal 8. Discreet on purpose: a reader
