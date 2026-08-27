@@ -1,6 +1,6 @@
 {
-  "name": "GrowthOS — AI Advisor",
-  "short_name": "GrowthOS",
+  "name": "Eliv8 OS — AI Advisor",
+  "short_name": "Eliv8 OS",
   "description": "AI business advisor and operating system for home-services contractors.",
   "start_url": "/dashboard",
   "display": "standalone",

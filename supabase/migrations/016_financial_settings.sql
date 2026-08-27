@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — business_profiles.financial_settings (migration 016)
+-- Eliv8 OS — business_profiles.financial_settings (migration 016)
 --
 -- Adds a JSONB column on business_profiles for overdraft + credit-card limits
 -- and balances. CreditFacilitiesSection.jsx writes/reads here so Claude can

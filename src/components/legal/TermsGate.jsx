@@ -96,7 +96,7 @@ export default function TermsGate({ children }) {
             Welcome to the pilot
           </h2>
           <p className="text-sm text-ink-500 leading-relaxed mb-5">
-            You are one of a small group testing GrowthOS early. There is a short
+            You are one of a small group testing Eliv8 OS early. There is a short
             agreement covering it — worth a look before you accept.
           </p>
 
@@ -129,7 +129,7 @@ export default function TermsGate({ children }) {
           <p className="text-[13px] text-ink-500 leading-relaxed mb-5">
             The pilot is free and nothing will be charged to you during it. It is
             currently run by {OPERATOR_LEGAL_NAME} while the company behind
-            GrowthOS is being incorporated — once that is done, you will be asked
+            Eliv8 OS is being incorporated — once that is done, you will be asked
             to accept a version in the company&rsquo;s name.
           </p>
 

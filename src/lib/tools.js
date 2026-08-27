@@ -1,5 +1,5 @@
 /**
- * Tools registry — the single source of truth for every tool in GrowthOS.
+ * Tools registry — the single source of truth for every tool in Eliv8 OS.
  *
  * One place to change when we:
  *   - launch a new tool (flip status from 'coming-soon' to 'available')
@@ -18,7 +18,7 @@
  * the `documents` table. Keep them stable — renaming a key orphans every
  * saved document for that tool.
  *
- * Post-April-2026 positioning note: GrowthOS niched down to home-services.
+ * Post-April-2026 positioning note: Eliv8 OS niched down to home-services.
  * Tools that don't fit that wedge (Exit Readiness, Rocks Tracker) are marked
  * `hidden: true` rather than deleted — the code runs fine, they just don't
  * clutter the homepage. Un-hide when we expand beyond home services.

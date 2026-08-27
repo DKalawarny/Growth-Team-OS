@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — email_log (migration 018)
+-- Eliv8 OS — email_log (migration 018)
 --
 -- Audit trail for every transactional email we send via the send-email Edge
 -- Function. Two reasons it exists:

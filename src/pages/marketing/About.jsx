@@ -5,7 +5,7 @@ import { buildPageMeta, organizationSchema, jsonLd, CONTACT_EMAIL } from '../../
 import { TRIAL_DAYS } from '../../lib/pricing'
 
 /**
- * /about — why GrowthOS exists.
+ * /about — why Eliv8 OS exists.
  *
  * ⚠️ READ THIS BEFORE EDITING.
  *
@@ -30,8 +30,8 @@ import { TRIAL_DAYS } from '../../lib/pricing'
  */
 
 const ABOUT_META = buildPageMeta({
-  title:       'About GrowthOS — why it exists',
-  description: 'GrowthOS is an AI business advisor for Christian business owners. What it is for, who it is for, and what it will not do.',
+  title:       'About Eliv8 OS — why it exists',
+  description: 'Eliv8 OS is an AI business advisor for Christian business owners. What it is for, who it is for, and what it will not do.',
   path:        '/about',
 })
 
@@ -61,7 +61,7 @@ export default function About() {
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
             Most business software assumes the only question worth asking is
-            how to make the number bigger. GrowthOS is built for owners who
+            how to make the number bigger. Eliv8 OS is built for owners who
             have a second question underneath that one.
           </p>
         </section>
@@ -78,7 +78,7 @@ export default function About() {
           <p className="text-gray-700 leading-relaxed mb-4">
             That is a harder job than it sounds, and it is a lonely one. Owners
             have plenty of people who need answers from them and almost nobody
-            to ask. GrowthOS exists to be somewhere to ask — an advisor called
+            to ask. Eliv8 OS exists to be somewhere to ask — an advisor called
             Solomon who reads your real numbers, remembers what you decided and
             why, argues the hard calls both ways, and tells you plainly when he
             does not know.
@@ -115,7 +115,7 @@ export default function About() {
 
         {/* ── Who it's for ────────────────────────────────────────────────── */}
         <section className="mb-16 bg-gray-50 rounded-2xl p-8">
-          <h2 className="text-2xl font-black text-gray-900 mb-4">Who GrowthOS is for</h2>
+          <h2 className="text-2xl font-black text-gray-900 mb-4">Who Eliv8 OS is for</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
             Owner-operators doing somewhere between $500k and $15M a year, with
             3 to 50 people on the team, where the owner is still the bottleneck

@@ -248,7 +248,7 @@ export default function Demo() {
             Your numbers, your business, same treatment.
           </h2>
           <p className="text-gray-600 mb-7 max-w-lg mx-auto leading-relaxed">
-            GrowthOS is in private pilot and free while it is. No card, and
+            Eliv8 OS is in private pilot and free while it is. No card, and
             nothing is charged.
           </p>
           <Link

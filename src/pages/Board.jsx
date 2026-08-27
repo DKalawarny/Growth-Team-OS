@@ -75,7 +75,7 @@ export default function Board() {
   const companyId    = profile?.company_id
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [appUsers,         setAppUsers]         = useState([])   // profiles with GrowthOS accounts
+  const [appUsers,         setAppUsers]         = useState([])   // profiles with Eliv8 OS accounts
   const [staff,            setStaff]            = useState([])   // external staff_members
   const [workOrders,       setWorkOrders]        = useState([])
   const [milestones,       setMilestones]        = useState([])
@@ -349,7 +349,7 @@ export default function Board() {
     if (order.description) lines.push('', order.description)
     lines.push('', `Priority: ${PRIORITY_MAP[order.priority]?.label ?? order.priority}`)
     if (order.due_date) lines.push(`Due: ${fmtDate(order.due_date)}`)
-    lines.push('', 'Log in to GrowthOS to view the full board and update progress.')
+    lines.push('', 'Log in to Eliv8 OS to view the full board and update progress.')
     window.location.href = `mailto:${member.email}?subject=${subject}&body=${encodeURIComponent(lines.join('\n'))}`
   }
 

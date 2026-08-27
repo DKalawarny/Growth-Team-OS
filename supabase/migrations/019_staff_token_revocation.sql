@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — staff token revocation (migration 019)
+-- Eliv8 OS — staff token revocation (migration 019)
 --
 -- Adds the support columns the staff magic-link token system needs:
 --

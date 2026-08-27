@@ -18,11 +18,11 @@ export function generateICS(milestones, companyName) {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//GrowthOS//Roadmap//EN',
+    'PRODID:-//Eliv8 OS//Roadmap//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
-    `X-WR-CALNAME:${escapeICS(companyName || 'GrowthOS')} Roadmap`,
-    'X-WR-CALDESC:Milestones from your GrowthOS roadmap',
+    `X-WR-CALNAME:${escapeICS(companyName || 'Eliv8 OS')} Roadmap`,
+    'X-WR-CALDESC:Milestones from your Eliv8 OS roadmap',
   ]
 
   milestones.forEach(m => {
@@ -40,7 +40,7 @@ export function generateICS(milestones, companyName) {
       `DTSTART;VALUE=DATE:${date}`,
       `DTEND;VALUE=DATE:${endDate}`,
       `SUMMARY:${escapeICS(m.title)}`,
-      `DESCRIPTION:GrowthOS roadmap milestone${m.completed ? ' (completed)' : ''}`,
+      `DESCRIPTION:Eliv8 OS roadmap milestone${m.completed ? ' (completed)' : ''}`,
       m.completed ? 'STATUS:COMPLETED' : 'STATUS:CONFIRMED',
       'END:VEVENT',
     )
@@ -50,7 +50,7 @@ export function generateICS(milestones, companyName) {
   return lines.join('\r\n')
 }
 
-export function downloadICS(milestones, companyName, filename = 'growthos-roadmap.ics') {
+export function downloadICS(milestones, companyName, filename = 'eliv8os-roadmap.ics') {
   const ics  = generateICS(milestones, companyName)
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
   const url  = URL.createObjectURL(blob)

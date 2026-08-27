@@ -3,7 +3,7 @@
  *
  * ⭐ THE TWO CONSTANTS THAT MATTER ARE AT THE TOP AND THEY MOVE TOGETHER.
  *
- * GrowthOS is running a private pilot BEFORE the company exists. That is a
+ * Eliv8 OS is running a private pilot BEFORE the company exists. That is a
  * deliberate, informed choice, but it has one consequence that has to be
  * handled honestly rather than papered over: an agreement is between two
  * parties, and right now the second party is a person, not a company.
@@ -36,7 +36,7 @@ export const TERMS_VERSION = '2026-08-pilot-1'
 export const OPERATOR_LEGAL_NAME = 'Daniel Kalawarny'
 
 /** Where notices and questions go. */
-export const OPERATOR_CONTACT = 'support@leadeos.com'
+export const OPERATOR_CONTACT = 'support@eliv8os.com'
 
 /** Province whose law governs, and whose courts hear disputes. */
 export const GOVERNING_PROVINCE = 'British Columbia'

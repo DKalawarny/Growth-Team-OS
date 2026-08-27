@@ -14,8 +14,8 @@ import { buildPageMeta, jsonLd, organizationSchema, CONTACT_EMAIL, ORG_NAME } fr
  */
 
 const PRIVACY_META = buildPageMeta({
-  title:       'Privacy policy — GrowthOS',
-  description: 'How GrowthOS collects, uses, stores, and shares personal information. Plain-language privacy policy compliant with PIPEDA. No data sold, no AI training on your data.',
+  title:       'Privacy policy — Eliv8 OS',
+  description: 'How Eliv8 OS collects, uses, stores, and shares personal information. Plain-language privacy policy compliant with PIPEDA. No data sold, no AI training on your data.',
   path:        '/privacy',
 })
 
@@ -90,7 +90,7 @@ export default function Privacy() {
         </Sec>
 
         <Sec title="3. Who we share data with">
-          <p>To run GrowthOS, we share minimum-necessary data with:</p>
+          <p>To run Eliv8 OS, we share minimum-necessary data with:</p>
           <ul>
             <li><strong>Supabase</strong> — database, auth, storage</li>
             <li><strong>Anthropic</strong> — AI processing (Claude)</li>
@@ -132,7 +132,7 @@ export default function Privacy() {
             Your data is stored in Supabase data centres in North America.
             QuickBooks data is processed via Intuit's regional infrastructure.
             Anthropic processes AI requests in the United States. By using
-            GrowthOS you consent to this cross-border processing.
+            Eliv8 OS you consent to this cross-border processing.
           </p>
         </Sec>
 
@@ -168,7 +168,7 @@ export default function Privacy() {
 
         <Sec title="9. Children">
           <p>
-            GrowthOS is for businesses. We do not knowingly collect data from
+            Eliv8 OS is for businesses. We do not knowingly collect data from
             anyone under 18. If you believe a minor has used the product,
             email us and we will delete the account.
           </p>

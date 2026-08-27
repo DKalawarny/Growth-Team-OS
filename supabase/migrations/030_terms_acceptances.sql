@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — recorded acceptance of the pilot agreement (migration 030)
+-- Eliv8 OS — recorded acceptance of the pilot agreement (migration 030)
 --
 -- WHY THIS EXISTS
 --
@@ -9,7 +9,7 @@
 -- asserts an agreement exists, and the first question anyone asks when
 -- something goes wrong is "show me what I agreed to."
 --
--- GrowthOS tells owners when to hire, how to price, and what their cash
+-- Eliv8 OS tells owners when to hire, how to price, and what their cash
 -- position is. Someone acts on that and loses money — free pilot or not — and
 -- the only thing standing between that and the operator is what they accepted
 -- and what the product said at the time. So acceptance has to be RECORDED,

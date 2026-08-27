@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — Solomon's memory (migration 027)
+-- Eliv8 OS — Solomon's memory (migration 027)
 --
 -- Until now Solomon had retrieval, not memory. `search_chat_history` finds
 -- past exchanges that resemble the current question, top-k above a similarity

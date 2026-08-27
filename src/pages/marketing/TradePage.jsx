@@ -150,7 +150,7 @@ export default function TradePage() {
   if (!data) return <Navigate to="/" replace />
 
   const meta = buildPageMeta({
-    title:       `GrowthOS for ${data.label} — an advisor who knows ${data.h1Trade}`,
+    title:       `Eliv8 OS for ${data.label} — an advisor who knows ${data.h1Trade}`,
     description: `An AI business advisor for Christian owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. Currently free while in private pilot.`,
     path:        `/for/${trade}`,
   })
@@ -169,7 +169,7 @@ export default function TradePage() {
         )}
         <script type="application/ld+json">{jsonLd(softwareApplicationSchema())}</script>
         <script type="application/ld+json">{jsonLd(productSchema({
-          name:        `GrowthOS for ${data.label}`,
+          name:        `Eliv8 OS for ${data.label}`,
           description: `An AI business advisor for Christian owners running ${data.label}. Finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession.`,
         }))}</script>
       </Helmet>
@@ -220,7 +220,7 @@ export default function TradePage() {
             Sound familiar?
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-center mb-10">
-            The friction points we hear constantly from {data.label}. GrowthOS doesn't
+            The friction points we hear constantly from {data.label}. Eliv8 OS doesn't
             fix all of them magically — but it gives you a co-pilot to think through them.
           </p>
           <div className="space-y-4">
@@ -241,7 +241,7 @@ export default function TradePage() {
             What that looks like in practice
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-center mb-10">
-            Real examples of what GrowthOS would do for a {data.label.replace(/s$/, '')} this week.
+            Real examples of what Eliv8 OS would do for a {data.label.replace(/s$/, '')} this week.
           </p>
           <div className="space-y-3">
             {data.examples.map((ex, i) => (

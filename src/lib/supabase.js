@@ -4,7 +4,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ''
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('[GrowthOS] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set in .env.local')
+  console.warn('[Eliv8 OS] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set in .env.local')
 }
 
 export const supabase = createClient(

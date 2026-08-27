@@ -14,7 +14,7 @@
  *   5. Best-effort log to email_log table (non-fatal if it fails)
  *
  * Auth model:
- *   - Caller must be a signed-in GrowthOS user (any role). Every template
+ *   - Caller must be a signed-in Eliv8 OS user (any role). Every template
  *     also enforces that `to` belongs to the caller's company — you can only
  *     email your own staff/advisors, not a random address.
  *
@@ -37,7 +37,7 @@
  *
  * Required env vars:
  *   RESEND_API_KEY   from resend.com dashboard
- *   RESEND_FROM      e.g. "GrowthOS <hello@growthos.app>" — verified domain
+ *   RESEND_FROM      e.g. "Eliv8 OS <hello@growthos.app>" — verified domain
  *                    For early testing, "onboarding@resend.dev" works without
  *                    domain verification but ONLY sends to your own address.
  *   APP_URL          used by templates for inline links
@@ -125,14 +125,14 @@ const staffWelcome: Template<StaffWelcomeData> = {
     const text = [
       `Hi ${staffName},`,
       ``,
-      `${ownerName} added you to the ${companyName} team on GrowthOS.`,
+      `${ownerName} added you to the ${companyName} team on Eliv8 OS.`,
       ``,
       `You'll receive an email any time a task gets assigned to you — with`,
       `the job details, due date, and a link to mark it done from your phone.`,
       ``,
       `No login required. Watch this inbox.`,
       ``,
-      `— The GrowthOS team`,
+      `— The Eliv8 OS team`,
     ].join('\n')
 
     const html = `
@@ -172,7 +172,7 @@ const staffWelcome: Template<StaffWelcomeData> = {
             </tr>
           </table>
           <div style="margin-top:24px;font-size:12px;color:#9a9a9a;">
-            Sent by GrowthOS on behalf of ${escapeHtml(companyName)}.
+            Sent by Eliv8 OS on behalf of ${escapeHtml(companyName)}.
           </div>
         </td>
       </tr>
@@ -283,7 +283,7 @@ const taskAssigned: Template<TaskAssignedData> = {
       ``,
       `Tap the link to see job details, mark progress, and upload photos.`,
       ``,
-      `— GrowthOS`,
+      `— Eliv8 OS`,
     ].join('\n')
 
     const html = `
@@ -342,7 +342,7 @@ const taskAssigned: Template<TaskAssignedData> = {
             </tr>
           </table>
           <div style="margin-top:24px;font-size:12px;color:#9a9a9a;">
-            Sent by GrowthOS on behalf of ${escapeHtml(d.companyName)}.
+            Sent by Eliv8 OS on behalf of ${escapeHtml(d.companyName)}.
           </div>
         </td>
       </tr>
@@ -391,7 +391,7 @@ const userWelcome: Template<UserWelcomeData> = {
     const text = [
       `Hey ${firstName},`,
       ``,
-      `Your GrowthOS workspace is live. Here's what to do in your first session:`,
+      `Your Eliv8 OS workspace is live. Here's what to do in your first session:`,
       ``,
       `1. Open Solomon — your AI advisor is ready with a personalised message.`,
       `   ${appUrl}/advisor`,
@@ -404,7 +404,7 @@ const userWelcome: Template<UserWelcomeData> = {
       ``,
       `Questions? Just reply to this email.`,
       ``,
-      `— The GrowthOS team`,
+      `— The Eliv8 OS team`,
     ].join('\n')
 
     const html = `
@@ -428,7 +428,7 @@ const userWelcome: Template<UserWelcomeData> = {
                   You're all set, ${escapeHtml(firstName)}.
                 </h1>
                 <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#3a3a3a;">
-                  Your GrowthOS workspace for <strong>${escapeHtml(companyName)}</strong> is live. Solomon has read your business profile and built your first roadmap. Here's where to start:
+                  Your Eliv8 OS workspace for <strong>${escapeHtml(companyName)}</strong> is live. Solomon has read your business profile and built your first roadmap. Here's where to start:
                 </p>
 
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
@@ -455,7 +455,7 @@ const userWelcome: Template<UserWelcomeData> = {
                 </table>
 
                 <a href="${appUrl}/advisor" style="display:inline-block;padding:13px 28px;background:#d4a843;color:#1a1a1a;font-weight:700;font-size:14px;border-radius:8px;text-decoration:none;">
-                  Open GrowthOS →
+                  Open Eliv8 OS →
                 </a>
 
                 <div style="margin:32px 0 0 0;padding-top:24px;border-top:1px solid #e5e3dd;">
@@ -467,7 +467,7 @@ const userWelcome: Template<UserWelcomeData> = {
             </tr>
           </table>
           <div style="margin-top:24px;font-size:12px;color:#9a9a9a;">
-            GrowthOS · <a href="${appUrl}" style="color:#9a9a9a;">leadeos.com</a>
+            Eliv8 OS · <a href="${appUrl}" style="color:#9a9a9a;">eliv8os.com</a>
           </div>
         </td>
       </tr>

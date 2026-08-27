@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — playbooks & work-order checklists (migration 020)
+-- Eliv8 OS — playbooks & work-order checklists (migration 020)
 --
 -- Lets owners turn repeating jobs into reusable playbooks. A playbook is a
 -- named list of steps the owner maintains once; whenever a new work order

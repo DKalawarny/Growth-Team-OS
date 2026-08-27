@@ -6,7 +6,7 @@
  *
  * Setup checklist (one-time, ~20 min):
  *   1. portal.azure.com → Azure Active Directory → App registrations → New
- *   2. Name: "GrowthOS", Supported account types: "Accounts in any org + personal"
+ *   2. Name: "Eliv8 OS", Supported account types: "Accounts in any org + personal"
  *   3. Redirect URI → Single-page application → https://your-domain.com
  *      (use http://localhost:5173 for local dev)
  *   4. API permissions → Add → Microsoft Graph → Delegated:

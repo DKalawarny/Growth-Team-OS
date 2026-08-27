@@ -404,7 +404,7 @@ export default function Onboarding() {
 
       // Fire-and-forget welcome email. Non-fatal — navigate regardless.
       // Requires the send-email Edge Function to be deployed and Resend
-      // domain verified (leadeos.com). Silently skips if either is missing.
+      // domain verified (eliv8os.com). Silently skips if either is missing.
       ;(async () => {
         try {
           const { data: { user: authUser } } = await supabase.auth.getUser()
@@ -576,7 +576,7 @@ function SplitShell({ stepIndex, children }) {
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">GrowthOS</span>
+            <span className="text-white font-bold text-base tracking-tight">Eliv8 OS</span>
           </div>
 
           {/* Step-specific messaging */}
@@ -726,7 +726,7 @@ function GeneratingScreen({ status, genStep }) {
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">GrowthOS</span>
+            <span className="text-white font-bold text-base tracking-tight">Eliv8 OS</span>
           </div>
           <h2 className="text-3xl font-bold text-white leading-tight mb-4">
             Almost there.

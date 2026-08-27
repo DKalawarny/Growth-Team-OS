@@ -34,7 +34,7 @@ const FAQ = [
     a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap keeps your subscription priced at $${PRICE_MONTHLY_USD} even when you're using it heavily. Most owners use 3–5 runs a month total. If you need more, email me — caps are easy to raise.`,
   },
   {
-    q: 'Do I need QuickBooks to use GrowthOS?',
+    q: 'Do I need QuickBooks to use Eliv8 OS?',
     a: 'No. Connecting QuickBooks unlocks the live CFO Dashboard and makes cash flow forecasting automatic, but every other tool works without it. You can connect later from Settings → Integrations, or enter numbers manually.',
   },
   {
@@ -59,11 +59,11 @@ const FAQ = [
   },
   {
     q: 'How do I export my data?',
-    a: 'Not self-serve yet — email me at support@leadeos.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
+    a: 'Not self-serve yet — email me at support@eliv8os.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
   },
   {
     q: 'I think I found a bug / something broke',
-    a: 'Email support@leadeos.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general — "the cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
+    a: 'Email support@eliv8os.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general — "the cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
   },
 ]
 
@@ -96,7 +96,7 @@ const TOOL_GUIDES = [
     short:  'Rolling 13-week forecast — see runway, gaps, and bad weeks before they hit.',
     steps: [
       'Enter the basics: starting cash, expected weekly inflows (jobs closing), and weekly outflows (payroll, rent, materials).',
-      'GrowthOS extends 13 weeks out and highlights any week where you go negative.',
+      'Eliv8 OS extends 13 weeks out and highlights any week where you go negative.',
       'If QuickBooks is connected, the inflow/outflow defaults come from your real data — just adjust forward-looking weeks.',
       'Re-run it any time your pipeline changes. It\'s designed to be cheap to run weekly.',
     ],
@@ -118,7 +118,7 @@ const TOOL_GUIDES = [
     short:  'Maps the team you need in 12 months — not the one you\'re stuck with today.',
     steps: [
       'Describe your current team and your 12-month revenue goal.',
-      'GrowthOS sketches the org structure that supports that goal — what roles you\'ll need, in what order.',
+      'Eliv8 OS sketches the org structure that supports that goal — what roles you\'ll need, in what order.',
       'Tells you which hire to make first and what hiring will cost vs. what it unlocks.',
       'Run it once a quarter. The picture changes as your roadmap moves.',
     ],
@@ -129,7 +129,7 @@ const TOOL_GUIDES = [
     short:  'Tracks every licence, WCB registration, insurance, and compliance document.',
     steps: [
       'Upload (or list) every licence, certificate, WCB registration, insurance policy, and contract you\'re responsible for.',
-      'GrowthOS reminds you 60 / 30 / 7 days before each expires.',
+      'Eliv8 OS reminds you 60 / 30 / 7 days before each expires.',
       'Generates a safety meeting cadence and talk topics specific to your work.',
       'If you operate in multiple provinces/states, it tracks per-jurisdiction.',
     ],
@@ -172,7 +172,7 @@ const TOOL_GUIDES = [
     short:  'Everything Solomon and the tools can reference — contracts, SOPs, financials.',
     steps: [
       'Upload PDFs, Word docs, spreadsheets — anything you want Solomon to know about.',
-      'GrowthOS reads them once and stores the extracted text so future conversations and tools can reference them.',
+      'Eliv8 OS reads them once and stores the extracted text so future conversations and tools can reference them.',
       'Good things to upload: master service agreement, employee handbook, last year\'s P&L, vendor list, safety manual.',
     ],
   },
@@ -181,7 +181,7 @@ const TOOL_GUIDES = [
     href:   '/tools/newsletter',
     short:  'Generates a monthly newsletter from your check-ins and milestones — keep the team in the loop.',
     steps: [
-      'Click Generate; GrowthOS reads your last 30 days of activity and drafts a newsletter.',
+      'Click Generate; Eliv8 OS reads your last 30 days of activity and drafts a newsletter.',
       'Covers wins, what\'s coming up, hiring, and any compliance reminders.',
       'Review, edit, send. Owners use this with their crews, board, or co-owners.',
     ],
@@ -212,10 +212,10 @@ export default function Help() {
           </p>
         </div>
         <a
-          href="mailto:support@leadeos.com"
+          href="mailto:support@eliv8os.com"
           className="px-5 py-2.5 rounded-lg bg-gold-gradient text-white text-sm font-bold whitespace-nowrap glow-gold-sm hover:glow-gold transition-all"
         >
-          support@leadeos.com
+          support@eliv8os.com
         </a>
       </section>
 
@@ -286,10 +286,10 @@ export default function Help() {
           Still stuck? I read every message.
         </p>
         <a
-          href="mailto:support@leadeos.com"
+          href="mailto:support@eliv8os.com"
           className="text-sm font-semibold text-brand-600 hover:text-brand-700"
         >
-          support@leadeos.com
+          support@eliv8os.com
         </a>
       </section>
     </div>
@@ -415,7 +415,7 @@ function RoadmapGuide() {
               Name
             </span>
             <span className="text-ink-600">
-              <strong>App user.</strong> Someone with their own login. They see assignments inside the GrowthOS dashboard.
+              <strong>App user.</strong> Someone with their own login. They see assignments inside the Eliv8 OS dashboard.
               No magic-link email — they're already in the app.
             </span>
           </li>

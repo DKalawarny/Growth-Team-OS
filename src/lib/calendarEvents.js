@@ -5,7 +5,7 @@ import { PAYMENTS_LIVE } from './pricing'
 /**
  * Calendar event shaping + month-grid math.
  *
- * The calendar page is the honest "when" view of GrowthOS. It mixes four
+ * The calendar page is the honest "when" view of Eliv8 OS. It mixes four
  * things into one stream:
  *
  *   - Milestones      — a muted chip on start_date, a prominent status-

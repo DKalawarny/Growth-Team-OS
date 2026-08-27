@@ -65,7 +65,7 @@ export const SHOW_PUBLIC_PRICE = false
 /** What public surfaces say instead of a number while the pilot runs. */
 export const PILOT_PRICE_LINE  = 'Free while in private pilot'
 export const PILOT_PRICE_BLURB =
-  'GrowthOS is in private pilot and free to use. We are setting the price with the first owners using it — you will be told well before anything is ever charged.'
+  'Eliv8 OS is in private pilot and free to use. We are setting the price with the first owners using it — you will be told well before anything is ever charged.'
 
 export const PRICE_MONTHLY_USD     = 147
 export const PRICE_ANNUAL_USD      = 1470

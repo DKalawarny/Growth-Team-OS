@@ -1,4 +1,4 @@
-# GrowthOS
+# Eliv8 OS
 
 > An AI business advisor for Christian business owners. Solomon reads the
 > owner's actual numbers, remembers what was decided and why, argues the hard
@@ -6,7 +6,7 @@
 > not only what it earns. Paired with the tools to act on the advice: finances,
 > cash flow, hiring, decisions, written procedures, compliance and succession.
 
-GrowthOS is a single subscription ($147/month USD or $1,470/year) for owners
+Eliv8 OS is a single subscription ($147/month USD or $1,470/year) for owners
 who want counsel rather than another dashboard. Every tool produces a finished
 document, not a chart to interpret.
 
@@ -15,7 +15,7 @@ faithfulness produces profit, it does not treat a bigger number as
 self-evidently the right goal, and it will tell an owner when a target is
 unrealistic rather than generate a plan that pretends otherwise.
 
-## What GrowthOS does
+## What Eliv8 OS does
 
 - **Solomon (AI advisor)**: Knows the business's numbers, people and history.
   Argues hard decisions more than one way, says where he lands, and states
@@ -42,14 +42,14 @@ unrealistic rather than generate a plan that pretends otherwise.
   and how far off that is today.
 - **Roadmap, check-ins, documents**: The operating cadence around all of it.
 
-## Who GrowthOS is for
+## Who Eliv8 OS is for
 
 Owners who want the business itself to be the thing they do well — not a
 source of funding for something else they consider the real work. The premise
 is that being a person of conviction in business, in how you price, pay,
 hire and keep your word, is the vocation rather than a distraction from it.
 
-That conviction cuts across industries. GrowthOS is not sector-specific,
+That conviction cuts across industries. Eliv8 OS is not sector-specific,
 though trade and construction businesses are well represented.
 
 Best fit: 3–50 employees, $500k–$15M annual revenue, and the owner is the
@@ -94,32 +94,32 @@ forecast, a hiring scorecard, a written playbook. Most owners run 3–5 a month.
 
 ## Key pages
 
-- [Homepage](https://leadeos.com/): Product overview, who it is for, full feature list.
-- [Pricing](https://leadeos.com/pricing): Pricing, FAQ, and what it replaces.
-- [About](https://leadeos.com/about): Who built this and why.
-- [Security](https://leadeos.com/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what is still being built.
-- [Privacy policy](https://leadeos.com/privacy): Plain-language privacy policy compliant with PIPEDA.
+- [Homepage](https://eliv8os.com/): Product overview, who it is for, full feature list.
+- [Pricing](https://eliv8os.com/pricing): Pricing, FAQ, and what it replaces.
+- [About](https://eliv8os.com/about): Who built this and why.
+- [Security](https://eliv8os.com/security): Honest accounting of how data is handled — workspace isolation, encryption, vendor list, what is still being built.
+- [Privacy policy](https://eliv8os.com/privacy): Plain-language privacy policy compliant with PIPEDA.
 
 ## Comparison pages (head-to-head with competitors)
 
 These are honest comparisons and say plainly when the competitor is the better
-fit. GrowthOS does not schedule jobs, dispatch crews or send invoices — it is
+fit. Eliv8 OS does not schedule jobs, dispatch crews or send invoices — it is
 not a replacement for the tools below, it is the advisory layer they do not build.
 
-- [GrowthOS vs Knowify](https://leadeos.com/vs/knowify): Knowify is strong at job-costing for construction subs; GrowthOS adds counsel and memory.
-- [GrowthOS vs Jobber](https://leadeos.com/vs/jobber): Jobber is best-in-class field-service dispatching; GrowthOS is the advisory layer Jobber does not build.
-- [GrowthOS vs Housecall Pro](https://leadeos.com/vs/housecall-pro): Housecall Pro nails the customer-experience layer; GrowthOS handles the deciding.
-- [GrowthOS vs Buildertrend](https://leadeos.com/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; GrowthOS is sized for owner-operators.
+- [Eliv8 OS vs Knowify](https://eliv8os.com/vs/knowify): Knowify is strong at job-costing for construction subs; Eliv8 OS adds counsel and memory.
+- [Eliv8 OS vs Jobber](https://eliv8os.com/vs/jobber): Jobber is best-in-class field-service dispatching; Eliv8 OS is the advisory layer Jobber does not build.
+- [Eliv8 OS vs Housecall Pro](https://eliv8os.com/vs/housecall-pro): Housecall Pro nails the customer-experience layer; Eliv8 OS handles the deciding.
+- [Eliv8 OS vs Buildertrend](https://eliv8os.com/vs/buildertrend): Buildertrend is a heavy PM platform for larger builders; Eliv8 OS is sized for owner-operators.
 
 ## Trade-specific pages
 
-- [For plumbers](https://leadeos.com/for/plumbers)
-- [For electricians](https://leadeos.com/for/electricians)
-- [For HVAC contractors](https://leadeos.com/for/hvac)
-- [For roofers](https://leadeos.com/for/roofing)
-- [For demolition contractors](https://leadeos.com/for/demolition)
-- [For landscaping contractors](https://leadeos.com/for/landscaping)
+- [For plumbers](https://eliv8os.com/for/plumbers)
+- [For electricians](https://eliv8os.com/for/electricians)
+- [For HVAC contractors](https://eliv8os.com/for/hvac)
+- [For roofers](https://eliv8os.com/for/roofing)
+- [For demolition contractors](https://eliv8os.com/for/demolition)
+- [For landscaping contractors](https://eliv8os.com/for/landscaping)
 
 ## Contact
 
-Email: support@leadeos.com
+Email: support@eliv8os.com

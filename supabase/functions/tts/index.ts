@@ -7,7 +7,7 @@
  * back to the device's robot voice. Degraded, never broken. Same here.
  *
  * ⚠️ SEPARATE ELEVENLABS ACCOUNT FROM KINWOVE. Two products sharing one credit
- * pool means GrowthOS usage silently eats kinwove's Bible narration, and the
+ * pool means Eliv8 OS usage silently eats kinwove's Bible narration, and the
  * product you are not looking at is the one that breaks. This function must be
  * given its own key.
  *

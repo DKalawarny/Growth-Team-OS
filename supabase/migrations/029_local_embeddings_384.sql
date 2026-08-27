@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — drop OpenAI, embed locally (migration 029)
+-- Eliv8 OS — drop OpenAI, embed locally (migration 029)
 --
 -- Embeddings were the only thing in this product using OpenAI. Supabase runs
 -- `gte-small` natively inside Edge Functions via Supabase.ai.Session — no API

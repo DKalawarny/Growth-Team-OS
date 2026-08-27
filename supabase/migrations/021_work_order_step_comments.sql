@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — field-level step comments (migration 021)
+-- Eliv8 OS — field-level step comments (migration 021)
 --
 -- The "loop-closing" piece of the playbook system. Crew on a job site can
 -- attach a comment or voice-transcribed note to any checklist step they're

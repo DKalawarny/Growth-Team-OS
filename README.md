@@ -1,9 +1,9 @@
-# GrowthOS
+# Eliv8 OS
 
 The operating system for owner-operated trades and service businesses. A
-[Leadeos](https://leadeos.com) product.
+[Leadeos](https://eliv8os.com) product.
 
-GrowthOS is a React + Vite SPA backed by Supabase (Postgres + Auth + Edge
+Eliv8 OS is a React + Vite SPA backed by Supabase (Postgres + Auth + Edge
 Functions). Owners and their teams use it to plan growth roadmaps, run their
 work board, capture playbooks, and ask **Solomon**, the in-app Claude-powered
 advisor, for help on hiring, cash flow, exit readiness, and the rest of the
@@ -31,7 +31,7 @@ Stripe dashboard configuration), keep reading.
 
 ## Usage caps & costs
 
-Every AI-powered tool in GrowthOS is rate-limited per company per calendar month to keep runaway spend off the table while we're still pre-billing. The cap is enforced at the point of each paid call:
+Every AI-powered tool in Eliv8 OS is rate-limited per company per calendar month to keep runaway spend off the table while we're still pre-billing. The cap is enforced at the point of each paid call:
 
 - **Default cap:** 10 Claude runs per tool per company per month. A "run" is either a fresh generate or a refine — they cost the same at the API level, so they deplete the cap the same way.
 - **Reset:** The 1st of each calendar month (UTC). No rolling window.
@@ -97,8 +97,8 @@ Set all of these in **Supabase → Project Settings → Edge Functions → Secre
 |---|---|---|
 | `STRIPE_SECRET_KEY` | `sk_test_...` / `sk_live_...` | Stripe → Developers → API keys |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_...` | Stripe → Developers → Webhooks → your endpoint → Signing secret |
-| `STRIPE_PRICE_ID_OWNER` | `price_...` | Stripe → Products → GrowthOS Owner → the **monthly** recurring price |
-| `STRIPE_PRICE_ID_OWNER_ANNUAL` | `price_...` | Stripe → Products → GrowthOS Owner → the **annual** recurring price (used when the user picks the yearly plan; checkout falls back to monthly if unset) |
+| `STRIPE_PRICE_ID_OWNER` | `price_...` | Stripe → Products → Eliv8 OS Owner → the **monthly** recurring price |
+| `STRIPE_PRICE_ID_OWNER_ANNUAL` | `price_...` | Stripe → Products → Eliv8 OS Owner → the **annual** recurring price (used when the user picks the yearly plan; checkout falls back to monthly if unset) |
 | `APP_URL` | `https://growthos.com` (prod) / `http://localhost:5173` (dev) | Where Stripe sends the user back to |
 
 The `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local` are already used for all Edge Function calls — no extra browser env is needed.
@@ -107,7 +107,7 @@ The `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local` are already
 
 1. **Create the Owner product**
    - Stripe → Products → Add product
-   - Name: `GrowthOS — Owner`
+   - Name: `Eliv8 OS — Owner`
    - Pricing: add **two** recurring prices on the same product:
      - **Monthly:** $97/month USD → copy the price ID into `STRIPE_PRICE_ID_OWNER`
      - **Annual:** $970/year USD (2 months free vs. monthly) → copy the price ID into `STRIPE_PRICE_ID_OWNER_ANNUAL`
@@ -206,7 +206,7 @@ Implementation:
 
 ## Edge Functions
 
-GrowthOS leans on Supabase Edge Functions for anything that requires a
+Eliv8 OS leans on Supabase Edge Functions for anything that requires a
 secret key, signing, or server-authoritative checks. The browser never holds
 an Anthropic, Stripe, Resend, or Google Places key — those all live in
 Supabase secrets and only flow through the functions below.
@@ -247,7 +247,7 @@ supabase secrets set STRIPE_PRICE_ID_OWNER_ANNUAL=price_...
 
 # Resend — transactional email
 supabase secrets set RESEND_API_KEY=re_...
-supabase secrets set RESEND_FROM="GrowthOS <hello@your-verified-domain>"
+supabase secrets set RESEND_FROM="Eliv8 OS <hello@your-verified-domain>"
 
 # Staff magic-link signing secret. Generate a fresh random value — this is
 # the only thing standing between a stolen link and arbitrary field-portal
@@ -281,7 +281,7 @@ You can confirm what's set with `supabase secrets list`.
 supabase db push
 
 # JWT-gated functions — standard deploy. The Supabase runtime enforces
-# that the caller's Authorization header carries a valid GrowthOS JWT
+# that the caller's Authorization header carries a valid Eliv8 OS JWT
 # before the function code runs.
 supabase functions deploy claude
 supabase functions deploy send-email
@@ -294,7 +294,7 @@ supabase functions deploy qbo-oauth-callback
 supabase functions deploy qbo-sync
 
 # Public functions — MUST deploy with --no-verify-jwt because the caller
-# isn't a logged-in GrowthOS user (Stripe webhooks, field crew on a magic
+# isn't a logged-in Eliv8 OS user (Stripe webhooks, field crew on a magic
 # link). Each function's own internal auth (Stripe signature, HMAC token)
 # is what actually protects the endpoint.
 supabase functions deploy stripe-webhook --no-verify-jwt

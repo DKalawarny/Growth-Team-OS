@@ -1,4 +1,4 @@
-# GrowthOS — Claude Code project context
+# Eliv8 OS — Claude Code project context
 
 This file is auto-loaded by Claude Code in any session opened in this repo.
 It's how the previous session hands the project off to the next one. Keep it
@@ -6,13 +6,13 @@ current — when something parked gets done, delete that line; when something
 new gets parked, add it.
 
 Deeper product context (features, philosophy) lives in
-[`GROWTHOS_OVERVIEW.md`](GROWTHOS_OVERVIEW.md) and [`README.md`](README.md).
+[`ELIV8OS_OVERVIEW.md`](ELIV8OS_OVERVIEW.md) and [`README.md`](README.md).
 
 ---
 
 ## What this is
 
-GrowthOS (a **Leadeos** product) — React + Vite SPA backed by Supabase
+**Eliv8 OS** — React + Vite SPA backed by Supabase
 (Postgres + Auth + Edge Functions). Repo: `github.com/DKalawarny/Growth-Team-OS`.
 
 It's an AI business advisor ("Solomon" — Claude Opus/Sonnet/Haiku via a
@@ -174,6 +174,38 @@ before pushing.
 - **Pricing decisions are his call.** I (Claude) had recommended $147 at
   launch; he chose $97 to ship and revisit later. Don't re-litigate
   unless he asks.
+
+## ⭐ RENAMED — GrowthOS / Leadeos → Eliv8 OS (26 Aug 2026)
+
+**Eliv8** — El (God), live, and the eternal 8. Discreet on purpose: a reader
+sees "elevate", anyone who looks finds El. The same mechanism as the landing
+page's "someone who shares none of your convictions" — findable, never asserted.
+
+Primary domain **eliv8os.com** (eliv8-os.com also owned, points at it).
+`src/lib/seo.js` remains the single source: SITE_URL, SITE_NAME, ORG_NAME,
+CONTACT_EMAIL.
+
+⚠️ **THE 24 LOWERCASE `growthos:` STRINGS ARE localStorage KEYS AND MUST NOT BE
+RENAMED.** They carry saved roadmap views, dismissed banners, trajectory
+checkboxes and — critically — `growthos:terms-pending`, which ferries terms
+consent across the Google OAuth redirect. Renaming them silently wipes every
+existing user's state and breaks consent capture. They are deliberately left.
+
+⚠️ Also left alone: the `.ics` UID domain in `icsExport.js`. Changing a UID makes
+every previously imported calendar event duplicate on the owner's calendar.
+
+⭐ Fixed in passing: `buildInviteUrl` fell back to `https://app.growthos.com` —
+a domain registered to a stranger on NameCheap since 2018.
+
+🔴 STILL DANIEL'S TO DO: point eliv8os.com at the Netlify site and keep
+leadeos.com attached as an alias so Netlify 301s it — `leadeos.com` holds the
+indexed pages, and `utm_source=chatgpt` is the only channel that has ever
+brought this product a stranger. Also: email on the new domain, Stripe product
+name, Supabase project name.
+
+🔴 PRE-EXISTING BUG FOUND: `OG_DEFAULT_IMAGE` points at `/og-default.png` and
+**that file does not exist in public/**. Every link preview the site has ever
+produced — Slack, iMessage, LinkedIn — has had a broken image.
 
 ## What just shipped (2026-08-26)
 
@@ -393,7 +425,7 @@ bundling step above the failure.
   founder story. See those commits — the reasoning is in the messages.
 - **Prerender was silently skipping on Netlify** — fixed in `netlify.toml`.
   Every marketing page had been shipping as an empty SPA shell. Verify with:
-  `curl -s https://leadeos.com/about | grep -o "<title>[^<]*</title>"`
+  `curl -s https://eliv8os.com/about | grep -o "<title>[^<]*</title>"`
 
 ## What just shipped (2026-05-17 session — continued)
 
@@ -426,7 +458,7 @@ bundling step above the failure.
 - **PWA support** — `public/manifest.json` added, linked from `index.html`.
 - **Welcome email** — `user-welcome` template in `send-email` Edge Function,
   triggered fire-and-forget from Onboarding on completion.
-- **Brand cleanup** — `leadeos.com` + `support@leadeos.com` everywhere; old
+- **Brand cleanup** — `eliv8os.com` + `support@eliv8os.com` everywhere; old
   `growthos.ca` and `dkalawarny@hotmail.com` removed sitewide.
 - **Integrations section** — Google Drive and OneDrive cloud-source cards added
   at bottom of Settings → Integrations.
@@ -463,7 +495,7 @@ In rough order of priority.
    so creating them now just locks in a number Daniel may not want.
 
    ⭐ He is running a pricing questionnaire with pilot users first, on the
-   suspicion that $147 is TOO CHEAP. Against what GrowthOS displaces (coach
+   suspicion that $147 is TOO CHEAP. Against what Eliv8 OS displaces (coach
    $500–2,000/mo, bookkeeper $400–800, fractional CFO $500–1,500) that is a
    reasonable suspicion.
 
@@ -523,7 +555,7 @@ In rough order of priority.
    (`/crm`, formerly listed here, was deleted on 22 Aug — see the 8/22 section.)
 
 5b. **Ten indexed pages still sell the pre-reposition sector wedge:** four
-   `/vs/<competitor>` pages comparing GrowthOS to field-service CRMs (Jobber,
+   `/vs/<competitor>` pages comparing Eliv8 OS to field-service CRMs (Jobber,
    Knowify, Housecall Pro, Buildertrend) and six `/for/<trade>` pages. Comparing
    yourself to four CRMs is a claim about what you are, and invites scoring on
    dispatching — which we deliberately do not do. `/about` meanwhile says the buyer
@@ -614,7 +646,7 @@ started somewhere else gets a DIFFERENT directory and will not see this one.
 That is why this file exists — CLAUDE.md travels with the repo and memory does
 not. **When something important is decided, write it in both.**
 
-The GrowthOS-relevant files there:
+The Eliv8 OS-relevant files there:
 
 - `project_growthos.md` — project context + ⭐ **the refreshed open list**
 - `project_growthos_audit_2026_08_22.md` — the 8/22 session in full: broken
@@ -625,7 +657,7 @@ The GrowthOS-relevant files there:
 - `user_daniel.md`, `feedback_working_style.md` — how he works
 
 ⚠️ Most other files there are **kinwove**, his other product. Do not assume a
-memory entry is about GrowthOS — see the note at the top of `project_growthos.md`
+memory entry is about Eliv8 OS — see the note at the top of `project_growthos.md`
 about the day "growth" was answered with a kinwove strategy.
 
 An older directory exists at

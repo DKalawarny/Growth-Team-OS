@@ -469,7 +469,7 @@ Deno.serve(async (req) => {
       // here remains a learning-stream entry. The CRM creates its own
       // signed, retention-controlled record if the owner accepts. We
       // deliberately don't auto-mirror so the two systems stay clean:
-      //   - GrowthOS: free-form crew insight, clustered for Solomon
+      //   - Eliv8 OS: free-form crew insight, clustered for Solomon
       //   - CRM:     legal-grade safety record, signed and defensible
       //
       // Payload sketch (for when we wire this up):

@@ -2,7 +2,7 @@
  * scripts/prerender.mjs — post-build prerender for the public marketing routes.
  *
  * Why this exists:
- *   GrowthOS is a Vite SPA. Per-page <Helmet> meta and JSON-LD schemas only
+ *   Eliv8 OS is a Vite SPA. Per-page <Helmet> meta and JSON-LD schemas only
  *   render after React mounts. Crawlers without JS execution (Slack/iMessage
  *   link previews, some AI training crawlers, legacy SEO audit tools) see
  *   only the fallback head in index.html. Prerendering closes that gap by
@@ -51,27 +51,27 @@ const ROUTES = [
   // which string — which is exactly what happened when the landing page was
   // repositioned. The catch below now prints both.
   { path: '/',                titleContains: 'advisor for Christian business owners' },
-  { path: '/pricing',         titleContains: 'Pricing — GrowthOS' },
+  { path: '/pricing',         titleContains: 'Pricing — Eliv8 OS' },
   { path: '/demo',            titleContains: 'See it work' },
-  { path: '/about',           titleContains: 'About GrowthOS' },
+  { path: '/about',           titleContains: 'About Eliv8 OS' },
   { path: '/security',        titleContains: 'Security & data handling' },
   { path: '/privacy',         titleContains: 'Privacy policy' },
   { path: '/terms',           titleContains: 'Pilot agreement' },
   { path: '/free-gbp-audit',  titleContains: 'Free Google Business Profile audit' },
 
   // Comparison pages
-  { path: '/vs/knowify',        titleContains: 'GrowthOS vs Knowify' },
-  { path: '/vs/jobber',         titleContains: 'GrowthOS vs Jobber' },
-  { path: '/vs/housecall-pro',  titleContains: 'GrowthOS vs Housecall Pro' },
-  { path: '/vs/buildertrend',   titleContains: 'GrowthOS vs Buildertrend' },
+  { path: '/vs/knowify',        titleContains: 'Eliv8 OS vs Knowify' },
+  { path: '/vs/jobber',         titleContains: 'Eliv8 OS vs Jobber' },
+  { path: '/vs/housecall-pro',  titleContains: 'Eliv8 OS vs Housecall Pro' },
+  { path: '/vs/buildertrend',   titleContains: 'Eliv8 OS vs Buildertrend' },
 
   // Trade-specific pages
-  { path: '/for/plumbers',      titleContains: 'GrowthOS for plumbers' },
-  { path: '/for/electricians',  titleContains: 'GrowthOS for electricians' },
-  { path: '/for/hvac',          titleContains: 'GrowthOS for HVAC contractors' },
-  { path: '/for/roofing',       titleContains: 'GrowthOS for roofers' },
-  { path: '/for/demolition',    titleContains: 'GrowthOS for demolition contractors' },
-  { path: '/for/landscaping',   titleContains: 'GrowthOS for landscaping contractors' },
+  { path: '/for/plumbers',      titleContains: 'Eliv8 OS for plumbers' },
+  { path: '/for/electricians',  titleContains: 'Eliv8 OS for electricians' },
+  { path: '/for/hvac',          titleContains: 'Eliv8 OS for HVAC contractors' },
+  { path: '/for/roofing',       titleContains: 'Eliv8 OS for roofers' },
+  { path: '/for/demolition',    titleContains: 'Eliv8 OS for demolition contractors' },
+  { path: '/for/landscaping',   titleContains: 'Eliv8 OS for landscaping contractors' },
 ]
 
 async function waitForServer(url, maxMs = 30_000) {

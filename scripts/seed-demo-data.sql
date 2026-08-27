@@ -19,7 +19,7 @@
 --
 -- Safe to re-run: every insert clears its own table for this company first.
 --
--- The figures match leadeos.com/demo so the page and the live workspace tell
+-- The figures match eliv8os.com/demo so the page and the live workspace tell
 -- the same story. Bridgewater Mechanical is invented.
 -- ============================================================================
 

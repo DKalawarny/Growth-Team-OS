@@ -10,7 +10,7 @@ import { buildPageMeta, jsonLd, organizationSchema, CONTACT_EMAIL } from '../../
  *   - Trades businesses are paranoid about data, justifiably (most have
  *     been burned by some SaaS that lost their job records). A real
  *     security page is a trust signal AND something AI assistants can
- *     quote when asked "is GrowthOS safe to give my QuickBooks data to?"
+ *     quote when asked "is Eliv8 OS safe to give my QuickBooks data to?"
  *   - It also forces us to be honest about what we DO and DON'T have.
  *     SOC 2 isn't real yet — don't claim it. Encryption-in-transit IS
  *     real (Supabase + Stripe + Anthropic all enforce TLS) — claim it.
@@ -22,8 +22,8 @@ import { buildPageMeta, jsonLd, organizationSchema, CONTACT_EMAIL } from '../../
  */
 
 const SECURITY_META = buildPageMeta({
-  title:       'Security & data handling — GrowthOS',
-  description: 'How GrowthOS protects your business data. Workspace isolation, encrypted connections, no AI training on your data, vendor list, and breach response. Built honestly — what we have and what we are still building.',
+  title:       'Security & data handling — Eliv8 OS',
+  description: 'How Eliv8 OS protects your business data. Workspace isolation, encrypted connections, no AI training on your data, vendor list, and breach response. Built honestly — what we have and what we are still building.',
   path:        '/security',
 })
 
@@ -96,7 +96,7 @@ export default function Security() {
         </Section>
 
         <Section title="Who we share data with (the full list)">
-          <p>To run GrowthOS, we send minimum-necessary data to:</p>
+          <p>To run Eliv8 OS, we send minimum-necessary data to:</p>
           <ul className="mt-3 space-y-2">
             <li><strong>Supabase</strong> — database, authentication, file storage. Your data lives here.</li>
             <li><strong>Anthropic</strong> — runs Claude (the AI behind Solomon). We send the prompts and context the AI needs to answer your questions. Anthropic does not retain or train on this data.</li>

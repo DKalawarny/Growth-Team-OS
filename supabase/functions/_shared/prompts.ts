@@ -4,7 +4,7 @@
  * This file used to live at src/lib/prompts.js and shipped to the browser in a
  * code-split chunk. Anyone could fetch it with one unauthenticated request:
  *
- *     curl https://leadeos.com/assets/prompts-<hash>.js     # 102K
+ *     curl https://eliv8os.com/assets/prompts-<hash>.js     # 102K
  *
  * That is 21,000 characters of Solomon — the vocation framing, the
  * anti-prosperity section, the eight domain refusals, the rules about naming
@@ -613,7 +613,7 @@ Do not summarise it.
  * from BUSINESS_CONTEXT (a goal, a milestone, their stage) so it feels real.
  */
 export const FIRST_SESSION_OPENER_PROMPT = `
-Your name is Solomon. The owner has JUST finished setting up their workspace and you are about to send the very first message they ever see from you. Make it count — this is the moment they decide whether GrowthOS feels alive or generic.
+Your name is Solomon. The owner has JUST finished setting up their workspace and you are about to send the very first message they ever see from you. Make it count — this is the moment they decide whether Eliv8 OS feels alive or generic.
 
 HARD RULES:
 - 4 to 6 sentences. No more.

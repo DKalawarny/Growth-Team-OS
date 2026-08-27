@@ -14,7 +14,7 @@ import { SITE_URL, SITE_NAME } from '../lib/seo'
  *
  * SEO posture: noindex. Login pages should never be indexed — they have
  * no value in search results, dilute brand SERP real estate, and can
- * leak into "site:leadeos.com" listings instead of marketing pages.
+ * leak into "site:eliv8os.com" listings instead of marketing pages.
  */
 export default function Login() {
   const navigate = useNavigate()
@@ -56,7 +56,7 @@ export default function Login() {
         <title>Sign in — {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/login`} />
         <meta name="robots" content="noindex, nofollow" />
-        <meta name="description" content="Sign in to your GrowthOS account." />
+        <meta name="description" content="Sign in to your Eliv8 OS account." />
       </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
@@ -245,7 +245,7 @@ export default function Login() {
           )}
 
           <p className="mt-8 text-sm text-ink-500 text-center">
-            New to GrowthOS?{' '}
+            New to Eliv8 OS?{' '}
             <Link to="/signup" className="text-brand-600 hover:text-brand-700 font-semibold">
               Start your free trial
             </Link>

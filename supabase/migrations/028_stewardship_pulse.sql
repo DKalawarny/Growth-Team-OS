@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — Giving in the check-in (migration 028)
+-- Eliv8 OS — Giving in the check-in (migration 028)
 --
 -- One optional field: what was given in the period. It feeds the twelve-month
 -- trajectory, so an owner can see over months whether revenue climbs while

@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — Initial schema
+-- Eliv8 OS — Initial schema
 -- Multi-tenant SaaS. Tenant root = `companies`. Every tenant-scoped table
 -- carries `company_id`. RLS (in 002) is a single "Own data" policy per table:
 --   company_id in (select company_id from public.profiles where id = auth.uid())

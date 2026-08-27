@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — RLS policies
+-- Eliv8 OS — RLS policies
 --
 -- The pre-existing `rls_auto_enable` event trigger already enables RLS on
 -- every newly-created public table, but we `alter ... enable row level

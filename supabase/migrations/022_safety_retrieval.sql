@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — Solomon-grade safety retrieval (migration 022)
+-- Eliv8 OS — Solomon-grade safety retrieval (migration 022)
 --
 -- Two pieces of plumbing so Solomon can answer safety questions by reading
 -- the owner's actual documents AND citing the right regulatory authority,
@@ -171,7 +171,7 @@ create policy "regulatory_sources_public_read"
 
 
 -- ----------------------------------------------------------------------------
--- Seed rows — starting set for the trades GrowthOS is launching into.
+-- Seed rows — starting set for the trades Eliv8 OS is launching into.
 --
 -- These are the regulations a demo / strip-out / commercial-renovation
 -- crew is most likely to hit. Add jurisdictions and topics as we grow.

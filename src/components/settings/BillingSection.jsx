@@ -174,7 +174,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
       <>
         <PlanHeader plan="Free pilot" tone="neutral" />
         <p className="text-sm text-gray-600 mb-3">
-          You have full access while GrowthOS is in pilot. There is nothing to
+          You have full access while Eliv8 OS is in pilot. There is nothing to
           pay, and no card is held on file.
         </p>
         <Hint>
@@ -234,7 +234,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
       />
       <Hint>
         Questions before you commit?{' '}
-        <a href="mailto:support@leadeos.com" className="text-brand-600 hover:underline">
+        <a href="mailto:support@eliv8os.com" className="text-brand-600 hover:underline">
           Email us
         </a>.
       </Hint>

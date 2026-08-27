@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — Advisor invite system (migration 011)
+-- Eliv8 OS — Advisor invite system (migration 011)
 --
 -- Adds two tables:
 --   company_invites   pending invitations (token → company)

@@ -44,13 +44,13 @@ import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from './pricing'
  * Production URL. Every canonical link, og:url, sitemap entry, and llms.txt
  * entry follows from this.
  */
-export const SITE_URL = 'https://leadeos.com'
+export const SITE_URL = 'https://eliv8os.com'
 
-export const SITE_NAME = 'GrowthOS'
+export const SITE_NAME = 'Eliv8 OS'
 
-export const ORG_NAME  = 'GrowthOS'
+export const ORG_NAME  = 'Eliv8 OS'
 
-export const CONTACT_EMAIL = 'support@leadeos.com'
+export const CONTACT_EMAIL = 'support@eliv8os.com'
 
 /** Default OG image — needs to exist at /public/og-default.png (1200×630). */
 export const OG_DEFAULT_IMAGE = `${SITE_URL}/og-default.png`
@@ -101,7 +101,7 @@ export const SERVICE_CATEGORIES = [
 ]
 
 /**
- * Core feature/benefit keywords — what GrowthOS actually does.
+ * Core feature/benefit keywords — what Eliv8 OS actually does.
  *
  * ⚠️ Every entry here must correspond to something a signed-in user can
  * really reach today (see the Sidebar nav and SolomonLauncher groups).
@@ -234,7 +234,7 @@ export function buildPageMeta({ title, description, path, image, keywords }) {
 /**
  * Organization schema. Goes on every page (or at least Landing) so Google
  * + AI assistants know who runs the site. Without this, AI answers like
- * "who built GrowthOS?" return nothing useful.
+ * "who built Eliv8 OS?" return nothing useful.
  */
 export function organizationSchema() {
   return {
@@ -257,14 +257,14 @@ export function organizationSchema() {
  * business owners" type queries.
  *
  * ⚠️ The price is read from pricing.js, not written here. This schema is what
- * an AI assistant quotes when someone asks "how much does GrowthOS cost?", so
+ * an AI assistant quotes when someone asks "how much does Eliv8 OS cost?", so
  * a stale number here misinforms buyers before they ever reach the site.
  */
 export function softwareApplicationSchema() {
   const price = String(PRICE_MONTHLY_USD)
   // ⚠️ While SHOW_PUBLIC_PRICE is false nothing is for sale, so we publish no
   // Offer at all rather than a number we expect to change. This schema is
-  // precisely what an AI assistant quotes when asked "how much does GrowthOS
+  // precisely what an AI assistant quotes when asked "how much does Eliv8 OS
   // cost?" — publishing a price we do not stand behind is how a wrong answer
   // gets cached across the whole answers channel.
   const offers = SHOW_PUBLIC_PRICE ? {
@@ -295,7 +295,7 @@ export function softwareApplicationSchema() {
 /**
  * Product schema for the Pricing page. Helps Google show price snippets
  * directly in search results, and lets AI tools answer "how much does
- * GrowthOS cost?" with the right number.
+ * Eliv8 OS cost?" with the right number.
  */
 export function productSchema({ name, description, price = PRICE_MONTHLY_USD, priceCurrency = 'USD' }) {
   return {

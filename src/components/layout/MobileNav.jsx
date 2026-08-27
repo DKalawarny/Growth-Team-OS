@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth'
  * MobileNav — shown only on small screens (lg:hidden).
  *
  * Two parts:
- *   1. Top bar        — GrowthOS logo + hamburger button
+ *   1. Top bar        — Eliv8 OS logo + hamburger button
  *   2. Bottom tab bar — 5 key destinations always visible
  *   3. Slide-in drawer — full nav, opens from the "More" tab or hamburger
  */

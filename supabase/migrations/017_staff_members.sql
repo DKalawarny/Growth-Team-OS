@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — staff_members (migration 017)
+-- Eliv8 OS — staff_members (migration 017)
 --
 -- Roster of a company's staff so they can be assigned tasks on the Work Board
 -- and emailed when work changes hands. TeamSection.jsx is the only UI today.

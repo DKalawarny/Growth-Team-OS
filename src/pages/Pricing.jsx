@@ -23,7 +23,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  *     never hardcode a second copy here.
  *   - FAQPage schema wraps the existing FAQS array → ChatGPT, Claude,
  *     Perplexity, and Google AI can answer specific questions ("does
- *     GrowthOS need a credit card?", "can I cancel?") without crawling
+ *     Eliv8 OS need a credit card?", "can I cancel?") without crawling
  *     the visible page
  *
  * Why FAQPage schema is high-leverage for AI: when an LLM hits a page
@@ -33,11 +33,11 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  */
 const PRICING_META = buildPageMeta({
   title:       SHOW_PUBLIC_PRICE
-    ? `Pricing — GrowthOS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
-    : 'Pricing — GrowthOS · free while in private pilot',
+    ? `Pricing — Eliv8 OS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
+    : 'Pricing — Eliv8 OS · free while in private pilot',
   description: SHOW_PUBLIC_PRICE
-    ? `GrowthOS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
-    : 'GrowthOS is in private pilot and free to use — Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
+    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
+    : 'Eliv8 OS is in private pilot and free to use — Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
   path:        '/pricing',
 })
 
@@ -88,7 +88,7 @@ const FEATURE_GROUPS = [
       { name: 'Playbooks', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
       { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones so he knows how you are actually doing, not just how the numbers are.' },
       { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
-      { name: 'Documents', desc: 'Everything GrowthOS writes for you, saved and searchable.' },
+      { name: 'Documents', desc: 'Everything Eliv8 OS writes for you, saved and searchable.' },
     ],
   },
 ]
@@ -176,10 +176,10 @@ export default function Pricing() {
 
         {/* JSON-LD — Product schema (lets Google show $97 price as a rich
             snippet directly in search results) + FAQPage schema (so AI
-            assistants can answer specific GrowthOS questions verbatim
+            assistants can answer specific Eliv8 OS questions verbatim
             from the structured Q&A list, not by inferring from the page). */}
         <script type="application/ld+json">{jsonLd(productSchema({
-          name:        'GrowthOS — AI advisor + business tools',
+          name:        'Eliv8 OS — AI advisor + business tools',
           description: 'An AI business advisor for Christian business owners, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession — for one monthly subscription.',
         }))}</script>
         <script type="application/ld+json">{jsonLd(faqPageSchema(FAQS))}</script>
@@ -312,7 +312,7 @@ export default function Pricing() {
               <p className="text-xs text-gray-500 mt-0.5">Agency and white-label options — let's talk.</p>
             </div>
             <a
-              href="mailto:support@leadeos.com?subject=GrowthOS%20Agency"
+              href="mailto:support@eliv8os.com?subject=Eliv8 OS%20Agency"
               className="flex-shrink-0 ml-4 px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-white transition-colors"
             >
               Email us →
@@ -364,7 +364,7 @@ export default function Pricing() {
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
               Most owners are already paying for this advice — just scattered, expensive, and slow.
-              GrowthOS pulls it all into one place.
+              Eliv8 OS pulls it all into one place.
             </p>
           </div>
 
@@ -385,7 +385,7 @@ export default function Pricing() {
             })}
             <div className="px-6 py-5 bg-gray-950 flex items-center justify-between">
               <div>
-                <p className="text-white font-black text-base">GrowthOS</p>
+                <p className="text-white font-black text-base">Eliv8 OS</p>
                 <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
               </div>
               <div className="text-right">
@@ -430,7 +430,7 @@ export default function Pricing() {
                 Start free trial — no credit card
               </Link>
               <a
-                href="mailto:support@leadeos.com"
+                href="mailto:support@eliv8os.com"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 font-semibold text-sm transition-colors"
               >
                 Have a question? Email us
@@ -442,8 +442,8 @@ export default function Pricing() {
 
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
         <footer className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-400">
-          <span>© GrowthOS · An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
-          <a href="mailto:support@leadeos.com" className="underline hover:text-gray-600">support@leadeos.com</a>
+          <span>© Eliv8 OS · An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
+          <a href="mailto:support@eliv8os.com" className="underline hover:text-gray-600">support@eliv8os.com</a>
         </footer>
 
       </main>

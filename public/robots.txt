@@ -1,4 +1,4 @@
-# robots.txt — GrowthOS
+# robots.txt — Eliv8 OS
 #
 # Posture:
 #   Public marketing pages (/, /pricing) are open to every crawler.
@@ -54,4 +54,4 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-Sitemap: https://leadeos.com/sitemap.xml
+Sitemap: https://eliv8os.com/sitemap.xml

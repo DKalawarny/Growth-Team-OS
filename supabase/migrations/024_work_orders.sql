@@ -1,5 +1,5 @@
 -- ============================================================================
--- GrowthOS — work_orders table (migration 024)
+-- Eliv8 OS — work_orders table (migration 024)
 --
 -- This table was previously created by a copy-paste SQL snippet shown in
 -- the Board page's "Setup needed" screen. That meant:

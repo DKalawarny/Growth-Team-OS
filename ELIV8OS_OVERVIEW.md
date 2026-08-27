@@ -1,12 +1,12 @@
-# GrowthOS — Full App Overview
+# Eliv8 OS — Full App Overview
 
-Use this document to give any AI assistant full context about what GrowthOS is, how it's built, and what it does — so you can ask integration or development questions without re-explaining from scratch.
+Use this document to give any AI assistant full context about what Eliv8 OS is, how it's built, and what it does — so you can ask integration or development questions without re-explaining from scratch.
 
 ---
 
-## What is GrowthOS?
+## What is Eliv8 OS?
 
-GrowthOS is a SaaS platform built for small service-business owners (tradespeople, contractors, agencies). It replaces the scattered collection of consultants, spreadsheets, and tools most owners use by putting an AI advisor, financial dashboards, hiring tools, marketing tools, compliance tracking, and a growth planner all in one connected platform.
+Eliv8 OS is a SaaS platform built for small service-business owners (tradespeople, contractors, agencies). It replaces the scattered collection of consultants, spreadsheets, and tools most owners use by putting an AI advisor, financial dashboards, hiring tools, marketing tools, compliance tracking, and a growth planner all in one connected platform.
 
 **Pricing:** $97/month or $970/year (2 months free). 14-day free trial, no credit card required.  
 **Target customer:** Owner-operators of service businesses — plumbers, HVAC, landscaping, cleaning, construction, agencies — typically $300k–$5M revenue, 1–20 employees.
@@ -220,7 +220,7 @@ Every tool page follows the same pattern:
 
 ## Integration Points for an Existing Website
 
-If you want to connect GrowthOS to an existing website, here are the natural touchpoints:
+If you want to connect Eliv8 OS to an existing website, here are the natural touchpoints:
 
 ### 1. Sign-up / Login links
 The simplest integration — add CTA buttons on your existing site that link to:
@@ -229,7 +229,7 @@ The simplest integration — add CTA buttons on your existing site that link to:
 - `https://your-growthos-domain.com/pricing` — pricing page
 
 ### 2. Embedded iframe (limited)
-GrowthOS is a React SPA that requires auth. Individual tool results can't easily be embedded without extracting them as standalone components. The most practical embed is a sign-up CTA iframe or a hosted widget.
+Eliv8 OS is a React SPA that requires auth. Individual tool results can't easily be embedded without extracting them as standalone components. The most practical embed is a sign-up CTA iframe or a hosted widget.
 
 ### 3. Shared Supabase backend
 If your existing site has its own backend, you can query the same Supabase project using the service role key to read/write data — e.g. pull a user's roadmap milestones to display on your site, or pre-populate their business profile from your site's CRM data.

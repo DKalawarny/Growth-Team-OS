@@ -84,7 +84,7 @@ export default function AdvisorPortal() {
             Your clients
           </h1>
           <p className="text-sm text-ink-400 mt-1">
-            Read-only access to each client's GrowthOS workspace.
+            Read-only access to each client's Eliv8 OS workspace.
             {profile?.name && ` Signed in as ${profile.name}.`}
           </p>
         </div>

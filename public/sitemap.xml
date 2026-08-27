@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  GrowthOS sitemap — list of public, indexable pages.
+  Eliv8 OS sitemap — list of public, indexable pages.
 
   Source of truth lives in src/lib/seo.js (PUBLIC_PAGES). When a new
   public page ships:
@@ -18,19 +18,19 @@
 
   <!-- Core marketing -->
   <url>
-    <loc>https://leadeos.com/</loc>
+    <loc>https://eliv8os.com/</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/pricing</loc>
+    <loc>https://eliv8os.com/pricing</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/about</loc>
+    <loc>https://eliv8os.com/about</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -38,7 +38,7 @@
 
   <!-- Lead magnets -->
   <url>
-    <loc>https://leadeos.com/free-gbp-audit</loc>
+    <loc>https://eliv8os.com/free-gbp-audit</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -46,25 +46,25 @@
 
   <!-- Comparison pages — high-intent SEO -->
   <url>
-    <loc>https://leadeos.com/vs/knowify</loc>
+    <loc>https://eliv8os.com/vs/knowify</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/vs/jobber</loc>
+    <loc>https://eliv8os.com/vs/jobber</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/vs/housecall-pro</loc>
+    <loc>https://eliv8os.com/vs/housecall-pro</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/vs/buildertrend</loc>
+    <loc>https://eliv8os.com/vs/buildertrend</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -72,37 +72,37 @@
 
   <!-- Trade-specific pages -->
   <url>
-    <loc>https://leadeos.com/for/plumbers</loc>
+    <loc>https://eliv8os.com/for/plumbers</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/for/electricians</loc>
+    <loc>https://eliv8os.com/for/electricians</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/for/hvac</loc>
+    <loc>https://eliv8os.com/for/hvac</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/for/roofing</loc>
+    <loc>https://eliv8os.com/for/roofing</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/for/demolition</loc>
+    <loc>https://eliv8os.com/for/demolition</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/for/landscaping</loc>
+    <loc>https://eliv8os.com/for/landscaping</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -110,13 +110,13 @@
 
   <!-- Legal / trust -->
   <url>
-    <loc>https://leadeos.com/security</loc>
+    <loc>https://eliv8os.com/security</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://leadeos.com/privacy</loc>
+    <loc>https://eliv8os.com/privacy</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

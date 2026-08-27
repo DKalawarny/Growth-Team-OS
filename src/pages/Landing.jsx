@@ -20,7 +20,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  *   - Per-page <Helmet> with rich meta + canonical + og/twitter
  *   - Two JSON-LD schemas: Organization (who we are) + SoftwareApplication
  *     (what category we're in + price). These power Google rich results
- *     and let AI assistants answer "what is GrowthOS?" / "how much does
+ *     and let AI assistants answer "what is Eliv8 OS?" / "how much does
  *     it cost?" without crawling the visible page.
  *   ⚠️ There used to be an sr-only div here listing ~55 trades for crawlers.
  *   It went with the reposition: the buyer is now defined by conviction, not
@@ -30,7 +30,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  */
 
 const LANDING_META = buildPageMeta({
-  title:       'GrowthOS — an advisor for Christian business owners',
+  title:       'Eliv8 OS — an advisor for Christian business owners',
   description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. Currently free while in private pilot.`,
   path:        '/',
 })
@@ -173,7 +173,7 @@ function VideoSection() {
               frameBorder="0"
               allow="autoplay; fullscreen"
               allowFullScreen
-              title="GrowthOS demo"
+              title="Eliv8 OS demo"
             />
           </div>
         ) : (
@@ -333,7 +333,7 @@ function ProblemSection() {
 // The page was flat, and the reason was specific: every differentiator on it
 // was a claim about SOFTWARE — reads your books, remembers your decisions,
 // argues both ways — and any AI tool with your books connected can claim four
-// of the five. The thing that actually separates GrowthOS appeared three times
+// of the five. The thing that actually separates Eliv8 OS appeared three times
 // and all three were hedged: a subordinate clause in the hero, a promise about
 // what Solomon WON'T do, and a footer saying "run a certain way", which is a
 // euphemism.
@@ -743,7 +743,7 @@ function ClosingCTA() {
             Start free
           </Link>
           <a
-            href="mailto:support@leadeos.com"
+            href="mailto:support@eliv8os.com"
             className="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-gray-950/20 text-gray-950/70 hover:text-gray-950 hover:border-gray-950/40 font-semibold text-base transition-colors"
           >
             Questions? Email us
@@ -774,7 +774,7 @@ function PageFooter() {
           <Link to="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
           <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
           <Link to="/security" className="hover:text-white/60 transition-colors">Security</Link>
-          <a href="mailto:support@leadeos.com" className="hover:text-white/60 transition-colors">Contact</a>
+          <a href="mailto:support@eliv8os.com" className="hover:text-white/60 transition-colors">Contact</a>
           <Link to="/login" className="hover:text-white/60 transition-colors">Log in</Link>
         </div>
       </div>

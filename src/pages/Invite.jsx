@@ -164,7 +164,7 @@ export default function Invite() {
               </h1>
               {company?.name && (
                 <p className="text-sm text-brand-300 mt-1">
-                  to <span className="font-semibold">{company.name}</span>'s GrowthOS workspace
+                  to <span className="font-semibold">{company.name}</span>'s Eliv8 OS workspace
                 </p>
               )}
             </div>
@@ -295,7 +295,7 @@ function Shell({ children }) {
   return (
     <div className="min-h-screen bg-ink-50 flex flex-col items-center justify-center p-6">
       <div className="mb-6 text-center">
-        <div className="text-2xl font-black text-ink-900 tracking-tight">GrowthOS</div>
+        <div className="text-2xl font-black text-ink-900 tracking-tight">Eliv8 OS</div>
         <div className="text-xs text-ink-400 mt-0.5">Executive team for business owners</div>
       </div>
       {children}

@@ -598,7 +598,7 @@ function OneDriveBrowser({ token, account, onDone, onBack }) {
           ) : drives.length === 0 ? (
             <div className="text-center py-10 text-sm text-ink-400">
               <p className="font-medium mb-1">No company libraries found</p>
-              <p className="text-xs text-ink-400 max-w-xs mx-auto">Make sure you signed in with your work email, not a personal Microsoft account. Your IT admin may also need to approve GrowthOS in your company's Azure portal.</p>
+              <p className="text-xs text-ink-400 max-w-xs mx-auto">Make sure you signed in with your work email, not a personal Microsoft account. Your IT admin may also need to approve Eliv8 OS in your company's Azure portal.</p>
             </div>
           ) : (
             <ul className="space-y-1 pt-1">

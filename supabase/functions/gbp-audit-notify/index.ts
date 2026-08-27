@@ -11,7 +11,7 @@
  *
  * Required env vars (same Supabase secrets):
  *   RESEND_API_KEY
- *   RESEND_FROM     e.g. "GrowthOS <hello@leadeos.com>"
+ *   RESEND_FROM     e.g. "Eliv8 OS <hello@eliv8os.com>"
  */
 
 // deno-lint-ignore-file no-external-import
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     `Website:  ${website || '—'}`,
     ``,
     `Run the GBP audit in the app, then reply to ${email} with the report.`,
-    `https://leadeos.com/dashboard`,
+    `https://eliv8os.com/dashboard`,
   ].join('\n')
 
   const res = await fetch('https://api.resend.com/emails', {

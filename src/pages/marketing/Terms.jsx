@@ -34,7 +34,7 @@ import {
 
 const TERMS_META = buildPageMeta({
   title:       `Pilot agreement — ${SITE_NAME}`,
-  description: 'The agreement covering the private GrowthOS pilot: what it is, what it is not, and how liability is handled during an unpaid evaluation.',
+  description: 'The agreement covering the private Eliv8 OS pilot: what it is, what it is not, and how liability is handled during an unpaid evaluation.',
   path:        '/terms',
 })
 
@@ -107,10 +107,10 @@ export default function Terms() {
           </p>
         </Section>
 
-        <Section n="2" title="What GrowthOS is not">
+        <Section n="2" title="What Eliv8 OS is not">
           <p>
             <strong>It is not professional advice.</strong> Nothing produced by
-            GrowthOS or by Solomon is legal, accounting, tax, financial,
+            Eliv8 OS or by Solomon is legal, accounting, tax, financial,
             insurance, employment, or safety-compliance advice, and using it does
             not create a professional or advisory relationship between us.
           </p>
@@ -125,7 +125,7 @@ export default function Terms() {
             Anything touching employment law, tax, workplace safety, insurance
             coverage, or contract wording should be confirmed with a qualified
             professional or the relevant authority before you act on it. That
-            applies even when GrowthOS sounds certain, and even when it cites a
+            applies even when Eliv8 OS sounds certain, and even when it cites a
             source.
           </p>
           <p>
@@ -152,7 +152,7 @@ export default function Terms() {
         <Section n="4" title="No warranty, and limits on what we owe you">
           <p>
             <strong>
-              GrowthOS is provided &ldquo;as is&rdquo; and &ldquo;as
+              Eliv8 OS is provided &ldquo;as is&rdquo; and &ldquo;as
               available&rdquo;, with no warranties of any kind, express or
               implied.
             </strong>{' '}
@@ -166,7 +166,7 @@ export default function Terms() {
             </strong>{' '}
             — including lost profits, lost revenue, lost or corrupted data, lost
             business or contracts, regulatory penalties, or reputational harm —
-            arising from your use of GrowthOS or from any decision you made in
+            arising from your use of Eliv8 OS or from any decision you made in
             reliance on it.
           </p>
           <p>
@@ -254,7 +254,7 @@ export default function Terms() {
             a record of which version you accepted and when.
           </p>
           <p className="text-gray-600">
-            One change is already expected. GrowthOS is being run personally
+            One change is already expected. Eliv8 OS is being run personally
             during the pilot because the company behind it is not yet
             incorporated. When it is, this agreement will be reissued in the
             company&rsquo;s name and you will be asked to accept that version. We

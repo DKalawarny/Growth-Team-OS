@@ -135,7 +135,7 @@ export async function startCheckout(plan = 'owner') {
   // rather than in three separate buttons. Hiding the UI is good manners; this
   // is what actually makes "nothing will be charged during the pilot" true.
   if (!PAYMENTS_LIVE) {
-    throw new Error('GrowthOS is in free pilot — there is nothing to pay for yet.')
+    throw new Error('Eliv8 OS is in free pilot — there is nothing to pay for yet.')
   }
   const { data, error } = await supabase.functions.invoke('stripe-checkout', {
     method: 'POST',

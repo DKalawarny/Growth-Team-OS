@@ -124,7 +124,7 @@ export default function Analytics() {
         <div className="max-w-5xl mx-auto">
           <h1 className="text-2xl font-bold text-ink-900">Analytics</h1>
           <p className="text-sm text-ink-400 mt-1">
-            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · how you're using GrowthOS
+            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · how you're using Eliv8 OS
           </p>
         </div>
       </div>

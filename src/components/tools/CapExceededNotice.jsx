@@ -52,10 +52,10 @@ export default function CapExceededNotice({ err, toolLabel }) {
             </Link>
             {' '}or email{' '}
             <a
-              href="mailto:support@leadeos.com?subject=Raise%20my%20monthly%20tool%20cap"
+              href="mailto:support@eliv8os.com?subject=Raise%20my%20monthly%20tool%20cap"
               className="underline hover:text-amber-950"
             >
-              support@leadeos.com
+              support@eliv8os.com
             </a>
             {' '}and we'll bump your limit.
           </p>

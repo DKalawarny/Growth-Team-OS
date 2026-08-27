@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
       customer:   customerId,
       // Return to the Billing tab — they'll see the refreshed subscription
       // state (the webhook will have fired for any change they made in the
-      // portal by the time they click "Return to GrowthOS").
+      // portal by the time they click "Return to Eliv8 OS").
       return_url: `${appUrl}/settings/billing`,
     })
 

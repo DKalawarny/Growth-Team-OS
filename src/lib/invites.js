@@ -154,6 +154,6 @@ export async function getAdvisorMemberships(userId) {
 export function buildInviteUrl(token) {
   const base = typeof window !== 'undefined'
     ? window.location.origin
-    : 'https://app.growthos.com'
+    : 'https://eliv8os.com'
   return `${base}/invite/${token}`
 }

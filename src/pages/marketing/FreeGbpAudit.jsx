@@ -69,7 +69,7 @@ export default function FreeGbpAudit() {
         {/* Mark as a free product for AI assistants — answers "is there a free GBP audit?" */}
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        'Free Google Business Profile audit for contractors',
-          description: 'Free audit of a contractor\'s Google Business Profile, citations, and AI search readiness. Delivered by email by GrowthOS.',
+          description: 'Free audit of a contractor\'s Google Business Profile, citations, and AI search readiness. Delivered by email by Eliv8 OS.',
           price:       '0',
         }))}</script>
       </Helmet>
@@ -156,7 +156,7 @@ export default function FreeGbpAudit() {
             <h2 className="text-xl font-black text-gray-900 mb-2">Got it. Audit on the way.</h2>
             <p className="text-gray-700 mb-5">
               We'll send your report to <strong>{email}</strong> within 2 business days.
-              In the meantime — want to see what GrowthOS does the rest of the time?
+              In the meantime — want to see what Eliv8 OS does the rest of the time?
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -202,7 +202,7 @@ export default function FreeGbpAudit() {
           <h2 className="text-xl font-black text-gray-900 mb-3">Why are we doing this for free?</h2>
           <p className="text-gray-700 leading-relaxed max-w-xl mx-auto">
             Honest reason: most contractors who get the audit see what's possible
-            and want help fixing it — and that's what GrowthOS does. The audit
+            and want help fixing it — and that's what Eliv8 OS does. The audit
             itself is genuinely free, no card, no follow-up call. If you want to
             fix what's in the report, that's a separate conversation.
           </p>

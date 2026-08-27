@@ -73,7 +73,7 @@ export function getBookLink(rawTitle) {
 
 /** Exported so the UI can render the required disclosure once, globally. */
 export const AFFILIATE_DISCLOSURE =
-  'Book recommendations include Amazon affiliate links. As an Amazon Associate, GrowthOS earns from qualifying purchases at no extra cost to you.'
+  'Book recommendations include Amazon affiliate links. As an Amazon Associate, Eliv8 OS earns from qualifying purchases at no extra cost to you.'
 
 // ---------------------------------------------------------------------------
 // Internals
