@@ -82,7 +82,7 @@ export default function Signup() {
         <div className="relative max-w-md">
           <Link to="/" className="inline-block mb-10">
             <span className="text-2xl font-bold tracking-tight">
-              <span className="text-white">Growth</span>
+              <span className="text-white">Eliv8</span>{' '}
               <span className="text-brand-400">OS</span>
             </span>
           </Link>

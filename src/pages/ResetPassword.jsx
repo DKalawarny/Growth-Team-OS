@@ -52,7 +52,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-ink-100 p-8">
         <Link to="/" className="block mb-8">
           <span className="text-xl font-bold tracking-tight">
-            <span className="text-ink-900">Growth</span>
+            <span className="text-ink-900">Eliv8</span>{' '}
             <span className="text-brand-500">OS</span>
           </span>
         </Link>

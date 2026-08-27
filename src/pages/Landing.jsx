@@ -761,7 +761,7 @@ function PageFooter() {
     <footer className="bg-gray-950 border-t border-white/5 py-10">
       <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
         <div className="flex items-center gap-2">
-          <span className="font-black text-white">Growth<span className="text-brand-400">OS</span></span>
+          <span className="font-black text-white">Eliv8<span className="text-brand-400"> OS</span></span>
           {/* "run a certain way" was a euphemism doing the work a tagline
               should do. It said nothing, standing alone in a footer with
               nothing to explain it — unlike /about, where the same phrase is

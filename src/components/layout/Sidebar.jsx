@@ -190,7 +190,7 @@ export default function Sidebar() {
       <div className="px-5 pt-6 pb-5 border-b border-ink-100">
         <div className="flex items-center gap-2 mb-0.5">
           <span className="text-lg font-black tracking-tight">
-            <span className="text-ink-900">Growth</span>
+            <span className="text-ink-900">Eliv8</span>{' '}
             <span className="text-brand-400">OS</span>
           </span>
         </div>

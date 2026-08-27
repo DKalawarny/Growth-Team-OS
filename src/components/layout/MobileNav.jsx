@@ -119,7 +119,7 @@ export default function MobileNav() {
       <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#EDF1F1] border-b border-ink-100 flex-shrink-0 z-30">
         <div className="flex items-center gap-2">
           <span className="text-lg font-black tracking-tight">
-            <span className="text-ink-900">Growth</span>
+            <span className="text-ink-900">Eliv8</span>{' '}
             <span className="text-brand-400">OS</span>
           </span>
         </div>
@@ -189,7 +189,7 @@ export default function MobileNav() {
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-ink-800">
           <span className="text-base font-black tracking-tight">
-            <span className="text-white">Growth</span>
+            <span className="text-white">Eliv8</span>{' '}
             <span className="text-brand-400">OS</span>
           </span>
           <button
