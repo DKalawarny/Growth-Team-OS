@@ -9,6 +9,7 @@ import {
   jsonLd,
 } from '../lib/seo'
 import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE, PILOT_PRICE_BLURB, ANNUAL_SAVINGS_USD } from '../lib/pricing'
+import Wordmark from '../components/brand/Wordmark'
 
 /**
  * / — public marketing landing page.
@@ -761,7 +762,7 @@ function PageFooter() {
     <footer className="bg-gray-950 border-t border-white/5 py-10">
       <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
         <div className="flex items-center gap-2">
-          <span className="font-black text-white">Eliv8<span className="text-brand-400"> OS</span></span>
+          <Wordmark tone="dark" size={15} />
           {/* "run a certain way" was a euphemism doing the work a tagline
               should do. It said nothing, standing alone in a footer with
               nothing to explain it — unlike /about, where the same phrase is

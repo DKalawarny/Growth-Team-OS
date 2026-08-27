@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
+import Wordmark from '../brand/Wordmark'
 
 /**
  * MobileNav — shown only on small screens (lg:hidden).
@@ -118,10 +119,7 @@ export default function MobileNav() {
       {/* ── Top bar ────────────────────────────────────────────────────────── */}
       <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#EDF1F1] border-b border-ink-100 flex-shrink-0 z-30">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-black tracking-tight">
-            <span className="text-ink-900">Eliv8</span>{' '}
-            <span className="text-brand-400">OS</span>
-          </span>
+          <Wordmark tone="light" size={18} />
         </div>
         <button
           onClick={() => setOpen(true)}
@@ -188,10 +186,7 @@ export default function MobileNav() {
       <div className={`lg:hidden fixed top-0 right-0 bottom-0 z-50 w-72 bg-ink-900 flex flex-col transition-transform duration-300 ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-ink-800">
-          <span className="text-base font-black tracking-tight">
-            <span className="text-white">Eliv8</span>{' '}
-            <span className="text-brand-400">OS</span>
-          </span>
+          <Wordmark tone="dark" size={16} />
           <button
             onClick={() => setOpen(false)}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-400 hover:text-white transition-colors"

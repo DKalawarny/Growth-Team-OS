@@ -1,18 +1,24 @@
 {
   "name": "Eliv8 OS — AI Advisor",
   "short_name": "Eliv8 OS",
-  "description": "AI business advisor and operating system for home-services contractors.",
+  "description": "An AI business advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#0F172A",
+  "background_color": "#F6F8F8",
+  "theme_color": "#0D1413",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }

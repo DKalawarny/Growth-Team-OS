@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
+import Wordmark from '../components/brand/Wordmark'
 
 /**
  * ResetPassword — handles the link from a "Forgot password" email.
@@ -51,10 +52,7 @@ export default function ResetPassword() {
 
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-ink-100 p-8">
         <Link to="/" className="block mb-8">
-          <span className="text-xl font-bold tracking-tight">
-            <span className="text-ink-900">Eliv8</span>{' '}
-            <span className="text-brand-500">OS</span>
-          </span>
+          <Wordmark tone="light" size={22} />
         </Link>
 
         {status === 'done' ? (

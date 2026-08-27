@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
 import { TRIAL_DAYS } from '../lib/pricing'
 import { parkPendingAcceptance } from '../lib/terms'
+import Wordmark from '../components/brand/Wordmark'
 
 /**
  * Signup — mirror of Login's split-screen, but the brand-side copy flips
@@ -81,10 +82,7 @@ export default function Signup() {
 
         <div className="relative max-w-md">
           <Link to="/" className="inline-block mb-10">
-            <span className="text-2xl font-bold tracking-tight">
-              <span className="text-white">Eliv8</span>{' '}
-              <span className="text-brand-400">OS</span>
-            </span>
+            <Wordmark tone="dark" size={26} />
           </Link>
 
           <p className="text-[11px] font-semibold uppercase tracking-widest text-brand-400 mb-3">
