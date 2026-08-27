@@ -79,10 +79,6 @@ export const TRADES = [
  * not verticals.
  */
 export const AUDIENCE = [
-  'Christian business owners',
-  'faith-driven business owners',
-  'Christian entrepreneurs',
-  'business owners of faith',
   'owner-operators',
   'small business owners',
   'family business owners',
@@ -93,8 +89,6 @@ export const AUDIENCE = [
  * list would be too long.
  */
 export const SERVICE_CATEGORIES = [
-  'Christian-owned businesses',
-  'faith-driven companies',
   'small and mid-sized businesses',
   'owner-operated businesses',
   'family-owned businesses',
@@ -110,9 +104,24 @@ export const SERVICE_CATEGORIES = [
  * been marketing a thing we do not ship.
  */
 export const FEATURE_KEYWORDS = [
+  // ⭐ NO FAITH-TARGETING TERMS HERE, DELIBERATELY (26 Aug, Daniel).
+  //
+  // An earlier version targeted "Christian business owners", "faith-driven
+  // companies", "biblical business principles" and the like. They are gone, and
+  // the reasoning is a step past the 22 Aug decision rather than a repeat of it:
+  //
+  //   "it doesn't bring in non-Christians. I want this open to everyone. It's
+  //    the fundamentals, the hidden code, that is Christian."
+  //
+  // So the conviction is the SUBSTRATE, not the audience filter. Sorting people
+  // by identity — even invisibly, even in a meta tag nobody reads — is still
+  // sorting, and it selects against exactly the owner this could reach first.
+  // Attraction, not persuasion: the product behaves with conviction, and where
+  // that comes from stays findable in /about for anyone who goes looking.
+  //
+  // ⚠️ Do not re-add identity targeting here. What we compete on is what it
+  // does and how it behaves, which is legible to everyone.
   'AI business advisor',
-  'Christian business advisor',
-  'biblical business principles',
   'stewardship in business',
   'business decision making',
   'CFO dashboard',
@@ -126,30 +135,11 @@ export const FEATURE_KEYWORDS = [
   'small business AI',
 ]
 
-/** Top keyword set for meta tags — the conviction axis first, then the job. */
+/** Top keyword set for meta tags — what it does, for anyone who needs it. */
 export const PRIMARY_KEYWORDS = [
-  // ⭐ KEYWORDS ARE DISCOVERY, NOT A DOOR POLICY — the distinction that keeps
-  // these here while the same words were removed from every title, description
-  // and OG tag on 26 Aug.
-  //
-  // The 22 Aug decision was that a visible label sorts people at the door: a
-  // reader decides whether he is in the category before he understands what the
-  // thing does. That badge came off the landing page — and the identical label
-  // was left in the <title>, the meta description, the OG tags and the JSON-LD,
-  // which are LOUDER, being the browser tab, the search result, the link preview
-  // and the text an AI assistant quotes back verbatim. Half-applied is worse
-  // than either choice.
-  //
-  // A keyword is different in kind: no human is shown it, and a Christian owner
-  // searching this exact phrase should find us. Removing it would cost the
-  // discovery without buying any discretion.
-  //
-  // ⚠️ Do NOT reinstate this wording in a title or description. Findable, never
-  // announced — the same rule as the name itself.
-  'AI advisor for Christian business owners',
-  'Christian business advisor',
-  'faith-driven business software',
-  'biblical business principles',
+  // See the note in the main keyword list: no identity targeting. This set used
+  // to lead with "Christian business advisor" and "faith-driven business
+  // software"; it now leads with the job, which is legible to every owner.
   'running a business with integrity',
   'stewardship business',
   'business advisor for small business',
@@ -271,7 +261,7 @@ export function organizationSchema() {
 
 /**
  * SoftwareApplication schema. Used on Landing — tells Google + AI tools what
- * category of software this is so it shows up in "AI advisor for Christian
+ * category of software this is so it shows up in "AI business advisor"
  * business owners" type queries.
  *
  * ⚠️ The price is read from pricing.js, not written here. This schema is what

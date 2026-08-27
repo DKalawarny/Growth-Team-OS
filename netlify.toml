@@ -28,7 +28,7 @@
 #
 #   curl -s https://leadeos.com/about | grep -o "<title>[^<]*</title>"
 #
-# It must print "About GrowthOS", not the homepage title.
+# It must print "About Eliv8 OS", not the homepage title.
 
 [build]
   # ⚠️ `npx puppeteer browsers install chrome` is load-bearing, not belt-and-braces.
