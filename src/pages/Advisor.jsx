@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { callClaude, streamClaudeTurn, SONNET, HAIKU } from '../lib/anthropic'
 import { SOLOMON_TOOLS, runSolomonTool, describeToolUse } from '../lib/solomonTools'
 import { prepareChatImage, chatImageUrl, saveChatImageToLibrary, isImageFile, ACCEPTED_IMAGE_TYPES } from '../lib/chatImages'
+import { speak, stopSpeaking, listen, dictationSupported } from '../lib/voice'
 import { pickAdvisorModel, explainModelChoice } from '../lib/advisorCascade'
 import { assertWithinSpendCap, isSpendCapExceeded, getMonthlyUsageSummary, DEFAULT_SPEND_CAP_USD } from '../lib/usage'
 import SpendCapBanner from '../components/tools/SpendCapBanner'
@@ -895,6 +896,40 @@ function SharedImage({ path, name, companyId, userId }) {
   )
 }
 
+/**
+ * Reads one reply aloud. Reports honestly which voice actually spoke — if the
+ * ElevenLabs plan is out of credits the device voice takes over, and saying so
+ * quietly is better than letting the owner think that robot is Solomon.
+ */
+function ListenButton({ text }) {
+  const [state, setState] = useState('idle')   // idle | loading | playing | device
+  useEffect(() => () => stopSpeaking(), [])
+
+  async function toggle() {
+    if (state === 'playing' || state === 'device') { stopSpeaking(); setState('idle'); return }
+    setState('loading')
+    const used = await speak(text, { onEnd: () => setState('idle') })
+    if (used === 'none')      setState('idle')
+    else if (used === 'device') setState('device')
+    else                      setState('playing')
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title={state === 'device' ? 'Using your device voice — Solomon\u2019s own voice is unavailable' : 'Listen'}
+      className="absolute -bottom-5 right-14 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 focus:opacity-100"
+      style={{ color: state === 'idle' ? 'rgba(13,20,19,0.35)' : '#0f7a5a' }}
+    >
+      {state === 'loading' ? 'Loading…'
+     : state === 'playing' ? 'Stop'
+     : state === 'device'  ? 'Stop (device voice)'
+     : 'Listen'}
+    </button>
+  )
+}
+
 function ArtifactChips({ artifacts }) {
   // source_documents carries two shapes now — artifacts Solomon produced and
   // images the owner shared. Filter, don't assume: an image entry has no
@@ -999,6 +1034,13 @@ function Bubble({ role, content, artifacts, streaming = false, onSave, companyId
             ))}
         </div>
         {!isUser && !streaming && <ArtifactChips artifacts={artifacts} />}
+        {/* Listen — beside Save, and only on his finished replies. Never
+            automatic: ElevenLabs bills per character, and a plan's whole
+            monthly allowance is about fifty spoken replies. This has to be a
+            thing the owner chooses, not a thing that happens to him. */}
+        {!isUser && !streaming && content && (
+          <ListenButton text={content} />
+        )}
         {/* Save button — only on assistant messages, not while streaming */}
         {!isUser && !streaming && content && (
           <button
@@ -1220,6 +1262,28 @@ const Composer = forwardRef(function Composer(
   ref,
 ) {
   const fileRef = useRef(null)
+  const stopRef = useRef(null)
+  const [dictating, setDictating] = useState(false)
+  const [micError,  setMicError]  = useState(null)
+  const canDictate = dictationSupported()
+
+  // Stop the microphone if the composer unmounts mid-sentence — otherwise the
+  // browser keeps listening after the owner has navigated away, which is both
+  // a bug and a bad look for an app asking to be trusted with the books.
+  useEffect(() => () => { try { stopRef.current?.() } catch { /* ignore */ } }, [])
+
+  function toggleDictation() {
+    if (dictating) { stopRef.current?.(); setDictating(false); return }
+    setMicError(null)
+    setDictating(true)
+    stopRef.current = listen(
+      (text, isFinal) => {
+        onChange(text)
+        if (isFinal) setDictating(false)
+      },
+      (err) => { setMicError(err); setDictating(false) },
+    )
+  }
   const previewUrl = useMemo(
     () => (attachment ? URL.createObjectURL(attachment) : null),
     [attachment],
@@ -1246,6 +1310,11 @@ const Composer = forwardRef(function Composer(
             </button>
           </div>
         )}
+        {micError && (
+          <div className="mb-2 rounded-lg px-3 py-2 text-xs" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#b91c1c' }}>
+            {micError}
+          </div>
+        )}
         {error && (
           typeof error === 'object' && error.code === 'spend_cap_exceeded'
             ? <div className="mb-2"><SpendCapBanner err={error} /></div>
@@ -1266,6 +1335,26 @@ const Composer = forwardRef(function Composer(
             className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) onAttach(f); e.target.value = '' }}
           />
+          {canDictate && (
+            <button
+              type="button"
+              onClick={toggleDictation}
+              disabled={disabled}
+              aria-label={dictating ? 'Stop dictating' : 'Speak to Solomon'}
+              title={dictating ? 'Stop dictating' : 'Speak to Solomon'}
+              className="rounded-xl p-2.5 min-h-[44px] flex items-center justify-center transition-colors disabled:opacity-30 flex-shrink-0"
+              style={{
+                color:      dictating ? '#fff' : 'rgba(13,20,19,0.45)',
+                background: dictating ? '#14a67b' : 'rgba(13,20,19,0.04)',
+                border:     '1px solid rgba(13,20,19,0.10)',
+              }}
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" />
+              </svg>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => fileRef.current?.click()}

@@ -97,6 +97,8 @@ export default function Privacy() {
             <li><strong>Stripe</strong> — billing</li>
             <li><strong>QuickBooks (optional)</strong> — financial sync, only if you connect it</li>
             <li><strong>Email providers</strong> — to deliver transactional email</li>
+            <li><strong>ElevenLabs (optional)</strong> — text-to-speech, only when you press Listen on a reply</li>
+            <li><strong>Google or Apple (optional)</strong> — speech-to-text, only while you are dictating, via your browser&rsquo;s built-in microphone feature</li>
           </ul>
           <p className="mt-3">
             <strong>We do not:</strong> sell your data, share it with advertisers,

@@ -102,6 +102,8 @@ export default function Security() {
             <li><strong>Anthropic</strong> — runs Claude (the AI behind Solomon). We send the prompts and context the AI needs to answer your questions. Anthropic does not retain or train on this data.</li>
             <li><strong>Stripe</strong> — billing. We send your email and subscription info. We do NOT see or store your credit card.</li>
             <li><strong>QuickBooks (optional)</strong> — read-only financial sync. Only if you connect it. We never write to your books.</li>
+            <li><strong>ElevenLabs (optional)</strong> — turns Solomon&rsquo;s written answer into speech, and only when you press Listen. We send that one answer. Nothing is sent if you never use it.</li>
+            <li><strong>Your browser&rsquo;s speech recognition (optional)</strong> — if you dictate instead of typing. On Chrome this means the audio goes to Google to be turned into text; on Safari it is handled by Apple. Only while the microphone button is on.</li>
           </ul>
           <p className="mt-3">
             That's the full list. No analytics tracking sold to third parties. No
