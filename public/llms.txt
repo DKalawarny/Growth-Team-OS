@@ -1,6 +1,7 @@
 # Eliv8 OS
 
-> An AI business advisor for Christian business owners. Solomon reads the
+> An AI business advisor for owners who care how the business is run, not
+> only what it returns. Solomon reads the
 > owner's actual numbers, remembers what was decided and why, argues the hard
 > calls more than one way, and treats how the business is run as mattering —
 > not only what it earns. Paired with the tools to act on the advice: finances,

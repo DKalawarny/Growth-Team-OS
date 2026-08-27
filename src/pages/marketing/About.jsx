@@ -31,7 +31,7 @@ import { TRIAL_DAYS } from '../../lib/pricing'
 
 const ABOUT_META = buildPageMeta({
   title:       'About Eliv8 OS — why it exists',
-  description: 'Eliv8 OS is an AI business advisor for Christian business owners. What it is for, who it is for, and what it will not do.',
+  description: 'Eliv8 OS is an AI business advisor for owners who care how the business is run. What it is for, who it is for, and what it will not do.',
   path:        '/about',
 })
 

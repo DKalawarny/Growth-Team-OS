@@ -128,6 +128,24 @@ export const FEATURE_KEYWORDS = [
 
 /** Top keyword set for meta tags — the conviction axis first, then the job. */
 export const PRIMARY_KEYWORDS = [
+  // ⭐ KEYWORDS ARE DISCOVERY, NOT A DOOR POLICY — the distinction that keeps
+  // these here while the same words were removed from every title, description
+  // and OG tag on 26 Aug.
+  //
+  // The 22 Aug decision was that a visible label sorts people at the door: a
+  // reader decides whether he is in the category before he understands what the
+  // thing does. That badge came off the landing page — and the identical label
+  // was left in the <title>, the meta description, the OG tags and the JSON-LD,
+  // which are LOUDER, being the browser tab, the search result, the link preview
+  // and the text an AI assistant quotes back verbatim. Half-applied is worse
+  // than either choice.
+  //
+  // A keyword is different in kind: no human is shown it, and a Christian owner
+  // searching this exact phrase should find us. Removing it would cost the
+  // discovery without buying any discretion.
+  //
+  // ⚠️ Do NOT reinstate this wording in a title or description. Findable, never
+  // announced — the same rule as the name itself.
   'AI advisor for Christian business owners',
   'Christian business advisor',
   'faith-driven business software',
@@ -244,7 +262,7 @@ export function organizationSchema() {
     url:         SITE_URL,
     logo:        `${SITE_URL}/favicon.svg`,
     email:       CONTACT_EMAIL,
-    description: 'An AI business advisor for Christian business owners — one who reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering, not only what it earns.',
+    description: 'An AI business advisor that reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering — not only what it earns.',
     sameAs:      [
       // Add LinkedIn / X / YouTube once those exist
     ],
@@ -285,7 +303,7 @@ export function softwareApplicationSchema() {
     name:                SITE_NAME,
     applicationCategory: 'BusinessApplication',
     operatingSystem:     'Web',
-    description:         'An AI business advisor for Christian business owners, with tools for cash flow, finances, hiring, decisions, written procedures, compliance, and succession. Reads your real numbers, remembers your decisions, and argues the hard calls both ways.',
+    description:         'An AI business advisor with tools for cash flow, finances, hiring, decisions, written procedures, compliance and succession. Reads your real numbers, remembers your decisions, and argues the hard calls both ways.',
     url:                 SITE_URL,
     offers,
     aggregateRating: undefined, // add once we have real reviews — never fake this

@@ -30,7 +30,7 @@ import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHL
  */
 
 const LANDING_META = buildPageMeta({
-  title:       'Eliv8 OS — an advisor for Christian business owners',
+  title:       "Eliv8 OS — an advisor for owners who care how it's run",
   description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. Currently free while in private pilot.`,
   path:        '/',
 })

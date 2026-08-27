@@ -36,7 +36,7 @@ const PRICING_META = buildPageMeta({
     ? `Pricing — Eliv8 OS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
     : 'Pricing — Eliv8 OS · free while in private pilot',
   description: SHOW_PUBLIC_PRICE
-    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, the advisor for Christian business owners — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
+    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, an advisor who reads your actual numbers — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
     : 'Eliv8 OS is in private pilot and free to use — Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
   path:        '/pricing',
 })
@@ -180,7 +180,7 @@ export default function Pricing() {
             from the structured Q&A list, not by inferring from the page). */}
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        'Eliv8 OS — AI advisor + business tools',
-          description: 'An AI business advisor for Christian business owners, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession — for one monthly subscription.',
+          description: 'An AI business advisor, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession — for one monthly subscription.',
         }))}</script>
         <script type="application/ld+json">{jsonLd(faqPageSchema(FAQS))}</script>
       </Helmet>

@@ -50,7 +50,7 @@ const ROUTES = [
   // seconds later with a bare "Waiting failed" and no clue which route or
   // which string — which is exactly what happened when the landing page was
   // repositioned. The catch below now prints both.
-  { path: '/',                titleContains: 'advisor for Christian business owners' },
+  { path: '/',                titleContains: 'advisor for owners who care how' },
   { path: '/pricing',         titleContains: 'Pricing — Eliv8 OS' },
   { path: '/demo',            titleContains: 'See it work' },
   { path: '/about',           titleContains: 'About Eliv8 OS' },
