@@ -18,17 +18,17 @@
 #   4. The build therefore "succeeded" in about 13 seconds, publishing the
 #      un-prerendered shell, with the explanation buried in the build log.
 #
-# The symptom was invisible from the app: leadeos.com/about returned the
-# homepage <title> and the homepage served one JSON-LD block where the local
-# dist/ had two. Every schema and per-page meta fix was reaching the browser
-# and nothing else.
+# The symptom was invisible from the app: /about returned the homepage <title>
+# and the homepage served one JSON-LD block where the local dist/ had two. Every
+# schema and per-page meta fix was reaching the browser and nothing else.
 #
 # PUPPETEER_CACHE_DIR moves that download inside the repo, where the build can
 # actually reach it. If this ever regresses, the check is one line:
 #
-#   curl -s https://leadeos.com/about | grep -o "<title>[^<]*</title>"
+#   curl -s https://eliv8os.com/about | grep -o "<title>[^<]*</title>"
 #
-# It must print "About Eliv8 OS", not the homepage title.
+# It must print "About Eliv8 OS — why it exists", not the homepage title.
+# (Checked green on 27 Aug, right after the domain cutover.)
 
 [build]
   # ⚠️ `npx puppeteer browsers install chrome` is load-bearing, not belt-and-braces.

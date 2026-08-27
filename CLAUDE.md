@@ -253,9 +253,21 @@ reasoning is written into `seo.js` in his words.
 sees "elevate", anyone who looks finds El. The same mechanism as the landing
 page's "someone who shares none of your convictions" — findable, never asserted.
 
-Primary domain **eliv8os.com** (eliv8-os.com also owned, points at it).
-`src/lib/seo.js` remains the single source: SITE_URL, SITE_NAME, ORG_NAME,
-CONTACT_EMAIL.
+Primary domain **eliv8os.com**. `src/lib/seo.js` remains the single source:
+SITE_URL, SITE_NAME, ORG_NAME, CONTACT_EMAIL.
+
+⚠️ **THIS FILE USED TO SAY "eliv8-os.com also owned, points at it". IT WAS THE
+OTHER WAY ROUND** — and that inverted note cost real time on 27 Aug. GoDaddy held
+a **domain forwarding rule `eliv8os.com` → `https://eliv8-os.com` (permanent
+301)**, so the good domain was sending every visitor to the hyphenated one, which
+serves a **GoDaddy Website Builder "coming soon" page** ("Announcing our website
+launch!"), not the product.
+
+⭐ The tell was in the DNS table, not the forwarding tab: the two parking A
+records had their **edit and delete icons greyed out**. GoDaddy locks the apex
+records while forwarding owns them. Deleting the forwarding rule collapsed both
+into one editable `A @ Parked` row. **If apex records are ever un-editable, look
+for forwarding before anything else.**
 
 ⚠️ **THE 24 LOWERCASE `growthos:` STRINGS ARE localStorage KEYS AND MUST NOT BE
 RENAMED.** They carry saved roadmap views, dismissed banners, trajectory
@@ -269,52 +281,75 @@ every previously imported calendar event duplicate on the owner's calendar.
 ⭐ Fixed in passing: `buildInviteUrl` fell back to `https://app.growthos.com` —
 a domain registered to a stranger on NameCheap since 2018.
 
-### Domain repointing — IN PROGRESS (27 Aug 2026)
+### Domain repointing — LIVE on eliv8os.com (27 Aug 2026)
 
-⭐ The ordering rule the whole switch runs on: **do the additive steps now, the
-cutover steps only once DNS actually resolves.** Flipping `APP_URL` or the
-Supabase Site URL at a domain that isn't serving yet breaks Stripe returns and
-password resets in the meantime, for no gain.
+⭐ The ordering rule the whole switch ran on: **additive steps first, cutover
+steps only once the domain actually serves.** Pointing `APP_URL` or the Supabase
+Site URL at a domain that 404s breaks Stripe returns and password resets in the
+meantime, for no gain. That ordering held and is why nothing broke.
 
-✅ **DONE — Supabase → Auth → URL Configuration.** Four redirect URLs added:
+✅ **Supabase → Auth → URL Configuration.** Four redirect URLs added:
 `https://eliv8os.com/**`, `https://www.eliv8os.com/**`, `https://leadeos.com/**`,
-`https://www.leadeos.com/**`. ⭐ The list had been **completely empty**, which
-means the only allowed redirect was ever the bare Site URL — so `/reset-password`
-could not have worked from an email link on any domain. Additive; nothing to
-break. **Site URL deliberately left at `https://leadeos.com`.**
+`https://www.leadeos.com/**`. ⭐ The list had been **completely empty**, so the
+only permitted redirect was ever the bare Site URL — `/reset-password` could not
+have worked from an email link on any domain. Fixed as a side effect.
+✅ **Site URL** → `https://eliv8os.com`. ✅ `APP_URL` secret → same.
 
-✅ **DONE — Netlify → Domain management.** `eliv8os.com` and `www.eliv8os.com`
-added as **domain aliases**, both "Pending DNS verification" (correct — GoDaddy
-still points them at parking). Primary is still `leadeos.com`.
+✅ **GoDaddy DNS.** `A @ → 75.2.60.5` (TTL 600), `CNAME www →
+fabulous-boba-bd78c9.netlify.app`. Verified at ns69 AND at 8.8.8.8 / 1.1.1.1.
+⭐ See the forwarding-rule trap documented in the rename section above — that was
+the real blocker, and the greyed-out record icons were the only visible sign.
 
-🔴 **NEXT, DANIEL'S — GoDaddy DNS for eliv8os.com.** ⚠️ `dcc.godaddy.com` is
-**blocked for browser automation**, so this cannot be driven from a session; it
-is his to click. Netlify's own instructions, read off the dashboard:
-  - **A** · Host `@` · → `75.2.60.5` — *replace* the two parking A records
-    (`15.197.225.128`, `3.33.251.168`)
-  - **CNAME** · Host `www` · → `fabulous-boba-bd78c9.netlify.app` — currently
-    points at `@`
-  ⭐ Netlify *recommends* ALIAS/ANAME → `apex-loadbalancer.netlify.com`, but
-  **GoDaddy does not support ALIAS at the apex** — the A record is the documented
-  fallback, and it is what leadeos.com already uses, which is the corroboration.
-  ⚠️ **Do not touch leadeos.com's DNS.** It keeps pointing at Netlify; the 301
-  comes from the primary-domain flip below, not from DNS.
+✅ **Netlify.** Both hostnames added, verified, certs issued, and **eliv8os.com is
+now the primary domain**; `www.eliv8os.com` redirects to it; `leadeos.com`
+demoted to alias.
 
-🔴 **THEN, IN THIS ORDER, once `dig +short eliv8os.com` returns 75.2.60.5:**
-  1. Netlify → Domain management → make **eliv8os.com the primary domain**. This
-     is what turns leadeos.com into an automatic 301 and preserves the indexed
-     pages + the `utm_source=chatgpt` channel — the only one that has ever brought
-     this product a stranger.
-  2. Netlify → HTTPS → **Renew certificate**. ⚠️ The Let's Encrypt cert covers
-     **`leadeos.com, www.leadeos.com` ONLY** (issued 16 May). Until it is
-     reissued, HTTPS on eliv8os.com fails — a cert error is worse than a domain
-     that doesn't resolve, because the visitor is already there.
-  3. `supabase secrets set APP_URL=https://eliv8os.com`
-  4. Supabase → Auth → URL Configuration → **Site URL** → `https://eliv8os.com`
-  5. Google Cloud console → OAuth client → authorized JS origins + redirect URIs
-  6. Resend → verify the new sending domain, then `RESEND_FROM`
-  7. A `support@eliv8os.com` mailbox must EXIST before it is advertised — it is
-     already written into `seo.js` as `CONTACT_EMAIL` and shipped on public pages.
+🔴 **THE ONE THAT COST THE MOST TIME — A VERIFIED DOMAIN CAN STILL 404, AND ONLY
+A REDEPLOY BINDS IT.** After DNS resolved, the certs issued and Netlify cleared
+its "Pending DNS verification" warnings, `eliv8os.com` still returned 404 for
+**~20 minutes** while `leadeos.com` served 200 from the *same deploy*. It was not
+propagation and waiting would not have fixed it.
+
+⭐ **The diagnostic was the response headers, not the status code.** Both are
+"404 from Netlify" until you look:
+```
+leadeos.com   server: Netlify   x-nf-request-id: …   cache-status: "Netlify Edge"; hit
+eliv8os.com   server: ip-10-124-4-72.us-west-2.compute.internal   x-request-id: …
+```
+No `server: Netlify`, no `x-nf-request-id` → the request never reached the site's
+edge config at all; it hit Netlify's unmapped-domain handler. **Triggering a
+deploy republishes the domain binding and fixed it within one build.** Checked
+first that only one project existed, so it was not a domain claimed elsewhere.
+
+✅ **Verified by reading the artifact, not the status code** (the 22 Aug rule):
+homepage `<title>` correct, `/about` returns "About Eliv8 OS — why it exists"
+(so the prerender still runs), 2 JSON-LD blocks, `/pricing` + `/signup` 200 via
+the SPA fallback.
+
+🔴 **`leadeos.com` DID NOT 301 ON ITS OWN — the plan above was wrong about this.**
+A Netlify **domain alias serves the same content with no redirect**; only the
+www/apex counterpart of the *primary* is redirected automatically. Live proof:
+`HTTP/2 200`, no `Location`. Two domains serving byte-identical pages is
+duplicate content and the damage lands on the NEW domain. Fixed with four forced
+rules in `public/_redirects` — ⚠️ they must stay **above** the SPA fallback, and
+the `!` is load-bearing or Netlify serves the existing index.html instead.
+⚠️ **NOT YET DEPLOYED** — committed locally, needs a push to take effect.
+
+⭐ **Daniel on 27 Aug: "i dont care for leadeos that can go ill cancel it."** His
+call, and the redirect is written so either choice works. The one thing worth
+knowing: the 301 only carries the search equity **while the domain is still
+registered**. Letting it lapse drops the link — no rule in `_redirects` can
+substitute for owning the name.
+
+🔴 **STILL OPEN:**
+  1. Google Cloud console → OAuth client → authorized JS origins + redirect URIs
+     (Google sign-in will fail on the new origin until this is done)
+  2. Resend → verify eliv8os.com as a sending domain, then `RESEND_FROM`
+  3. A `support@eliv8os.com` mailbox must EXIST before it is advertised — it is
+     already in `seo.js` as `CONTACT_EMAIL` and shipped on public pages, so it is
+     currently advertised and dead.
+  4. `og-default.png` still does not exist in `public/` — every link preview the
+     site has ever produced has had a broken image.
 
 Also still open: Stripe product name, Supabase project name (still "Growth Team
 OS").

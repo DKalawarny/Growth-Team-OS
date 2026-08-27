@@ -17,6 +17,31 @@
 # what's left over — which is every authenticated app route, since those
 # can't be prerendered.
 
+# ⚠️ THE OLD DOMAIN MUST 301, NOT SERVE.
+#
+# eliv8os.com became the primary domain on 27 Aug. Netlify does NOT redirect a
+# domain alias to the primary — only the www/apex counterpart of the primary is
+# redirected for you. Verified live: leadeos.com returned `HTTP/2 200` with no
+# Location header, i.e. it was serving the identical site from the same deploy.
+#
+# Two domains serving byte-identical pages is duplicate content, and the damage
+# lands on the NEW domain — search engines pick one canonical themselves, and
+# they have years of history pointing at leadeos.com and days pointing here.
+#
+# ⭐ This also does the job the domain was kept for: leadeos.com holds every
+# indexed page, and `utm_source=chatgpt` is the only channel that has ever
+# brought this product a stranger. A 301 passes that to eliv8os.com. It works
+# only while the domain is still REGISTERED — letting it lapse drops the link,
+# and no rule here can substitute for owning the name.
+#
+# ⚠️ The `!` is load-bearing: without it Netlify serves the file that exists at
+# that path (index.html) instead of redirecting. And these MUST stay above the
+# SPA fallback below — first match wins.
+http://leadeos.com/*       https://eliv8os.com/:splat   301!
+https://leadeos.com/*      https://eliv8os.com/:splat   301!
+http://www.leadeos.com/*   https://eliv8os.com/:splat   301!
+https://www.leadeos.com/*  https://eliv8os.com/:splat   301!
+
 # ⚠️ Kill the retired prompt chunks.
 #
 # src/lib/prompts.js used to be bundled and served, so Solomon's full system
