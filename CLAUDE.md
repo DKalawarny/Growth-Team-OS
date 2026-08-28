@@ -341,15 +341,59 @@ knowing: the 301 only carries the search equity **while the domain is still
 registered**. Letting it lapse drops the link — no rule in `_redirects` can
 substitute for owning the name.
 
-🔴 **STILL OPEN:**
-  1. Google Cloud console → OAuth client → authorized JS origins + redirect URIs
-     (Google sign-in will fail on the new origin until this is done)
-  2. Resend → verify eliv8os.com as a sending domain, then `RESEND_FROM`
-  3. A `support@eliv8os.com` mailbox must EXIST before it is advertised — it is
-     already in `seo.js` as `CONTACT_EMAIL` and shipped on public pages, so it is
-     currently advertised and dead.
-  4. `og-default.png` still does not exist in `public/` — every link preview the
-     site has ever produced has had a broken image.
+✅ **RESEND — eliv8os.com added as a sending domain (27 Aug).** Three records
+entered at GoDaddy BY HAND and verified at ns69: `TXT resend._domainkey` (DKIM,
+218 chars, byte-compared before saving), `TXT send` = `v=spf1
+include:amazonses.com ~all`, `MX send` → `feedback-smtp.us-east-1.amazonses.com`
+priority 10. Region us-east-1. Status was still **Pending** at hand-off — Resend
+warns GoDaddy propagation can take hours; the records are correct, so it clears
+on its own.
+
+⚠️ **DO NOT SET `RESEND_FROM` UNTIL RESEND SAYS VERIFIED.** Resend refuses to
+send from an unverified domain, so flipping it early breaks every outgoing email
+— welcome emails, the GBP audit notification, everything. Once verified:
+`supabase secrets set RESEND_FROM='Eliv8 OS <noreply@eliv8os.com>'`.
+
+⭐ **Chose Manual setup over Resend's "Auto configure"** — auto-configure asks for
+standing write access to the whole GoDaddy DNS zone via OAuth, which is a far
+bigger grant than three records need.
+⭐ **Resend truncates DNS values in the UI with a real `[…]` DOM node**, so both
+the screenshot AND `innerText` give you a corrupted string. The full value lives
+in the copy button's `aria-label`. Guessing the middle of a DKIM key produces a
+record that looks right and never verifies.
+⚠️ **`Enable Receiving` deliberately left OFF.** Turning it on wants `MX @` →
+`inbound-smtp...`, which would occupy the apex MX and collide with whatever
+really hosts `support@eliv8os.com`. The apex has NO MX record right now.
+⚠️ This is **kinwove's Resend account** (only `kinwove.com` was in it). Same
+shared-vendor shape as the ElevenLabs warning above — fine for a pilot, worth
+separating before it matters.
+
+🔴 **CORRECTION — IT IS NOT GOOGLE SIGN-IN THAT BREAKS ON THE NEW DOMAIN.**
+An earlier hand-off note said Google sign-in would fail until the OAuth origins
+were updated. **This repo contains no `signInWithOAuth` at all** — Google sign-in
+is kinwove's feature, not this product's. What actually breaks is **Google Drive
+import**: `src/lib/googleDriveImport.js` loads Google Identity Services and calls
+`initTokenClient` **in the browser**, and GIS validates the page origin.
+The client ID is real and shipped in the production bundle
+(`170277291780-2945tkdsacfn8j7ctan0t4vvsamrb58g.apps.googleusercontent.com`), so
+this is a live break, just a different one. ⭐ The Supabase auth callback is
+unchanged and needs nothing.
+
+🔴 **STILL OPEN — DANIEL'S, WITH REASONS:**
+  1. **Google Cloud console** → APIs & Services → Credentials → the OAuth client
+     above → **Authorized JavaScript origins** → add `https://eliv8os.com` and
+     `https://www.eliv8os.com`. ⚠️ **Cannot be driven from a session:** the
+     account (`danny@deconstructors.ca`) is behind a **passkey / biometric**
+     challenge. Redirect URIs need no change.
+  2. **A real mailbox for `support@eliv8os.com`.** It is already in `seo.js` as
+     `CONTACT_EMAIL` and printed on live public pages, so it is advertised and
+     dead today. Needs a provider decision (paid mailbox vs a forwarder), which
+     is a purchase, so it is his.
+  3. `RESEND_FROM`, once Resend flips to Verified — see the warning above.
+  4. `og-default.png` still does not exist in `public/`; every link preview the
+     site has produced has had a broken image.
+  5. ⚠️ **`public/_redirects` 301 for leadeos.com is committed but NOT DEPLOYED.**
+     Until it ships, both domains serve identical content.
 
 Also still open: Stripe product name, Supabase project name (still "Growth Team
 OS").
