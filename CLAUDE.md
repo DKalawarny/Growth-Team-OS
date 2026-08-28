@@ -345,14 +345,19 @@ substitute for owning the name.
 entered at GoDaddy BY HAND and verified at ns69: `TXT resend._domainkey` (DKIM,
 218 chars, byte-compared before saving), `TXT send` = `v=spf1
 include:amazonses.com ~all`, `MX send` → `feedback-smtp.us-east-1.amazonses.com`
-priority 10. Region us-east-1. Status was still **Pending** at hand-off — Resend
-warns GoDaddy propagation can take hours; the records are correct, so it clears
-on its own.
+priority 10. Region us-east-1. ✅ **VERIFIED** the same session (it read
+Pending for ~25 min first — Resend warns GoDaddy propagation can take hours, so
+Pending is not a fault, just wait).
 
-⚠️ **DO NOT SET `RESEND_FROM` UNTIL RESEND SAYS VERIFIED.** Resend refuses to
-send from an unverified domain, so flipping it early breaks every outgoing email
-— welcome emails, the GBP audit notification, everything. Once verified:
-`supabase secrets set RESEND_FROM='Eliv8 OS <noreply@eliv8os.com>'`.
+✅ **`RESEND_FROM` = `Eliv8 OS <noreply@eliv8os.com>`**, set only AFTER Verified
+appeared. ⚠️ The ordering is not optional: Resend refuses to send from an
+unverified domain, so setting it early breaks every outgoing email — welcome
+emails, the GBP audit notification, everything — with nothing in the UI saying
+why.
+⚠️ **`noreply@` is a SENDING identity only; nothing receives there.** Email
+*receiving* is off (see below), so a customer who hits reply reaches a black
+hole. That is the same gap as the advertised-and-dead `support@` below, and both
+close with the same decision.
 
 ⭐ **Chose Manual setup over Resend's "Auto configure"** — auto-configure asks for
 standing write access to the whole GoDaddy DNS zone via OAuth, which is a far
@@ -389,11 +394,11 @@ unchanged and needs nothing.
      `CONTACT_EMAIL` and printed on live public pages, so it is advertised and
      dead today. Needs a provider decision (paid mailbox vs a forwarder), which
      is a purchase, so it is his.
-  3. `RESEND_FROM`, once Resend flips to Verified — see the warning above.
-  4. `og-default.png` still does not exist in `public/`; every link preview the
-     site has produced has had a broken image.
-  5. ⚠️ **`public/_redirects` 301 for leadeos.com is committed but NOT DEPLOYED.**
-     Until it ships, both domains serve identical content.
+  3. ⚠️ **NOTHING IS DEPLOYED YET.** Four commits sit unpushed, and two of them
+     only take effect on deploy: the `leadeos.com` 301 (until it ships, both
+     domains serve identical content) and `public/og-default.png` (until it
+     ships, link previews stay broken). Pushing is Daniel's call under the
+     Netlify credit rule — 398 credits remained on 27 Aug.
 
 Also still open: Stripe product name, Supabase project name (still "Growth Team
 OS").
