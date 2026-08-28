@@ -384,6 +384,31 @@ The client ID is real and shipped in the production bundle
 this is a live break, just a different one. ⭐ The Supabase auth callback is
 unchanged and needs nothing.
 
+🔴 **THE PRIMARY FLIP SILENTLY DROPPED `www.leadeos.com`** (found 28 Aug, after
+the deploy). Netlify treats the www of the PRIMARY domain as a special
+"redirects automatically to primary" entry. Demoting `leadeos.com` to a plain
+alias took its www partner off the domain list with it — and the certificate
+reissued covering `eliv8os.com`, `www.eliv8os.com`, `leadeos.com` and **not**
+`www.leadeos.com`. That host fell back to Netlify's `*.netlify.app` wildcard, so
+every visitor got a **full-page browser security warning** — worse than a dead
+domain, because it reads as compromised.
+
+⭐ **How it hid, and the lesson:** `curl` just returned `000`, and
+`openssl s_client` reported **"Verify return code: 0 (ok)"** — because openssl
+validates the CHAIN, not the HOSTNAME. Nothing said "wrong cert". The only thing
+that showed it was listing the SANs per hostname:
+```
+for d in eliv8os.com www.eliv8os.com leadeos.com www.leadeos.com; do
+  echo | openssl s_client -connect $d:443 -servername $d 2>/dev/null \
+    | openssl x509 -noout -text | grep -A1 "Subject Alternative Name" | tail -1
+done
+```
+Fixed by re-adding `www.leadeos.com` as a domain alias; Netlify auto-reissued.
+✅ Verified: one cert now carries all four names, and all three non-primary hosts
+301 to eliv8os.com with the path preserved (`www.leadeos.com/about` →
+`eliv8os.com/about/`).
+⚠️ **Whenever a primary domain changes, re-check the OLD domain's `www`.**
+
 🔴 **STILL OPEN — DANIEL'S, WITH REASONS:**
   1. **Google Cloud console** → APIs & Services → Credentials → the OAuth client
      above → **Authorized JavaScript origins** → add `https://eliv8os.com` and
