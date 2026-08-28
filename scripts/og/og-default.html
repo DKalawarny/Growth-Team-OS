@@ -1,0 +1,78 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700&family=Inter:wght@600&display=swap">
+<style>
+  :root{
+    --ground:#0D1413;
+    --letters:#F6F8F8;
+    --green:#14A67B;
+    --muted:rgba(246,248,248,0.52);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1200px;height:630px}
+  body{
+    background:var(--ground);
+    font-family:'Instrument Sans',system-ui,sans-serif;
+    color:var(--letters);
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:74px 80px 66px;
+    /* A single, very quiet warm lift from the lower-left. The brand note is
+       restraint — this is here so the flat ground doesn't read as unfinished,
+       and it is deliberately too faint to notice as an effect. */
+    background-image:radial-gradient(120% 90% at 0% 108%, rgba(20,166,123,0.13) 0%, rgba(20,166,123,0) 58%);
+  }
+
+  /* The wordmark. Same spec as src/components/brand/Wordmark.jsx —
+     Inter SemiBold, 0.035em, and the 8 is the only coloured character. */
+  .mark{
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:600;
+    font-size:31px;
+    letter-spacing:0.035em;
+    line-height:1;
+    display:inline-block;
+  }
+  .mark .eight{color:var(--green)}
+
+  .rule{width:64px;height:3px;background:var(--green);border-radius:2px;margin:34px 0 30px}
+
+  h1{
+    font-weight:600;
+    font-size:69px;
+    line-height:1.12;
+    letter-spacing:-0.021em;
+    max-width:1000px;
+    text-wrap:balance;
+  }
+  /* The turn in the sentence carries the whole positioning, so it gets the
+     tonal shift rather than a second colour or a bolder weight. */
+  h1 .turn{color:var(--muted)}
+
+  footer{display:flex;align-items:baseline;justify-content:space-between}
+  .domain{font-size:23px;letter-spacing:0.005em;color:var(--muted)}
+  .note{font-size:21px;color:var(--muted)}
+</style></head>
+<body>
+
+  <div>
+    <span class="mark">ELIV<span class="eight">8</span> OS</span>
+  </div>
+
+  <div>
+    <div class="rule"></div>
+    <h1>An advisor for owners who care how it&rsquo;s run,<br><span class="turn">not only what it returns.</span></h1>
+  </div>
+
+  <!-- ⚠️ NOTHING TIME-LIMITED GOES IN THIS IMAGE.
+       Scrapers cache an OG card indefinitely, so a claim baked in here outlives
+       the truth in every link already shared. "Free while in private pilot"
+       lives in the meta description instead, which re-reads on every fetch.
+       Same failure mode as the $97 frozen into JSON-LD and the "$XXX
+       placeholder" that sat indexed on /crm. -->
+  <footer>
+    <span class="domain">eliv8os.com</span>
+  </footer>
+
+</body></html>
