@@ -409,21 +409,49 @@ Fixed by re-adding `www.leadeos.com` as a domain alias; Netlify auto-reissued.
 `eliv8os.com/about/`).
 ⚠️ **Whenever a primary domain changes, re-check the OLD domain's `www`.**
 
-🔴 **STILL OPEN — DANIEL'S, WITH REASONS:**
-  1. **Google Cloud console** → APIs & Services → Credentials → the OAuth client
-     above → **Authorized JavaScript origins** → add `https://eliv8os.com` and
-     `https://www.eliv8os.com`. ⚠️ **Cannot be driven from a session:** the
-     account (`danny@deconstructors.ca`) is behind a **passkey / biometric**
-     challenge. Redirect URIs need no change.
-  2. **A real mailbox for `support@eliv8os.com`.** It is already in `seo.js` as
+✅ **GOOGLE CLOUD MOVED OFF DECONSTRUCTORS (28 Aug).** Eliv8's credentials came
+from a project inside the **deconstructors.ca org** Daniel is exiting. Rebuilt
+under his personal gmail (`dannykalawarny88@gmail.com`, **No organization**) as
+project **`eliv8os`** — recreated rather than migrated, because moving a project
+between orgs needs admin on both, i.e. a favour from whoever keeps the company.
+
+Two API keys, deliberately **not one** — the uses have incompatible restrictions:
+| key | used from | application restriction | APIs |
+|---|---|---|---|
+| `GOOGLE_PLACES_API_KEY` | **server** (edge fn, `X-Goog-Api-Key`) | **None** | Places API (New) |
+| `VITE_GOOGLE_API_KEY` | **browser** (`setDeveloperKey`) | HTTP referrers | Picker + Drive |
+⚠️ A referrer restriction on the server key breaks it — edge functions send no
+referrer. ⚠️ It must be **Places API (New)** (`places.googleapis.com/v1`); the
+legacy "Places API" looks enabled and every call still fails.
+
+✅ **Verified in the SHIPPED BUNDLE, not the dashboard** — both values were found
+in the live code-split chunk `/assets/Documents-*.js`. ⭐ Grepping the entry
+bundle finds nothing; the Drive code is lazily loaded.
+
+⚠️ **The consent screen stays in TESTING with Daniel as a test user.** Drive
+scopes are *sensitive*, so publishing triggers a Google verification review.
+Fine at pilot scale; a real gate before customers use Drive import.
+
+⚠️ **Do not shut down the old `Growth Os` project** until Drive import has been
+seen working once.
+
+🔴 **NETLIFY'S ENV EDITOR SILENTLY DOES NOTHING** — cost five attempts. Entering
+an API-key-shaped value pops a **second confirmation modal** ("This looks like a
+sensitive value") that renders **below the fold**. The save just… doesn't happen:
+timestamp unchanged, no error. ⭐ **Scroll after every submit.** Choose *Save
+without marking as secret* — a `VITE_` var is compiled into the public bundle, so
+marking it secret hides it from the build, not from users.
+
+🔴 **STILL OPEN — DANIEL'S:**
+  1. **Drive import click-through** on eliv8os — the one thing about the Google
+     move that has not been exercised end to end.
+  2. **`support@eliv8os.com` has no mailbox.** It is in `seo.js` as
      `CONTACT_EMAIL` and printed on live public pages, so it is advertised and
-     dead today. Needs a provider decision (paid mailbox vs a forwarder), which
-     is a purchase, so it is his.
-  3. ⚠️ **NOTHING IS DEPLOYED YET.** Four commits sit unpushed, and two of them
-     only take effect on deploy: the `leadeos.com` 301 (until it ships, both
-     domains serve identical content) and `public/og-default.png` (until it
-     ships, link previews stay broken). Pushing is Daniel's call under the
-     Netlify credit rule — 398 credits remained on 27 Aug.
+     dead. Needs a provider decision (free forwarder vs paid mailbox); the DNS
+     is a session's job once he picks. ⚠️ Whatever he picks adds an **apex MX** —
+     Resend's receiving toggle was left OFF on purpose so nothing collides.
+     ⚠️ `noreply@eliv8os.com` can send but nothing receives, so a customer hitting
+     reply hits a black hole. One mailbox closes both gaps.
 
 Also still open: Stripe product name, Supabase project name (still "Growth Team
 OS").
