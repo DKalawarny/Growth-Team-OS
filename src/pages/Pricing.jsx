@@ -11,6 +11,7 @@ import {
   jsonLd,
 } from '../lib/seo'
 import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, PAYMENTS_LIVE, ANNUAL_SAVINGS_USD, ANNUAL_MONTHS_FREE, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE, PILOT_PRICE_BLURB } from '../lib/pricing'
+import Wordmark from '../components/brand/Wordmark'
 
 /**
  * /pricing — public pricing page.
@@ -385,7 +386,7 @@ export default function Pricing() {
             })}
             <div className="px-6 py-5 bg-gray-950 flex items-center justify-between">
               <div>
-                <p className="text-white font-black text-base">Eliv8 OS</p>
+                <Wordmark tone="dark" size={16} />
                 <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
               </div>
               <div className="text-right">

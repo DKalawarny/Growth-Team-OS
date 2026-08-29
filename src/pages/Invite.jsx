@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getInviteByToken, acceptInvite } from '../lib/invites'
+import Wordmark from '../components/brand/Wordmark'
 
 /**
  * Invite — advisor accept-invite page.
@@ -295,7 +296,7 @@ function Shell({ children }) {
   return (
     <div className="min-h-screen bg-ink-50 flex flex-col items-center justify-center p-6">
       <div className="mb-6 text-center">
-        <div className="text-2xl font-black text-ink-900 tracking-tight">Eliv8 OS</div>
+        <Wordmark tone="light" size={24} />
         <div className="text-xs text-ink-400 mt-0.5">Executive team for business owners</div>
       </div>
       {children}

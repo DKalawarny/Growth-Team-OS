@@ -8,6 +8,7 @@ import { REVENUE_OPTIONS } from '../lib/stageEngine'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { assignMilestoneDates, buildDependencyUpdates } from '../lib/milestoneDates'
 import ShowHimTheBusiness from '../components/onboarding/ShowHimTheBusiness'
+import Wordmark from '../components/brand/Wordmark'
 import {
   INDUSTRY_OPTIONS,
   TEAM_SIZE_OPTIONS,
@@ -649,7 +650,7 @@ function SplitShell({ stepIndex, children }) {
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">Eliv8 OS</span>
+            <Wordmark tone="dark" size={16} />
           </div>
 
           {/* Step-specific messaging */}
@@ -799,7 +800,7 @@ function GeneratingScreen({ status, genStep }) {
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">Eliv8 OS</span>
+            <Wordmark tone="dark" size={16} />
           </div>
           <h2 className="text-3xl font-bold text-white leading-tight mb-4">
             Almost there.

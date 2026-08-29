@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { uploadKnowledgeFile, expandDroppedItems, validateFile, MAX_MB } from '../../lib/knowledgeFiles'
 import { runLibraryAnalysis } from '../../lib/libraryAnalysis'
 import { startOAuthFlow } from '../../lib/quickbooks'
+import Wordmark from '../brand/Wordmark'
 
 /**
  * "Show him the business" — the last screen of onboarding.
@@ -200,7 +201,7 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">Eliv8 OS</span>
+            <Wordmark tone="dark" size={16} />
           </div>
           <h2 className="text-3xl font-bold text-white leading-tight mb-4">
             Your roadmap is built.

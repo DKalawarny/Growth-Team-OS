@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Wordmark from '../brand/Wordmark'
 
 /**
  * Shared header for public (logged-out) pages: Landing, Pricing.
@@ -15,7 +16,19 @@ export default function PublicHeader() {
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="text-xl font-bold text-brand-700">Eliv8 OS</Link>
+        {/* 🔴 THIS WAS HAND-ROLLED TEXT until 29 Aug — `text-xl font-bold
+            text-brand-700`, i.e. the whole wordmark in green, wrong weight, no
+            tracking, and the 8 not picked out at all. Daniel spotted it on the
+            live site: "not on brand".
+
+            ⚠️ It is the SEVENTH copy of the wordmark this codebase has grown.
+            The Wordmark component exists precisely because six hand-made copies
+            are why the logo still said "GrowthOS" for days after the rename —
+            and this one slipped through the same way. Never restate the mark in
+            markup; if it needs a new size or tone, add a prop. */}
+        <Link to="/" aria-label="Eliv8 OS — home">
+          <Wordmark tone="light" size={19} />
+        </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link to="/pricing" className="text-gray-700 hover:text-gray-900 font-medium">Pricing</Link>
           <Link to="/login" className="text-gray-600 hover:text-gray-900">Log in</Link>
