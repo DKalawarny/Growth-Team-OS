@@ -221,9 +221,15 @@ function HeroSection() {
             Nine attempts in that voice were all rejected. The line that lands
             will sound like Daniel, not like a campaign. His words are above;
             start there, and let him choose. Same reason /about is still empty. */}
+        {/* ⭐ 29 Aug — Daniel's own line: "the os that operates with integrity in
+            mind", asked to be smoothed. "Runs on" earns its place by doing two
+            jobs at once: what powers it, and how it behaves. Nearby versions he
+            can swap in without touching anything else:
+              "An operating system that runs with integrity"  (softer)
+              "Built to run with integrity in mind"           (closest to his) */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
-          Financially successful,<br />
-          <span className="text-brand-400">with moral dignity.</span>
+          The OS that runs<br />
+          <span className="text-brand-400">on integrity.</span>
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">

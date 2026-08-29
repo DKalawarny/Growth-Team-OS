@@ -66,27 +66,51 @@ export default function About() {
           </p>
         </section>
 
-        {/* ── What it is ──────────────────────────────────────────────────── */}
+        {/* ── What it is ──────────────────────────────────────────────────────
+            ⭐ ORDER CHANGED 29 Aug — Daniel, on the live page: "if someone
+            clicks it they see this in their face and it seems random."
+
+            He was right, and it was the same mistake the landing page had. "The
+            short version" opened with the faith paragraph, so a reader who
+            clicked About to find out WHAT THIS IS got a conviction before an
+            answer. That is assertion, and this product's whole stated posture
+            is the opposite: findable, never pushed.
+
+            ⚠️ NOTHING WAS REMOVED AND NOTHING WAS SOFTENED. The conviction now
+            has its own section, one scroll down, under a heading that tells the
+            reader what they are stepping into. Someone looking for it finds it
+            immediately; someone who came to learn what the product does is not
+            sorted at the door. That is exactly the 22 Aug decision — the About
+            page stays fully explicit because it is where the curious go looking.
+
+            ⚠️ Only ONE sentence moved between paragraphs ("That is a harder job
+            than it sounds…"), because it referred back to the faith paragraph
+            and would have dangled. The words are Daniel's; do not rewrite them. */}
         <section className="mb-16 prose prose-gray max-w-none">
           <h2 className="text-2xl font-black text-gray-900 mb-4">The short version</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Not everyone who takes their faith seriously is called to be a
-            minister. Most are called to be the person of conviction inside an
-            ordinary business — in how they price, how they pay, who they hire,
-            and whether their word holds when keeping it costs something.
-          </p>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            That is a harder job than it sounds, and it is a lonely one. Owners
-            have plenty of people who need answers from them and almost nobody
-            to ask. Eliv8 OS exists to be somewhere to ask — an advisor called
-            Solomon who reads your real numbers, remembers what you decided and
-            why, argues the hard calls both ways, and tells you plainly when he
-            does not know.
+            Owners have plenty of people who need answers from them and almost
+            nobody to ask. Eliv8 OS exists to be somewhere to ask — an advisor
+            called Solomon who reads your real numbers, remembers what you
+            decided and why, argues the hard calls both ways, and tells you
+            plainly when he does not know.
           </p>
           <p className="text-gray-700 leading-relaxed">
             The first commitment is competence. If the advice is not as sharp
             as the best secular advisor you could hire, nothing else about this
             matters. What differs is the posture, not the arithmetic.
+          </p>
+        </section>
+
+        {/* ── Where it comes from ─────────────────────────────────────────── */}
+        <section className="mb-16 prose prose-gray max-w-none">
+          <h2 className="text-2xl font-black text-gray-900 mb-4">Where this comes from</h2>
+          <p className="text-gray-700 leading-relaxed">
+            Not everyone who takes their faith seriously is called to be a
+            minister. Most are called to be the person of conviction inside an
+            ordinary business — in how they price, how they pay, who they hire,
+            and whether their word holds when keeping it costs something. That
+            is a harder job than it sounds, and it is a lonely one.
           </p>
         </section>
 
