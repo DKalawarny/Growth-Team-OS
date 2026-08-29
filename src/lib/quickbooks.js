@@ -23,19 +23,50 @@ import { supabase } from './supabase'
 // -------- OAuth kickoff --------
 
 /**
- * Call qbo-oauth-start, then navigate the browser to Intuit's authorise URL.
+ * Call qbo-oauth-start, then send the owner to Intuit's authorise URL.
  *
- * Returns nothing useful — either the navigation happens (and the caller
- * never sees a return) or we throw. Intentional: there's no "partial success"
- * state here; either we send the owner to Intuit or we surface an error.
+ * @param {object}  [opts]
+ * @param {boolean} [opts.newTab=false]  open Intuit in a new tab instead of
+ *                                       navigating this one away.
+ *
+ * ⭐ WHY newTab EXISTS (28 Aug). Daniel hit this during onboarding: the
+ * QuickBooks button navigated the whole tab to Intuit, and coming back left him
+ * having lost his place. His question — "this should just open in its own page
+ * right?" — is the right instinct. From Settings, leaving the tab is fine and
+ * the callback returning to /settings?qbo=connected is exactly what you want.
+ * From inside a wizard it is not.
+ *
+ * ⚠️ THE POPUP-BLOCKER TRAP. `window.open()` is only allowed while the browser
+ * still considers itself inside a user gesture. This function `await`s the edge
+ * function first, and by the time that resolves the gesture is over — so
+ * opening there is silently blocked and the button does nothing at all, which
+ * is worse than navigating away. The tab is therefore opened SYNCHRONOUSLY,
+ * before any await, and only pointed at Intuit once we have the URL.
  */
-export async function startOAuthFlow() {
-  const { data, error } = await supabase.functions.invoke('qbo-oauth-start', {
-    method: 'POST',
-  })
-  if (error) throw new Error(error.message || 'Could not start QuickBooks connection')
-  if (!data?.authorize_url) throw new Error('Missing authorize_url from server')
-  window.location.href = data.authorize_url
+export async function startOAuthFlow({ newTab = false } = {}) {
+  // Opened before the await, while the click is still "live".
+  const tab = newTab ? window.open('', '_blank', 'noopener') : null
+
+  try {
+    const { data, error } = await supabase.functions.invoke('qbo-oauth-start', {
+      method: 'POST',
+    })
+    if (error) throw new Error(error.message || 'Could not start QuickBooks connection')
+    if (!data?.authorize_url) throw new Error('Missing authorize_url from server')
+
+    if (tab && !tab.closed) {
+      tab.location.href = data.authorize_url
+    } else {
+      // Either we were not asked for a tab, or the browser blocked it. Falling
+      // back to a same-tab navigation keeps the button working — the owner
+      // gets to QuickBooks either way, which matters more than where it opens.
+      window.location.href = data.authorize_url
+    }
+  } catch (err) {
+    // Never strand a blank tab in front of the owner.
+    if (tab && !tab.closed) tab.close()
+    throw err
+  }
 }
 
 // -------- Sync --------

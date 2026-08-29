@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -179,14 +179,51 @@ const INITIAL_FORM = {
   primary_goal: [], goal_timeline: '', why_statement: '',
 }
 
+// ── Draft persistence ─────────────────────────────────────────────────────────
+
+/**
+ * 🔴 WHY THIS EXISTS. Everything the owner types here lived in `useState` and
+ * nowhere else, so ANY navigation away threw away up to five steps of answers.
+ * Found 28 Aug by actually running onboarding in a browser: the QuickBooks step
+ * calls `startOAuthFlow()`, which does `window.location.href = …` to Intuit —
+ * a full page leave — and coming back left an empty wizard.
+ *
+ * ⭐ The QuickBooks redirect was only the loudest way to lose the data. A
+ * refresh, a back button, or a transient error on the final call did the same.
+ * That is the real bug: it turned any one-off failure into ten minutes of
+ * retyping, which is how an owner decides the product is not worth the effort.
+ *
+ * ⚠️ Deliberately NOT solved by opening Intuit in a popup. OAuth has to leave
+ * the page and come back to a redirect URI; popups get blocked, and it would
+ * still leave refresh and back broken. Persisting the draft fixes every path at
+ * once.
+ *
+ * ⚠️ Key is USER-SCOPED. A flat key would show the next person to log in on this
+ * device the previous owner's revenue and goals — see the June privacy audit.
+ */
+const DRAFT_KEY = (userId) => `growthos:onboarding-draft:${userId}`
+
+/** Everything typed is business-sensitive, so the draft dies the moment it is
+ *  no longer needed — on successful completion, not on a timer. */
+function clearDraft(userId) {
+  if (!userId) return
+  try { localStorage.removeItem(DRAFT_KEY(userId)) } catch { /* private mode */ }
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Onboarding() {
   const navigate = useNavigate()
   const { refresh, session } = useAuth()
 
+  const userId = session?.user?.id ?? null
+
+  // ⚠️ Both start empty and are filled by the restore effect below — NOT by a
+  // useState lazy initialiser, which would race the session load and read the
+  // key before `userId` exists.
   const [stepIndex, setStepIndex]   = useState(0)
   const [form, setForm]             = useState(INITIAL_FORM)
+  const [draftLoaded, setDraftLoaded] = useState(false)
   const [phase, setPhase]           = useState('form')     // 'form' | 'generating' | 'error'
   const [genStatus, setGenStatus]   = useState('')
   const [genStep, setGenStep]       = useState(0)          // 0-4 for the generating progress steps
@@ -202,6 +239,37 @@ export default function Onboarding() {
   const step       = STEPS[stepIndex]
   const totalSteps = STEPS.length
   const isLastStep = stepIndex === totalSteps - 1
+
+  // Restore once the session is known. Runs on userId so a fresh login on the
+  // same device picks up that person's draft and nobody else's.
+  useEffect(() => {
+    if (!userId) return
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY(userId))
+      if (raw) {
+        const saved = JSON.parse(raw)
+        // Merge over INITIAL_FORM rather than replacing it: a draft written by
+        // an older build is missing any field added since, and a missing key
+        // would render an uncontrolled input.
+        if (saved.form) setForm(prev => ({ ...prev, ...saved.form }))
+        if (Number.isInteger(saved.stepIndex)) {
+          setStepIndex(Math.min(Math.max(saved.stepIndex, 0), STEPS.length - 1))
+        }
+      }
+    } catch { /* corrupt or unavailable — start clean, never block onboarding */ }
+    setDraftLoaded(true)
+  }, [userId])
+
+  // ⚠️ `userId` is deliberately NOT in these deps. On a session switch React
+  // would fire with the NEW userId and the PREVIOUS owner's still-stale form,
+  // writing one person's answers under another's key — the exact stale-save bug
+  // fixed in kinwove (6d678db). Only the data itself may trigger a save.
+  useEffect(() => {
+    if (!draftLoaded || !userId) return
+    try {
+      localStorage.setItem(DRAFT_KEY(userId), JSON.stringify({ form, stepIndex }))
+    } catch { /* quota or private mode — the wizard still works, just not resumable */ }
+  }, [form, stepIndex, draftLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function set(field, value) { setForm(prev => ({ ...prev, [field]: value })) }
 
@@ -427,6 +495,11 @@ export default function Onboarding() {
       // someone still paying an entry fee — and the library analysis can feed a
       // roadmap that is already there. Putting it earlier would have delayed
       // the payoff behind a chore, which is how upload steps get skipped.
+      // The answers are now in business_profiles, so the local draft has done
+      // its job. Dropped here rather than on a timer, because it holds revenue,
+      // profit and the owner's own reason for running the business.
+      clearDraft(userId)
+
       setDocsCtx({ companyId, userId: session?.user?.id ?? null })
       setPhase('documents')
     } catch (err) {

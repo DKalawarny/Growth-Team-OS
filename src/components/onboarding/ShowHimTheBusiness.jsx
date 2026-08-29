@@ -333,20 +333,22 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
           )}
 
           {/* QuickBooks — one click beats ten drags for the money half.
-              ⚠️ This LEAVES the page: startOAuthFlow navigates to Intuit and the
-              callback lands in Settings. That is acceptable here only because
-              onboarding is already complete by this screen — the profile is
-              saved and the roadmap is built, so nothing is lost. Do not move
-              this earlier in the flow. */}
+              ⭐ Opens in a NEW TAB (28 Aug). It used to navigate this tab to
+              Intuit; the profile and roadmap are already saved by this screen so
+              no data was at risk, but the owner still lost his place and read it
+              as having lost his work — which costs the same trust either way.
+              The callback lands in Settings in the new tab, and this screen stays
+              exactly where he left it. */}
           <button
             type="button"
-            onClick={() => startOAuthFlow().catch(err => setError(err.message))}
+            onClick={() => startOAuthFlow({ newTab: true }).catch(err => setError(err.message))}
             className="mt-6 w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-50 transition-colors"
           >
             Connect QuickBooks instead — one click, real numbers
           </button>
           <p className="text-[11px] text-ink-400 mt-1.5 text-center">
-            Takes you to Intuit and back. You can also do this any time from Settings.
+            Opens Intuit in a new tab, so you keep your place here. You can also
+            do this any time from Settings.
           </p>
 
           {/* Where it goes. The trust question is the real barrier here, and it
