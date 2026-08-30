@@ -42,7 +42,7 @@ const LANDING_META = buildPageMeta({
 const TOOLS = [
   {
     name: 'Work through a decision',
-    outcome: 'He argues it more than one way, tells you where the arguments disagree, then says where he lands and what he cannot see.',
+    outcome: 'Argues it more than one way, shows you where the arguments disagree, then says which way it leans \u2014 and what it cannot see.',
   },
   {
     name: 'Read your numbers',
@@ -66,7 +66,7 @@ const TOOLS = [
   },
   {
     name: 'Check an obligation',
-    outcome: 'Answered from your own documents and the actual regulation, with the source shown. He will not guess at the law.',
+    outcome: 'Answered from your own documents and the actual regulation, with the source shown. Never guesses at the law.',
   },
   {
     name: 'Plan what you leave behind',
@@ -76,10 +76,36 @@ const TOOLS = [
 
 // ── Solomon chat preview ──────────────────────────────────────────────────────
 
+/**
+ * ⭐ REWRITTEN 29 Aug. The old preview was written before two things changed,
+ * and Daniel spotted that it no longer showed what the product does:
+ *
+ *   1. 24 Aug — Solomon RUNS THE TOOLS HIMSELF. He used to only be able to
+ *      seed one. Now he produces the real artifact mid-conversation and it
+ *      lands in the Library. The old script had him offering to write a script.
+ *   2. 26 Aug — his VOICE was rewritten. Prose, not bulleted findings. Direct
+ *      about the situation, never directive about the person. Says what he
+ *      cannot see instead of filling the gap.
+ *
+ * ⚠️ Each line here is doing a specific job, so do not trim it for length:
+ *   - real figures from connected books, not vibes
+ *   - HE REMEMBERS WHAT THE OWNER SAID MONTHS AGO. This is the single hardest
+ *     thing to copy and the clearest proof of the positioning — the standard
+ *     being applied is the owner's own, not one imposed on him.
+ *   - names the input he does NOT have, rather than inventing it
+ *   - produces a document, which is the 24 Aug capability made visible
+ *
+ * ⚠️ The memory line is also how the conviction shows up WITHOUT preaching:
+ * "you still knew everyone's name" is about how the business is run, and it is
+ * quoted back as the owner's own words. Never put a value in Solomon's mouth
+ * that the owner did not say first.
+ */
 const CHAT_LINES = [
-  { role: 'assistant', text: "Good morning Daniel. Your cash runway is sitting at 6 weeks — a bit tight going into Q3. Want me to walk you through where the gap is?" },
-  { role: 'user',      text: "Yeah, what's driving it?" },
-  { role: 'assistant', text: "Two things: receivables are up $18k from slow-paying commercial clients, and your materials spend jumped 22% in May. The receivables are the faster fix — want a follow-up script for the three oldest invoices?" },
+  { role: 'user',      text: "Can I afford a second crew lead?" },
+  { role: 'assistant', text: "On the numbers, probably. Margin has held near 11% for three months and there is about $47k of cushion. Worth weighing against something you told me in March \u2014 that you did not want to grow past the point where you still knew everyone's name. A second lead is roughly where that changes." },
+  { role: 'user',      text: "Show me what it costs." },
+  { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200 \u2014 it holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
+    artifact: 'Cash flow forecast \u00b7 saved to your Library' },
 ]
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -244,7 +270,7 @@ function HeroSection() {
             'Reads your books',
             'Remembers your decisions',
             'Argues both sides',
-            'Says when he doesn\u2019t know',
+            'Names what it cannot see',
             'Never flatters you',
           ].map(f => (
             <span key={f} className="text-xs font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/50">
@@ -333,12 +359,25 @@ function SolomonSection() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
               Sharp about the business.<br />Clear about what it&rsquo;s for.
             </h2>
+            {/* ⚠️ TWO NOTES FROM DANIEL, 29 Aug: "too wordy" and "you say HE too
+                much, it's not a he really."
+
+                The old version ran 55 words and used "he" FIVE times in one
+                paragraph. That is not warmth, it is insistence — the copy
+                pushing personhood harder than the product should claim. Solomon
+                keeps his name and the advisor framing; what goes is the pronoun
+                drumbeat. Verb-first sentences carry the same meaning and read
+                faster.
+
+                ⚠️ Do not swap the pronoun for "it" either. Naming the thing an
+                "it" over and over is the same tic in the other direction, and
+                it makes an advisor sound like a dashboard. Just start with the
+                verb. */}
             <p className="text-white/60 leading-relaxed mb-6">
-              He reads your books, your plan and your last six check-ins, and he
-              remembers what you decided in March and why. On anything hard to
-              reverse he argues it more than one way, tells you where the arguments
-              genuinely disagree, then says where he lands &mdash; and what he can&rsquo;t
-              see from where he sits.
+              Reads your books, your plan and your last six check-ins. Remembers
+              what you decided in March, and why. On the calls that are hard to
+              undo, argues it both ways &mdash; then says where it lands, and what
+              it cannot see.
             </p>
             {/* The anti-prosperity line used to sit here as a refusal. It now
                 lives in ConvictionSection, stated as a promise — "he'll tell you
@@ -347,10 +386,14 @@ function SolomonSection() {
                 the limit, never apologise for the product. */}
             <ul className="space-y-3">
               {[
-                'Reads your finances, roadmap, and team check-ins daily',
-                'Proactively flags risks before they become problems',
-                'Answers strategy, hiring, pricing, and operations questions',
-                'Remembers every conversation — gets smarter over time',
+                // Tightened 29 Aug — same four claims, half the words. ⚠️ "gets
+                // smarter over time" was cut on purpose: it is AI-vendor
+                // boilerplate, it promises something we do not measure, and it
+                // is exactly the kind of sentence this product refuses to write.
+                'Reads your books, roadmap and check-ins daily',
+                'Names what is coming before it lands',
+                'Answers hiring, pricing, cash and strategy',
+                'Remembers every decision, and why you made it',
               ].map((point, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-white/70">
                   <span className="text-brand-400 font-bold mt-0.5 flex-shrink-0">✓</span>
@@ -399,6 +442,18 @@ function SolomonSection() {
                     }}
                   >
                     {line.text}
+                    {/* The artifact chip is the 24 Aug capability made visible:
+                        he does not describe a cash forecast, he produces one.
+                        Rendered inside the bubble so it reads as something the
+                        answer came with, not a separate advert. */}
+                    {line.artifact && (
+                      <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg border border-brand-400/30 bg-brand-400/10 px-2.5 py-1.5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-brand-400">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span className="text-xs font-semibold text-brand-300">{line.artifact}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -478,7 +533,7 @@ function WhatHeKnowsSection() {
 
         {/* What he produces */}
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 text-center">
-          And what he can build for you, without leaving the conversation
+          And what it builds for you, without leaving the conversation
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
           {TOOLS.map((tool, i) => (
@@ -606,9 +661,9 @@ function ClosingCTA() {
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
           {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, no card.`}{' '}
-          Connect your books, tell him what you&rsquo;re
-          weighing, and see whether he tells you anything you didn&rsquo;t already know.
-          If he doesn&rsquo;t, leave — and take your data with you.
+          Connect your books, say what you&rsquo;re weighing, and see whether
+          Solomon tells you anything you did not already know. If not, leave
+          &mdash; and take your data with you.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
