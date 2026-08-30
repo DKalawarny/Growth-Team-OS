@@ -76,12 +76,16 @@ export default function About() {
             answer. That is assertion, and this product's whole stated posture
             is the opposite: findable, never pushed.
 
-            ⚠️ NOTHING WAS REMOVED AND NOTHING WAS SOFTENED. The conviction now
-            has its own section, one scroll down, under a heading that tells the
-            reader what they are stepping into. Someone looking for it finds it
-            immediately; someone who came to learn what the product does is not
-            sorted at the door. That is exactly the 22 Aug decision — the About
-            page stays fully explicit because it is where the curious go looking.
+            The conviction now has its own section, one scroll down, under a
+            heading that tells the reader what they are stepping into. Someone
+            looking for it finds it; someone who came to learn what the product
+            does is not sorted at the door.
+
+            ⚠️ This note used to say "nothing was removed and nothing was
+            softened." That stopped being true LATER THE SAME DAY — see the note
+            on that section, where Daniel cut the declarative paragraph back
+            after the reorder alone proved insufficient. Findability now rests
+            on the two refusals in "What this is not".
 
             ⚠️ Only ONE sentence moved between paragraphs ("That is a harder job
             than it sounds…"), because it referred back to the faith paragraph
@@ -105,12 +109,34 @@ export default function About() {
         {/* ── Where it comes from ─────────────────────────────────────────── */}
         <section className="mb-16 prose prose-gray max-w-none">
           <h2 className="text-2xl font-black text-gray-900 mb-4">Where this comes from</h2>
+          {/* ⚠️ CUT BACK 29 Aug — Daniel, pointing at this exact paragraph:
+              "this exact thing is too much." Moving it down the page (earlier
+              the same day) was not enough; the problem was the paragraph
+              itself.
+
+              ⭐ WHAT WENT AND WHY. "Takes their faith seriously" and "called to
+              be a minister" are declarative — they state the belief rather than
+              let it be found, which is the one thing this product says it will
+              not do. What is left is the same thesis carried by its specifics:
+              price, pay, hire, and whether your word holds when keeping it
+              costs. "Called" stays because it reads two ways — vocation to
+              someone who thinks in those terms, plain conviction to everyone
+              else. That is the Eliv8 mechanism itself: findable, never
+              announced.
+
+              ⚠️ THE EXPLICIT VERSION IS NOT GONE FROM THE SITE. It lives in the
+              two refusals below — "will not help you press your faith on your
+              staff" and "does not quote scripture at you" — which are the right
+              place for it, because a refusal reads as integrity to any reader
+              while still telling a curious one exactly whose standard this is.
+              ⚠️ Do not remove those two as well; that would take findability to
+              zero, and being findable is the whole point of the 22 Aug
+              decision. */}
           <p className="text-gray-700 leading-relaxed">
-            Not everyone who takes their faith seriously is called to be a
-            minister. Most are called to be the person of conviction inside an
-            ordinary business — in how they price, how they pay, who they hire,
-            and whether their word holds when keeping it costs something. That
-            is a harder job than it sounds, and it is a lonely one.
+            Some owners are called to build the thing a particular way &mdash; in
+            how they price, how they pay, who they hire, and whether their word
+            holds when keeping it costs something. That is harder than it sounds,
+            and it is a lonely job.
           </p>
         </section>
 
