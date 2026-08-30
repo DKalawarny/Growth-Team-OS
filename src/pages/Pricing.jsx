@@ -54,9 +54,9 @@ const FEATURE_GROUPS = [
     icon:  '💡',
     color: 'amber',
     features: [
-      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way and tells you where he lands — and what he cannot see.' },
-      { name: 'He remembers', desc: 'Constraints, decisions, people, commitments. You do not re-explain your business every time you open it, and he will tell you when something you say contradicts something you said before.' },
-      { name: 'He will say he does not know', desc: 'Answers about rules and obligations come from your own documents and the actual regulation, with the source shown. He does not guess at the law and he does not flatter you.' },
+      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way, then says which way it leans — and what it cannot see.' },
+      { name: 'Remembers your business', desc: 'Constraints, decisions, people, commitments. You never re-explain the business, and when something you say contradicts something you said before, you hear about it.' },
+      { name: 'Will not guess', desc: 'Answers about rules and obligations come from your own documents and the actual regulation, with the source shown. No guessing at the law, and no flattery.' },
     ],
   },
   {
@@ -87,7 +87,7 @@ const FEATURE_GROUPS = [
     features: [
       { name: 'Roadmap', desc: 'A milestone-by-milestone plan from where you are to where you are going, with the slipped ones surfaced honestly rather than buried.' },
       { name: 'Playbooks', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
-      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones so he knows how you are actually doing, not just how the numbers are.' },
+      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones, so the advice tracks how you are actually doing \u2014 not just how the numbers are.' },
       { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
       { name: 'Documents', desc: 'Everything Eliv8 OS writes for you, saved and searchable.' },
     ],
@@ -109,7 +109,12 @@ const REPLACES = [
 const FAQS = [
   {
     q: 'Do I need a credit card to start?',
-    a: `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything — no card, no commitment. You decide at the end of the trial whether it is worth it.`,
+    // ⚠️ Same one-offer rule as the landing hero: a trial only means
+    // something once there is a price to trial against, and
+    // SHOW_PUBLIC_PRICE is false. Do not hardcode either half.
+    a: SHOW_PUBLIC_PRICE
+      ? `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything — no card, no commitment. You decide at the end of the trial whether it is worth it.`
+      : 'Nope. Sign up with your email — no card, no commitment. Eliv8 OS is free while it is in private pilot, and we are setting the price with the first owners using it.',
   },
   {
     q: 'What exactly counts as a "report"?',
@@ -428,7 +433,7 @@ export default function Pricing() {
                 to="/signup?plan=owner"
                 className="w-full sm:w-auto px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
               >
-                Start free trial — no credit card
+                {SHOW_PUBLIC_PRICE ? 'Start free trial — no credit card' : 'Start free — no credit card'}
               </Link>
               <a
                 href="mailto:support@eliv8os.com"
@@ -516,7 +521,7 @@ function OwnerCta({ billing, authState }) {
       to={`/signup?plan=${plan}`}
       className="block w-full text-center rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 text-gray-950 transition-colors shadow-lg"
     >
-      Start {TRIAL_DAYS}-day free trial — free
+      {SHOW_PUBLIC_PRICE ? `Start ${TRIAL_DAYS}-day free trial` : 'Start free'}
     </Link>
   )
 }
