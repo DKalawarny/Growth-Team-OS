@@ -124,14 +124,14 @@ export default function About() {
               else. That is the Eliv8 mechanism itself: findable, never
               announced.
 
-              ⚠️ THE EXPLICIT VERSION IS NOT GONE FROM THE SITE. It lives in the
-              two refusals below — "will not help you press your faith on your
-              staff" and "does not quote scripture at you" — which are the right
-              place for it, because a refusal reads as integrity to any reader
-              while still telling a curious one exactly whose standard this is.
-              ⚠️ Do not remove those two as well; that would take findability to
-              zero, and being findable is the whole point of the 22 Aug
-              decision. */}
+              ⚠️ THIS NOTE ORIGINALLY SAID the explicit version still lived in
+              the two refusals below, and that removing those would be wrong.
+              Daniel overruled that within the hour: "instead of saying
+              anything, show it in how you act, respond." The refusals were
+              rewritten too — see the note on that section. Nothing on any
+              public surface states the conviction now; it is carried entirely
+              by behaviour, which is what he has been asking for since 22 Aug
+              and has been right about every time. */}
           <p className="text-gray-700 leading-relaxed">
             Some owners are called to build the thing a particular way &mdash; in
             how they price, how they pay, who they hire, and whether their word
@@ -143,22 +143,46 @@ export default function About() {
         {/* ── What it will not do ─────────────────────────────────────────── */}
         <section className="mb-16">
           <h2 className="text-2xl font-black text-gray-900 mb-6">What this is not</h2>
+          {/* ⚠️ 29 Aug — Daniel: "you are still putting in faith things. I don't
+              want it like that. Instead of saying anything, show it in how you
+              act, respond."
+
+              ⭐ I had argued the opposite that morning — that these refusals
+              were the RIGHT home for the explicit language, because a refusal
+              reads as integrity to anyone. He overruled it, and he is right for
+              a reason stronger than taste: once the framing is gone from the
+              rest of the page, "it does not quote scripture at you" answers a
+              question nobody asked, and reintroduces the very thing it
+              disclaims. A promise not to preach is still preaching.
+
+              ⭐ NOTHING OF SUBSTANCE WAS LOST. Every refusal below does exactly
+              what it did before; only the vocabulary changed. The anti-prosperity
+              rule survives as "will not sell you a bigger number", the staff
+              protection survives with "personal views" doing the work "faith"
+              did, and the scripture pillar is replaced by the one that was
+              missing: it does not flatter you. Character is now demonstrated by
+              conduct rather than announced.
+
+              ⚠️ Do NOT reintroduce faith vocabulary here. Solomon's prompt, the
+              canon, and the onboarding "why do you run this business" question
+              are all untouched — the hidden code is intact where it belongs, in
+              behaviour. */}
           <div className="space-y-5">
             <Pillar
-              title="It is not a prosperity-gospel product"
-              body="It will never suggest that faithfulness produces profit, that a downturn is a test of belief, or that a bigger number is self-evidently the right goal. If a target is unrealistic, Solomon says so instead of generating a plan that pretends."
+              title="It will not sell you a bigger number"
+              body="A bigger number is not self-evidently the right goal, and a bad quarter is not a character flaw. If a target is unrealistic, Solomon says so instead of generating a plan that pretends."
             />
             <Pillar
-              title="It will not help you press your faith on your staff"
-              body="The power imbalance between an owner and someone who needs the job is real, and so is the legal exposure. Solomon will decline that and say why."
+              title="It will not help you lean on your people"
+              body="The power imbalance between an owner and someone who needs the job is real, and so is the legal exposure. Ask for help pressing your personal views on your team and Solomon declines, and says why."
             />
             <Pillar
               title="It does not make things up"
-              body="Questions about rules and obligations are answered from your own documents and the actual regulation, with the source shown. Where Solomon cannot see something, he names it rather than filling the gap."
+              body="Questions about rules and obligations are answered from your own documents and the actual regulation, with the source shown. Where something cannot be seen, Solomon names it rather than filling the gap."
             />
             <Pillar
-              title="It does not quote scripture at you"
-              body="Only where it genuinely bears on the question, and briefly. The default is a straight business answer."
+              title="It does not flatter you"
+              body="The default is a straight answer, including when the straight answer is that the plan does not work or the number does not support the decision."
             />
           </div>
         </section>
@@ -166,22 +190,36 @@ export default function About() {
         {/* ── Who it's for ────────────────────────────────────────────────── */}
         <section className="mb-16 bg-gray-50 rounded-2xl p-8">
           <h2 className="text-2xl font-black text-gray-900 mb-4">Who Eliv8 OS is for</h2>
+          {/* ⚠️ THE REVENUE BAND AND HEADCOUNT ARE GONE (29 Aug) — Daniel:
+              "why are we showing a limit, do you think that makes sense?"
+
+              ⭐ He is right, and the page was contradicting itself. It said the
+              thing these owners have in common is a conviction about HOW the
+              business is run, "not what it does" — and then gated on revenue
+              and headcount, which are exactly what it does. An owner at $300k
+              with two staff who cares intensely how it is run is the buyer by
+              the page's own definition, and the numbers turned them away before
+              they read a word about the product.
+
+              ⚠️ At zero organic signups, in a free pilot, a size filter costs
+              real people and buys nothing. Disqualifying copy earns its place
+              when demand outstrips supply; that is not where this is.
+
+              ⭐ ONE disqualifier kept, because it is about FIT rather than size
+              and it is the one that matches the positioning: someone who wants
+              software that promises returns will hate this. Saying so is honest
+              and saves both sides the trouble. */}
           <p className="text-gray-700 leading-relaxed mb-4">
-            Owner-operators doing somewhere between $500k and $15M a year, with
-            3 to 50 people on the team, where the owner is still the bottleneck
-            on the financial decisions. It is not sector-specific — the thing
-            these owners have in common is a conviction about how the business
-            should be run, not what it does. Trade and construction businesses
-            are well represented, but the question it answers is not a trade
-            question.
+            Owner-operators, where you are still the one making the financial
+            calls. It is not sector-specific — what these owners have in common
+            is a conviction about how the business should be run, not what it
+            does. Trade and construction are well represented, but the question
+            it answers is not a trade question.
           </p>
           <p className="text-gray-700 leading-relaxed">
             <span className="font-bold text-gray-900">It's probably not for you if:</span>{' '}
-            you have a controller and a leadership team already — you have
-            outgrown this. If you are pre-revenue, wait until there are real
-            numbers to work with. And if what you want is software that
-            promises returns, this is the wrong product and will be a
-            frustrating one.
+            what you want is software that promises returns. This is the wrong
+            product, and it will be a frustrating one.
           </p>
         </section>
 

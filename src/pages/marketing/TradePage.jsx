@@ -151,7 +151,7 @@ export default function TradePage() {
 
   const meta = buildPageMeta({
     title:       `Eliv8 OS for ${data.label} — an advisor who knows ${data.h1Trade}`,
-    description: `An AI business advisor for Christian owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. Currently free while in private pilot.`,
+    description: `An AI business advisor for owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. Currently free while in private pilot.`,
     path:        `/for/${trade}`,
   })
 
@@ -170,7 +170,7 @@ export default function TradePage() {
         <script type="application/ld+json">{jsonLd(softwareApplicationSchema())}</script>
         <script type="application/ld+json">{jsonLd(productSchema({
           name:        `Eliv8 OS for ${data.label}`,
-          description: `An AI business advisor for Christian owners running ${data.label}. Finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession.`,
+          description: `An AI business advisor for owners running ${data.label}. Finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession.`,
         }))}</script>
       </Helmet>
 

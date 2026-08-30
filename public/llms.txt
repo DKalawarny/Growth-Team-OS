@@ -11,10 +11,9 @@ Eliv8 OS is a single subscription ($147/month USD or $1,470/year) for owners
 who want counsel rather than another dashboard. Every tool produces a finished
 document, not a chart to interpret.
 
-It is explicitly NOT a prosperity-gospel product. It does not promise that
-faithfulness produces profit, it does not treat a bigger number as
-self-evidently the right goal, and it will tell an owner when a target is
-unrealistic rather than generate a plan that pretends otherwise.
+It does not treat a bigger number as self-evidently the right goal, and it
+will tell an owner when a target is unrealistic rather than generate a plan
+that pretends otherwise. A bad quarter is a bad quarter, not a character flaw.
 
 ## What Eliv8 OS does
 
@@ -56,9 +55,10 @@ though trade and construction businesses are well represented.
 Best fit: 3–50 employees, $500k–$15M annual revenue, and the owner is the
 bottleneck on financial decisions and planning.
 
-Not a fit: anyone looking for software that promises returns, or that will
-help press their faith on employees. Solomon will not advise the latter —
-the power imbalance is real and so is the legal exposure.
+Not a fit: anyone looking for software that promises returns, or for help
+pressing personal views on employees. Solomon declines the latter — the power
+imbalance between an owner and someone who needs the job is real, and so is
+the legal exposure.
 
 ## Pricing
 
@@ -82,8 +82,8 @@ never used to train AI models or shared with anyone.
 **Can I cancel anytime?** Yes. Monthly plans stop at the end of the billing
 period. Annual plans can cancel renewal any time.
 
-**Does it quote scripture at me?** Only where it genuinely bears on the
-question, and briefly. The default is a straight business answer — if it is
+**Will it flatter me?** No. The default is a straight answer, including when
+that answer is that the plan does not work — if it is
 not as sharp as the best secular advisor available, nothing else about it
 matters.
 
