@@ -36,7 +36,7 @@
  */
 
 import { json, preflight } from '../_shared/cors.ts'
-import { serviceClient, authedUser } from '../_shared/supabase.ts'
+import { serviceClient } from '../_shared/supabase.ts'
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight()
@@ -46,9 +46,34 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Resolves from the caller's own bearer token. Never from the body.
-    const { userId, companyId } = await authedUser(req)
+    // ⚠️ Resolved from the caller's own bearer token. NEVER from the body.
+    //
+    // ⚠️ Deliberately NOT using the shared authedUser(), which requires a
+    // profiles row and throws 'auth: no profile for user' without one. Signup
+    // creates the auth user; the profile is written during onboarding. So a
+    // person who signs up, thinks better of it and never onboards has no
+    // profile — and that is precisely the person most likely to want their
+    // account gone. Under authedUser they got "Not signed in." and could not
+    // delete anything. (Caught by end-to-end testing this against a real
+    // throwaway signup, which is the only way it would ever have shown up.)
     const admin = serviceClient()
+
+    const auth  = req.headers.get('Authorization') ?? ''
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
+    if (!token) return json({ error: 'Not signed in.' }, 401)
+
+    const { data: userRes, error: userErr } = await admin.auth.getUser(token)
+    if (userErr || !userRes?.user) return json({ error: 'Not signed in.' }, 401)
+    const userId = userRes.user.id
+
+    // A profile may legitimately not exist yet. No profile means no company,
+    // which means there is nothing to delete but the login itself.
+    const { data: prof } = await admin
+      .from('profiles')
+      .select('company_id')
+      .eq('id', userId)
+      .maybeSingle()
+    const companyId = prof?.company_id ?? null
 
     // Is anyone else on this company? Deleting shared data is not ours to do.
     let deletedCompany = false
@@ -85,7 +110,6 @@ Deno.serve(async (req: Request) => {
     return json({ ok: true, deletedCompany })
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    if (msg.startsWith('auth:')) return json({ error: 'Not signed in.' }, 401)
     return json({ error: msg }, 500)
   }
 })
