@@ -91,17 +91,28 @@ export default function About() {
             than it sounds…"), because it referred back to the faith paragraph
             and would have dangled. The words are Daniel's; do not rewrite them. */}
         <section className="mb-16 prose prose-gray max-w-none">
+          {/* ⚠️ 31 Aug — "the best SECULAR advisor you could hire" lost the word
+              secular, Daniel's call. It was the last place on the site that
+              sorted readers into two camps to make its point: it only lands if
+              you already read this as a religious product, and it quietly
+              concedes the comparison is with "them". "The best advisor you
+              could hire" is a bigger claim and needs no in-group to work.
+
+              ⭐ Daniel, on this section: "this is a clean sell, it should almost
+              be the first thing people see." He is right — the opening sentence
+              is the best problem statement on the site and it is buried on a
+              page most readers never reach. */}
           <h2 className="text-2xl font-black text-gray-900 mb-4">The short version</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
             Owners have plenty of people who need answers from them and almost
             nobody to ask. Eliv8 OS exists to be somewhere to ask — an advisor
-            called Solomon who reads your real numbers, remembers what you
+            called Solomon that reads your real numbers, remembers what you
             decided and why, argues the hard calls both ways, and tells you
-            plainly when he does not know.
+            plainly when it does not know.
           </p>
           <p className="text-gray-700 leading-relaxed">
             The first commitment is competence. If the advice is not as sharp
-            as the best secular advisor you could hire, nothing else about this
+            as the best advisor you could hire, nothing else about this
             matters. What differs is the posture, not the arithmetic.
           </p>
         </section>
@@ -227,8 +238,8 @@ export default function About() {
         <section className="text-center">
           <h2 className="text-2xl font-black text-gray-900 mb-4">Want to talk?</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Daniel reads every email. If you are an owner thinking about it, or
-            you want to introduce someone — write. No sales script.
+            A person reads every email, not a queue. If you are an owner thinking
+            about it, or you want to introduce someone — write. No sales script.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <a
