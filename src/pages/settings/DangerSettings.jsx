@@ -37,6 +37,7 @@ export default function DangerSettings() {
 
   // Delete account state
   const [deleteState, setDeleteState] = useState('idle') // idle | confirm | deleting
+  const [deleteError, setDeleteError] = useState(null)
   const deleteInputRef = useRef(null)
 
   async function handlePasswordChange(e) {
@@ -49,12 +50,33 @@ export default function DangerSettings() {
     else { setPwState('done'); setPwCurrent(''); setPwNew(''); setPwConfirm('') }
   }
 
+  // ⚠️ 31 Aug — until today this function was a LIE. It set state to 'deleting',
+  // rendered "Deleting your workspace…", called supabase.auth.signOut() and
+  // navigated away. Nothing was ever deleted. The copy above it promised
+  // "Permanently delete this workspace and all data — milestones, documents,
+  // financial records, and advisor memory. This cannot be undone", and made the
+  // owner type DELETE to confirm it. Someone who had trusted us with their
+  // books was told those books were gone while they sat untouched in the
+  // database.
+  //
+  // It now calls the delete-account Edge Function, which is the only place with
+  // the service role needed to remove an auth user. Sign-out happens AFTER the
+  // delete succeeds — signing out first would throw away the very token the
+  // function authenticates with.
   async function handleDeleteAccount() {
     setDeleteState('deleting')
-    // Sign out — data remains but session is gone. Full deletion requires a backend
-    // function; for now we sign out and show a "contact us" message.
-    await supabase.auth.signOut()
-    navigate('/login')
+    setDeleteError(null)
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-account', { body: {} })
+      if (error) throw new Error(error.message || 'Delete failed')
+      if (data?.error) throw new Error(data.error)
+      await supabase.auth.signOut()
+      navigate('/login?deleted=1')
+    } catch (e) {
+      // Never leave them believing it worked when it did not.
+      setDeleteError(e?.message || String(e))
+      setDeleteState('confirm')
+    }
   }
 
   async function handleRegenerate() {
@@ -249,7 +271,9 @@ export default function DangerSettings() {
         <h2 className="text-lg font-semibold text-ink-900 mb-1">Delete workspace</h2>
         <p className="text-sm text-ink-500 leading-relaxed mb-4">
           Permanently delete this workspace and all data — milestones, documents,
-          financial records, and advisor memory. <strong className="text-red-600">This cannot be undone.</strong>
+          financial records, and advisor memory. <strong className="text-red-600">This cannot be undone.</strong>{' '}
+          If anyone else is on this workspace, only your own account is removed &mdash;
+          their records stay with them.
         </p>
 
         {deleteState === 'idle' && (
@@ -293,6 +317,12 @@ export default function DangerSettings() {
               </button>
             </div>
           </div>
+        )}
+
+        {deleteError && (
+          <p className="text-sm text-red-700 mt-3 max-w-sm" role="alert">
+            {deleteError}
+          </p>
         )}
 
         {deleteState === 'deleting' && (

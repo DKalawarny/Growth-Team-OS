@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
 import Wordmark from '../components/brand/Wordmark'
+import { SHOW_PUBLIC_PRICE } from '../lib/pricing'
 
 /**
  * Login — premium split-screen treatment. Left side is the dark brand zone
@@ -94,14 +95,14 @@ export default function Login() {
           </h1>
 
           <p className="text-ink-300 text-sm leading-relaxed mb-10 max-w-sm">
-            He remembers what you decided and why, argues the hard calls both ways, and tells you when he doesn't know.
+            Solomon remembers what you decided and why, argues the hard calls both ways, and tells you plainly when it does not know.
           </p>
 
           {/* Trust signals / stage markers */}
           <div className="space-y-3 max-w-sm">
-            <TrustRow text="Reads your books before he says anything" />
+            <TrustRow text="Reads your books before it says anything" />
             <TrustRow text="Remembers what you decided, and why" />
-            <TrustRow text="Tells you plainly when he doesn't know" />
+            <TrustRow text="Tells you plainly when it does not know" />
           </div>
         </div>
       </div>
@@ -245,7 +246,7 @@ export default function Login() {
           <p className="mt-8 text-sm text-ink-500 text-center">
             New to Eliv8 OS?{' '}
             <Link to="/signup" className="text-brand-600 hover:text-brand-700 font-semibold">
-              Start your free trial
+              {SHOW_PUBLIC_PRICE ? 'Start your free trial' : 'Start free'}
             </Link>
           </p>
         </div>
