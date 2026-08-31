@@ -95,6 +95,19 @@ const TOOLS = [
  *   - names the input he does NOT have, rather than inventing it
  *   - produces a document, which is the 24 Aug capability made visible
  *
+ * ⭐ 31 Aug, DANIEL'S CATCH — the strongest line here and it was missing. The
+ * old version answered "can I afford it" out of a $47k CUSHION, which is a
+ * one-time number, while a lead is a RECURRING cost. Cushion buys a wage for a
+ * few months; only work coming in buys it after that. His words: "are you
+ * expecting more work to hold this cost". That question now leads the answer,
+ * because it is the actual gate — the memory callback is the differentiator,
+ * but this is the one that stops a bad hire.
+ *
+ * ⚠️ "That is your line, not one I would pick for you" came out to make room —
+ * the bubble was already the tallest thing on the page. The non-directive rule
+ * it demonstrated is still shown, by the answer ending on a fact rather than a
+ * recommendation. Put it back if the bubble can afford it.
+ *
  * ⚠️ The memory line is also how the conviction shows up WITHOUT preaching:
  * "you still knew everyone's name" is about how the business is run, and it is
  * quoted back as the owner's own words. Never put a value in Solomon's mouth
@@ -102,7 +115,7 @@ const TOOLS = [
  */
 const CHAT_LINES = [
   { role: 'user',      text: "Can I afford a second crew lead?" },
-  { role: 'assistant', text: "On the numbers, probably. Margin has held near 11% for three months and there is about $47k of cushion. Worth weighing against something you told me in March \u2014 that you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty. That is your line, not one I would pick for you." },
+  { role: 'assistant', text: "On the numbers, probably \u2014 though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that? Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty." },
   { role: 'user',      text: "Show me what it costs." },
   { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200 \u2014 it holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
     artifact: 'Cash flow forecast \u00b7 saved to your Library' },
