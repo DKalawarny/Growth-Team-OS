@@ -17,14 +17,59 @@
 -- Upload the files in demo-docs/ through the app instead. That path also runs
 -- the chunker and the embedder, so retrieval genuinely works afterwards.
 --
--- Safe to re-run: every insert clears its own table for this company first.
+-- Safe to re-run FOR THE COMPANY demo_email RESOLVES TO: every insert clears
+-- its own table for that company first. It is not safe without demo_email set,
+-- which is why the guard above refuses to run.
 --
 -- The figures match eliv8os.com/demo so the page and the live workspace tell
 -- the same story. Bridgewater Mechanical is invented.
 -- ============================================================================
 
+-- ============================================================================
+-- ⚠️ 31 Aug — THIS SCRIPT USED TO PICK ITS TARGET WITH
+--       select company_id as id from public.profiles limit 1
+--    twenty-five times: no WHERE, no ORDER BY. "limit 1" without an order is
+--    whichever row Postgres feels like returning, and it can differ between
+--    runs. Every section then does `delete from <table> where company_id = ...`
+--    before inserting, so running this against a database with real accounts
+--    in it DESTROYS an arbitrary owner's milestones, staff, work orders,
+--    playbooks, check-ins and Solomon's memory, and replaces them with a
+--    fictional HVAC company. The old header called it "safe to re-run".
+--
+--    It now demands an explicit email and refuses to do anything if that does
+--    not resolve to exactly one company.
+--
+-- RUN IT LIKE THIS:
+--    psql "$DATABASE_URL" -v demo_email="'demo@eliv8os.com'" -f scripts/seed-demo-data.sql
+-- ============================================================================
+
+create temporary table _demo_target as
+  select p.company_id as id
+  from public.profiles p
+  join auth.users u on u.id = p.id
+  where u.email = :demo_email;
+
+-- The owner's PROFILE id, for rows that record who wrote something (check-ins,
+-- Solomon's memory). These were `select id from public.profiles limit 1` — the
+-- same unordered pick, attributing seeded content to an arbitrary real person.
+create temporary table _demo_owner as
+  select p.id as id
+  from public.profiles p
+  join auth.users u on u.id = p.id
+  where u.email = :demo_email;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from _demo_target;
+  if n <> 1 or (select count(*) from _demo_owner) <> 1 then
+    raise exception
+      'seed-demo-data: demo_email matched % companies, refusing to run. Pass -v demo_email="''someone@example.com''".', n;
+  end if;
+end $$;
+
 -- ── Business profile — Solomon's baseline context ───────────────────────────
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 insert into public.business_profiles
   (company_id, business_name, industry, location, team_size, last_revenue,
    current_revenue, profit, hours_per_week, biggest_challenge, primary_goal, goal_timeline)
@@ -52,10 +97,10 @@ set business_name     = excluded.business_name,
 -- matter — they are what the Dashboard headline picks up, and they exercise
 -- the milestone status field that Solomon now reads instead of guessing at
 -- dates.
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.milestones where company_id = (select id from co);
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 insert into public.milestones
   (company_id, title, description, timeframe, category, weight, progress_percent,
    completed, completed_date, start_date, end_date, sort_order)
@@ -97,10 +142,10 @@ from co, (values
 
 
 -- ── People ──────────────────────────────────────────────────────────────────
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.staff_members where company_id = (select id from co);
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 insert into public.staff_members (company_id, name, role, email)
 select id, s.nm, s.rl, s.em from co, (values
   ('Marcus Reyes',   'Lead service tech',   'marcus@bridgewatermech.example'),
@@ -117,10 +162,10 @@ select id, s.nm, s.rl, s.em from co, (values
 -- CHECK constraint on the column, so anything else inserts happily and then
 -- renders in none of the Board's four columns — invisible rows that look like
 -- data loss. 'todo' and 'blocked' were in the first draft of this file.
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.work_orders where company_id = (select id from co);
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 insert into public.work_orders (company_id, title, description, status, priority, due_date, staff_member_id)
 select co.id, w.title, w.descr, w.st, w.pr, date '2026-08-21' + w.due,
        (select id from public.staff_members s where s.company_id = co.id and s.name = w.who)
@@ -136,10 +181,10 @@ from co, (values
 
 
 -- ── Playbooks ───────────────────────────────────────────────────────────────
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.work_order_templates where company_id = (select id from co);
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 insert into public.work_order_templates (company_id, name, description)
 select id, t.nm, t.ds from co, (values
   ('Service callout',        'The standard diagnostic visit, start to invoice.'),
@@ -159,7 +204,7 @@ from public.work_order_templates t,
        (6,'Invoice same day','Every day it sits is a day added to collections.')
      ) as s(pos,txt,nt)
 where t.name = 'Service callout'
-  and t.company_id = (select company_id from public.profiles limit 1);
+  and t.company_id = (select id from _demo_target);
 
 
 -- ── Check-ins ───────────────────────────────────────────────────────────────
@@ -175,28 +220,28 @@ where t.name = 'Service callout'
 -- Chasing the exact cause of a parser complaint is not worth a second failed
 -- paste for someone who just wants the demo populated.
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.checkins where company_id = (select id from co);
 
 insert into public.checkins
   (company_id, user_id, revenue_update, win, challenge, mood, hours_this_week, created_at)
 values
-  ((select company_id from public.profiles limit 1),
-   (select id from public.profiles limit 1),
+  ((select id from _demo_target),
+   (select id from _demo_owner),
    'Tracking about $290k for the month',
    'Northgate renewed the maintenance contract for two years',
    'Still doing dispatch myself every morning',
    3, '55-65', now() - interval '7 days'),
 
-  ((select company_id from public.profiles limit 1),
-   (select id from public.profiles limit 1),
+  ((select id from _demo_target),
+   (select id from _demo_owner),
    '$310k, best month since March',
    'Priya ran the Willow Creek phase without me on site once',
    'Phase one went 20% over hours and I only found out at invoicing',
    3, '50-60', now() - interval '14 days'),
 
-  ((select company_id from public.profiles limit 1),
-   (select id from public.profiles limit 1),
+  ((select id from _demo_target),
+   (select id from _demo_owner),
    'Around $265k',
    'Got the estimating rebuild started',
    'Marcus asked about his overtime. I did not have a good answer.',
@@ -206,32 +251,32 @@ values
 -- ── Solomon's memory ────────────────────────────────────────────────────────
 -- What makes the demo land: he already knows these before the first question.
 
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 delete from public.solomon_memory where company_id = (select id from co);
 
 insert into public.solomon_memory (company_id, user_id, kind, statement, source)
 values
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'constraint', 'Will not use the overdraft to fund contract work — wants growth funded by the work itself', 'conversation'),
 
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'decision', 'Held off hiring a second service tech in August, pending the job-costing review', 'conversation'),
 
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'person', 'Marcus Reyes and Danny Okafor have carried sustained overtime since November', 'conversation'),
 
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'commitment', 'Pricing review before adding any capacity', 'conversation'),
 
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'context', 'Wants to be off the tools within two years, and for the business to run a week without him', 'conversation'),
 
-  ((select company_id from public.profiles limit 1), (select id from public.profiles limit 1),
+  ((select id from _demo_target), (select id from _demo_owner),
    'preference', 'Prefers being told the hard thing once, plainly, rather than having it softened', 'conversation');
 
 
 -- ── Confirm ─────────────────────────────────────────────────────────────────
-with co as (select company_id as id from public.profiles limit 1)
+with co as (select id from _demo_target)
 select
   (select name  from public.companies where id = (select id from co))                     as company,
   -- ⚠️ FIRST, because this is the row that failed and nothing noticed. A
