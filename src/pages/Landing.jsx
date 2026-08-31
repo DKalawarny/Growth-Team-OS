@@ -216,10 +216,28 @@ function HeroSection() {
             terms, change the on-page voice. About and the pilot agreement stay
             fully explicit too — that is where someone curious goes looking, and
             being findable is the point. This is attraction, not concealment. */}
-        {/* ⏸️ PLACEHOLDER HEADLINE — Daniel has not signed off on this (29 Aug).
-            He rejected three rounds of options and asked for something in place
-            so the rest of the page could move. Treat it as a slot, not a
-            decision.
+        {/* ✅ SETTLED FOR NOW — Daniel, 31 Aug: "sure for now". This is a
+            decision, not a slot. The earlier PLACEHOLDER note is gone; do not
+            reopen this line unsolicited, and do not write a tenth option.
+
+            ⭐ WHY IT SURVIVED where nine others did not: it is a smoothed
+            version of a sentence he actually said, and that is the ONLY
+            property separating a line he kept from a line he rejected.
+
+            ⭐ WHY THE H1 DOES NOT NEED TO DESCRIBE THE PRODUCT: the sub-line
+            and the five chips below already tell a cold reader exactly what
+            this does, inside one eyeful. That frees the headline to be
+            memorable rather than descriptive. ⚠️ So if anyone ever weakens the
+            chips, the headline stops being able to afford its abstraction —
+            they are load-bearing for it.
+
+            ⚠️ THE KNOWN RESERVATION, recorded so it is not rediscovered as
+            though it were new: "integrity" is a self-claim, in the largest type
+            on the site, and the 29 Aug principle was to SHOW conviction rather
+            than state it. The chip "Never flatters you" is integrity
+            demonstrated; the headline is integrity asserted. Daniel knows and
+            accepted it for now. If it is ever revisited, that is the reason —
+            not that the line is unclear.
 
             ⭐ WHY THE OLD ONE WENT. "You carry this business on your own" is a
             feeling, not a claim — and empathy hooks only work while a category
@@ -242,11 +260,14 @@ function HeroSection() {
             real documents on one side, the owner's own why-statement in
             solomon_memory read on EVERY turn on the other.
 
-            ⚠️ WHAT KEEPS FAILING: anything written in advertising register —
-            punchy fragments, parallel structure, a comma doing dramatic work.
-            Nine attempts in that voice were all rejected. The line that lands
-            will sound like Daniel, not like a campaign. His words are above;
-            start there, and let him choose. Same reason /about is still empty. */}
+            ⚠️ WHAT KEEPS FAILING, if it is ever reopened: anything written in
+            advertising register — punchy fragments, parallel structure, a comma
+            doing dramatic work. Nine attempts in that voice were all rejected.
+            The line that lands will sound like Daniel, not like a campaign. His
+            words are above; start there, and let him choose. The strongest
+            unused raw material is his own "real numbers to back it… but not
+            just numbers", which names the gap the product sits in. Same reason
+            /about is still empty. */}
         {/* ⭐ 29 Aug — Daniel's own line: "the os that operates with integrity in
             mind", asked to be smoothed. "Runs on" earns its place by doing two
             jobs at once: what powers it, and how it behaves. Nearby versions he
