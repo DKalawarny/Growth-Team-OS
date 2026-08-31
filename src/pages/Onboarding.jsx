@@ -43,7 +43,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'Your business,\nunderstood.',
-      sub: 'Ten minutes now, and Solomon stops giving you advice that could be for anyone.',
+      sub: 'A few minutes now, and Solomon stops giving you advice that could be for anyone.',
       bullets: [
         'Roadmap tailored to your industry and stage',
         'Advice grounded in your actual numbers',
@@ -72,7 +72,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'Sized to what you\nactually have.',
-      sub: "Whether it's just you or a crew of thirty, the plan fits the hours you really have.",
+      sub: "Whether it's just you or thirty people, the plan fits the hours you really have.",
       bullets: [
         'Steps that fit the time you actually have',
         'Advice that accounts for who is already on the team',
@@ -83,7 +83,7 @@ const STEPS = [
       { name: 'location',       label: 'City / region',           type: 'text', placeholder: 'e.g. Calgary, AB',
         hint: 'Where you mostly work. Decides which employment and safety authority we point you to.' },
       { name: 'team_size',      label: 'Team size',               type: 'select', options: TEAM_SIZE_OPTIONS,
-        hint: 'Everyone you pay, including yourself and regular subcontractors.' },
+        hint: 'Everyone you pay, including yourself and anyone you use regularly on contract.' },
       { name: 'hours_per_week', label: 'Hours you work per week', type: 'select', options: HOURS_OPTIONS,
         hint: 'Honestly, not contractually. Evenings and weekends count.' },
     ],
@@ -111,7 +111,7 @@ const STEPS = [
       { name: 'current_revenue', label: 'Where this year is tracking', type: 'select', options: REVENUE_OPTIONS,
         hint: 'If the rest of the year looks like the last few months, what would the year total? Up on last year, pick the higher band.' },
       { name: 'profit',          label: 'Profit margin',        type: 'select', options: PROFIT_OPTIONS,
-        hint: 'NET — what is left after everything, including your own pay. Most owner-operated businesses land between 5% and 15%. "Not sure" is a real answer and Solomon can help you find it.' },
+        hint: 'NET — what is left after everything, including your own pay. "Not sure" is a real answer, and Solomon can help you work it out from your books.' },
     ],
   },
   {
@@ -157,7 +157,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'The part a\nspreadsheet misses.',
-      sub: 'Solomon reads this before every answer he gives you.',
+      sub: 'Solomon reads this before every answer it gives you.',
       bullets: [
         'Why you run it the way you do',
         "What you won't do, even when it costs you",
@@ -167,7 +167,7 @@ const STEPS = [
     fields: [
       { name: 'why_statement', label: 'Why do you run this business?', type: 'textarea',
         placeholder: "There's no wrong answer. Something like: it pays for four families, not just mine — and I want to be able to look anyone I've worked with in the eye afterwards.",
-        hint: 'Optional. He reads it before every answer — change or delete it any time under Context.',
+        hint: 'Optional. It is read before every answer — change or delete it any time under Context.',
         optional: true },
     ],
   },
@@ -865,7 +865,7 @@ function GeneratingScreen({ status, genStep }) {
           </div>
 
           <p className="text-center text-xs text-ink-400 mt-6">
-            This takes 10–20 seconds
+            This usually takes under a minute
           </p>
         </div>
       </div>
