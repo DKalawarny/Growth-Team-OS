@@ -102,7 +102,7 @@ const TOOLS = [
  */
 const CHAT_LINES = [
   { role: 'user',      text: "Can I afford a second crew lead?" },
-  { role: 'assistant', text: "On the numbers, probably. Margin has held near 11% for three months and there is about $47k of cushion. Worth weighing against something you told me in March \u2014 that you did not want to grow past the point where you still knew everyone's name. A second lead is roughly where that changes." },
+  { role: 'assistant', text: "On the numbers, probably. Margin has held near 11% for three months and there is about $47k of cushion. Worth weighing against something you told me in March \u2014 that you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty. That is your line, not one I would pick for you." },
   { role: 'user',      text: "Show me what it costs." },
   { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200 \u2014 it holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
     artifact: 'Cash flow forecast \u00b7 saved to your Library' },
@@ -298,13 +298,23 @@ function HeroSection() {
   )
 }
 
+/* ⚠️ 30 Aug — the headline was "What you're building is the thing. / Not the
+ * money for the thing." Daniel: "this could be better, the wording is weird and
+ * doesn't sell what it does." He was right about the cause — neither half of
+ * that headline contained the product, so the whole section read as a mood
+ * piece and the one real capability was buried in paragraph two.
+ *
+ * "Holds you to your margins" is a product claim, which is what earns the
+ * second line the right to be a conviction. Keep that order. A replacement
+ * where BOTH halves are philosophy puts us back where we started.
+ */
 function ConvictionSection() {
   return (
     <section className="bg-white py-24 border-b border-gray-100">
       <div className="max-w-2xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
-          What you&rsquo;re building is the thing.<br />
-          <span className="text-gray-400">Not the money for the thing.</span>
+          Holds you to your margins.<br />
+          <span className="text-gray-400">And to the things a margin can&rsquo;t show.</span>
         </h2>
 
         <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
@@ -369,15 +379,25 @@ function SolomonSection() {
                 drumbeat. Verb-first sentences carry the same meaning and read
                 faster.
 
-                ⚠️ Do not swap the pronoun for "it" either. Naming the thing an
-                "it" over and over is the same tic in the other direction, and
-                it makes an advisor sound like a dashboard. Just start with the
-                verb. */}
+                ⚠️ 30 Aug — DANIEL OVERRODE THE SECOND HALF OF THIS, KNOWINGLY.
+                The verb-first fix over-corrected: with no subject at all the
+                paragraph read like a telegram ("Reads your books. Remembers
+                what you decided.") and he called the wording weird. He was
+                shown a subject-anchored version that keeps zero pronouns and
+                chose the one that uses "it" three times instead, having been
+                told that was the tradeoff. So the live copy names Solomon once
+                up front and uses "it" after. DO NOT strip those back out.
+
+                What still holds from 29 Aug: no "he", and no five-pronoun
+                paragraph. The rule is now "one subject, then it" — not "no
+                subject at all". */}
             <p className="text-white/60 leading-relaxed mb-6">
-              Reads your books, your plan and your last six check-ins. Remembers
-              what you decided in March, and why. On the calls that are hard to
-              undo, argues it both ways &mdash; then says where it lands, and what
-              it cannot see.
+              Solomon reads your books, your plan and your last six check-ins
+              before it answers anything &mdash; so the advice starts from your
+              numbers, not a template. It remembers what you decided in March and
+              why. On the calls that are hard to undo, it makes the case both
+              ways, tells you where it comes down, and tells you what it could
+              not see.
             </p>
             {/* The anti-prosperity line used to sit here as a refusal. It now
                 lives in ConvictionSection, stated as a promise — "he'll tell you
@@ -567,7 +587,7 @@ function PriceSection() {
           will tell you what you want to hear.{' '}
           {SHOW_PUBLIC_PRICE
             ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
-            : 'This reads your actual numbers before it says anything — and we are setting the price with the first owners using it, rather than guessing at one now.'}
+            : 'Solomon reads your actual numbers before it says anything. It is free while we are in private pilot — the owners using it now are the ones setting the price.'}
         </p>
 
         {/* Toggle — only meaningful when a price is published */}
