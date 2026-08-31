@@ -227,7 +227,7 @@ export default function Onboarding() {
   const [draftLoaded, setDraftLoaded] = useState(false)
   const [phase, setPhase]           = useState('form')     // 'form' | 'generating' | 'error'
   const [genStatus, setGenStatus]   = useState('')
-  const [genStep, setGenStep]       = useState(0)          // 0-4 for the generating progress steps
+  const [genStep, setGenStep]       = useState(0)          // 0-5; GEN_STEPS has 5 entries, so 5 = all done
   // ⚠️ companyId is created inside handleGenerate (the create_company RPC), and
   // useAuth() here only carries { refresh, session } — there is no `profile` in
   // scope on this page. The document screen needs both ids, so they are parked
@@ -422,51 +422,77 @@ export default function Onboarding() {
       // Generate Solomon's first personalised message right now, while they're
       // watching the loader, so when they land on /advisor it's already there.
       // Best-effort — if it fails, we still navigate them through.
-      setGenStatus('Solomon is reading your setup…'); setGenStep(6)
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user?.id) {
-          const ctx = await buildAdvisorContext(companyId, { userId: user.id })
-          const ownerFirst = form.full_name?.split(' ')[0] ?? 'there'
-          // ⚠️ These were bare `promptKey, stableContext,` referencing variables
-          // that do not exist in this scope — my scripted prompt migration
-          // rewrote the call site but left the local named systemPrompt and
-          // never defined the two it started passing. The call failed, no
-          // opener was written, and a freshly onboarded owner landed in an old
-          // conversation with nothing acknowledging the setup he had just done.
-          // It builds and it runs; only finishing onboarding reveals it.
-          const openerContext = ctx
-            ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}`
-            : ''
-          const opener = await callClaude({
-            model: HAIKU,
-            promptKey:     'FIRST_SESSION_OPENER_PROMPT',
-            stableContext: openerContext,
-            messages: [{ role: 'user', content: `Send your first ever message to ${ownerFirst}. They just finished setting up.` }],
-            maxTokens: 350,
-          })
-          if (opener) {
+      // ⚠️ 31 Aug — THIS USED TO BLOCK. It ran a full advisor-context build and
+      // a Haiku call before the owner was allowed to leave the loader, on top
+      // of a website fetch and a Sonnet call at maxTokens 4000. Daniel: "this
+      // page is really slow". Nobody reads the opener until they are on
+      // /advisor, so waiting for it bought nothing and cost the whole wait.
+      //
+      // ⚠️ AND IT COULD PRODUCE TWO. The only thing stopping the Advisor
+      // generating its own opener on arrival was a localStorage key — a
+      // browser-state guard on a database fact. Blocked storage, a different
+      // device, or simply losing the race and you get two welcome messages,
+      // which is what Daniel saw. The marker is now set BEFORE the async work
+      // so it cannot lose the race, and the insert additionally refuses if the
+      // advisor thread already has an assistant message in it. Storage is the
+      // optimisation; the database is the truth.
+      const ownerFirst = form.full_name?.split(' ')[0] ?? 'there'
+      const { data: { user: openerUser } } = await supabase.auth.getUser()
+
+      if (openerUser?.id) {
+        try {
+          const d = new Date()
+          const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+          localStorage.setItem(`gos_morning_${openerUser.id}_${today}`, '1')
+        } catch { /* storage blocked — the DB check below still holds */ }
+
+        // Deliberately NOT awaited. Navigation happens without it; the message
+        // lands in the thread a moment later. Errors are swallowed on purpose —
+        // the Advisor falls back to its own opener.
+        void (async () => {
+          try {
+            const { count } = await supabase
+              .from('chat_messages')
+              .select('id', { count: 'exact', head: true })
+              .eq('company_id', companyId)
+              .eq('chat_type', 'advisor')
+              .eq('role', 'assistant')
+            if ((count ?? 0) > 0) return   // already welcomed — never twice
+
+            const ctx = await buildAdvisorContext(companyId, { userId: openerUser.id })
+            const openerContext = ctx
+              ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}`
+              : ''
+            const opener = await callClaude({
+              model: HAIKU,
+              promptKey:     'FIRST_SESSION_OPENER_PROMPT',
+              stableContext: openerContext,
+              messages: [{ role: 'user', content: `Send your first ever message to ${ownerFirst}. They just finished setting up.` }],
+              maxTokens: 350,
+            })
+            if (!opener) return
+
+            // Re-check immediately before writing: the whole point is that this
+            // now runs concurrently with the owner arriving on /advisor.
+            const { count: recheck } = await supabase
+              .from('chat_messages')
+              .select('id', { count: 'exact', head: true })
+              .eq('company_id', companyId)
+              .eq('chat_type', 'advisor')
+              .eq('role', 'assistant')
+            if ((recheck ?? 0) > 0) return
+
             await supabase.from('chat_messages').insert({
               company_id: companyId,
-              user_id:    user.id,
+              user_id:    openerUser.id,
               chat_type:  'advisor',
               role:       'assistant',
               content:    opener,
             })
-            // Mark today as opened so Advisor doesn't generate a second opener.
-            try {
-              const d = new Date()
-              const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-              localStorage.setItem(`gos_morning_${user.id}_${today}`, '1')
-            } catch { /* storage blocked — non-fatal */ }
+          } catch (openerErr) {
+            console.warn('[Onboarding] First-session opener failed (non-fatal):', openerErr)
           }
-        }
-      } catch (openerErr) {
-        // Non-fatal — owner still lands on a working advisor, just without the
-        // pre-generated opener. The Advisor will fall back to its own.
-        // Logged so a persistent failure (e.g. cap exceeded, model change) is
-        // visible during dev rather than silently degrading the wow moment.
-        console.warn('[Onboarding] First-session opener failed (non-fatal):', openerErr)
+        })()
       }
 
       await refresh()
@@ -785,7 +811,6 @@ const GEN_STEPS = [
   'Saving your profile',
   'Building your roadmap with Solomon',
   'Wiring your milestones',
-  'Solomon is reading your setup',
 ]
 
 function GeneratingScreen({ status, genStep }) {
