@@ -292,10 +292,31 @@ function HeroSection() {
           <span className="text-brand-400">on integrity.</span>
         </h1>
 
+        {/* ⭐ 31 Aug — this sentence came off /about, where Daniel spotted it:
+            "this is a clean sell, it should almost be the first thing people
+            see." He was right, and it exposed a real gap. The landing page had
+            NO problem statement — the H1 is a conviction, the old sub-line was
+            capability plus outcome, and the five chips below are capability
+            again. A cold reader learned what it is, what it does and what we
+            believe, and never learned what hurts. The 29 Aug note deleting
+            ProblemSection said "the hero states the problem"; it does not, it
+            states a value, and nothing picked the job up.
+
+            ⚠️ DELIBERATELY SHORT — 23 words against the old 40. Everything the
+            old version said after the dash ("reads your actual numbers,
+            remembers...") is restated by the chips two inches below. The
+            sentence is strong enough that adding to it dilutes it. Do not
+            re-attach a capability clause here.
+
+            🔴 WHAT THIS DROPPED, and it is Daniel's own language: "so you can
+            build somewhere people want to work, and bring your staff and your
+            clients through it with you." He chose this version knowing that.
+            It is currently on NO public surface — the natural home is the
+            conviction section, beside "Holds you to your margins", but that is
+            approved copy and his call, not a silent edit. */}
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
-          An advisor who reads your actual numbers and remembers why you started
-          — so you can build somewhere people want to work, and bring your staff
-          and your clients through it with you.
+          Owners have plenty of people who need answers from them and almost
+          nobody to ask. Eliv8 OS exists to be somewhere to ask.
         </p>
 
         {/* What he does, in the owner's language rather than in feature names. */}
