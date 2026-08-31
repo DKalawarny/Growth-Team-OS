@@ -411,7 +411,7 @@ function SolomonSection() {
                 // boilerplate, it promises something we do not measure, and it
                 // is exactly the kind of sentence this product refuses to write.
                 'Reads your books, roadmap and check-ins daily',
-                'Names what is coming before it lands',
+                'Flags the cash squeeze while you can still do something about it',
                 'Answers hiring, pricing, cash and strategy',
                 'Remembers every decision, and why you made it',
               ].map((point, i) => (
@@ -635,16 +635,48 @@ function PriceSection() {
             </>
           )}
 
+          {/* ⚠️ 30 Aug — this used to read "All 10+ tools", which Daniel queried:
+              he could not tell what the ten were. Two problems with that line.
+              It named nothing, so it was the only cell on the card carrying no
+              information. And it was not true — src/lib/tools.js has 12 entries,
+              but `exit-readiness` and `rocks-tracker` are hidden:true (they do
+              not fit the home-services wedge) and `solomon` is a virtual entry
+              for the document library, so a new owner finds NINE tools in
+              /tools. Advertising "10+" overstated the product to the exact
+              degree this product refuses to.
+
+              What is listed below is every tool actually discoverable in the
+              app, plus the surfaces that are not tools. If you un-hide the two
+              tools in tools.js, add them here — and not before.
+
+              ⚠️ CORRECTION, same day: `hidden: true` does NOT mean unreachable.
+              exit-readiness is hidden from the /tools GRID but is a top-level
+              sidebar item labelled "Succession" (Sidebar.jsx:167, MobileNav.jsx:87)
+              and /pricing sells it, so owners do find it and it is listed here.
+              rocks-tracker is the genuinely retired one — the sidebar comment
+              records that Roadmap absorbed quarterly priorities. So: check the
+              NAV before concluding a hidden tool is unreachable, not just the
+              grid. */}
           <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">
             {[
               'Solomon AI advisor',
-              'All 10+ tools',
-              'CFO Dashboard',
               'QuickBooks sync',
+              'CFO dashboard',
+              '13-week cash flow',
+              'Offer & pricing builder',
+              'Hiring planner',
+              'Org chart',
+              'Team newsletter',
+              'Safety & compliance',
+              'Local & AI visibility',
+              'Work through a decision',
+              'Succession planning',
               'Growth roadmap',
-              'Document library',
-              'Team check-ins',
+              'Weekly check-ins',
+              'Playbooks',
               'Work board',
+              'Cited regulatory answers',
+              'Document library',
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-2 text-white/70">
                 <span className="text-brand-400 font-bold flex-shrink-0">✓</span>
