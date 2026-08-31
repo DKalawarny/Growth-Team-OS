@@ -357,16 +357,31 @@ function ConvictionSection() {
             number, and everything else &mdash; the wages, the estimates, whether
             the shop is a decent place to work &mdash; as overhead on the way there.
           </p>
+          {/* ⚠️ 31 Aug — this used to read "notice how the customer who is never
+              going to check the invoice gets treated". Daniel: "a weird thing to
+              say". He was right twice over. It quietly implies the reader might
+              be padding invoices for people who do not check — a suspicion aimed
+              at a prospect who has not signed up yet. And it named something
+              Solomon cannot actually see.
+
+              A job gone back to and fixed for free is visible in the books, and
+              it is the better example anyway: it COSTS the owner something. That
+              is what earns the paragraph below it, which was previously arriving
+              unprepared — the section now counts a real cost, then says plainly
+              that it will keep counting them. */}
           <p>
-            Solomon will hold you to your margins as hard as any CFO would. He will
-            also notice how the customer who is never going to check the invoice
-            gets treated, and whether someone who shares none of your convictions
-            still wants to work here in a year.
+            Solomon will hold you to your margins as hard as any CFO would. It will
+            also notice what the job you went back and fixed for free actually cost
+            you, and whether someone who shares none of your convictions still wants
+            to work here in a year.
           </p>
+          {/* ⚠️ "He/He'll" three times here until 31 Aug. The 29 Aug pronoun pass
+              only ever touched the Solomon section; Daniel: "yes he is said lots
+              fix that". Same rule as there — ONE named subject, then "it". */}
           <p className="text-gray-900 font-medium">
-            He won&rsquo;t tell you that running it this way makes it more profitable.
-            Nobody can promise that. He&rsquo;ll tell you what it costs, and whether
-            you can afford it.
+            It won&rsquo;t tell you that running the business this way makes it more
+            profitable. Nobody can promise that. It will tell you what that costs,
+            and whether you can afford it.
           </p>
         </div>
 
