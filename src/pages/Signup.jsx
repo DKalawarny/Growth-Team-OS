@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
-import { TRIAL_DAYS } from '../lib/pricing'
+import { TRIAL_DAYS, SHOW_PUBLIC_PRICE } from '../lib/pricing'
 import { parkPendingAcceptance } from '../lib/terms'
 import Wordmark from '../components/brand/Wordmark'
 
@@ -55,10 +55,12 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <Helmet>
-        <title>Start your free trial — {SITE_NAME}</title>
+        <title>{SHOW_PUBLIC_PRICE ? 'Start your free trial' : 'Start free — private pilot'} — {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/signup`} />
         <meta name="robots" content="noindex, nofollow" />
-        <meta name="description" content={`Start your ${TRIAL_DAYS}-day free trial of Eliv8 OS — an AI business advisor that reads your actual numbers. No credit card required.`} />
+        <meta name="description" content={SHOW_PUBLIC_PRICE
+          ? `Start your ${TRIAL_DAYS}-day free trial of Eliv8 OS — an advisor that reads your actual numbers. No credit card required.`
+          : 'Eliv8 OS is in private pilot and free to use — an advisor that reads your actual numbers. No credit card required.'} />
       </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
@@ -90,17 +92,17 @@ export default function Signup() {
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-            Turn hard work into a business that actually grows.
+            Somewhere to ask.
           </h1>
 
           <p className="text-ink-300 text-sm leading-relaxed mb-10 max-w-sm">
-            A 24-month plan custom-built for where you are today — and the tools, check-ins, and AI advisor to actually execute it.
+            Owners have plenty of people who need answers from them and almost nobody to ask. Solomon reads your real numbers, remembers what you decided and why, and argues the hard calls both ways.
           </p>
 
           <div className="space-y-3 max-w-sm">
-            <TrustRow text={`${TRIAL_DAYS}-day free trial, no card required`} />
-            <TrustRow text="Your roadmap built in the first 10 minutes" />
-            <TrustRow text="Cancel anytime from settings" />
+            <TrustRow text={SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS}-day free trial, no card required` : 'Free while in private pilot, no card required'} />
+            <TrustRow text="A roadmap built from your answers, not a template" />
+            <TrustRow text="Nothing is charged, and you will be told before that changes" />
           </div>
         </div>
       </div>
@@ -112,7 +114,7 @@ export default function Signup() {
             Create your account
           </h2>
           <p className="text-sm text-ink-500 mb-8">
-            Two fields. Fourteen days. Let's go.
+            {SHOW_PUBLIC_PRICE ? `Two fields, then ${TRIAL_DAYS} days to decide.` : 'Two fields. Free while we are in private pilot.'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -181,7 +183,7 @@ export default function Signup() {
               disabled={loading || !agreed}
               className="w-full bg-gold-gradient text-white rounded-lg px-4 py-3 text-sm font-bold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed glow-gold-sm hover:glow-gold transition-all duration-200"
             >
-              {loading ? 'Creating your account…' : 'Start my free trial →'}
+              {loading ? 'Creating your account…' : (SHOW_PUBLIC_PRICE ? 'Start my free trial →' : 'Create my account →')}
             </button>
             )}
 
