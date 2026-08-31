@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, productSchema, CONTACT_EMAIL } from '../../lib/seo'
-import { TRIAL_DAYS } from '../../lib/pricing'
+import { TRIAL_DAYS, SHOW_PUBLIC_PRICE } from '../../lib/pricing'
 import { supabase } from '../../lib/supabase'
 
 /**
@@ -169,7 +169,7 @@ export default function FreeGbpAudit() {
                 to="/signup"
                 className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold hover:border-gray-400 transition-colors"
               >
-                Start a {TRIAL_DAYS}-day free trial
+                {SHOW_PUBLIC_PRICE ? `Start a ${TRIAL_DAYS}-day free trial` : 'Start free'}
               </Link>
             </div>
           </div>
