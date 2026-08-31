@@ -460,6 +460,97 @@ OS").
 **that file does not exist in public/**. Every link preview the site has ever
 produced — Slack, iMessage, LinkedIn — has had a broken image.
 
+## ⭐⭐ MARKETING PASS + THE CONVICTION GOES FULLY BEHAVIOURAL (29 Aug)
+
+⭐⭐ **"Instead of saying anything, show it in how you act, respond."** There are
+now **ZERO** occurrences of faith / minister / scripture / Christian / gospel on
+any built page or in `llms.txt`. This is the third and final step of a line
+Daniel has walked alone each time (22 Aug badge → 26 Aug keywords → 29 Aug
+everything), and he has been right at every step.
+
+⚠️ **I argued to KEEP the /about refusals** ("a refusal reads as integrity to
+anyone") and was overruled. His reason beats mine: once the framing is gone from
+the rest of the page, *"it does not quote scripture at you"* answers a question
+nobody asked. **A promise not to preach is still preaching.**
+
+⭐ **Nothing of substance was lost — only vocabulary.** Anti-prosperity became
+"It will not sell you a bigger number"; the staff protection kept full force
+with "personal views" doing the work "faith" did; the scripture pillar was
+replaced by the one that had been missing — **"It does not flatter you."**
+
+🔴 **The 26 Aug cleanup had MISSED two surfaces**, and they matter more than page
+copy because they are what gets **quoted back**: the six `/for/<trade>` pages
+carried *"An AI business advisor for Christian owners"* in their **meta
+description and JSON-LD**, and **`llms.txt`** had three passages.
+
+✅ **`prompts.ts` is untouched** — 14 references, the two-trigger scripture rule,
+both anti-prosperity halves, the canon, and onboarding's why-statement →
+`solomon_memory`. The hidden code lives in behaviour, which is the whole point.
+
+### 🔴 THE HEADLINE IS A PLACEHOLDER — nine attempts rejected
+Currently *"The OS that runs on integrity"* (his line, smoothed), marked as
+provisional in the code with his own words recorded beside it.
+⚠️ **What keeps failing is ADVERTISING REGISTER** — punchy fragments, parallel
+structure, a comma doing dramatic work. Three rounds of three, all rejected,
+including ones built from his own sentences. **Do not generate a tenth batch.**
+
+### The rest
+- **Landing 8 sections → 4** (784 → 651 lines). 🔴 `VideoSection` rendered
+  *"Video demo coming soon"* in the best slot on the page — an empty shelf reads
+  worse than no shelf. ⭐ **Conviction moved AFTER Solomon** (and the same fix on
+  /about): show competence, then let the conviction be found. Tools +
+  Integrations + HowItWorks were three answers to one question.
+- 🔴 **The wordmark was a BUG.** `PublicHeader` hand-rolled it in solid green —
+  **the seventh copy**, the exact failure `Wordmark` exists to prevent. Five more
+  found and fixed. ⚠️ Comparison keeps plain text: there it is a column label.
+- 🔴 **One offer, not two.** A *14-day free trial* badge sat 60px above *free
+  while in private pilot*; /pricing had three, including a button reading
+  **"Start 14-day free trial — free"**. All derive from `SHOW_PUBLIC_PRICE` now.
+- ⭐ **"You say he too much."** Five "he"s in one paragraph. Visible he/him/his on
+  landing and /pricing is now **0**. ⚠️ **Do NOT swap "he" for "it"** — same tic
+  reversed, and it makes an advisor read like a dashboard. Start with the verb.
+- **Chat preview rewritten** — it predated tool-running (24 Aug) and the voice
+  rewrite (26 Aug). Now shows a March decision quoted back, the input he does NOT
+  have, and a real artifact.
+- **Size limits cut from "who it's for"** — the page claimed the buyer is defined
+  by conviction "not what it does", then gated on revenue and headcount.
+
+## ⭐ NEW PROMPT SECTION — `WHERE BAD DECISIONS COME FROM` (30 Aug)
+
+🔴 **NOT DEPLOYED. Needs `supabase functions deploy claude`** — prompts are
+server-side, so a git push does not ship it. ⚠️ It changes every answer.
+
+From Daniel's thesis: *"kingdom first mentality, having faith he has you and a
+plan."* The operational half is that **you do not have to act from a tight
+spot** — which is where underpricing, overpromising and corner-cutting come
+from. `WHAT THE BUSINESS IS FOR` already had the first half; this is the second.
+
+Three deliberate features, each from a past failure:
+1. ⚠️ **"DO NOT SAY SO"** does double duty. As voice: naming the owner's state is
+   a verdict on the person, the *"that portion of the balance was never yours"*
+   failure. As **liability**: a claim about a user's psychological state is one
+   this product is not licensed to make. The counterfactual question — *"would
+   you price it there if you had three more of these lined up?"* — gets there
+   without either.
+2. ⚠️ **The "not every decision" guard is load-bearing.** "Say the two or three
+   things that matter" once came back as the literal sentence *"Three things
+   that change what you do next:"* every reply. A question can become a tic the
+   same way.
+3. 🔴 **My first draft was a liability bug** — it used *"firing far too late"*,
+   which contradicts `DOMAIN BOUNDARIES` (employment law / termination /
+   wrongful dismissal are hard-redirect). Two instructions disagreeing is worse
+   than either alone. ⚠️ An early draft also leaked the word "afraid" into the
+   guard clause itself; vocabulary in an instruction leaks into output.
+
+⭐ **Liability audit done at his request.** Terms already say nothing produced is
+legal/accounting/tax/financial/insurance/employment advice and no advisory
+relationship is created; §4 is "as is", no warranties, liability capped, with
+fraud carve-outs; the prompt has a hard redirect list; every tool renders
+`ToolDisclaimer`. ⚠️ Terms' own header says limitation-of-liability and indemnity
+are where a lawyer earns their fee — still true. ⚠️ Worth asking one: he is
+**pre-incorporation**, so a cap in an agreement signed personally protects him
+differently than one signed by a company.
+
 ## What just shipped (2026-08-26)
 
 🔴 **`useAuth` WAS A PLAIN HOOK, NOT A CONTEXT.** 44 components call it, and each
