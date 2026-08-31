@@ -526,6 +526,10 @@ export default function Onboarding() {
       <ShowHimTheBusiness
         companyId={docsCtx.companyId}
         userId={docsCtx.userId}
+        // Decides which four gaps that screen asks for. A pre-revenue owner has
+        // no P&L, no thirteen weeks of bank statements and no SOP, so asking
+        // for them reads as "you are not ready for this product".
+        revenue={form.current_revenue || form.last_revenue}
         onDone={() => navigate('/advisor')}
       />
     )

@@ -5,7 +5,7 @@ import { startOAuthFlow } from '../../lib/quickbooks'
 import Wordmark from '../brand/Wordmark'
 
 /**
- * "Show him the business" — the last screen of onboarding.
+ * "Show Solomon the business" — the last screen of onboarding.
  *
  * ⭐ WHY THIS EXISTS
  *
@@ -32,7 +32,7 @@ import Wordmark from '../brand/Wordmark'
  * promise we cannot keep, because "100%" would imply the advice is right.
  *
  * The framing comes from the product's own tone rule, in Daniel's words:
- * "he works from what you give him, so his answer is only as good as what he
+ * "it works from what you give it, so an answer is only as good as what it
  * can see." State the limit; never apologise for the product.
  *
  * ⚠️ Skipping is FIRST CLASS. Most owners have nothing to hand at minute three,
@@ -46,7 +46,16 @@ import Wordmark from '../brand/Wordmark'
 // ⚠️ Keep these to answers the product genuinely produces — cash flow, hiring,
 // pricing and the owner's own written procedures all map to real tools. Adding
 // an item we cannot actually deliver would make the whole list a lie.
-const GAPS = [
+// ⚠️ 31 Aug — this was ONE static list and it asked a pre-revenue owner for a
+// P&L, thirteen weeks of bank statements, a price list and an SOP. Daniel hit
+// it setting up a pre-revenue profile: four things he does not have, presented
+// as everything Solomon cannot tell him yet. The screen whose whole job is to
+// say "show me the business" opened by asking for four documents that do not
+// exist, which reads as "you are not ready for this product".
+//
+// The profile already knows — REVENUE_OPTIONS has a 'Pre-revenue' band and they
+// picked it two steps ago. So the list follows the answer.
+const GAPS_OPERATING = [
   {
     id:      'financials',
     locked:  'Whether you can afford the next hire',
@@ -73,16 +82,52 @@ const GAPS = [
   },
 ]
 
+// Pre-revenue. Same four questions an owner at this stage actually has, and
+// every ask is something they plausibly already wrote while deciding to start.
+// ⭐ The fourth is Daniel's: at this stage who you need and when you can afford
+// them is a live question, where "what do your procedures say" is not.
+const GAPS_PRE_REVENUE = [
+  {
+    id:      'costs',
+    locked:  'Whether the numbers actually work yet',
+    unlock:  'A budget, a forecast, or your cost estimates',
+    match:   /budget|forecast|projection|cost|model|plan|estimate|financial/i,
+  },
+  {
+    id:      'runway',
+    locked:  'How long you can fund this before it pays you',
+    unlock:  'Your monthly costs, savings, or a funding plan',
+    match:   /runway|savings|funding|loan|investor|capital|bank|statement|expense/i,
+  },
+  {
+    id:      'pricing',
+    locked:  'Whether what you plan to charge covers the work',
+    unlock:  'A draft quote, a price list, or what competitors charge',
+    match:   /quote|estimate|pricing|price|rate|bid|proposal|competitor|market/i,
+  },
+  {
+    id:      'team',
+    locked:  'Who you need first, and when you could afford them',
+    unlock:  'A list of the roles, or notes on who you have in mind',
+    match:   /role|hire|hiring|team|staff|org|job.?desc|contractor/i,
+  },
+]
+
+function gapSetFor(revenue) {
+  return revenue === 'Pre-revenue' ? GAPS_PRE_REVENUE : GAPS_OPERATING
+}
+
 // Which gap a file satisfies. Filename only — deliberately. The alternative is
 // waiting for extraction to finish before the list can respond, which would
 // leave the owner watching a spinner at the exact moment the page is supposed
 // to be showing its work.
-function gapsFor(filename) {
+function gapsFor(filename, gaps) {
   const name = filename || ''
-  return GAPS.filter(g => g.match.test(name)).map(g => g.id)
+  return gaps.filter(g => g.match.test(name)).map(g => g.id)
 }
 
-export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
+export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone }) {
+  const GAPS = gapSetFor(revenue)
   const [queue,    setQueue]    = useState([])   // [{ id, name, state, note }]
   const [busy,     setBusy]     = useState(false)
   const [dragging, setDragging] = useState(false)
@@ -122,7 +167,7 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
       id:    `${f.name}-${f.size}-${Math.round(f.lastModified || 0)}`,
       file:  f,
       name:  f.name,
-      gaps:  gapsFor(f.name),
+      gaps:  gapsFor(f.name, GAPS),
       state: 'waiting',
       note:  null,
     }))
@@ -150,7 +195,7 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
               state: 'done',
               // Honest about the one case that looks like success and isn't:
               // uploaded fine, nothing readable inside.
-              note: row.status === 'ready' ? null : 'Stored, but he could not read this one',
+              note: row.status === 'ready' ? null : 'Stored, but it could not be read',
             }
           : q))
       } catch (err) {
@@ -207,7 +252,7 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
             Your roadmap is built.
           </h2>
           <p className="text-ink-300 text-sm leading-relaxed">
-            It is built from what you told him. Everything you show him from here
+            It is built from what you told it. Everything you add from here
             makes the next answer less of an assumption and more of a reading.
           </p>
         </div>
@@ -218,10 +263,10 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
         <div className="w-full max-w-lg">
 
           <h1 className="text-2xl font-bold text-ink-900 mb-2 tracking-tight">
-            Show him the business.
+            Show Solomon the business.
           </h1>
           <p className="text-sm text-ink-500 leading-relaxed mb-8">
-            He works from what you give him, so his answer is only as good as what
+            It works from what you give it, so an answer is only as good as what
             he can see. Here is what he cannot tell you yet.
           </p>
 
@@ -238,12 +283,19 @@ export default function ShowHimTheBusiness({ companyId, userId, onDone }) {
                     borderColor: done ? 'rgba(20,166,123,0.30)' : 'rgba(13,20,19,0.09)',
                   }}
                 >
+                  {/* ⚠️ 31 Aug — this rendered an empty bordered circle on every
+                      unmet row, which is the universal shape of an unchecked
+                      checkbox. Daniel: "these look like they are clickable but
+                      are not". The rows are status, not controls — nothing here
+                      is tickable, the list fills in as files land. The slot is
+                      kept at a fixed width so rows stay aligned as they tick
+                      over; only a MET row draws anything. */}
                   <span
-                    className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full border flex items-center justify-center text-[10px] font-bold"
+                    aria-hidden={!done}
+                    className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold"
                     style={{
-                      borderColor: done ? '#14a67b' : 'rgba(13,20,19,0.20)',
-                      background:  done ? '#14a67b' : 'transparent',
-                      color:       '#fff',
+                      background: done ? '#14a67b' : 'transparent',
+                      color:      '#fff',
                     }}
                   >
                     {done ? '✓' : ''}
