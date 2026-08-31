@@ -96,9 +96,16 @@ const FEATURE_GROUPS = [
 
 // ── Value comparison ──────────────────────────────────────────────────────────
 
+// ⚠️ 31 Aug — "Part-time bookkeeper, $400–800/mo" was removed from this list.
+// There is no bookkeeping in the product, and the claim contradicted the
+// product in two places: the CFO Dashboard's sixth section is literally
+// "pointed questions to take to the bookkeeper" (it assumes you have one), and
+// Solomon's own prompt says "I'd want a bookkeeper to confirm the margin
+// figure". We defer to a bookkeeper everywhere else and were selling their
+// replacement here. The total below moved with it — do not re-add a row
+// without checking the product actually does that job.
 const REPLACES = [
   { label: 'Business coach or consultant',  low: 500,  high: 2000 },
-  { label: 'Part-time bookkeeper',          low: 400,  high: 800  },
   { label: 'Fractional CFO or advisor',     low: 500,  high: 1500 },
   { label: 'Project management tool',       low: 50,   high: 200  },
   { label: 'HR / check-in tool',            low: 30,   high: 150  },
@@ -118,11 +125,11 @@ const FAQS = [
   },
   {
     q: 'What exactly counts as a "report"?',
-    a: 'One finished piece of work — a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. In practice most owners run 3–5 a month and never come close to the limit.',
+    a: 'One finished piece of work — a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
   },
   {
     q: 'What if I need more than 10 reports per tool?',
-    a: 'Just email us. We\'ll raise your cap the same day, no questions. The limit exists to stop runaway AI bills — not to slow you down.',
+    a: 'Just email us. We\'ll raise your cap the same day, no questions. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything — including Solomon — once it is reached. Both limits exist to stop runaway AI bills, not to slow you down, and we would rather raise them than have you hit one without warning.',
   },
   {
     q: 'Can I cancel anytime?',
@@ -130,7 +137,7 @@ const FAQS = [
   },
   {
     q: 'Is my business data private?',
-    a: 'Completely. Your data lives in your own isolated workspace and is never used to train AI models or shared with anyone. What you put in stays yours.',
+    a: 'Your data lives in your own isolated workspace, is never sold or shared, and is not used to train AI models — the providers we send it to do not train on API data. What you put in stays yours.',
   },
   {
     q: 'Do I need QuickBooks for this to work?',
@@ -216,9 +223,28 @@ export default function Pricing() {
             One subscription.<br />
             <span className="text-brand-400">Your entire business team.</span>
           </h1>
+          {/* ⚠️ 31 Aug — this read "An AI advisor who knows your numbers. A live
+              CFO dashboard. A hiring coach. A marketing analyst. A compliance
+              tracker. A growth planner. All connected." Three problems, all the
+              same family as "All 10+ tools" on the landing card.
+
+              A HIRING COACH AND A MARKETING ANALYST DO NOT EXIST. There is a
+              Hiring Planner that builds a scorecard and a GBP/search audit.
+              Naming them as people inflates the product exactly where it is
+              being asked for money.
+
+              It was also six parallel fragments — the advertising register that
+              got nine landing headlines rejected — and it said "who" of the
+              product, days after the pronoun pass. Named tools and one concrete
+              claim instead of six personas.
+
+              ⚠️ "ten tools" is the honest count of what is REACHABLE (nine in
+              the /tools grid plus Succession in the sidebar). Do not round it up
+              and do not write "10+". */}
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
-            An AI advisor who knows your numbers. A live CFO dashboard. A hiring coach. A marketing analyst. A compliance tracker. A growth planner.
-            All connected. {SHOW_PUBLIC_PRICE
+            Solomon reads your books and remembers what you decided. Behind that, ten tools
+            on the same set of numbers — the CFO dashboard, thirteen-week cash flow, hiring,
+            pricing, compliance and succession. {SHOW_PUBLIC_PRICE
               ? <>All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span></>
               : <span className="text-white font-semibold">Free while we are in private pilot.</span>}
           </p>
@@ -226,7 +252,7 @@ export default function Pricing() {
             <span className="flex items-center gap-1.5"><Tick />No contracts</span>
             <span className="flex items-center gap-1.5"><Tick />Cancel anytime</span>
             <span className="flex items-center gap-1.5"><Tick />Your data stays yours</span>
-            <span className="flex items-center gap-1.5"><Tick />Setup in under 10 minutes</span>
+            <span className="flex items-center gap-1.5"><Tick />Nothing to install</span>
           </div>
         </div>
       </section>
@@ -392,11 +418,11 @@ export default function Pricing() {
             <div className="px-6 py-5 bg-gray-950 flex items-center justify-between">
               <div>
                 <Wordmark tone="dark" size={16} />
-                <p className="text-white/40 text-xs mt-0.5">Everything above — connected, AI-powered, and always on</p>
+                <p className="text-white/40 text-xs mt-0.5">Everything above, working from the same set of numbers</p>
               </div>
               <div className="text-right">
                 <p className="text-brand-400 font-black text-2xl">{SHOW_PUBLIC_PRICE ? <>${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></> : <span className="text-lg">Free in pilot</span>}</p>
-                <p className="text-white/30 text-xs mt-0.5">vs. $1,480–$4,650/mo separately</p>
+                <p className="text-white/30 text-xs mt-0.5">vs. $1,080–$3,850/mo separately</p>
               </div>
             </div>
           </div>
@@ -405,7 +431,7 @@ export default function Pricing() {
         {/* ── FAQ ──────────────────────────────────────────────────────────────── */}
         <section className="mb-20 max-w-2xl mx-auto">
           <h2 className="text-3xl font-black text-gray-900 text-center mb-8">
-            Questions we actually get asked.
+            The questions worth asking.
           </h2>
           <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
             {FAQS.map((faq, i) => (
@@ -425,8 +451,9 @@ export default function Pricing() {
               {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free. No card. No risk.` : 'Free while in pilot. No card. No risk.'}
             </h2>
             <p className="text-white/50 max-w-md mx-auto mb-8 leading-relaxed">
-              Get your first AI report in under an hour. Ask Solomon anything about your business. See your financials clearly — maybe for the first time.
-              If it doesn't change how you run your business, cancel. We won't even ask why.
+              Connect QuickBooks, or start without it. Ask Solomon anything about the business
+              and see what it says with your actual numbers in front of it. Nothing is charged
+              during the pilot, and you will be told well before that changes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
