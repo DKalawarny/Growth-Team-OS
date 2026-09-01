@@ -47,6 +47,32 @@ const INITIAL_FORM = {
 
 export default function ExitReadiness() {
   const { profile }          = useAuth()
+  // ⚠️ 1 Sep — this screen called itself "Your sellability diagnostic" for
+  // everyone. Daniel: "it's giving a sellable plan, I don't remember seeing an
+  // option to just be out of the day to day and still own."
+  //
+  // He is right, and the product already knows better: GOAL_OPTIONS separates
+  // "Get out of the day-to-day" from "Hand it on", and the sidebar renamed this
+  // tool "Succession — what gets left behind, not what it sells for". That
+  // rename never reached the tool. An owner who never said he wants to sell was
+  // being told a rational buyer would pass, and graded F for it — which is the
+  // exact move the advisor prompt forbids everywhere else: treating a bigger
+  // exit as the self-evident goal.
+  //
+  // The eight drivers are identical either way. Only the frame changes.
+  const [wantsToSell, setWantsToSell] = useState(null)   // null = not yet known
+  useEffect(() => {
+    if (!profile?.company_id) return
+    let cancelled = false
+    supabase.from('business_profiles').select('primary_goal').eq('company_id', profile.company_id).maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return
+        const g = data?.primary_goal
+        const list = Array.isArray(g) ? g : (g ? [String(g)] : [])
+        setWantsToSell(list.some(x => /hand it on|sell/i.test(String(x))))
+      })
+    return () => { cancelled = true }
+  }, [profile?.company_id])
   const navigate             = useNavigate()
   const [stage, setStage]    = useState('form')   // form | loading | result | saving
   const [form, setForm]      = useState(INITIAL_FORM)
@@ -103,7 +129,7 @@ export default function ExitReadiness() {
       setResult(parsed)
       setMsgs([{
         role:    'assistant',
-        content: "Here's your sellability diagnostic. Push back on any score you think is off, add context I missed, or ask me to rescore under a different assumption (\"what if I hired a GM next year?\").",
+        content: "Here's the diagnostic. Push back on any score you think is off, add context I missed, or ask me to rescore under a different assumption (\"what if I hired a GM next year?\").",
       }])
       setStage('result')
     } catch (err) {
@@ -402,7 +428,9 @@ function LoadingView() {
         })}
       </div>
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Eight drivers, one sellability score, and the fixes worth doing before a buyer finds them.
+        {wantsToSell
+          ? 'Eight drivers, one sellability score, and the fixes worth doing before a buyer finds them.'
+          : 'Eight drivers, and what would have to be true for this to run without you.'}
       </p>
     </div>
   )
@@ -415,7 +443,7 @@ function ResultView({ result, saving, error, capError, messages, refining, conte
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">🚪 Exit Readiness</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">Your sellability diagnostic</h1>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">{wantsToSell ? 'Your sellability diagnostic' : 'What it would take to step back'}</h1>
           </div>
         </div>
       </div>
