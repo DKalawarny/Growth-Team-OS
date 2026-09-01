@@ -6,6 +6,7 @@ import { useRef } from 'react'
 import { callClaude, SONNET } from '../../lib/anthropic'
 import { fetchWebsiteContent } from '../../lib/websiteScraper'
 import { assignMilestoneDates, buildDependencyUpdates } from '../../lib/milestoneDates'
+import { roadmapFingerprint } from '../../lib/roadmapFingerprint'
 
 /**
  * DangerSettings — destructive actions. Conventional "danger zone" pattern
@@ -140,6 +141,19 @@ export default function DangerSettings() {
         .insert(rows)
         .select('id')
       if (insErr) throw new Error(`Could not save new milestones: ${insErr.message}`)
+
+      // Re-stamp which profile this plan came from. Regenerating is the ONLY
+      // way to clear a drift warning, so if this does not run the owner fixes
+      // the roadmap and is told it is still stale — which would teach them to
+      // ignore the warning entirely.
+      try {
+        await supabase
+          .from('companies')
+          .update({ roadmap_built_from: roadmapFingerprint(bp) })
+          .eq('id', profile.company_id)
+      } catch (fpErr) {
+        console.warn('[Danger] roadmap fingerprint not re-stamped (non-fatal):', fpErr)
+      }
 
       // Dependency wiring — array indexes → UUIDs. Best-effort.
       const depUpdates = buildDependencyUpdates(parsed.milestones, insertedRows ?? [])

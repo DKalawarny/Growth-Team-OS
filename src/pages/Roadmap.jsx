@@ -20,6 +20,7 @@ import {
   computeWeightedProgress,
   classifyMilestone,
 } from '../lib/milestoneProgress'
+import { roadmapDrift, describeDrift } from '../lib/roadmapFingerprint'
 
 /**
  * Roadmap — the owner's 24-month plan, designed for a non-technical user.
@@ -161,6 +162,12 @@ const LABEL_COLUMN_PX  = 240
 
 export default function Roadmap() {
   const { profile, company } = useAuth()
+  // ⚠️ Does this plan still describe the business they have? Milestones are
+  // generated once and never re-checked against the profile they came from, so
+  // changing industry, revenue band or the primary goal leaves every milestone
+  // answering a question the owner stopped asking — silently. See
+  // src/lib/roadmapFingerprint.js.
+  const [drift, setDrift] = useState([])
   const [milestones, setMilestones] = useState([])
   const [loading, setLoading]       = useState(true)
   const [assigneesByMilestone, setAssigneesByMilestone] = useState(new Map())
@@ -216,6 +223,20 @@ export default function Roadmap() {
   })
   // Prevent the auto-apply from re-firing every render
   const paceAutoApplied = useRef(false)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      if (!profile?.company_id) return
+      const [{ data: bp }, { data: co }] = await Promise.all([
+        supabase.from('business_profiles').select('*').eq('company_id', profile.company_id).maybeSingle(),
+        supabase.from('companies').select('roadmap_built_from').eq('id', profile.company_id).maybeSingle(),
+      ])
+      if (cancelled) return
+      setDrift(roadmapDrift(co?.roadmap_built_from, bp))
+    })().catch(() => { /* non-fatal — a missing warning beats a broken roadmap */ })
+    return () => { cancelled = true }
+  }, [profile?.company_id])
 
   useEffect(() => {
     try { localStorage.setItem(VIEW_STORAGE_KEY, view) } catch { /* non-critical */ }
@@ -991,6 +1012,38 @@ Suggest a single new milestone that addresses what they've described. Make it sp
           onToggleComplete={toggleComplete}
           onSetDates={handleSetSideQuestDates}
         />
+      )}
+
+      {/* ⚠️ Drift notice. Sits ABOVE the plan on purpose: if the roadmap was
+          built for a different business, that changes how to read everything
+          below it, so it cannot be a footnote.
+
+          ⚠️ It states the change and stops. No "regenerate now" button, and no
+          nagging: regenerating wipes every milestone and the progress on them,
+          and a plan built before a goal changed may still be the right plan —
+          the owner knows which. Same reason slipped milestones are surfaced
+          rather than quietly re-dated. It is dismissible in the sense that it
+          disappears the moment the roadmap is regenerated, and not before. */}
+      {drift.length > 0 && (
+        <div
+          className="mb-6 rounded-xl border px-4 py-3 flex items-start gap-3"
+          style={{ background: 'rgba(245,158,11,0.06)', borderColor: 'rgba(245,158,11,0.35)' }}
+          role="status"
+        >
+          <span aria-hidden className="mt-0.5 flex-shrink-0">⚠️</span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-900">
+              {describeDrift(drift)}
+            </p>
+            <p className="text-[13px] text-gray-600 mt-1 leading-snug">
+              The milestones below were planned for the earlier answers, so some of
+              them may be solving a problem you no longer have. It may still be the
+              right plan — you would know better than the plan does. Rebuilding it
+              from your current profile is under Settings &rarr; Danger, and it
+              replaces every milestone, including the ones you have made progress on.
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Full-plan browser */}

@@ -15,6 +15,7 @@ import { getJurisdictionLinks } from './jurisdictionLinks'
 import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
 import { referenceCanonBlock } from './references'
 import { loadMemory, formatMemory } from './memory'
+import { roadmapDrift, describeDrift } from './roadmapFingerprint'
 
 // Safety vault — char budget for direct loading (no embeddings path).
 // Owner uploads SOPs, SDS sheets, permits. We load the most recent
@@ -165,7 +166,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : Promise.resolve(null)
 
   const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes,
-         staffRes, woRes, tplRes, memoryRows] = await Promise.all([
+         staffRes, woRes, tplRes, memoryRows, coRes] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -257,6 +258,14 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // active row goes in on every turn. It is small by design, and the whole
     // point is that Solomon doesn't have to go looking for what he knows.
     loadMemory(companyId, userId).catch(() => []),
+    // Last entry of the same Promise.all — one more round trip would be a
+    // waste for a single jsonb column, and this is on the hot path for every
+    // advisor turn.
+    supabase
+      .from('companies')
+      .select('roadmap_built_from')
+      .eq('id', companyId)
+      .maybeSingle(),
   ])
 
   const bp        = bpRes.data ?? {}
@@ -573,6 +582,17 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       completed:           completedCount,
       weighted_pct_done:   weightedPct,  // the number the owner sees on /roadmap
       active_focus:        active,
+      // ⚠️ Whether this plan was built for the business he has NOW. Milestones
+      // are generated once from business_profiles and never re-checked, so
+      // without this Solomon reasons confidently from a roadmap made for a
+      // company that no longer exists — and has no way of knowing. Null means
+      // the roadmap predates the fingerprint column: unknown, not "fine".
+      built_from_current_profile: coRes?.data?.roadmap_built_from
+        ? (roadmapDrift(coRes.data.roadmap_built_from, bp).length === 0)
+        : null,
+      stale_because: coRes?.data?.roadmap_built_from
+        ? describeDrift(roadmapDrift(coRes.data.roadmap_built_from, bp))
+        : null,
     },
     website_excerpt: bp.website_content
       ? bp.website_content.slice(0, WEBSITE_EXCERPT_CHARS)

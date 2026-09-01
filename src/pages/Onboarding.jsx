@@ -17,6 +17,7 @@ import {
   GOAL_OPTIONS,
   GOAL_TIMELINE_OPTIONS,
 } from '../lib/businessProfileOptions'
+import { roadmapFingerprint } from '../lib/roadmapFingerprint'
 
 /**
  * Onboarding wizard — 5 steps, 10 questions, ~3 minutes.
@@ -402,6 +403,29 @@ export default function Onboarding() {
       const { data: insertedRows, error: msError } = await supabase
         .from('milestones').insert(rows).select('id')
       if (msError) throw new Error(`Could not save your roadmap: ${msError.message}`)
+
+      // Record WHICH profile this plan was generated from. Without this, drift
+      // is undetectable: you can read the current profile and the current
+      // milestones, but never whether one produced the other. Best-effort —
+      // a roadmap that saved is worth more than a fingerprint that did not,
+      // and a null simply means "unknown", which stays quiet.
+      try {
+        await supabase
+          .from('companies')
+          .update({ roadmap_built_from: roadmapFingerprint({
+            business_name:   form.business_name,
+            industry:        form.industry,
+            team_size:       form.team_size,
+            last_revenue:    form.last_revenue,
+            current_revenue: form.current_revenue,
+            profit:          form.profit,
+            primary_goal:    form.primary_goal,
+            goal_timeline:   form.goal_timeline,
+          }) })
+          .eq('id', companyId)
+      } catch (fpErr) {
+        console.warn('[Onboarding] roadmap fingerprint not saved (non-fatal):', fpErr)
+      }
 
       const depUpdates = buildDependencyUpdates(parsed.milestones, insertedRows ?? [])
       if (depUpdates.length > 0) {
