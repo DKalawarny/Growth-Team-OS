@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth, AuthProvider } from './hooks/useAuth'
 
 // Landing stays synchronous — it's the most common entry point and we want
@@ -154,9 +154,27 @@ function LazyRoute({ children }) {
   return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
 }
 
+/**
+ * Public marketing pages scroll the WINDOW (they render outside
+ * AppLayoutChrome, which has its own scroll container and resets itself).
+ * Without this, following a link from halfway down /pricing drops you halfway
+ * down /about.
+ *
+ * ⚠️ pathname only. Several pages drive tabs and filters from search params,
+ * and jumping to the top when someone changes a filter is its own bug.
+ */
+function ScrollToTopOnNavigate() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTopOnNavigate />
       {/* ⚠️ AuthProvider must sit ABOVE the routes: every page below calls
           useAuth(), and before this existed each of those 44 call sites ran its
           own session lookup and its own profile/company fetch. One page load

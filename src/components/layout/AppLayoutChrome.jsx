@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import Sidebar       from './Sidebar'
 import MobileNav     from './MobileNav'
 import AdvisorBanner from './AdvisorBanner'
@@ -21,6 +23,27 @@ import TrialBanner   from '../billing/TrialBanner'
  * RequireAuth guard, so children = <Outlet /> at the call site.
  */
 export default function AppLayoutChrome({ children }) {
+  // ⚠️ 1 Sep — navigating between app pages left you wherever you had scrolled
+  // to on the PREVIOUS page. Open a long tool, scroll to the bottom, click
+  // Roadmap, and you land halfway down it. Daniel hit it on /tools/exit-
+  // readiness and asked for every page to be checked.
+  //
+  // ⚠️ window.scrollTo() does NOT fix this and would have looked like it did
+  // nothing: the app does not scroll the window at all. <main> below is
+  // `overflow-y-auto` inside a `h-screen overflow-hidden` shell, so the
+  // scrollable element is that container and it is the thing that has to be
+  // reset. (Public marketing pages DO scroll the window — they are handled
+  // separately in App.jsx, since they never render this component.)
+  //
+  // Keyed on pathname only, deliberately. Search params drive tabs and filters
+  // on several pages; yanking someone to the top when they switch a filter is
+  // its own bug.
+  const scrollRef = useRef(null)
+  const { pathname } = useLocation()
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname])
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar — hidden on mobile */}
@@ -30,7 +53,7 @@ export default function AppLayoutChrome({ children }) {
         {/* Mobile top bar + bottom tab bar + slide-in drawer */}
         <MobileNav />
 
-        <main className="flex-1 overflow-y-auto bg-ink-50 flex flex-col">
+        <main ref={scrollRef} className="flex-1 overflow-y-auto bg-ink-50 flex flex-col">
           {/* AdvisorBanner shows a gold strip when an advisor is viewing a
               client workspace. Hidden for regular owners. */}
           <AdvisorBanner />
