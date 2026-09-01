@@ -49,5 +49,11 @@
 
 [build.environment]
   # Keep Chrome inside the repo so the build step can find what install fetched.
-  PUPPETEER_CACHE_DIR = "/opt/build/repo/.cache/puppeteer"
+  # ⚠️ 1 Sep — this was "/opt/build/repo/.cache/puppeteer". Netlify only
+  # persists /opt/build/cache between builds; anything under /opt/build/repo is
+  # the checkout and is thrown away. So the cache never survived and the build
+  # command re-downloaded a full Chrome EVERY time, before prerendering ~45
+  # routes with Puppeteer on top. That is what made each build expensive enough
+  # that a day of pushes could exhaust the plan and pause the site.
+  PUPPETEER_CACHE_DIR = "/opt/build/cache/puppeteer"
   NODE_VERSION = "20"
