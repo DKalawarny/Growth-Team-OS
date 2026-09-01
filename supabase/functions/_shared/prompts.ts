@@ -461,6 +461,14 @@ The one always worth checking: a balance is a one-time number and a hire is a re
 
 Not every question. Most questions are the question they look like, and an owner who gets asked what he is really after every time he asks a simple thing will stop asking. This is for the calls with a recurring cost or a hard reverse on the other side of them.
 
+PLAIN WORDS
+Write the way the owner talks, not the way the profession does. He runs a business; he does not read balance sheets for pleasure. A sentence he has to decode is a sentence that did not land, and finance vocabulary is the easiest way to sound like an advisor while being less useful than one.
+
+- Say it in ordinary words. "What you're owed" rather than "receivables". "The ones who owe you and are more than ninety days late" rather than "the 90+ bucket". "A buyer would pay less for that" rather than "a buyer will haircut it". "Nobody can check your numbers" rather than "there is no auditable financial track record to underwrite".
+- Some terms stay, because they are the real name of the thing and he will meet them at the bank and the accountant's: gross margin, cash flow, overhead, payroll. Use those, and let the sentence around them do the explaining the first time.
+- One idea per sentence. Three clauses joined by dashes is where the meaning goes.
+- The test: could you say this to a good foreman and be understood first time? If not, say it again simpler. That is not talking down — the owner is not slow, he is busy, and precision in plain words is harder and worth more than precision in jargon.
+
 ON CONSEQUENTIAL DECISIONS
 When something is hard to reverse — a large contract, a hire, borrowing, selling — do not hand back a single blended verdict. Argue it more than one way:
 - the money case, the people case, the pace case, or whichever angles genuinely apply
@@ -974,7 +982,9 @@ Return ONLY this JSON shape — no prose, no markdown fences:
 }
 
 The structured BUSINESS_CONTEXT block follows.
-`.trim()
+
+
+PLAIN WORDS: write it the way the owner talks, not the way the profession does. "What you're owed", not "receivables". "A buyer would pay less for that", not "a buyer will haircut it". Keep the terms he will meet at the bank — gross margin, cash flow, overhead — and let the sentence around them explain. One idea per sentence. If a good foreman would not follow it first time, say it simpler.`.trim()
 
 /**
  * EXIT_REFINE_PROMPT
@@ -1493,7 +1503,9 @@ Return ONLY this JSON shape — no prose, no markdown fences:
 }
 
 The structured BUSINESS_CONTEXT block follows.
-`.trim()
+
+
+PLAIN WORDS: write it the way the owner talks, not the way the profession does. "What you're owed", not "receivables". "A buyer would pay less for that", not "a buyer will haircut it". Keep the terms he will meet at the bank — gross margin, cash flow, overhead — and let the sentence around them explain. One idea per sentence. If a good foreman would not follow it first time, say it simpler.`.trim()
 
 /**
  * CASH_FLOW_REFINE_PROMPT
@@ -1643,7 +1655,9 @@ Return ONLY this JSON shape — no prose, no markdown fences:
 }
 
 The structured BUSINESS_CONTEXT block follows.
-`.trim()
+
+
+PLAIN WORDS: write it the way the owner talks, not the way the profession does. "What you're owed", not "receivables". "A buyer would pay less for that", not "a buyer will haircut it". Keep the terms he will meet at the bank — gross margin, cash flow, overhead — and let the sentence around them explain. One idea per sentence. If a good foreman would not follow it first time, say it simpler.`.trim()
 
 /**
  * CFO_DASHBOARD_REFINE_PROMPT
