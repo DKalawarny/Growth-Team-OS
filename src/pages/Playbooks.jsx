@@ -14,7 +14,7 @@ import { useAuth } from '../hooks/useAuth'
  *
  * This is the "replace yourself with process" feature. Owner-knowledge becomes
  * structured rows the crew works through, so the owner stops fielding
- * "what's next?" calls.
+ * the job record — what the work involves, and what happened on it.
  *
  * Layout: two-pane. Left = list of playbooks + "+ New". Right = editor for
  * the selected one. On mobile, picking a playbook swaps the panes.
@@ -548,10 +548,29 @@ function PageHeader() {
         Process Library
       </div>
       <h1 className="text-xl font-bold text-ink-900">Playbooks</h1>
+      {/* ⚠️ 1 Sep — this used to say "your crew gets a checklist on every work
+          order — no more 'what's next?' calls". Daniel, looking at this page:
+          "it's almost a totally different thing to what we are building, we
+          don't want this to be a job scheduling app." He was right about the
+          symptom and the cause was here, not in the feature: that sentence is
+          a dispatch pitch, and dispatch is a product we would lose at.
+
+          ⭐ His own reframe, which is the one that works: this is the JOB
+          RECORD. What the job involves, and what actually happened on it —
+          foreman notes included. That competes with nothing (the alternative
+          is not another app, it is nowhere), it is what lets the business run
+          a day without him, and it is the only ground truth Solomon has about
+          whether work is really getting set up properly.
+
+          ⚠️ Do not put scheduling language back on this page. No calendars, no
+          dispatch, no "never chase your crew again". /pricing already had the
+          honest version of this all along: "get the jobs that live in your
+          head onto paper, so the business can run a day without you in it." */}
       <p className="text-xs text-ink-500 mt-1.5 max-w-2xl leading-relaxed">
-        Capture the steps you'd otherwise be explaining over the phone. Build
-        a playbook once per repeating job and your crew gets a checklist on
-        every work order — no more "what's next?" calls.
+        The jobs you do over and over, written down once — what they involve, and
+        what actually happened on them. It gets what is in your head onto paper, so
+        the business can run a day without you, and so Solomon can see how the work
+        really goes rather than how it was supposed to.
       </p>
     </div>
   )
@@ -591,13 +610,13 @@ function HowItWorksBanner({ onDismiss }) {
         />
         <HowStep
           n="2"
-          title="Attach to a work order"
-          body="When you create a job on the Board or Roadmap, pick the matching playbook. Its steps copy onto that work order as a fresh checklist."
+          title="Attach it to a job"
+          body="When a job comes up, pick the matching playbook. Its steps copy across, so the same work gets done the same way whoever is on it."
         />
         <HowStep
           n="3"
-          title="Crew ticks it off"
-          body="The team taps through the checklist on their phone via the staff portal. You see live progress on the Board — no calls, no nagging."
+          title="It comes back with what happened"
+          body="The crew works through it on their phone and adds notes as they go. Those notes stay with the job — which is what lets Solomon tell you something true about how it actually went."
         />
       </div>
     </div>
