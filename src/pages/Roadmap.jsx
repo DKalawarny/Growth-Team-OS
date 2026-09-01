@@ -307,7 +307,7 @@ export default function Roadmap() {
       const [ordersRes, profilesRes, staffRes] = await Promise.all([
         supabase
           .from('work_orders')
-          .select('id, milestone_id, title, assigned_to, staff_member_id, created_at')
+          .select('id, milestone_id, title, assigned_to, staff_member_id, due_date, created_at')
           .eq('company_id', profile.company_id)
           .not('milestone_id', 'is', null)
           // Order by created_at ascending so the latest row overwrites
@@ -339,7 +339,10 @@ export default function Roadmap() {
         // reassignment of an existing-but-unassigned work order also takes
         // the UPDATE path.
         if (o.title) {
-          woIdMap.set(`${o.milestone_id}::${o.title}`, o.id)
+          // ⚠️ 1 Sep — this stored only the id, so the reassign modal had no
+          // way to show the due date already on the work order. See the state
+          // initialiser in the modal for what that cost.
+          woIdMap.set(`${o.milestone_id}::${o.title}`, { id: o.id, due_date: o.due_date ?? null })
         }
 
         if (!person?.id) continue
@@ -609,7 +612,9 @@ export default function Roadmap() {
     // id into the draft — the modal will UPDATE instead of inserting a
     // duplicate. The key matches what the orders loader builds.
     const key = `${milestoneId}::${taskTitle || milestoneTitle}`
-    const existingWorkOrderId  = actionWorkOrderIdByKey.get(key) ?? null
+    const existingWorkOrder    = actionWorkOrderIdByKey.get(key) ?? null
+    const existingWorkOrderId  = existingWorkOrder?.id ?? null
+    const existingDueDate      = existingWorkOrder?.due_date ?? null
     const existingAssigneePerson = actionAssigneesByKey.get(key) ?? null
     // Pre-populate the dropdown with the current assignee (if any) so
     // "Reassign" opens showing who's there now, not blank.
@@ -621,6 +626,7 @@ export default function Roadmap() {
       milestoneTitle,
       taskTitle,
       existingWorkOrderId,
+      existingDueDate,
       existingAssigneeCid,
     })
   }
@@ -2474,7 +2480,17 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
   // Pre-fill the dropdown if reassigning. Lets the owner see who's currently
   // on this action step instead of "No one yet" when they reopen the modal.
   const [assignee_cid, setAssigneeCid] = useState(draft.existingAssigneeCid || '')
-  const [due_date,     setDueDate]     = useState('')
+  // ⚠️ 1 Sep — this was useState(''), so the field opened BLANK every time,
+  // including when reassigning a work order that already had a due date.
+  // Daniel: "date dont save". It did save — the update path has always written
+  // it — but reopening showed nothing, so it looked like it had not.
+  //
+  // The save path then grew a workaround for the blankness: `if (due_date)`,
+  // so a blank submit would not wipe a date the field had failed to show. Net
+  // effect was that a due date could be set once and then never seen, never
+  // changed to empty, and never trusted. Loading the real value fixes the
+  // display AND lets the owner clear it, which is why the guard goes too.
+  const [due_date,     setDueDate]     = useState(draft.existingDueDate ?? '')
   // template_id is only meaningful on the INSERT path (the picker is hidden
   // on reassign). When set, the chosen playbook's steps copy onto the new
   // WO as checklist items.
@@ -2507,14 +2523,14 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
     if (isReassign) {
       // ---- UPDATE path: existing work order, owner is reassigning ----
       // Set both columns explicitly so switching between profile and staff
-      // assignees clears the other one. Don't touch due_date unless the
-      // owner typed something new — the form opens blank on reassign and
-      // we don't want a blank submit to wipe a previously-set due date.
+      // assignees clears the other one. due_date is now written unconditionally
+      // because the field is prefilled with the real value — so an empty box is
+      // the owner deliberately clearing it, not the form having failed to load.
       const updatePayload = {
         title: taskLabel,
         assigned_to,
       }
-      if (due_date) updatePayload.due_date = due_date
+      updatePayload.due_date = due_date || null
 
       let res = await supabase.from('work_orders')
         .update({ ...updatePayload, staff_member_id })
