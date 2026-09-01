@@ -414,8 +414,13 @@ function LibraryIntelligencePanel({
           <span className="w-2 h-2 rounded-full bg-ink-600 flex-shrink-0" />
         )}
 
+        {/* ⚠️ 1 Sep — this said "LIBRARY INTELLIGENCE", which Daniel found
+            confusing: "is it a summary of everything it sees?" It is exactly
+            that — a synthesised read across ALL the uploaded files at once, not
+            per-file — and the old name described the machinery rather than the
+            thing. Named for what it does now. */}
         <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 flex-shrink-0">
-          Library Intelligence
+          Everything, read together
         </span>
 
         {/* Collapsed summary */}

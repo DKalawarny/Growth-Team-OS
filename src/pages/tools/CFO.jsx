@@ -588,21 +588,33 @@ export default function CFO() {
                 </select>
               </Field>
 
-              <Field label="Notes or context" hint="Anything Solomon can't see — lost a customer, one-time expense, bonus month, etc.">
+              {/* ⚠️ 1 Sep — all four examples on this form used to be disasters:
+                  a lost account, margin lower than February, AR getting worse,
+                  "why did my margin drop". Daniel: "the examples seem negative".
+
+                  ⚠️ The fix is NOT cheerfulness — this product does not do false
+                  optimism, and an example that only ever shows good news would
+                  be its own kind of dishonest. It is that examples MODEL what to
+                  type: four problems in a row teaches the owner this form is
+                  where bad news goes, and leaves someone having a good month
+                  with nothing to pattern-match. These now show the range — a win,
+                  a neutral one-off, and a question that is genuinely open rather
+                  than pre-loaded with a bad answer. Keep the mix. */}
+              <Field label="Notes or context" hint="Anything Solomon can't see — a big job landing, a one-off expense, a quiet month.">
                 <textarea
                   value={form.notes}
                   onChange={e => setForm({ ...form, notes: e.target.value })}
-                  placeholder="Lost the Johnson account late in the month — ~$6k off commercial."
+                  placeholder="Won the Parker contract mid-month, and the new van came out of this period."
                   rows={3}
                   className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
                 />
               </Field>
 
-              <Field label="Specific questions" hint='Anything you want answered directly. "Why did my margin drop?"'>
+              <Field label="Specific questions" hint='Anything you want answered directly. "Is this month as good as it looks?"'>
                 <textarea
                   value={form.specific_questions}
                   onChange={e => setForm({ ...form, specific_questions: e.target.value })}
-                  placeholder="Why is my gross margin lower than Feb? Is my AR getting worse?"
+                  placeholder="Is the margin holding where I think it is? Which jobs actually made money?"
                   rows={2}
                   className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
                 />

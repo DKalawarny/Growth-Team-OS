@@ -26,7 +26,7 @@ export default function Documents() {
           <div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Library</h1>
             <p className="text-xs text-ink-500 mt-0.5">
-              Your generated outputs and uploaded knowledge — always side by side.
+              What Solomon has written for you, and what you have given him to read.
             </p>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function Documents() {
               </span>
             )}
             <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">Tool outputs</span>
+            <span className="text-xs text-ink-400">Written by the tools, saved here</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">
@@ -65,7 +65,7 @@ export default function Documents() {
               </span>
             )}
             <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">Your knowledge files + library intelligence</span>
+            <span className="text-xs text-ink-400">Files you added — Solomon reads all of them</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">
