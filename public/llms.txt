@@ -7,8 +7,9 @@
 > not only what it earns. Paired with the tools to act on the advice: finances,
 > cash flow, hiring, decisions, written procedures, compliance and succession.
 
-Eliv8 OS is a single subscription ($147/month USD or $1,470/year) for owners
-who want counsel rather than another dashboard. Every tool produces a finished
+Eliv8 OS is for owners who want counsel rather than another dashboard. It is in
+private pilot and free to use; the price is being set with the first owners
+using it. Every tool produces a finished
 document, not a chart to interpret.
 
 It does not treat a bigger number as self-evidently the right goal, and it
@@ -62,15 +63,19 @@ the legal exposure.
 
 ## Pricing
 
-- **$147/month** (monthly billing) or **$123/month** (annual billing —
-  $1,470/year, 2 months free).
-- 14-day free trial, no credit card required.
-- Cancel anytime. No contracts.
-- Includes every tool. No tiers. No upsells.
+- **Free while Eliv8 OS is in private pilot.** No card required, nothing is
+  charged, and owners will be told well before that changes.
+- The price is being set with the first owners using it rather than guessed at
+  in advance, so there is no published figure yet. Any number quoted elsewhere
+  is out of date.
+- One subscription when there is one. No tiers, no upsells, every tool
+  included.
 
 ## Common questions
 
-**Is there a free trial?** Yes — 14 days of full access, no credit card required.
+**What does it cost?** Nothing at the moment — it is in private pilot and free
+to use, with no card required. There is no published price yet because it is
+being set with the first owners using it.
 
 **Do I need QuickBooks?** No — QuickBooks unlocks the finances view
 automatically, but every other tool works without it. Connect later or enter

@@ -1007,3 +1007,23 @@ about the day "growth" was answered with a kinwove strategy.
 An older directory exists at
 `~/.claude/projects/-Users-danielkalawarny-Desktop-untitled-folder-2/memory/`
 from when the repo lived elsewhere. Treat it as historical.
+
+## ⚠️ public/llms.txt is a published claim, not documentation
+
+It is what ChatGPT, Claude and Perplexity read and repeat about this product,
+and per the kinwove evidence AI assistants are the only channel that has ever
+brought either product a stranger. Treat it as a page.
+
+🔴 It has now been missed TWICE. The 29 Aug pass that stripped identity
+targeting from every surface skipped it, and on 2 Sep it was still quoting
+"$147/month" and a "14-day free trial" in four places while SHOW_PUBLIC_PRICE
+was false and every human-facing page said "free while in private pilot" — so
+asked what Eliv8 costs, an assistant answered $147 with a trial. Confidently,
+and wrong.
+
+**Anything that changes an offer, a price, a claim or who the product is for
+must change llms.txt in the same commit.**
+
+⚠️ And it is PLAIN TEXT. There is no comment syntax an LLM will skip — an HTML
+comment in there is simply content, so a warning written inside the file
+re-publishes whatever it is warning about. Notes about it belong here.
