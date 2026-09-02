@@ -820,6 +820,47 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
             Solomon reads everything together as one picture of your business — not file by file.
             Upload whatever you have; even partial docs help.
           </p>
+
+          {/* ⚠️ 2 Sep — Daniel: "is there a guideline we can give clients so
+              Solomon reads properly, pulling from different areas, invoice
+              numbers or direction?"
+
+              The need is real and his own library proves it: nine files, every
+              one filed as "General", three of them named quote.png. Solomon can
+              read all three and has no way to tell which job, which version, or
+              which is current — so he either hedges or picks one.
+
+              ⚠️ Four rules, not a manual. Anything longer does not get read,
+              and every rule here has to earn its place by changing what Solomon
+              can actually do with the file. */}
+          <div className="mb-6 rounded-xl border border-brand-200 bg-brand-50/40 p-4">
+            <p className="text-sm font-bold text-ink-900 mb-2">Four things that make him much better at this</p>
+            <ol className="space-y-2 text-[13px] text-ink-700 leading-relaxed list-decimal pl-4">
+              <li>
+                <span className="font-semibold text-ink-900">Name the file so it says what and when.</span>{' '}
+                &ldquo;Cascade quote &mdash; Mar 2026&rdquo; beats &ldquo;quote.png&rdquo;. Three files
+                called quote.png are three files he cannot tell apart.
+              </li>
+              <li>
+                <span className="font-semibold text-ink-900">Pick the category when you upload.</span>{' '}
+                It is how he knows a P&amp;L from a handbook before he has read a word of either.
+              </li>
+              <li>
+                <span className="font-semibold text-ink-900">Leave the reference numbers in.</span>{' '}
+                An invoice or quote number, the job name, the customer &mdash; that is how he ties a
+                document to the job it belongs to instead of guessing.
+              </li>
+              <li>
+                <span className="font-semibold text-ink-900">Replace old versions, do not stack them.</span>{' '}
+                If two versions of a quote are both here he will read both, and say they disagree
+                rather than pick one.
+              </li>
+            </ol>
+            <p className="text-[12px] text-ink-500 mt-3 leading-relaxed">
+              None of it is required. He works with whatever he is given &mdash; this is just what
+              turns &ldquo;a document exists&rdquo; into &ldquo;the Cascade quote says $47,200&rdquo;.
+            </p>
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {UPLOAD_CATEGORIES.map(cat => (
               <div

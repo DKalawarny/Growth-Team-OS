@@ -1175,7 +1175,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
                 value={blockerDrafts[wo.id] ?? ''}
                 onChange={(e) => setBlockerDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
                 onFocus={() => { focusedWoIdRef.current = wo.id }}
-                placeholder="Anything slow you down? Locked door, missing part, waiting on someone…"
+                placeholder="Anything slow you down? Locked door, missing part, waiting on another trade…"
                 rows={2}
                 maxLength={4000}
                 className="mt-1.5 w-full text-[12px] leading-snug px-2 py-1.5 bg-amber-50/60 border border-amber-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-ink-400"
