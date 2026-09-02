@@ -401,6 +401,75 @@ export const ANSWERS = [
       { q: 'Is it wrong to sell something I built with people who trusted me?', a: 'No, but how you do it is where the trust is kept or lost — what they are told, when, and what happens to them in the deal.' },
     ],
   },
+  {
+    slug: 'does-god-want-my-business-to-succeed',
+    question: 'Does God want my business to succeed?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Nobody can tell you that, and anyone who does is guessing on your behalf. Faithful people run businesses that fail and dishonest people run businesses that thrive, so success is not evidence of approval and struggle is not evidence of the opposite. What you can control is how it is run.',
+    body: [
+      { h: 'Why the question is usually asked',
+        p: 'Almost always in a hard season, and underneath it is a different question: have I got this wrong. That is worth separating out, because the answer to "is this business viable" comes from the numbers and the answer to the other one does not come from a P&L at all.' },
+      { h: 'What outcome does not tell you',
+        p: 'Plenty of businesses built carefully by decent people fail because a market moved, a customer went under, or the timing was wrong. Plenty of others succeed while treating people badly. If outcomes measured character, the most upright operator in your trade would be the wealthiest, and you already know he is not.' },
+      { h: 'The part that is actually yours',
+        p: 'How you price. Whether people are paid properly and on time. Whether your word holds when keeping it costs you. Whether the estimate matches the invoice. Those are decisions rather than outcomes, and they are the same whether the year is good or bad.' },
+      { h: 'Be careful what you do with the answer',
+        p: 'Reading a good quarter as approval sets you up to read the next bad one as judgement — and that is when owners make frightened decisions: dropping a price to survive a month, taking a client they know is trouble. The pressure feels like discernment and it is not.' },
+    ],
+    faqs: [
+      { q: 'Does that mean prayer makes no difference?', a: 'Many owners would say it steadies them, and steadier decisions are better decisions. That is different from a guaranteed outcome, and nobody honest will promise you one.' },
+      { q: 'How do I know if I should keep going?', a: 'From whether the business can be made to work — whether a typical job is profitable, whether the cash lasts, whether you can fix what is broken. Those are answerable. Reading signs into a slow month is not.' },
+      { q: 'Is it wrong to want it to succeed?', a: 'No. Wanting to build something that lasts and provides for people is not a lesser motive. The question worth watching is what you would be willing to do to get there.' },
+    ],
+  },
+  {
+    slug: 'will-giving-more-grow-my-business',
+    question: 'Will giving more make my business more profitable?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'It might not, and you should not give expecting it to. Generosity framed as an investment with a return is not generosity — it is a transaction with a longer settlement date. Give because you decided to, at a level that does not put wages or suppliers at risk, and let the return be nobody\'s expectation.',
+    body: [
+      { h: 'The promise being made to you',
+        p: 'Give and it will come back multiplied, usually with a story attached. The stories are real; so are all the ones nobody tells, where someone gave sacrificially and the business still closed. A claim that only collects its successes is not evidence, it is marketing.' },
+      { h: 'What it costs when it does not work',
+        p: 'Not just money. An owner who gave expecting a return and did not get one is left concluding he did not give enough, or did not believe hard enough. That is a worse place than where he started, and it is why the framing matters more than the amount.' },
+      { h: 'Give from what is actually yours',
+        p: 'The account holds tax you collected and deductions withheld from payroll. Giving from money owed to somebody else is not generosity — it relocates the cost onto a supplier or the tax authority. Give from what the business has genuinely earned and paid you.' },
+      { h: 'A cleaner way to think about it',
+        p: 'Decide what you want to give and why, at a level you could sustain through a bad year, and treat it as spending rather than sowing. If it is worth doing, it is worth doing when nothing comes back — and if it is only worth doing because something might, it was never really giving.' },
+    ],
+    faqs: [
+      { q: 'What about people who say it worked for them?', a: 'Some businesses grow after their owners started giving. Some grow after their owners started running four miles a week. Neither tells you the cause, and the people it did not work for are not writing books.' },
+      { q: 'Should I stop giving if money is tight?', a: 'That is yours to decide. What is worth avoiding is giving money you owe someone else, or giving more in a crisis in the hope it will resolve the crisis.' },
+      { q: 'Is it wrong to give strategically — sponsoring a local team, say?', a: 'No, and it is honest as long as you call it what it is. Marketing that also does good is fine. Marketing described as generosity is where it goes wrong.' },
+    ],
+  },
+  {
+    slug: 'is-it-a-lack-of-faith-to-plan',
+    question: 'Is it a lack of faith to plan and forecast?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'No. Diligence and trust are not opposites, and "it will work out" is not a cash-flow plan. The tradition this question comes from is full of counting costs before building and storing grain before a famine. Planning is what makes it possible to keep your word later.',
+    body: [
+      { h: 'Presumption is not faith',
+        p: 'Taking on an obligation on the assumption things will work out — and calling that trust — is the failure worth naming. It is the reason an owner signs for equipment he cannot service and then has to choose between the payment and payroll. Nobody is served by that, least of all the people relying on the wage.' },
+      { h: 'A forecast is a promise-keeping tool',
+        p: 'Knowing week nine is tight is what lets you tell a supplier early, or not take a job you cannot resource. Owners without a forecast do not avoid those problems; they meet them later, with fewer options and usually with somebody else absorbing the surprise.' },
+      { h: 'What planning cannot do',
+        p: 'It cannot tell you what happens. A thirteen-week forecast is a set of assumptions, and the honest version says which ones it rests on — that June collections land like May\'s, that the big invoice does not slip. Planning does not remove uncertainty; it makes it visible early enough to do something.' },
+      { h: 'Where the worry usually comes from',
+        p: 'Owners who ask this have often been told that detailed planning shows a lack of trust. It is worth asking who benefits from that idea. An owner who does not look closely at his numbers is easier to sell things to.' },
+    ],
+    faqs: [
+      { q: 'How far ahead should I plan?', a: 'Thirteen weeks is the common horizon for cash because it is far enough to act and near enough to be more than guesswork. Longer than that becomes a story about the future.' },
+      { q: 'Is it wrong to hold a large cash reserve?', a: 'Holding a buffer is what lets you pay people through a slow month and refuse work that would compromise you. That is not hoarding, it is capacity to keep commitments.' },
+      { q: 'What if the numbers say stop and I feel I should continue?', a: 'Both are information. But make the decision knowing what the numbers say rather than avoiding them, and say it out loud to someone who is not depending on you for a wage.' },
+    ],
+  },
 ]
 
 /** Categories in the order they should appear on the index. */
