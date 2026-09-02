@@ -156,6 +156,21 @@ export default function StaffPortal() {
   //
   // promptType defaults to 'free' (the always-on 💬 button). Workflow-triggered
   // prompts pass their own promptType so Solomon can cluster later.
+
+  // ⚠️ 2 Sep — the end-of-shift recap writes here now, not to step comments.
+  // It is the crew's account of the day: what happened on this job, in their
+  // words, stored the moment they hit send. Nobody in the office can edit it
+  // afterwards — they can only add a note alongside (036) — because the whole
+  // point is that it is the one thing in Solomon's context the owner did not
+  // write himself.
+  const submitDailyLog = async (workOrderId, whatHappened) => {
+    try {
+      const res = await callPortal('submitDailyLog', { token, workOrderId, whatHappened })
+      return res?.ok ? { ok: true } : { ok: false }
+    } catch {
+      return { ok: false }
+    }
+  }
   const addStepComment = useCallback(async (workOrderId, itemId, { text, isVoice, promptType }) => {
     const trimmed = (text ?? '').trim()
     if (!trimmed) return { ok: false, error: 'empty' }
@@ -361,7 +376,7 @@ export default function StaffPortal() {
             Each WO gets its own textarea so the crew can split thoughts
             cleanly across jobs they touched. */}
         {inProgress.length > 0 && (
-          <ShiftEndRecap workOrders={inProgress} onAddStepComment={addStepComment} />
+          <ShiftEndRecap workOrders={inProgress} onSubmitDailyLog={submitDailyLog} />
         )}
 
         {/* Completed — keep these in view but visually dimmed. The crew
@@ -869,19 +884,34 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * shows one textarea per in-progress WO so the crew can leave a quick
  * "anything slow you down" thought per job without re-opening each one.
  *
- * Submit fires one addStepComment per non-empty textarea, in parallel.
- * Each comment anchors to the first checklist item of its WO (workflow-
- * level reflection has no single-step anchor; the prompt_type pill
- * conveys "this is shift-end" regardless of which step it's pinned to).
+ * Submit fires one daily log per non-empty textarea, in parallel.
+ *
+ * ⚠️ 2 Sep — this used to write a STEP COMMENT anchored to the first checklist
+ * item of the work order, with a comment admitting why: "workflow-level
+ * reflection has no single-step anchor". It was pinning a note about the whole
+ * day onto an unrelated step because there was nowhere else to put it — and
+ * the filter it needed (`checklist_items?.[0]`) silently dropped the recap
+ * entirely for any job with no playbook attached, which are often the jobs
+ * worth hearing about.
+ *
+ * daily_logs (035) is that missing place. Same form, same voice input, same
+ * "End my shift" button — it just lands somewhere that means what it says, and
+ * Solomon reads it as the crew's account of the day rather than as a stray
+ * comment on step one.
  *
  * The voice button is shared at the top — recording flows into whichever
  * textarea last had focus, so the crew can tap a textarea, talk, tap
  * another textarea, talk. Simpler than a 🎤 per WO and the natural way a
  * crew member moves through their thoughts at end-of-shift.
  */
-function ShiftEndRecap({ workOrders, onAddStepComment }) {
+function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const [expanded, setExpanded] = useState(false)
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: text }
+  // ⚠️ 2 Sep — still tracked, currently unread. It used to travel to the step
+  // comment as is_voice; daily_logs has no such column and does not need one —
+  // a dictated account of the day is not worth less than a typed one. Kept
+  // because the tracking is free and the flag is the right shape if we ever
+  // want it. Delete it rather than inventing a use for it.
   const [voiceWoIds, setVoiceWoIds] = useState(() => new Set())  // which drafts touched by voice
   const [recording, setRecording] = useState(false)
   const [sending, setSending]     = useState(false)
@@ -954,7 +984,11 @@ function ShiftEndRecap({ workOrders, onAddStepComment }) {
     if (sending) return
     const toSend = workOrders
       .map(w => ({ wo: w, text: (drafts[w.id] ?? '').trim() }))
-      .filter(x => x.text.length > 0 && x.wo.checklist_items?.[0])
+      // ⚠️ No longer requires a checklist item. It used to — because the note
+      // had to be pinned to one — which silently dropped the recap for any job
+      // without a playbook attached. Those are often the jobs worth hearing
+      // about.
+      .filter(x => x.text.length > 0)
     if (toSend.length === 0) return
     if (recording) stopRecording()
     setSending(true)
@@ -965,13 +999,7 @@ function ShiftEndRecap({ workOrders, onAddStepComment }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text }) =>
-          onAddStepComment(wo.id, wo.checklist_items[0].id, {
-            text,
-            isVoice: voiceWoIds.has(wo.id),
-            promptType: 'shift_end',
-          })
-        )
+        toSend.map(({ wo, text }) => onSubmitDailyLog(wo.id, text))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
