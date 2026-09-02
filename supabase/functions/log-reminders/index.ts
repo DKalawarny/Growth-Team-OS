@@ -96,8 +96,13 @@ Deno.serve(async (req: Request) => {
             `<p style="color:#667">Same link every day, so you can save it. Nothing to log in to.</p>`,
         }),
       })
-      if (!res.ok) failures.push(`${s.name}: ${res.status}`)
-      else sent++
+      // ⚠️ Report what the provider actually SAID, not just the status. A bare
+      // "401" led me to conclude the API key was missing when it was set all
+      // along — a status code is a symptom and the body is the diagnosis.
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '')
+        failures.push(`${s.name}: ${res.status} ${detail.slice(0, 200)}`)
+      } else sent++
     } catch (e) {
       failures.push(`${s.name}: ${e instanceof Error ? e.message : String(e)}`)
     }
