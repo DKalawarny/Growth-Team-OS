@@ -218,6 +218,12 @@ export default function Board() {
       assigned_to,
       due_date:     data.due_date || null,
       priority:     data.priority,
+      // ⚠️ Empty string becomes NULL, not 0. "Not entered" and "this job made
+      // nothing" are different facts and only one of them is a problem — the
+      // same reasoning as the giving field in migration 028.
+      quoted_amount:   data.quoted_amount   === '' || data.quoted_amount   == null ? null : Number(data.quoted_amount),
+      cost_amount:     data.cost_amount     === '' || data.cost_amount     == null ? null : Number(data.cost_amount),
+      invoiced_amount: data.invoiced_amount === '' || data.invoiced_amount == null ? null : Number(data.invoiced_amount),
       milestone_id: data.milestone_id || null,
       status:       data.status,
       ...(staff_member_id && !staffSetupNeeded ? { staff_member_id } : {}),
@@ -909,6 +915,12 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
     // the new WO (see spawnChecklistFromTemplate in the parent). Honoured
     // when prefilled via ?playbook_id=<id> from the Playbooks page CTA.
     template_id:  order?.template_id ?? '',
+    // ⚠️ Always optional. A job must remain creatable with all three blank —
+    // the moment one is required this stops being a job record and becomes an
+    // estimating tool nobody asked for. '' is sent as null, never 0.
+    quoted_amount:   order?.quoted_amount   ?? '',
+    cost_amount:     order?.cost_amount     ?? '',
+    invoiced_amount: order?.invoiced_amount ?? '',
   })
   const [saving,   setSaving]   = useState(false)
   const [saveErr,  setSaveErr]  = useState(null)
@@ -1046,6 +1058,36 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
               <label className="block text-xs font-semibold text-ink-600 mb-1.5">Due date</label>
               <input type="date" value={form.due_date} onChange={e => set('due_date', e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+            </div>
+
+            {/* ⭐ 2 Sep — what the job quoted, cost and made. Added because
+                Daniel scoped a PM to "job numbers, not company numbers" and
+                checking that turned up that no job numbers existed at all.
+                It also lets Solomon connect the crew's account of a job to what
+                it actually made, which nothing did before.
+                ⚠️ All three optional, forever. Blank is "not entered", not 0. */}
+            <div>
+              <label className="block text-xs font-semibold text-ink-600 mb-1.5">
+                The numbers <span className="font-normal text-ink-400">— optional</span>
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  ['quoted_amount',   'Quoted'],
+                  ['cost_amount',     'Cost'],
+                  ['invoiced_amount', 'Invoiced'],
+                ].map(([key, label]) => (
+                  <div key={key}>
+                    <input
+                      type="number" min="0" step="0.01" inputMode="decimal"
+                      value={form[key]}
+                      onChange={e => set(key, e.target.value)}
+                      placeholder={label}
+                      className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
+                    />
+                    <span className="block text-[11px] text-ink-400 mt-1">{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -242,7 +242,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // an org chart the owner drew once.
     supabase
       .from('work_orders')
-      .select('id, title, status, due_date, staff_member_id, milestone_id, updated_at')
+      .select('id, title, status, due_date, staff_member_id, milestone_id, updated_at, quoted_amount, cost_amount, invoiced_amount')
       .eq('company_id', companyId)
       .order('updated_at', { ascending: false })
       .limit(MAX_WORK_ORDERS),
