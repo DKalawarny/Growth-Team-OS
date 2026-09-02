@@ -54,7 +54,9 @@ export default function Paywall() {
         <p className="text-gray-600 mt-2 leading-relaxed">{content.body}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          {content.primary === 'portal' ? (
+          {/* 'none' is the pilot state: there is nothing to buy, so showing a
+              button that cannot do anything is worse than showing none. */}
+          {content.primary === 'none' ? null : content.primary === 'portal' ? (
             <button
               type="button"
               onClick={portal}
@@ -143,6 +145,24 @@ function pickContent(status) {
       primaryLabel: 'Reactivate subscription',
     }
   }
+  // ⚠️ 1 Sep — DURING THE PILOT THIS WAS A DEAD END WITH A PRICE ON IT.
+  // `!PAYMENTS_LIVE` only ever stopped the CHECKOUT, not the rendering, so an
+  // owner who hit a cap got "you've had two full weeks to kick the tires — time
+  // to pick a plan, the Owner plan is $X/month" and an Upgrade button that
+  // silently did nothing when clicked. Nothing is charged during the pilot,
+  // there is no plan to pick, and a wall quoting an unpublished price to
+  // somebody already inside the product is the worst place this contradiction
+  // could appear.
+  if (!PAYMENTS_LIVE) {
+    return {
+      tone:         'neutral',
+      title:        'You have hit this month\u2019s limit',
+      body:         'Nothing is charged during the pilot and nothing has ended — this is only the cap that stops runaway AI costs. Email support@eliv8os.com and we will raise it, usually the same day.',
+      primary:      'none',
+      primaryLabel: null,
+    }
+  }
+
   // 'expired' — the default / trial-ended case.
   return {
     tone:         'warn',

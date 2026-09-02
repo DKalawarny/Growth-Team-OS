@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PRICE_MONTHLY_USD } from '../lib/pricing'
 
 /**
  * /help — in-app FAQ + per-tool guides.
@@ -31,7 +30,7 @@ const FAQ = [
   },
   {
     q: 'Why is there a 10-runs-per-month cap on tools?',
-    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap keeps your subscription priced at $${PRICE_MONTHLY_USD} even when you're using it heavily. Most owners use 3–5 runs a month total. If you need more, email me — caps are easy to raise.`,
+    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap is what stops those costs running away — it is not there to slow you down. If you need more, email me and I will raise it, usually the same day.`,
   },
   {
     q: 'Do I need QuickBooks to use Eliv8 OS?',

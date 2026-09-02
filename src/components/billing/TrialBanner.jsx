@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSubscription } from '../../hooks/useSubscription'
-import { PRICE_MONTHLY_USD } from '../../lib/pricing'
+import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from '../../lib/pricing'
 
 /**
  * TrialBanner — sticky top banner shown to users in the last stretch of
@@ -35,6 +35,22 @@ export default function TrialBanner() {
     try { return sessionStorage.getItem(DISMISS_KEY) === '1' }
     catch { return false }   // SSR / storage-denied — fall through
   })
+
+  // ⚠️ 1 Sep — this banner ran during the private pilot. Daniel screenshotted it
+  // saying "3 days left on your free trial. Upgrade now to keep access — or save
+  // $294 with the annual plan" while SHOW_PUBLIC_PRICE is false and nothing is
+  // charged. It told a pilot owner he was about to lose access and quoted him a
+  // saving against a price that is not published anywhere.
+  //
+  // Same bug as the nine marketing pages, and it hid here because this lives in
+  // the layout rather than on a page, so a sweep of src/pages missed it. There
+  // is no trial to count down to while the product is free, and a countdown
+  // with a price on it is the loudest possible version of the offer
+  // contradiction — it is aimed at someone already inside the product.
+  //
+  // ⚠️ Anything that quotes a price or a deadline must derive from
+  // SHOW_PUBLIC_PRICE. Do not hardcode either.
+  if (!SHOW_PUBLIC_PRICE) return null
 
   if (loading || dismissed) return null
 
