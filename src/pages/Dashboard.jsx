@@ -91,13 +91,24 @@ export default function Dashboard() {
     const cid = profile.company_id
 
     ;(async () => {
-      const [msRes, ciRes, ciCount, docCount, playCount, staffCount] = await Promise.all([
+      const [msRes, ciRes, ciCount, docCount, playCount, staffCount, logsRes, openNotesRes, ordersRes] = await Promise.all([
         supabase.from('milestones').select('*').eq('company_id', cid).order('sort_order', { ascending: true }),
         supabase.from('checkins').select('id, created_at').eq('company_id', cid).order('created_at', { ascending: false }).limit(1),
         supabase.from('checkins').select('id', { count: 'exact', head: true }).eq('company_id', cid),
         supabase.from('documents').select('id', { count: 'exact', head: true }).eq('company_id', cid),
         supabase.from('work_order_templates').select('id', { count: 'exact', head: true }).eq('company_id', cid).is('archived_at', null),
         supabase.from('staff_members').select('id', { count: 'exact', head: true }).eq('company_id', cid),
+        // ⚠️ 2 Sep — everything below is new to this page. The dashboard was
+        // built before the job record existed and showed only milestones, so it
+        // could not answer either of the two questions an owner actually opens
+        // it with: "what needs me today" and "is this running without me".
+        supabase.from('daily_logs')
+          .select('id, log_date, what_happened, blockers, injury, safety_note, reviewed_at, staff_member_id, who_on_site')
+          .eq('company_id', cid).order('log_date', { ascending: false }).limit(30),
+        supabase.from('office_notes')
+          .select('id, status').eq('company_id', cid).neq('status', 'done'),
+        supabase.from('work_orders')
+          .select('id, status, quoted_amount, cost_amount, invoiced_amount').eq('company_id', cid),
       ])
       if (cancelled) return
       setState({
@@ -110,11 +121,67 @@ export default function Dashboard() {
           playbooks: playCount.count  ?? 0,
           staff:     staffCount.count ?? 0,
         },
+        logs:      logsRes.data       ?? [],
+        openNotes: openNotesRes.data  ?? [],
+        orders:    ordersRes.data     ?? [],
       })
     })()
 
     return () => { cancelled = true }
   }, [profile?.company_id])
+
+  // ⚠️ 2 Sep — Daniel: "it depends on the owner's status; if in the business
+  // will need a different dashboard than the owner that is just checking on the
+  // CEO." Two modes on one page, because moving between them IS what the
+  // product is for — a homepage that only served one would be telling half its
+  // customers they had arrived, or the other half that they never would.
+  //
+  // ⚠️ user-scoped localStorage key, and userId is deliberately NOT in the
+  // save-effect deps — same rule as everywhere else in this codebase.
+  const [mode, setMode] = useState('today')
+  useEffect(() => {
+    if (!profile?.id) return
+    try {
+      const saved = localStorage.getItem(`eliv8_dash_mode_${profile.id}`)
+      if (saved === 'today' || saved === 'running') setMode(saved)
+    } catch { /* storage blocked — 'today' is the safe default */ }
+  }, [profile?.id])
+  const chooseMode = (next) => {
+    setMode(next)
+    try { localStorage.setItem(`eliv8_dash_mode_${profile?.id}`, next) } catch { /* noop */ }
+  }
+
+  // ⭐ THE HONEST SIGNAL. An owner writing his own daily logs is in the
+  // business, whatever he told the questionnaire — and that is the only
+  // owner-dependence measure in the product that is evidence rather than
+  // self-report. It belongs in the "is it running" view as content, not as a
+  // nag: it is literally the answer to the question that view asks.
+  const dash = useMemo(() => {
+    const logs   = state.logs   ?? []
+    const orders = state.orders ?? []
+    const today  = todayYmd()
+
+    const unsafe      = logs.filter(l => l.injury || l.safety_note)
+    const unreadLogs  = logs.filter(l => !l.reviewed_at)
+    const ownLogs     = logs.filter(l => !l.staff_member_id)   // no crew member = the owner wrote it
+    const priced      = orders.filter(o => o.invoiced_amount != null && o.cost_amount != null && o.invoiced_amount > 0)
+    const margin      = priced.length
+      ? Math.round(priced.reduce((a, o) => a + ((o.invoiced_amount - o.cost_amount) / o.invoiced_amount), 0) / priced.length * 100)
+      : null
+
+    return {
+      unsafe,
+      unsafeToday: unsafe.filter(l => l.log_date === today),
+      unreadLogs,
+      openNotes:   state.openNotes ?? [],
+      liveJobs:    orders.filter(o => o.status && o.status !== 'done').length,
+      ownLogs,
+      logCount:    logs.length,
+      margin,
+      pricedCount: priced.length,
+      reviewedPct: logs.length ? Math.round(((logs.length - unreadLogs.length) / logs.length) * 100) : null,
+    }
+  }, [state.logs, state.orders, state.openNotes])
 
   const statusById = useMemo(
     () => classifyAll(state.milestones ?? [], todayYmd()),
@@ -142,6 +209,94 @@ export default function Dashboard() {
             {greeting()}{firstName ? `, ${firstName}` : ''}.
           </h1>
         </header>
+
+        {/* ── Which question are you here to answer ───────────────────────── */}
+        <div className="animate-fade-in flex gap-1 -mt-4">
+          {[['today', 'What needs me today'], ['running', 'Is it running without me']].map(([val, label]) => (
+            <button
+              key={val}
+              type="button"
+              onClick={() => chooseMode(val)}
+              className={`text-[12.5px] px-3.5 py-1.5 rounded-full border transition-colors ${
+                mode === val
+                  ? 'bg-ink-900 border-ink-900 text-white'
+                  : 'border-ink-200 text-ink-500 hover:border-ink-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* ⚠️ Injury and near misses sit above BOTH modes and are never
+            collapsed into a count. "1 safety item" is a number you scroll past;
+            the sentence someone wrote is not. */}
+        {dash.unsafe.length > 0 && (
+          <section className="animate-fade-in rounded-xl border border-red-300 bg-red-50 px-5 py-4 flex flex-col gap-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-red-700">
+              {dash.unsafeToday.length > 0 ? 'Today' : 'Recently'}
+            </p>
+            {dash.unsafe.slice(0, 2).map(l => (
+              <p key={l.id} className="text-[14.5px] text-ink-900 leading-relaxed">
+                {l.injury && <span className="font-semibold">Someone was hurt. </span>}
+                {l.safety_note || l.what_happened}
+              </p>
+            ))}
+            <Link to="/logs" className="text-[13px] font-semibold text-red-700 hover:text-red-800 mt-0.5">
+              Open the logs →
+            </Link>
+          </section>
+        )}
+
+        {mode === 'today' ? (
+          <section className="animate-fade-in flex flex-wrap gap-x-8 gap-y-3">
+            {dash.unreadLogs.length > 0 && (
+              <Link to="/logs" className="text-[15px] text-ink-900 hover:text-brand-700">
+                <span className="font-semibold">{dash.unreadLogs.length}</span> log{dash.unreadLogs.length === 1 ? '' : 's'} you have not read
+              </Link>
+            )}
+            {dash.openNotes.length > 0 && (
+              <Link to="/logs" className="text-[15px] text-ink-900 hover:text-brand-700">
+                <span className="font-semibold">{dash.openNotes.length}</span> thing{dash.openNotes.length === 1 ? '' : 's'} on your list
+              </Link>
+            )}
+            {dash.liveJobs > 0 && (
+              <Link to="/board" className="text-[15px] text-ink-900 hover:text-brand-700">
+                <span className="font-semibold">{dash.liveJobs}</span> job{dash.liveJobs === 1 ? '' : 's'} on
+              </Link>
+            )}
+          </section>
+        ) : (
+          <section className="animate-fade-in flex flex-col gap-3">
+            {/* ⭐ The honest one. An owner writing his own daily logs is in the
+                business whatever the questionnaire says, and this is the only
+                owner-dependence measure in the product made of evidence rather
+                than self-report. Stated as a fact, not a telling-off. */}
+            {dash.logCount > 0 && (
+              <p className="text-[15px] text-ink-900 leading-relaxed">
+                {dash.ownLogs.length === 0
+                  ? `The last ${dash.logCount} daily log${dash.logCount === 1 ? '' : 's'} came from the crew, not from you.`
+                  : `You wrote ${dash.ownLogs.length} of the last ${dash.logCount} daily logs yourself.`}
+              </p>
+            )}
+            {dash.reviewedPct != null && (
+              <p className="text-[15px] text-ink-600 leading-relaxed">
+                {dash.reviewedPct}% of what the crew wrote has been read by someone in the office.
+              </p>
+            )}
+            {dash.margin != null && (
+              <p className="text-[15px] text-ink-600 leading-relaxed">
+                Across {dash.pricedCount} job{dash.pricedCount === 1 ? '' : 's'} with numbers on them, the average margin is {dash.margin}%.
+              </p>
+            )}
+            {dash.logCount === 0 && (
+              <p className="text-[15px] text-ink-500 leading-relaxed">
+                Nothing to read from yet. Once the crew are writing at the end of the day,
+                this is where you will see whether it runs without you.
+              </p>
+            )}
+          </section>
+        )}
 
         {/* ── The one thing ───────────────────────────────────────────────── */}
         <section className="animate-fade-in flex flex-col gap-5">
