@@ -1000,21 +1000,26 @@ function Bubble({ role, content, artifacts, streaming = false, onSave, companyId
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative max-w-[78%]">
-        {/* Solomon answers in the serif, the owner types in the sans.
-            Counsel should look considered rather than look like chat — it is
-            the one typographic decision carrying the whole positioning, and a
-            reply set in the same face as the input reads as a chatbot. Size
-            and line-height are bumped with it, because Instrument Serif runs
-            small and needs the air. */}
+        {/* Solomon answers in a serif, the owner types in the sans. Counsel
+            should look considered rather than look like chat — it is the one
+            typographic decision carrying the whole positioning, and a reply
+            set in the same face as the input reads as a chatbot.
+
+            ⚠️ 1 Sep — the FACE changed, the decision did not. This was
+            `font-serif`, i.e. Instrument Serif, which is a DISPLAY face and
+            was never meant to carry paragraphs. Daniel: "hard to read, almost
+            like a boring text book." Now --font-reading (Charter/Georgia),
+            drawn for reading long text on a screen. Leading opened a little
+            further with it. */}
         <div
           className={`px-4 py-2.5 rounded-[18px] ${
             isUser
               ? 'text-sm leading-relaxed'
-              : 'font-serif text-[16.5px] leading-[1.62]'
+              : 'text-[16.5px] leading-[1.68]'
           }`}
           style={isUser
             ? { background: '#0d1413', color: '#fff', borderBottomRightRadius: '4px' }
-            : { background: '#FFFFFF', border: '1px solid rgba(13,20,19,0.09)', color: '#1B2422', borderBottomLeftRadius: '4px' }
+            : { background: '#FFFFFF', border: '1px solid rgba(13,20,19,0.09)', color: '#1B2422', borderBottomLeftRadius: '4px', fontFamily: 'var(--font-reading)' }
           }
         >
           {isUser

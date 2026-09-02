@@ -42,6 +42,21 @@
      what every other tool in this category uses. */
   --font-sans:  'Instrument Sans', system-ui, -apple-system, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* ⚠️ 1 Sep — a THIRD face, for Solomon's answers only.
+     Daniel: "I find the font hard to read, almost like a boring text book."
+     He is describing a real mistake, not a preference. Instrument Serif is a
+     DISPLAY face — high contrast, small x-height, tight fitting. It is built
+     for a headline or a single number, which is exactly what --font-serif is
+     used for everywhere else in the app (DailyQuote, the Decision view, the
+     figures on Dashboard) and it is right there.
+     Set a four-paragraph answer in it and it turns into a textbook, because a
+     display face has none of the things that make long text easy on screen.
+     Charter and Georgia were drawn for exactly this job — reading paragraphs
+     on a screen — and they keep the "considered, not chatty" distinction the
+     serif was chosen for in the first place.
+     ⚠️ Do not point this at Instrument Serif. That is what caused this. */
+  --font-reading: Charter, 'Bitstream Charter', 'Sitka Text', Georgia, serif;
 }
 
 @layer base {
