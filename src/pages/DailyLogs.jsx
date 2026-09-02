@@ -22,6 +22,51 @@ import { useAuth } from '../hooks/useAuth'
  * When roles land, a PM gets this, the board and playbooks, and neither the
  * advisor nor the numbers.
  */
+// ⚠️ 2 Sep — dates rendered as raw "2026-09-01". An owner scanning a week of
+// logs is asking "was that yesterday or last Tuesday", and an ISO string makes
+// him do the arithmetic every row.
+function humanDate(iso) {
+  if (!iso) return ''
+  const d = new Date(`${iso}T00:00:00`)
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const days = Math.round((today - d) / 86400000)
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  if (days < 7)  return d.toLocaleDateString(undefined, { weekday: 'long' })
+  return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
+}
+
+/**
+ * ⭐ THE POINT OF THE PAGE, not a nice-to-have.
+ *
+ * One locked door is a bad morning. The same locked door four times is a
+ * system nobody wrote down — that is Daniel's own insight, and it is the whole
+ * reason blockers get collected. But a reverse-chronological list buries it:
+ * the two entries that rhyme are days apart and the reader has to hold both in
+ * his head to notice.
+ *
+ * Deliberately crude matching. Real overlap in a foreman's phrasing shows up in
+ * the nouns he reaches for, and anything cleverer would need embeddings and
+ * would start claiming patterns that are not there. Two logs sharing two
+ * uncommon words is a hint worth showing, phrased as a question rather than a
+ * finding.
+ */
+function repeatedBlockers(logs) {
+  const STOP = new Set(['the','and','for','was','were','with','that','this','from','they','them','had','has','have','been','into','over','about','again','then','than','when','what','who','not','but','out','all','are','our','you','your','his','her','its','it','on','in','to','of','a','i','at','by','up','me','my','no','so','as','is','be','an','or','if','we','he'])
+  const words = t => new Set(String(t).toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !STOP.has(w)))
+  const withBlockers = logs.filter(l => l.blockers?.trim())
+  const pairs = []
+  for (let i = 0; i < withBlockers.length; i++) {
+    for (let j = i + 1; j < withBlockers.length; j++) {
+      const a = words(withBlockers[i].blockers)
+      const b = words(withBlockers[j].blockers)
+      const shared = [...a].filter(w => b.has(w))
+      if (shared.length >= 2) pairs.push({ a: withBlockers[i], b: withBlockers[j], shared })
+    }
+  }
+  return pairs.slice(0, 2)
+}
+
 export default function DailyLogs() {
   const { profile } = useAuth()
   const [logs, setLogs]       = useState([])
@@ -158,7 +203,7 @@ export default function DailyLogs() {
             <ul className="mt-4 space-y-2.5">
               {notes.map(n => (
                 <li key={n.id} className="flex items-start gap-3 group">
-                  <span className="text-[12px] text-ink-400 tabular-nums flex-shrink-0 mt-0.5 w-20">{n.note_date}</span>
+                  <span className="text-[12px] text-ink-400 flex-shrink-0 mt-0.5 w-20" title={n.note_date}>{humanDate(n.note_date)}</span>
                   <p className="text-[14px] text-ink-800 leading-relaxed whitespace-pre-wrap flex-1">{n.note}</p>
                   {/* Only the author can delete — RLS enforces it, this just
                       hides a button that would fail for everyone else. */}
@@ -177,6 +222,31 @@ export default function DailyLogs() {
           )}
         </div>
       </div>
+
+      {(() => {
+        const pairs = repeatedBlockers(logs)
+        if (!pairs.length) return null
+        return (
+          <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
+              Same thing came up twice
+            </p>
+            <p className="text-[13px] text-ink-700 mt-1.5 leading-relaxed">
+              Worth a look — two different days ran into something similar. It may be
+              coincidence, or it may be one thing you can fix once.
+            </p>
+            <ul className="mt-3 space-y-2">
+              {pairs.map((p, i) => (
+                <li key={i} className="text-[13px] text-ink-800 leading-relaxed">
+                  <span className="text-ink-500">{humanDate(p.a.log_date)}:</span> {p.a.blockers}
+                  <br />
+                  <span className="text-ink-500">{humanDate(p.b.log_date)}:</span> {p.b.blockers}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      })()}
 
       {logs.length === 0 && (
         <div className="mt-8 rounded-xl border border-ink-100 bg-white px-5 py-6">
@@ -202,7 +272,7 @@ export default function DailyLogs() {
                 </div>
                 <div className="flex items-center gap-3 text-[12px] text-ink-400">
                   {log.hours_on_site != null && <span>{log.hours_on_site}h on site</span>}
-                  <span>{log.log_date}</span>
+                  <span title={log.log_date}>{humanDate(log.log_date)}</span>
                   {log.reviewed_at && <span className="text-brand-600 font-semibold">read</span>}
                 </div>
               </div>
@@ -229,18 +299,28 @@ export default function DailyLogs() {
                     placeholder="Anything the owner should know that isn't in the log above."
                     className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
                   />
-                  <div className="mt-2 flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => saveNote(log)}
-                      disabled={saving === log.id || (!dirty && !!log.reviewed_at)}
-                      className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-200 text-white text-sm font-medium transition-colors"
-                    >
-                      {saving === log.id
-                        ? 'Saving…'
-                        : log.reviewed_at ? (dirty ? 'Update note' : 'Read') : (dirty ? 'Save note' : 'Mark as read')}
-                    </button>
-                    {dirty && <span className="text-[12px] text-ink-400">Unsaved</span>}
+                  {/* ⚠️ 2 Sep — this rendered a DISABLED button labelled "Read"
+                      once a note was saved, which reads as an action you are
+                      not allowed to take. It was a status wearing a button's
+                      clothes, and the header already showed "read" anyway.
+                      Now: a button only when there is something to do, and the
+                      state said in words when there is not. */}
+                  <div className="mt-2 flex items-center gap-3 min-h-[36px]">
+                    {(dirty || !log.reviewed_at) ? (
+                      <button
+                        type="button"
+                        onClick={() => saveNote(log)}
+                        disabled={saving === log.id}
+                        className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-300 text-white text-sm font-medium transition-colors"
+                      >
+                        {saving === log.id
+                          ? 'Saving…'
+                          : dirty ? (log.pm_note ? 'Update note' : 'Save note') : 'Mark as read'}
+                      </button>
+                    ) : (
+                      <span className="text-[12px] text-ink-400">Saved.</span>
+                    )}
+                    {dirty && <span className="text-[12px] text-amber-700">Unsaved</span>}
                   </div>
                 </div>
               </div>
