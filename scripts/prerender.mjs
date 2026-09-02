@@ -44,12 +44,19 @@ const HOST       = `http://127.0.0.1:${PORT}`
 //   - title is a single element (not a list), so dedup ambiguity doesn't apply
 //   - react-helmet-async always rewrites it via document.title = …
 //   - no schema-shape coupling per route
+import { ANSWERS } from '../src/content/answers.js'
+
 const ROUTES = [
   // ⚠️ These needles must track the real <title> of each page. Change a title
   // in Helmet or index.html without changing it here and the build fails 20
   // seconds later with a bare "Waiting failed" and no clue which route or
   // which string — which is exactly what happened when the landing page was
   // repositioned. The catch below now prints both.
+  { path: '/answers',         titleContains: 'Answers for owner-operators' },
+  // ⚠️ Generated from the same array the pages render from. An answer page that
+  // is not prerendered is invisible to every assistant that does not run
+  // JavaScript — which is the entire reason these pages exist.
+  ...ANSWERS.map(a => ({ path: `/answers/${a.slug}`, titleContains: a.question.slice(0, 30) })),
   { path: '/',                titleContains: 'advisor for owners who care how' },
   { path: '/pricing',         titleContains: 'Pricing — Eliv8 OS' },
   { path: '/demo',            titleContains: 'See it work' },

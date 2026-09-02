@@ -36,7 +36,7 @@
 // Google and to AI assistants, so a hardcoded copy here silently becomes a
 // second source of truth — which is how it came to advertise $97 CAD long
 // after the price was $147 USD.
-import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from './pricing'
+import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from './pricing.js'
 
 // ── Site constants ──────────────────────────────────────────────────────────
 
@@ -44,6 +44,10 @@ import { PRICE_MONTHLY_USD, SHOW_PUBLIC_PRICE } from './pricing'
  * Production URL. Every canonical link, og:url, sitemap entry, and llms.txt
  * entry follows from this.
  */
+import { ANSWERS } from '../content/answers.js'
+
+const ANSWER_SLUGS = ANSWERS.map(a => a.slug)
+
 export const SITE_URL = 'https://eliv8os.com'
 
 export const SITE_NAME = 'Eliv8 OS'
@@ -177,6 +181,12 @@ export const PUBLIC_PAGES = [
   { path: '/privacy',         priority: '0.4', changefreq: 'yearly'  },
   { path: '/terms',           priority: '0.4', changefreq: 'yearly'  },
   { path: '/free-gbp-audit',  priority: '0.8', changefreq: 'monthly' },
+  { path: '/answers',         priority: '0.8', changefreq: 'weekly'  },
+  // ⚠️ Answer pages are the reason the sitemap is now GENERATED rather than
+  // hand-kept: the old file had drifted to 16 URLs against 18 live routes, and
+  // adding these by hand would have guaranteed it drifted further. A page an
+  // assistant cannot find is a page that does not exist.
+  ...ANSWER_SLUGS.map(slug => ({ path: `/answers/${slug}`, priority: '0.7', changefreq: 'monthly' })),
   ...COMPETITOR_SLUGS.map(slug => ({ path: `/vs/${slug}`,  priority: '0.7', changefreq: 'monthly' })),
   ...TRADE_SLUGS     .map(slug => ({ path: `/for/${slug}`, priority: '0.7', changefreq: 'monthly' })),
 ]

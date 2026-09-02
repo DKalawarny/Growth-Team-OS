@@ -54,6 +54,8 @@ const Trajectories   = lazy(() => import('./pages/Trajectories'))
 const Board          = lazy(() => import('./pages/Board'))
 const Playbooks      = lazy(() => import('./pages/Playbooks'))
 const DailyLogs      = lazy(() => import('./pages/DailyLogs'))
+const AnswerIndex    = lazy(() => import('./pages/marketing/Answers').then(m => ({ default: m.AnswerIndex })))
+const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => ({ default: m.AnswerPage })))
 const AdminBackfill  = lazy(() => import('./pages/AdminBackfill'))
 const AdminReview    = lazy(() => import('./pages/AdminReview'))
 const Analytics      = lazy(() => import('./pages/Analytics'))
@@ -195,6 +197,8 @@ export default function App() {
         <Route path="/"         element={<RedirectIfAuthed><Landing /></RedirectIfAuthed>} />
         <Route path="/pricing"  element={<LazyRoute><Pricing /></LazyRoute>} />
         <Route path="/about"    element={<LazyRoute><About /></LazyRoute>} />
+        <Route path="/answers"       element={<LazyRoute><AnswerIndex /></LazyRoute>} />
+        <Route path="/answers/:slug" element={<LazyRoute><AnswerPage /></LazyRoute>} />
         <Route path="/security" element={<LazyRoute><Security /></LazyRoute>} />
         <Route path="/privacy"  element={<LazyRoute><Privacy /></LazyRoute>} />
         <Route path="/terms"    element={<LazyRoute><Terms /></LazyRoute>} />
