@@ -1036,7 +1036,16 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
         </p>
 
         <p className="text-[11px] text-ink-300 mt-5">
-          PDF, Word, Excel, CSV, text, Markdown — or a photo of a whiteboard or document · {MAX_MB} MB max · only you and your team can see these
+          {/* ⚠️ 2 Sep — the photo capability was SIXTH in a list of file formats,
+              which is not the same as telling anyone about it. Daniel: "having
+              that explained to the user is important, it's a great feature it
+              reading hand notes." It is genuinely the least expected thing the
+              product does — an owner does not assume he can photograph the back
+              of an envelope — and it was written as a footnote about MIME types. */}
+          <span className="text-ink-600">Photograph a handwritten page and it gets read.</span>{' '}
+          A whiteboard, a site note, the back of an envelope — Solomon reads the writing,
+          not just the picture. Or upload PDF, Word, Excel, CSV, text, Markdown ·
+          {' '}{MAX_MB} MB max · only you and your team can see these
         </p>
       </div>
 
