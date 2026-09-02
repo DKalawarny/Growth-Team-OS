@@ -166,7 +166,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : Promise.resolve(null)
 
   const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes,
-         staffRes, woRes, tplRes, memoryRows, coRes] = await Promise.all([
+         staffRes, woRes, tplRes, memoryRows, coRes, logsRes] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -266,6 +266,18 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .select('roadmap_built_from')
       .eq('id', companyId)
       .maybeSingle(),
+    // ⭐ Daily logs — what actually happened on the jobs, in the crew's words.
+    // This is the only thing in BUSINESS_CONTEXT the owner did not write
+    // himself, which is exactly why it is worth having: it is how Solomon can
+    // see whether work is really being set up properly rather than taking the
+    // owner's account of it. Asked about a crew member who coasts, Solomon
+    // reached for precisely this data before it existed.
+    supabase
+      .from('daily_logs')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id')
+      .eq('company_id', companyId)
+      .order('log_date', { ascending: false })
+      .limit(20),
   ])
 
   const bp        = bpRes.data ?? {}
@@ -594,6 +606,18 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
         ? describeDrift(roadmapDrift(coRes.data.roadmap_built_from, bp))
         : null,
     },
+    // ⚠️ Names are resolved so a log reads "Marcus: the unit was locked out
+    // again" rather than a uuid. Blockers are kept even when empty-ish because
+    // a repeated blocker across days is the finding — one locked door is a bad
+    // morning, the same locked door four times is a system nobody wrote down.
+    daily_logs: (logsRes?.data ?? []).map(l => ({
+      date:      l.log_date,
+      person:    (staffRes?.data ?? []).find(m => m.id === l.staff_member_id)?.name ?? 'Crew',
+      happened:  l.what_happened,
+      blockers:  l.blockers ?? null,
+      hours:     l.hours_on_site ?? null,
+    })),
+
     website_excerpt: bp.website_content
       ? bp.website_content.slice(0, WEBSITE_EXCERPT_CHARS)
       : null,

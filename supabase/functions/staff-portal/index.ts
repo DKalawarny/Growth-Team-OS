@@ -34,6 +34,9 @@
  *   updateChecklistItem   → { ok: true } after ticking / unticking a single
  *                            checklist item; ownership verified via the
  *                            item's parent work_order
+ *   submitDailyLog        → { ok: true, log } — end-of-day account of what
+ *                            happened. Server sets the date, so it records the
+ *                            past only and can never become scheduling.
  *   addStepComment        → { ok: true, comment } after inserting a field
  *                            comment against a checklist item; ownership
  *                            verified via the item's parent work_order.
@@ -498,6 +501,83 @@ Deno.serve(async (req) => {
           author_name: staff.name ?? 'Crew',
         },
       })
+    }
+
+    // ── submitDailyLog ────────────────────────────────────────────────────
+    // Daniel, 1 Sep: "a link for a foreman like a daily log would work well."
+    //
+    // ⚠️ RECORDS THE PAST ONLY. No date is accepted from the client — the day
+    // is the server's, so a foreman cannot log tomorrow and this cannot drift
+    // into scheduling. That is the line that keeps the product from becoming
+    // the dispatch tool Daniel said he does not want.
+    //
+    // Upsert, not insert: someone correcting himself at 6pm should replace his
+    // own account of the day, not leave two contradictory versions for Solomon
+    // to average. The unique index in 035 is what makes that safe.
+    if (body.op === 'submitDailyLog') {
+      const whatHappened = typeof body.whatHappened === 'string' ? body.whatHappened.trim() : ''
+      if (!whatHappened) return json({ error: 'missing whatHappened' }, 400)
+      if (whatHappened.length > MAX_COMMENT_LEN) return json({ error: 'text_too_long' }, 400)
+
+      const blockers = typeof body.blockers === 'string' ? body.blockers.trim().slice(0, MAX_COMMENT_LEN) : null
+
+      // Optional and deliberately loose — this is context for the owner, not a
+      // timesheet. Anything unparseable is simply dropped rather than refused;
+      // losing the hours is better than losing the whole log over them.
+      let hours: number | null = null
+      if (body.hours !== undefined && body.hours !== null && body.hours !== '') {
+        const h = Number(body.hours)
+        if (Number.isFinite(h) && h >= 0 && h <= 24) hours = h
+      }
+
+      // A work order is optional, but if one is named it must be this person's.
+      // Same generic not_found as everywhere else so nothing leaks about which
+      // guard tripped.
+      let workOrderId: string | null = null
+      if (body.workOrderId) {
+        const { data: wo } = await admin
+          .from('work_orders')
+          .select('id, staff_member_id, company_id')
+          .eq('id', body.workOrderId)
+          .maybeSingle()
+        const row = wo as { staff_member_id: string | null; company_id: string } | null
+        if (!row || row.company_id !== staff.company_id || row.staff_member_id !== staff.id) {
+          return json({ error: 'not_found' }, 404)
+        }
+        workOrderId = body.workOrderId
+      }
+
+      const today = new Date().toISOString().slice(0, 10)
+
+      const { data: existing } = await admin
+        .from('daily_logs')
+        .select('id')
+        .eq('company_id', staff.company_id)
+        .eq('staff_member_id', staff.id)
+        .eq('log_date', today)
+        .is('work_order_id', workOrderId === null ? null : undefined)
+        .maybeSingle()
+
+      const payload = {
+        company_id:      staff.company_id,
+        staff_member_id: staff.id,
+        work_order_id:   workOrderId,
+        log_date:        today,
+        what_happened:   whatHappened,
+        blockers:        blockers || null,
+        hours_on_site:   hours,
+        updated_at:      new Date().toISOString(),
+      }
+
+      const res = existing?.id
+        ? await admin.from('daily_logs').update(payload).eq('id', (existing as { id: string }).id).select('id, log_date').maybeSingle()
+        : await admin.from('daily_logs').insert(payload).select('id, log_date').maybeSingle()
+
+      if (res.error) {
+        console.error('[staff-portal] daily log write failed', res.error)
+        return json({ error: 'insert_failed' }, 500)
+      }
+      return json({ ok: true, log: res.data })
     }
 
     return json({ error: 'unknown_op' }, 400)
