@@ -91,6 +91,15 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     setSaving(false)
   }
 
+  // ⚠️ Which days to NUDGE, not a record of who works when. A rota needs
+  // maintaining and goes stale the first time someone swaps a shift; a nudge on
+  // the wrong day costs nothing and gets ignored. Nothing else in the product
+  // reads this, and nothing else should.
+  async function saveDays(id, days) {
+    setStaff(list => list.map(s => (s.id === id ? { ...s, log_days: days } : s)))
+    await supabase.from('staff_members').update({ log_days: days }).eq('id', id)
+  }
+
   async function handleRemove(id) {
     setRemoving(id)
     await supabase.from('staff_members').delete().eq('id', id)
@@ -123,6 +132,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   staff={s}
                   removing={removing === s.id}
                   onRemove={() => handleRemove(s.id)}
+                  onSetDays={(days) => saveDays(s.id, days)}
                 />
               ))}
             </div>
@@ -187,7 +197,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   )
 }
 
-function StaffRow({ staff: s, removing, onRemove }) {
+function StaffRow({ staff: s, removing, onRemove, onSetDays }) {
   const initials = (s.name || s.email || '?')
     .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 
@@ -205,6 +215,33 @@ function StaffRow({ staff: s, removing, onRemove }) {
             </span>
           )}
         </div>
+        {/* ⚠️ 2 Sep — Daniel: "a foreman might not need one every day... maybe
+            he's sometimes not the foreman or has days off." Day toggles, and
+            they only appear when there is an email to send to — offering to
+            schedule a reminder we have no way to deliver is worse than not
+            offering. */}
+        {s.email && (
+          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+            <span className="text-[10px] text-ink-400 mr-1">Ask for a log on</span>
+            {[[1, 'M'], [2, 'T'], [3, 'W'], [4, 'T'], [5, 'F'], [6, 'S'], [7, 'S']].map(([day, letter], i) => {
+              const days = Array.isArray(s.log_days) ? s.log_days : []
+              const on   = days.includes(day)
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  title={`${on ? 'Stop asking' : 'Ask'} on this day`}
+                  onClick={() => onSetDays(on ? days.filter(d => d !== day) : [...days, day].sort())}
+                  className={`w-5 h-5 rounded text-[10px] font-bold transition-colors ${
+                    on ? 'bg-teal-600 text-white' : 'bg-ink-50 text-ink-300 hover:bg-ink-100'
+                  }`}
+                >
+                  {letter}
+                </button>
+              )
+            })}
+          </div>
+        )}
         {s.email ? (
           <a
             href={`mailto:${s.email}`}
