@@ -163,9 +163,9 @@ export default function StaffPortal() {
   // afterwards — they can only add a note alongside (036) — because the whole
   // point is that it is the one thing in Solomon's context the owner did not
   // write himself.
-  const submitDailyLog = async (workOrderId, whatHappened) => {
+  const submitDailyLog = async (workOrderId, whatHappened, blockers, hours) => {
     try {
-      const res = await callPortal('submitDailyLog', { token, workOrderId, whatHappened })
+      const res = await callPortal('submitDailyLog', { token, workOrderId, whatHappened, blockers, hours })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
       return { ok: false }
@@ -906,7 +906,9 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  */
 function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const [expanded, setExpanded] = useState(false)
-  const [drafts, setDrafts]     = useState({})              // { [workOrderId]: text }
+  const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
+  const [blockerDrafts, setBlockerDrafts] = useState({})   // { [workOrderId]: what got in the way }
+  const [hourDrafts, setHourDrafts]       = useState({})   // { [workOrderId]: hours on site }
   // ⚠️ 2 Sep — still tracked, currently unread. It used to travel to the step
   // comment as is_voice; daily_logs has no such column and does not need one —
   // a dictated account of the day is not worth less than a typed one. Kept
@@ -983,12 +985,22 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const submit = async () => {
     if (sending) return
     const toSend = workOrders
-      .map(w => ({ wo: w, text: (drafts[w.id] ?? '').trim() }))
+      .map(w => ({
+        wo:       w,
+        text:     (drafts[w.id] ?? '').trim(),
+        blockers: (blockerDrafts[w.id] ?? '').trim(),
+        hours:    (hourDrafts[w.id] ?? '').trim(),
+      }))
       // ⚠️ No longer requires a checklist item. It used to — because the note
       // had to be pinned to one — which silently dropped the recap for any job
       // without a playbook attached. Those are often the jobs worth hearing
       // about.
-      .filter(x => x.text.length > 0)
+      // ⚠️ A blocker on its own still counts. "Nothing got done, waited two
+      // hours for access" is the most useful log of the lot, and requiring the
+      // first box would throw it away. what_happened is NOT NULL, so fall back
+      // to the blocker text rather than refusing the submit.
+      .filter(x => x.text.length > 0 || x.blockers.length > 0)
+      .map(x => ({ ...x, text: x.text || x.blockers }))
     if (toSend.length === 0) return
     if (recording) stopRecording()
     setSending(true)
@@ -999,11 +1011,13 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text }) => onSubmitDailyLog(wo.id, text))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
         setDrafts({})
+        setBlockerDrafts({})
+        setHourDrafts({})
         setVoiceWoIds(new Set())
         setSuccess(true)
         // Auto-collapse after a beat so the crew can move on without a
@@ -1083,15 +1097,46 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
           {workOrders.map(wo => (
             <li key={wo.id} className="border border-ink-150 rounded-lg p-2.5 bg-ink-50/40">
               <p className="text-[12px] font-bold text-ink-900 mb-1 leading-snug">{wo.title}</p>
+              {/* ⚠️ 2 Sep — there was ONE box here and it sent what_happened.
+                  blockers and hours_on_site existed in the table, in Solomon's
+                  context, in the prompt (where blockers is called "the field the
+                  whole thing exists for") and in the amber panel on /logs — and
+                  NOTHING COULD EVER FILL THEM. The only blockers in the database
+                  were seeded by hand. A column nobody can write to is not a
+                  feature, it is a promise the UI cannot keep.
+
+                  Two boxes, not one merged box, because they answer different
+                  questions and merging them buries the second. What happened is
+                  the record; what got in the way is the thing worth fixing, and
+                  the one that shows a pattern when it repeats. */}
               <textarea
                 value={drafts[wo.id] ?? ''}
                 onChange={(e) => setDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
                 onFocus={() => { focusedWoIdRef.current = wo.id }}
-                placeholder="Anything slow you down? Tool gaps? Surprise hazards?"
+                placeholder="What got done?"
                 rows={2}
                 maxLength={4000}
                 className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
               />
+              <textarea
+                value={blockerDrafts[wo.id] ?? ''}
+                onChange={(e) => setBlockerDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
+                onFocus={() => { focusedWoIdRef.current = wo.id }}
+                placeholder="Anything slow you down? Locked door, missing part, waiting on someone…"
+                rows={2}
+                maxLength={4000}
+                className="mt-1.5 w-full text-[12px] leading-snug px-2 py-1.5 bg-amber-50/60 border border-amber-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-ink-400"
+              />
+              <div className="mt-1.5 flex items-center gap-2">
+                <input
+                  type="number" min="0" max="24" step="0.5" inputMode="decimal"
+                  value={hourDrafts[wo.id] ?? ''}
+                  onChange={(e) => setHourDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
+                  placeholder="Hours"
+                  className="w-24 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+                />
+                <span className="text-[11px] text-ink-400">on site — optional</span>
+              </div>
             </li>
           ))}
         </ul>
