@@ -274,7 +274,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // reached for precisely this data before it existed.
     supabase
       .from('daily_logs')
-      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at')
       .eq('company_id', companyId)
       .order('log_date', { ascending: false })
       .limit(20),
@@ -616,6 +616,12 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       happened:  l.what_happened,
       blockers:  l.blockers ?? null,
       hours:     l.hours_on_site ?? null,
+      // ⚠️ Kept as a SEPARATE field, never merged into `happened`. These are two
+      // different people's accounts and Solomon must be able to tell them apart
+      // — the crew's is what was seen on site, the office note is an
+      // interpretation of it, and where they disagree that gap is the finding.
+      office_note: l.pm_note ?? null,
+      reviewed:    !!l.reviewed_at,
     })),
 
     website_excerpt: bp.website_content
