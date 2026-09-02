@@ -188,6 +188,31 @@ export const SOLOMON_TOOLS = [
     },
   },
   {
+    name: 'search_the_record',
+    description:
+      "Search the job record — the crew's end-of-day logs and the owner's own notes — for something " +
+      'that happened. Use it when the question is about the PAST: when something started, whether it has ' +
+      'come up before, what was said about a job or a person, how often a problem recurs.\n\n' +
+      'You are given the most recent entries in BUSINESS_CONTEXT already, so do not use this to re-read ' +
+      'those. Use it when the answer is likely to be older than that, which is most of the time once a ' +
+      'business has been running a while. "Has this happened before?" is almost always a search.\n\n' +
+      'Returns matching entries with who wrote them and when. Nothing back means nothing was written ' +
+      'about it — which is a real answer, and NOT the same as it not having happened.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description:
+            'Words that would actually appear in what someone typed. These are notes written quickly at ' +
+            'the end of a day, so search for the plain thing — "locked", "access", "waiting on the ' +
+            'sparky" — rather than for a formal phrasing nobody would have used.',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
     name: 'run_tool',
     description:
       'Run one of the owner\'s tools and get its finished result back. The artifact is saved to their ' +
@@ -264,6 +289,8 @@ export async function runSolomonTool({ toolUse, companyId, userId, context }) {
   try {
     const result = name === 'search_library'
       ? await doSearchLibrary({ companyId, input })
+      : name === 'search_the_record'
+      ? await doSearchTheRecord({ companyId, input })
       : name === 'run_tool'
         ? await doRunTool({ companyId, userId, context, input })
         : { error: `No such tool: ${name}.` }
@@ -303,6 +330,78 @@ export function describeToolUse({ name, input }) {
 }
 
 // ── search_library ────────────────────────────────────────────────────────────
+
+/**
+ * search_the_record — the crew's logs and the owner's notes, searched.
+ *
+ * ⚠️ WHY THIS EXISTS. BUSINESS_CONTEXT carries the 20 most recent of each, so
+ * anything older was invisible to Solomon no matter how often the owner asked.
+ * "When did the Northgate access problem start?" was unanswerable after a
+ * fortnight, and it got worse every week the crew wrote. Daniel: "is there a
+ * way of looking back on notes — this is important."
+ *
+ * ⚠️ Plain text matching, not embeddings, and that is deliberate. These are two
+ * or three sentences typed on a phone at the end of a long day. The words the
+ * owner remembers ARE the words the foreman used — "locked", "waiting on the
+ * sparky" — and semantic search over such short, concrete entries mostly adds
+ * a way to return something confidently irrelevant. The library is different:
+ * long documents, formal language, worth embedding. This is not.
+ *
+ * ⚠️ Returns who and when with every hit. An account is only worth anything if
+ * you know whose it was.
+ */
+async function doSearchTheRecord({ companyId, input }) {
+  const q = String(input?.query ?? '').trim()
+  if (!q) return { error: 'Give me something to look for.' }
+
+  const like = `%${q.replace(/[%_]/g, '')}%`
+
+  const [logs, notes, staff] = await Promise.all([
+    supabase
+      .from('daily_logs')
+      .select('log_date, what_happened, blockers, safety_note, who_on_site, injury, staff_member_id, work_order_id')
+      .eq('company_id', companyId)
+      .or(`what_happened.ilike.${like},blockers.ilike.${like},safety_note.ilike.${like},who_on_site.ilike.${like},pm_note.ilike.${like}`)
+      .order('log_date', { ascending: false })
+      .limit(25),
+    supabase
+      .from('office_notes')
+      .select('note_date, note, status')
+      .eq('company_id', companyId)
+      .ilike('note', like)
+      .order('note_date', { ascending: false })
+      .limit(25),
+    supabase.from('staff_members').select('id, name').eq('company_id', companyId),
+  ])
+
+  const nameOf = id => (staff.data ?? []).find(m => m.id === id)?.name ?? 'Crew'
+
+  const payload = {
+    crew_logs: (logs.data ?? []).map(l => ({
+      date:     l.log_date,
+      person:   nameOf(l.staff_member_id),
+      happened: l.what_happened,
+      blockers: l.blockers ?? null,
+      safety:   l.safety_note ?? null,
+      injury:   l.injury === true,
+      on_site:  l.who_on_site ?? null,
+    })),
+    office_notes: (notes.data ?? []).map(n => ({
+      date: n.note_date, note: n.note, status: n.status ?? 'open',
+    })),
+  }
+
+  if (!payload.crew_logs.length && !payload.office_notes.length) {
+    return {
+      payload: {
+        found: false,
+        // ⚠️ Said explicitly so it is not reported as "this never happened".
+        note: 'Nothing written about that. Nobody recorded it — which is not the same as it not having happened.',
+      },
+    }
+  }
+  return { payload }
+}
 
 async function doSearchLibrary({ companyId, input }) {
   const query = String(input?.query ?? '').trim()
