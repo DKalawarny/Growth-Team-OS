@@ -30,6 +30,14 @@ export default function PublicHeader() {
           <Wordmark tone="light" size={19} />
         </Link>
         <nav className="flex items-center gap-4 text-sm">
+          {/* ⚠️ 2 Sep — /answers was ORPHANED. Nineteen prerendered pages existed
+              in the sitemap and NOTHING on the site linked to them: not the
+              homepage, not the footer, not one trade page. Orphaned content
+              ranks badly however good it is — a crawler reaching a page only
+              via the sitemap treats it as unimportant, and an assistant
+              following links off the homepage never reaches it at all. This is
+              the link that makes the rest of the work count. */}
+          <Link to="/answers" className="text-gray-700 hover:text-gray-900 font-medium">Answers</Link>
           <Link to="/pricing" className="text-gray-700 hover:text-gray-900 font-medium">Pricing</Link>
           <Link to="/login" className="text-gray-600 hover:text-gray-900">Log in</Link>
           <Link

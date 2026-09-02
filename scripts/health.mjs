@@ -86,6 +86,26 @@ console.log('\n── crawl files ───────────────�
   }
 }
 
+// ⚠️ 2 Sep — /answers was orphaned: 19 prerendered pages, in the sitemap, and
+// NOT ONE link to them from anywhere on the site. Orphaned content ranks badly
+// however good it is, and an assistant following links off the homepage never
+// reaches it. That failure is invisible — every page returns 200 — so it is
+// checked here rather than trusted.
+console.log('\n── internal links ─────────────────────────────────────')
+{
+  const home = await get(SITE_URL)
+  const n = (home.body.match(/href="\/answers/g) ?? []).length
+  n > 0 ? ok(`homepage links to /answers (${n})`) : bad('homepage does not link to /answers — orphaned')
+
+  const trade = await get(`${SITE_URL}/for/plumbers`)
+  const t = (trade.body.match(/href="\/answers/g) ?? []).length
+  t > 0 ? ok(`/for/plumbers links to answers (${t})`) : bad('/for/plumbers does not link to answers')
+
+  const ans = await get(`${SITE_URL}/answers/should-i-drop-my-price-to-win-a-job`)
+  const b = (ans.body.match(/href="\/for\//g) ?? []).length
+  b > 0 ? ok(`answer pages link back to trades (${b})`) : bad('answer pages are a cul-de-sac')
+}
+
 console.log('\n── crawlers ───────────────────────────────────────────')
 for (const [name, ua] of [
   ['Googlebot',     'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'],

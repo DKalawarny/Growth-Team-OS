@@ -48,6 +48,17 @@ function AnswerIndex() {
           to read them, and no pretending a hard question has an easy answer.
         </p>
 
+        <p className="mt-6 text-[15px] text-gray-500">
+          Or read the version written for{' '}
+          {[['plumbers','plumbers'],['electricians','electricians'],['hvac','HVAC'],['roofing','roofing']]
+            .map(([slug, label], i, arr) => (
+              <span key={slug}>
+                <Link to={`/for/${slug}`} className="text-brand-700 hover:underline underline-offset-2">{label}</Link>
+                {i < arr.length - 2 ? ', ' : i === arr.length - 2 ? ' or ' : '.'}
+              </span>
+            ))}
+        </p>
+
         {ANSWER_CATEGORIES.map(cat => {
           const inCat = ANSWERS.filter(a => a.category === cat)
           if (!inCat.length) return null
@@ -165,6 +176,26 @@ function AnswerPage() {
             </ul>
           </section>
         )}
+
+        {/* ⚠️ Links back OUT to the trade pages. Weight has to flow both ways or
+            the answers stay a well-written cul-de-sac — and a reader who has
+            just got a straight answer is the likeliest person in the world to
+            want the version written for his trade. */}
+        <section className="mt-10 pt-8 border-t border-gray-100">
+          <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Written for your trade</h2>
+          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+            {[
+              ['plumbers', 'Plumbers'], ['electricians', 'Electricians'], ['hvac', 'HVAC'],
+              ['roofing', 'Roofing'], ['demolition', 'Demolition'], ['landscaping', 'Landscaping'],
+            ].map(([slug, label]) => (
+              <li key={slug}>
+                <Link to={`/for/${slug}`} className="text-[15px] text-gray-700 hover:text-brand-700 hover:underline underline-offset-2">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* ⚠️ One soft line, at the bottom, after the answer has been given.
             A page that sells before it answers does not get cited, and does not

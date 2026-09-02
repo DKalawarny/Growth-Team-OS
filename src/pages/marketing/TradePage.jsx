@@ -285,6 +285,37 @@ export default function TradePage() {
         </section>
 
         {/* ── CTA ─────────────────────────────────────────────────────────── */}
+        {/* ⚠️ 2 Sep — the answer pages were an ISLAND. Nothing linked to them and
+            they linked to nothing outside their own category, so the two halves
+            of the site could not lend each other any weight. These are the same
+            questions a plumber landing here is already carrying, and a page
+            that answers one for free is a better argument for the product than
+            another paragraph about the product. */}
+        <section className="mb-10">
+          <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Questions owners ask us
+          </h2>
+          <ul className="mt-3 grid sm:grid-cols-2 gap-x-8 gap-y-2">
+            {[
+              ['should-i-drop-my-price-to-win-a-job',      'Should I drop my price to win a job?'],
+              ['can-i-afford-to-hire-someone',             'Can I afford to hire someone?'],
+              ['why-is-my-margin-dropping-when-revenue-is-up', 'Why is my margin dropping when revenue is up?'],
+              ['why-do-good-people-keep-leaving',          'Why do good people keep leaving?'],
+              ['how-do-i-know-if-im-underpricing',         'How do I know if I am underpricing?'],
+              ['how-do-i-get-out-of-the-day-to-day',       'How do I get out of the day-to-day?'],
+            ].map(([slug, q]) => (
+              <li key={slug}>
+                <Link to={`/answers/${slug}`} className="text-[15px] text-gray-700 hover:text-brand-700 hover:underline underline-offset-2">
+                  {q}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link to="/answers" className="inline-block mt-3 text-[14px] font-semibold text-brand-700 hover:text-brand-800">
+            All answers &rarr;
+          </Link>
+        </section>
+
         <section className="bg-gray-950 rounded-2xl px-8 py-12 text-center text-white relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{
             backgroundImage: 'radial-gradient(ellipse 60% 50% at 50% 100%, rgba(245,158,11,0.12) 0%, transparent 70%)',
