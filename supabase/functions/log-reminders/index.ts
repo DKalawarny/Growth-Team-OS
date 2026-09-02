@@ -61,6 +61,27 @@ Deno.serve(async (req: Request) => {
   const toSend = due.filter(s => !alreadyWrote.has((s as { id: string }).id))
 
   const site = Deno.env.get('PUBLIC_SITE_URL') ?? 'https://eliv8os.com'
+
+  // ⚠️ 2 Sep — these went out with NO reply-to, so a foreman hitting reply sent
+  // to hello@eliv8os.com: OUR address, not his own boss's. In a multi-tenant
+  // product that is plainly wrong — a crew reply belongs to the owner of THAT
+  // business. Daniel spotted it: "shouldn't the email go to the PM or the
+  // owner's email?"
+  //
+  // One query for every company involved rather than one per person. Falls back
+  // to no reply-to rather than to ours: a reply that bounces tells the sender
+  // something, and a reply that quietly lands in a stranger's inbox does not.
+  const companyIds = [...new Set((due as Array<{ company_id: string }>).map(s => s.company_id))]
+  const { data: owners } = await admin
+    .from('profiles')
+    .select('company_id, email, role')
+    .in('company_id', companyIds)
+    .not('email', 'is', null)
+  const ownerEmailFor = (cid: string) => {
+    const rows = (owners ?? []) as Array<{ company_id: string; email: string; role: string | null }>
+    const forCo = rows.filter(r => r.company_id === cid)
+    return (forCo.find(r => r.role === 'owner') ?? forCo[0])?.email ?? null
+  }
   let sent = 0
   const failures: string[] = []
 
@@ -82,12 +103,14 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           from:    Deno.env.get('RESEND_FROM') ?? 'Eliv8 OS <onboarding@resend.dev>',
           to:      [s.email],
+          ...(ownerEmailFor(s.company_id) ? { reply_to: ownerEmailFor(s.company_id) } : {}),
           subject: 'Two minutes on today',
           text:
             `Hi ${first},\n\n` +
             `When you get a minute, jot down how today went — what got done, ` +
             `anything that slowed you up, who was on site.\n\n${link}\n\n` +
-            `Same link every day, so you can save it. Nothing to log in to.\n`,
+            `Same link every day, so you can save it. Nothing to log in to.\n` +
+            `Reply to this email if you need to reach the office.\n`,
           html:
             `<p>Hi ${first},</p>` +
             `<p>When you get a minute, jot down how today went — what got done, ` +
