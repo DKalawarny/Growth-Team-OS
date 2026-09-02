@@ -899,6 +899,25 @@ function WorkOrderCard({ order, member, milestone, onEdit, onMove, onDelete, onD
 // ── Work order modal ──────────────────────────────────────────────────────────
 
 function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose }) {
+  // ⚠️ 2 Sep — the two halves of a job record never referenced each other.
+  // /logs was a flat stream and the Board showed jobs; standing on Northgate
+  // you could not see what the crew wrote about it, and reading a log you could
+  // not tell which job it was. Read-only here on purpose — the crew's account
+  // is not editable from the office, and this is the office.
+  const [jobLogs, setJobLogs] = useState([])
+  useEffect(() => {
+    if (!order?.id) { setJobLogs([]); return }
+    let cancelled = false
+    supabase
+      .from('daily_logs')
+      .select('id, log_date, what_happened, blockers, hours_on_site, staff_member_id')
+      .eq('work_order_id', order.id)
+      .order('log_date', { ascending: false })
+      .limit(10)
+      .then(({ data }) => { if (!cancelled) setJobLogs(data ?? []) })
+    return () => { cancelled = true }
+  }, [order?.id])
+
   const fromRoadmap = !!(order?._ms_hint || order?.milestone_id) && !order?.id
   const isCreate    = !order?.id
   const [form, setForm] = useState({
@@ -953,6 +972,29 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
         </div>
 
         <form onSubmit={submit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+          {jobLogs.length > 0 && (
+            <div className="rounded-lg border border-ink-150 bg-ink-50/50 px-4 py-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">
+                What the crew wrote on this job
+              </p>
+              <ul className="space-y-2.5">
+                {jobLogs.map(l => (
+                  <li key={l.id} className="text-[12px] leading-relaxed">
+                    <span className="text-ink-400">
+                      {(staff ?? []).find(m => m.id === l.staff_member_id)?.name ?? 'Crew'} · {l.log_date}
+                      {l.hours_on_site != null ? ` · ${l.hours_on_site}h` : ''}
+                    </span>
+                    <p className="text-ink-800 mt-0.5 whitespace-pre-wrap">{l.what_happened}</p>
+                    {l.blockers && (
+                      <p className="text-amber-800 mt-1 whitespace-pre-wrap">
+                        Got in the way: {l.blockers}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Roadmap context banner */}
           {fromRoadmap && (
@@ -1088,6 +1130,41 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                   </div>
                 ))}
               </div>
+
+              {/* ⚠️ 2 Sep — the numbers went in and nothing ever showed the
+                  result. You could type quoted, cost and invoiced and the card
+                  looked identical whether the job made money or lost it, which
+                  is data entry with no payoff. Two facts, only when they can
+                  actually be computed:
+                    quoted vs invoiced = scope — work done and not charged for,
+                      or charged for and never quoted
+                    invoiced vs cost   = what the job actually made
+                  ⚠️ Blank stays blank. A missing figure shows nothing rather
+                  than being treated as zero, because "not entered" and "made
+                  nothing" are different facts. */}
+              {(() => {
+                const q = form.quoted_amount   === '' ? null : Number(form.quoted_amount)
+                const c = form.cost_amount     === '' ? null : Number(form.cost_amount)
+                const i = form.invoiced_amount === '' ? null : Number(form.invoiced_amount)
+                const money = n => `$${Math.round(n).toLocaleString()}`
+                const bits = []
+                if (q != null && i != null && q !== i) {
+                  const d = i - q
+                  bits.push(d > 0
+                    ? `Invoiced ${money(d)} over the quote`
+                    : `Invoiced ${money(-d)} under the quote`)
+                }
+                if (i != null && c != null && i > 0) {
+                  const pct = Math.round(((i - c) / i) * 100)
+                  bits.push(`Made ${money(i - c)} — ${pct}% margin`)
+                }
+                if (!bits.length) return null
+                return (
+                  <p className="mt-2 text-[12px] text-ink-600 leading-relaxed">
+                    {bits.join(' · ')}
+                  </p>
+                )
+              })()}
             </div>
           </div>
 

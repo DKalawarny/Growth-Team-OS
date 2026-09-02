@@ -278,7 +278,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // nature. Solomon needs to be able to weigh them differently.
     supabase
       .from('office_notes')
-      .select('note_date, note, status')
+      .select('note_date, note, status, work_order_id')
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
       .limit(20),
@@ -626,6 +626,18 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       happened:  l.what_happened,
       blockers:  l.blockers ?? null,
       hours:     l.hours_on_site ?? null,
+      // ⚠️ The job's own numbers travel WITH its log. This is the pair nothing
+      // else in the business puts together — a job that came in under its quote
+      // with a two-hour access delay on it has explained itself, and neither
+      // half says that alone.
+      job:       (woRes?.data ?? []).find(w => w.id === l.work_order_id)?.title ?? null,
+      job_money: (() => {
+        const w = (woRes?.data ?? []).find(x => x.id === l.work_order_id)
+        if (!w) return null
+        const { quoted_amount: q, cost_amount: c, invoiced_amount: i } = w
+        if (q == null && c == null && i == null) return null
+        return { quoted: q, cost: c, invoiced: i }
+      })(),
       // ⚠️ Kept as a SEPARATE field, never merged into `happened`. These are two
       // different people's accounts and Solomon must be able to tell them apart
       // — the crew's is what was seen on site, the office note is an
@@ -639,6 +651,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // worth noticing once, and is invisible if you only ever send the text.
     office_notes: (notesRes?.data ?? []).map(n => ({
       date: n.note_date, note: n.note, status: n.status ?? 'open',
+      job: (woRes?.data ?? []).find(w => w.id === n.work_order_id)?.title ?? null,
     })),
 
     website_excerpt: bp.website_content

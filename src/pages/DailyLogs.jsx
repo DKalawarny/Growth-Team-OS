@@ -80,6 +80,12 @@ export default function DailyLogs() {
   const [notes, setNotes]         = useState([])
   const [noteDraft, setNoteDraft] = useState('')
   const [noteSaving, setNoteSaving] = useState(false)
+  const [noteJob, setNoteJob]       = useState('')
+  const [jobs, setJobs]             = useState([])
+  // ⚠️ Search filters BOTH streams from one box. Two search fields on one page
+  // is a small cruelty — you would have to remember which half you were
+  // looking in, which is the thing you came here because you had forgotten.
+  const [q, setQ] = useState('')
 
   const load = useCallback(async () => {
     if (!profile?.company_id) return
@@ -97,12 +103,13 @@ export default function DailyLogs() {
       supabase.from('staff_members').select('id, name').eq('company_id', profile.company_id),
       supabase.from('work_orders').select('id, title').eq('company_id', profile.company_id),
     ])
+    setJobs(orders ?? [])
     const staffById = new Map((staff ?? []).map(s => [s.id, s.name]))
     const woById    = new Map((orders ?? []).map(o => [o.id, o.title]))
 
     const { data: noteRows } = await supabase
       .from('office_notes')
-      .select('id, note, note_date, created_at, author_profile, status')
+      .select('id, note, note_date, created_at, author_profile, status, work_order_id')
       .eq('company_id', profile.company_id)
       .order('created_at', { ascending: false })
       .limit(50)
@@ -144,9 +151,10 @@ export default function DailyLogs() {
       company_id:     profile.company_id,
       author_profile: profile.id,
       note:           text,
+      work_order_id:  noteJob || null,
     })
     setNoteSaving(false)
-    if (!error) { setNoteDraft(''); load() }
+    if (!error) { setNoteDraft(''); setNoteJob(''); load() }
   }
 
   // ⚠️ Done notes stay on the page. A note that got done is still the record
@@ -164,6 +172,11 @@ export default function DailyLogs() {
     await supabase.from('office_notes').delete().eq('id', id)
     load()
   }
+
+  const needle   = q.trim().toLowerCase()
+  const hit      = (...vals) => !needle || vals.some(v => String(v ?? '').toLowerCase().includes(needle))
+  const shownNotes = notes.filter(n => hit(n.note, n.note_date))
+  const shownLogs  = logs.filter(l => hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date))
 
   if (loading) {
     return <div className="p-8 text-sm text-ink-500">Loading the logs…</div>
@@ -183,6 +196,19 @@ export default function DailyLogs() {
         day. Between them they keep the jobs straight, instead of it living in your
         head and half a dozen text messages.
       </p>
+
+      {/* ⚠️ One search box for both streams. Daniel: "is there a way of looking
+          back on notes, this is important." Scrolling was the only way back.
+          Matches the note, the crew's account, the blockers and the office's
+          note — i.e. everything anyone typed — because a searcher does not know
+          or care which field their half-remembered phrase landed in. */}
+      <input
+        type="search"
+        value={q}
+        onChange={e => setQ(e.target.value)}
+        placeholder="Search everything on this page — a word, a name, a job"
+        className="mt-4 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
+      />
 
       {/* ⚠️ Office notes sit ABOVE the crew logs on purpose. This is the box the
           person at the desk actually reaches for — the crew's logs arrive on
@@ -208,18 +234,28 @@ export default function DailyLogs() {
             placeholder="Supplier rang — steel is going up 6% from the first. Worth repricing the Cascade quote before it goes out."
             className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
           />
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+          <select
+            value={noteJob}
+            onChange={e => setNoteJob(e.target.value)}
+            className="rounded-lg border border-ink-200 px-2 py-2 text-sm text-ink-600 focus:outline-none focus:ring-2 focus:ring-brand-300"
+          >
+            <option value="">Not about a job</option>
+            {jobs.map(j => <option key={j.id} value={j.id}>{j.title}</option>)}
+          </select>
           <button
             type="button"
             onClick={addNote}
             disabled={noteSaving || !noteDraft.trim()}
-            className="mt-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-200 text-white text-sm font-medium transition-colors"
+            className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-200 text-white text-sm font-medium transition-colors"
           >
             {noteSaving ? 'Saving…' : 'Add note'}
           </button>
+          </div>
 
-          {notes.length > 0 && (
+          {shownNotes.length > 0 && (
             <ul className="mt-4 space-y-2.5">
-              {notes.map(n => (
+              {shownNotes.map(n => (
                 <li key={n.id} className="flex items-start gap-3 group">
                   {/* ⚠️ Three explicit labels rather than a click-to-cycle circle.
                       Daniel asked for check marks AND said "I just want assurance
@@ -248,7 +284,14 @@ export default function DailyLogs() {
                   <span className="text-[12px] text-ink-400 flex-shrink-0 mt-1 w-20" title={n.note_date}>{humanDate(n.note_date)}</span>
                   <p className={`text-[14px] leading-relaxed whitespace-pre-wrap flex-1 mt-0.5 ${
                     n.status === 'done' ? 'text-ink-400 line-through' : 'text-ink-800'
-                  }`}>{n.note}</p>
+                  }`}>
+                    {n.note}
+                    {n.work_order_id && (
+                      <span className="text-[12px] text-ink-400">
+                        {' '}· {jobs.find(j => j.id === n.work_order_id)?.title ?? 'job'}
+                      </span>
+                    )}
+                  </p>
                   {/* Only the author can delete — RLS enforces it, this just
                       hides a button that would fail for everyone else. */}
                   {n.author_profile === profile?.id && (
@@ -268,7 +311,7 @@ export default function DailyLogs() {
       </div>
 
       {(() => {
-        const pairs = repeatedBlockers(logs)
+        const pairs = repeatedBlockers(logs)  // pattern always over ALL logs, not the filtered view
         if (!pairs.length) return null
         return (
           <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
@@ -318,7 +361,7 @@ export default function DailyLogs() {
       )}
 
       <div className="mt-6 space-y-4">
-        {logs.map(log => {
+        {shownLogs.map(log => {
           const draft = drafts[log.id] ?? log.pm_note ?? ''
           const dirty = draft.trim() !== (log.pm_note ?? '').trim()
           return (
