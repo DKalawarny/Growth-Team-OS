@@ -217,10 +217,194 @@ export const ANSWERS = [
       { q: 'How do I raise prices with existing customers?', a: 'Tell them before it happens, say why in one sentence, and do not over-explain. Most reasonable customers expect increases; what they resent is finding out on an invoice.' },
     ],
   },
+  {
+    slug: 'should-i-tithe-from-the-business',
+    question: 'Should I tithe from the business or personally?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Most owners give personally from what the business pays them, because that is where the money is actually theirs. Giving from the business itself means giving from money that may still owe tax, wages and suppliers. Neither is more spiritual than the other — but only one of them is unambiguously yours to give.',
+    body: [
+      { h: 'A bank balance is not profit',
+        p: 'The account holds sales tax you collected and deductions withheld from payroll. Neither is yours. Owners who give from the balance rather than from what they have actually earned sometimes end up unable to make a remittance — which is not generosity, it is a debt moved somewhere less visible.' },
+      { h: 'Where it is genuinely a business decision',
+        p: 'Some owners give through the business deliberately — sponsoring something local, doing work at cost for a cause. That is a real choice with real tax consequences, and it is worth an accountant rather than a rule of thumb, because the treatment differs by structure and jurisdiction.' },
+      { h: 'What nobody should tell you',
+        p: 'That giving will make the business more profitable. It might not. Generosity framed as an investment with a return is not generosity, and an owner who gives expecting the money back has been sold something. If it is worth doing, it is worth doing when the return never comes.' },
+      { h: 'The question underneath',
+        p: 'Owners usually ask this when giving has started to feel like pressure rather than freedom. That is worth noticing on its own. A number arrived at from guilt tends not to last, and it is not what anyone was after.' },
+    ],
+    faqs: [
+      { q: 'Is there a right percentage?', a: 'People will give you one confidently. The honest answer is that it is a conviction question rather than an accounting one, and a figure that ruins your ability to pay people is not more faithful for being larger.' },
+      { q: 'Should I give if the business is losing money?', a: 'That is between you and your conscience, but be clear-eyed: giving from money you owe suppliers or staff moves the cost onto them. Their claim is real too.' },
+      { q: 'Is it wrong to take a tax deduction for giving?', a: 'No. Using a deduction that exists is not a loophole, and declining it does not make the gift worth more to the person receiving it.' },
+    ],
+  },
+  {
+    slug: 'is-my-struggling-business-a-sign',
+    question: 'Is my business struggling because I have done something wrong?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'No. Faithful people run businesses that fail, and dishonest people run businesses that thrive — which is exactly why nobody should read a P&L as a spiritual report card. A hard quarter is usually a market, a customer, a price or a mistake. Those are findable. Guilt is not a diagnosis.',
+    body: [
+      { h: 'The idea that trouble means disfavour is cruel and it is also false',
+        p: 'It is cruel because it lands hardest on someone already frightened, and false because it is contradicted by every honest business owner who has had a bad year. If it were true, the most upright operator in your trade would be the wealthiest. He is not, and you know it.' },
+      { h: 'Look for the ordinary cause first',
+        p: 'Margin drifting while revenue grows is usually prices lagging costs. Cash tight while profitable is usually receivables. A quiet quarter is often seasonal and visible in last year\'s numbers. Almost every crisis that feels existential has a boring explanation, and boring explanations have fixes.' },
+      { h: 'What is worth examining',
+        p: 'Not whether you have been faithful enough, but whether anything was decided from fear — a price dropped to survive a slow month, a client taken you already knew was trouble, a date promised you could not hold. Those are worth looking at, and they are decisions, not verdicts.' },
+      { h: 'Say it out loud to someone',
+        p: 'Owners carry this alone longer than they should, and it gets heavier in private. Someone who knows the numbers and is not depending on you for a wage is worth more than any amount of re-reading the accounts at eleven at night.' },
+    ],
+    faqs: [
+      { q: 'Should I take it as a sign to close?', a: 'Sometimes closing is right. But make that call from the numbers and a clear head, not from a bad month interpreted as a message.' },
+      { q: 'Does prayer help a struggling business?', a: 'Many owners would say it steadies them, and steadiness changes decisions. It is not a substitute for a cash-flow plan, and nobody honest will tell you it is.' },
+      { q: 'How do I tell the difference between a bad season and a broken business?', a: 'Look at whether the unit is profitable — whether a typical job makes money. A profitable business in a slow season has a cash problem. An unprofitable one has a pricing problem, and more volume makes it worse.' },
+    ],
+  },
+  {
+    slug: 'should-i-only-hire-christians',
+    question: 'Should I only hire Christians?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Hiring on shared faith rather than on whether someone can do the work tends to produce both a weaker team and a worse witness — and in most jurisdictions it is unlawful discrimination. The more useful question is whether someone who shares none of your convictions would still want to work for you in a year.',
+    body: [
+      { h: 'The legal position is not a footnote',
+        p: 'Employment law in most places prohibits hiring on religion outside narrow religious-organisation exemptions, and a trade business is very unlikely to qualify. This is a question for an employment lawyer in your jurisdiction before it is a question of conscience.' },
+      { h: 'Shared belief is not shared character',
+        p: 'It is entirely possible to hire someone who agrees with you about everything and turns up late, cuts corners and is unkind to the crew. Character shows in how someone works, and it is testable in ways a statement of belief is not.' },
+      { h: 'The better test',
+        p: 'Whether someone who does not share your convictions still wants to work here in a year. If they do, something about how the place runs is working. If they do not, no amount of agreement at the interview will have fixed it.' },
+      { h: 'What people actually notice',
+        p: 'Being paid properly and on time, being told the truth when it costs you something, and not being shouted at. Those are visible to everyone regardless of what they believe, and they say more than anything you could put in a job advert.' },
+    ],
+    faqs: [
+      { q: 'Can I ask about someone\'s faith in an interview?', a: 'In most jurisdictions, no — and doing so creates legal exposure regardless of intent. Check with an employment lawyer where you are.' },
+      { q: 'Is it wrong to prefer someone who shares my values?', a: 'Values like honesty and reliability are fair to hire for and can be assessed from how someone has worked. Religious belief is a different thing and is usually a protected characteristic.' },
+      { q: 'What if the role involves representing my convictions?', a: 'That is exactly the case where you need proper advice, because the exemptions are narrow and getting it wrong is expensive.' },
+    ],
+  },
+  {
+    slug: 'is-it-wrong-to-take-on-debt',
+    question: 'Is it wrong for a Christian business owner to take on debt?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Debt is not treated as sin, but it is treated seriously — the borrower ends up serving the lender, and that is a real loss of freedom rather than a metaphor. The question is not whether borrowing is permitted but whether this particular debt can be serviced when the optimistic case does not happen.',
+    body: [
+      { h: 'What borrowing actually costs',
+        p: 'Not just interest. It costs options. An owner with a payment due each month has fewer choices about which work to take, which customer to walk away from, and how long he can survive a quiet season. That is the part people underestimate, and it is the part that changes how you behave.' },
+      { h: 'Test it against the bad case, not the good one',
+        p: 'Anyone can service a loan in the year they planned for. Run it against the quarter where your biggest customer pays sixty days late and a truck needs replacing. If it only works when things go well, it is not financing, it is hoping.' },
+      { h: 'Borrowing for an asset is different from borrowing for a hole',
+        p: 'Debt against equipment that earns is a different decision from debt covering a shortfall you have not diagnosed. The second usually returns, larger, because the cause was never found. Fix the leak before financing it.' },
+      { h: 'Presumption is the actual risk',
+        p: 'Taking on an obligation on the assumption things will work out — and calling that faith — is the failure mode worth naming. Diligence and planning are not the opposite of trust. "It will come" is not a repayment schedule.' },
+    ],
+    faqs: [
+      { q: 'What about a mortgage on a building?', a: 'Generally the most defensible kind: an asset you use, that holds value, with a payment you can test against real rent you already pay.' },
+      { q: 'Is it better to grow slowly with no debt?', a: 'Often, and it is underrated. Slower growth you own outright leaves you free to say no, which is worth more than most owners realise until they cannot.' },
+      { q: 'Should I borrow to make payroll?', a: 'Treat that as an alarm rather than a plan. It is usually a symptom of pricing or collections, and borrowing without fixing the cause buys weeks and adds a payment.' },
+    ],
+  },
+  {
+    slug: 'how-do-i-share-my-faith-at-work',
+    question: 'How do I live out my faith at work without pressuring people?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Mostly by how the place runs rather than by what is said. There is a real power imbalance between an owner and someone who needs the job, and anything that feels like a condition of employment stops being a conversation. Pay properly, tell the truth when it costs you, and answer honestly when asked.',
+    body: [
+      { h: 'The power imbalance is the whole issue',
+        p: 'An employee cannot easily disagree with the person who signs their cheque, and they know it. Something that would be an ordinary conversation between equals becomes pressure when one party controls the other\'s income. That is not a reason for silence — it is a reason for care about who starts the conversation.' },
+      { h: 'What people read as genuine',
+        p: 'A quote that does not change after it is signed. A mistake fixed at your own cost. Someone kept on through a slow month. Wages paid on time when cash is tight. Those are noticed precisely because they cost something, and they cannot be faked over time.' },
+      { h: 'Where it goes wrong',
+        p: 'Prayer at a mandatory meeting, hiring or promotion that appears to track belief, an invitation from a boss that is hard to decline. Even with good intent, these put people in a position they cannot get out of gracefully — and they are the reason many people distrust the whole idea.' },
+      { h: 'Being findable rather than loud',
+        p: 'Most owners who do this well are simply known for it, and are asked. Answering honestly when someone raises it is a different act from raising it yourself, and it is the one that tends to be trusted.' },
+    ],
+    faqs: [
+      { q: 'Can I put something about my faith on my website?', a: 'Yes — a customer choosing to read your site is not in the position an employee is. The considerations are different for the people who work for you.' },
+      { q: 'Should I pray with a customer who asks?', a: 'If they asked, they asked. The caution is about initiating with someone who depends on you, not about responding to someone who does not.' },
+      { q: 'What if my crew swear or drink at the Christmas do?', a: 'Setting standards for conduct at work is normal and fair. Setting standards for private life is neither, and it is where owners lose good people.' },
+    ],
+  },
+  {
+    slug: 'how-much-should-i-pay-myself',
+    question: 'How much should I pay myself?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Enough that your household is not quietly subsidising the business. Owners routinely underpay themselves, call it sacrifice, and end up with a company that only appears profitable because its most expensive worker is free. That is not stewardship — it is a cost you have hidden from yourself.',
+    body: [
+      { h: 'An unpaid owner makes the numbers lie',
+        p: 'If you work on the jobs and take nothing, every job looks more profitable than it is. Price the work as though you had to hire someone to do your part, because one day you will, and the price will not magically rise to meet it.' },
+      { h: 'The household is a real stakeholder',
+        p: 'A business funded by a marriage under strain, savings that do not get replaced, or a partner covering the mortgage is carrying a debt that never appears on any statement. It is still owed, and it usually comes due at the worst moment.' },
+      { h: 'Underpaying yourself is not humility',
+        p: 'It is often fear — that the business cannot afford you, and that finding out would force a decision. Finding out is the point. An owner who cannot pay himself properly has a pricing problem, and no amount of personal frugality fixes it.' },
+      { h: 'What to actually do',
+        p: 'Set a figure that covers your household honestly, pay it consistently, and let the business be measured against it. If it cannot carry that number, you have learned something true and early rather than false and late.' },
+    ],
+    faqs: [
+      { q: 'What if the business genuinely cannot afford it yet?', a: 'Then say so out loud, put a date on it, and track it. A temporary decision with a review date is different from a permanent one you never made deliberately.' },
+      { q: 'Salary or dividends?', a: 'That depends on your structure and jurisdiction and it materially affects tax — an accountant, not a rule of thumb, and not something to copy from another owner.' },
+      { q: 'Is it wrong to pay myself well?', a: 'No. You are doing the work and carrying the risk. What is worth examining is whether everyone else is paid fairly too, not whether you are paid at all.' },
+    ],
+  },
+  {
+    slug: 'is-it-wrong-to-let-someone-go',
+    question: 'Is it wrong to let someone go?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Keeping someone who cannot do the job is rarely kind — it is usually postponement, and the cost lands on the crew covering for them and on the person themselves, who stays in a role they are failing at. What matters is whether it was done honestly, with warning, and with the standard applied the same way for everyone.',
+    body: [
+      { h: 'The kindness question is the wrong way round',
+        p: 'Owners ask whether letting someone go is unkind. The comparison that matters is against the alternative: months of a person knowing they are underwater, colleagues carrying it silently, and a conversation that eventually happens anyway with more resentment attached.' },
+      { h: 'What makes it honest',
+        p: 'That they knew. A specific standard, said out loud, with time and support to meet it, and a real chance to respond. "We have talked about this a few times" is not a standard. A dismissal that arrives as a surprise is a failure of management before it is a decision about a person.' },
+      { h: 'Applied the same way for everyone',
+        p: 'A rule enforced for one person and not another is worse than no rule at all — it tells the whole crew that the standard is really about who you like. That is the part people remember long after the individual has gone.' },
+      { h: 'This is legal territory, not just moral',
+        p: 'Notice, cause, documentation and process are set by employment standards where you are, and getting them wrong is expensive regardless of how fair you were. Get proper advice before you act, not after.' },
+    ],
+    faqs: [
+      { q: 'What if they have family depending on the job?', a: 'That is real and worth weighing in how you do it — notice, a reference, timing. It is not usually a reason to keep someone in a role they cannot do, because the crew has families too.' },
+      { q: 'Should I give more chances?', a: 'Give clear ones. Repeated vague chances are worse than one specific chance with a date, because nobody can act on a standard they cannot name.' },
+      { q: 'How do I know if it is me rather than them?', a: 'Ask who was supposed to train them, whether the standard was ever written down, and whether anyone else has succeeded in the role. If the answer is nobody has, it is probably the role.' },
+    ],
+  },
+  {
+    slug: 'should-i-sell-the-business',
+    question: 'How do I know whether to sell the business?',
+    category: 'Kingdom',
+    updated: '2026-09-02',
+    answer:
+      'Separate two questions that usually get asked as one: whether the business could run without you, and whether you want it to. The first is a fact you can test. The second is yours, and no valuation answers it. Many owners discover they wanted the freedom rather than the sale.',
+    body: [
+      { h: 'Test the fact before the feeling',
+        p: 'Could someone else run this? Who decides when you are away, who holds the customer relationships, what only exists in your head. That is answerable, and the answer often explains the restlessness better than any thinking about price does.' },
+      { h: 'Selling and stepping back are different exits',
+        p: 'An owner who wants his weekends back does not necessarily want to hand over the thing he built. Building a business that runs without you gets you most of what you were after and keeps the choice open. Selling closes it.' },
+      { h: 'What a buyer is actually buying',
+        p: 'Predictable revenue, clean books, systems that survive you, and customers attached to the business rather than to you personally. Which means the work that makes it sellable is the same work that makes it liveable — and you get the benefit either way.' },
+      { h: 'The question underneath',
+        p: 'Owners usually raise selling in a hard season, and a decision made from exhaustion is a decision made by the exhaustion. If the answer would be different after two proper weeks off, that is worth knowing before anyone is approached.' },
+    ],
+    faqs: [
+      { q: 'What is my business worth?', a: 'Only a real valuation from someone who has seen the books can answer that, and multiples quoted in your trade are averages that may have nothing to do with you.' },
+      { q: 'Should I tell my staff?', a: 'Eventually and carefully, and the timing has real consequences for retention. Take advice on it rather than deciding alone in the first week.' },
+      { q: 'Is it wrong to sell something I built with people who trusted me?', a: 'No, but how you do it is where the trust is kept or lost — what they are told, when, and what happens to them in the deal.' },
+    ],
+  },
 ]
 
 /** Categories in the order they should appear on the index. */
-export const ANSWER_CATEGORIES = ['Pricing', 'Money', 'Hiring', 'People', 'The owner', 'Conviction']
+export const ANSWER_CATEGORIES = ['Pricing', 'Money', 'Hiring', 'People', 'The owner', 'Conviction', 'Kingdom']
 
 export function answerBySlug(slug) {
   return ANSWERS.find(a => a.slug === slug) ?? null
