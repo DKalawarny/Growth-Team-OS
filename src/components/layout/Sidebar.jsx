@@ -162,6 +162,7 @@ const mainNav = [
   { to: '/advisor',                label: 'Solomon',    icon: 'advisor'      },
   { to: '/roadmap',                label: 'Roadmap',    icon: 'roadmap'      },
   { to: '/playbooks',              label: 'Playbooks',  icon: 'playbooks'    },
+  { to: '/logs',                   label: 'Daily logs', icon: 'playbooks'    },
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
   { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },

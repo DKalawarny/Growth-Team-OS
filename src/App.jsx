@@ -53,6 +53,7 @@ const AdvisorPortal  = lazy(() => import('./pages/AdvisorPortal'))
 const Trajectories   = lazy(() => import('./pages/Trajectories'))
 const Board          = lazy(() => import('./pages/Board'))
 const Playbooks      = lazy(() => import('./pages/Playbooks'))
+const DailyLogs      = lazy(() => import('./pages/DailyLogs'))
 const AdminBackfill  = lazy(() => import('./pages/AdminBackfill'))
 const AdminReview    = lazy(() => import('./pages/AdminReview'))
 const Analytics      = lazy(() => import('./pages/Analytics'))
@@ -243,6 +244,7 @@ export default function App() {
           <Route path="/trajectories" element={<Trajectories />} />
           <Route path="/board"        element={<Board />} />
           <Route path="/playbooks"    element={<Playbooks />} />
+          <Route path="/logs"         element={<DailyLogs />} />
           <Route path="/help"         element={<Help />} />
 
           {/* Settings is a sub-route tree — the layout renders a left
