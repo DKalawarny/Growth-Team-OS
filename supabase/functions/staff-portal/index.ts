@@ -519,7 +519,12 @@ Deno.serve(async (req) => {
       if (!whatHappened) return json({ error: 'missing whatHappened' }, 400)
       if (whatHappened.length > MAX_COMMENT_LEN) return json({ error: 'text_too_long' }, 400)
 
-      const blockers = typeof body.blockers === 'string' ? body.blockers.trim().slice(0, MAX_COMMENT_LEN) : null
+      const blockers    = typeof body.blockers    === 'string' ? body.blockers.trim().slice(0, MAX_COMMENT_LEN)    : null
+      const whoOnSite   = typeof body.whoOnSite   === 'string' ? body.whoOnSite.trim().slice(0, 500)                : null
+      const safetyNote  = typeof body.safetyNote  === 'string' ? body.safetyNote.trim().slice(0, MAX_COMMENT_LEN)   : null
+      // ⚠️ A flag, never a report. It exists so the owner hears today; the
+      // formal record is WorkSafeBC's and the prompt sends him there.
+      const injury      = body.injury === true
 
       // Optional and deliberately loose — this is context for the owner, not a
       // timesheet. Anything unparseable is simply dropped rather than refused;
@@ -565,6 +570,9 @@ Deno.serve(async (req) => {
         log_date:        today,
         what_happened:   whatHappened,
         blockers:        blockers || null,
+        who_on_site:     whoOnSite || null,
+        safety_note:     safetyNote || null,
+        injury,
         hours_on_site:   hours,
         updated_at:      new Date().toISOString(),
       }

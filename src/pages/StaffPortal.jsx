@@ -163,9 +163,12 @@ export default function StaffPortal() {
   // afterwards — they can only add a note alongside (036) — because the whole
   // point is that it is the one thing in Solomon's context the owner did not
   // write himself.
-  const submitDailyLog = async (workOrderId, whatHappened, blockers, hours) => {
+  const submitDailyLog = async (workOrderId, whatHappened, blockers, hours, day = {}) => {
     try {
-      const res = await callPortal('submitDailyLog', { token, workOrderId, whatHappened, blockers, hours })
+      const res = await callPortal('submitDailyLog', {
+        token, workOrderId, whatHappened, blockers, hours,
+        whoOnSite: day.whoOnSite, safetyNote: day.safetyNote, injury: day.injury,
+      })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
       return { ok: false }
@@ -909,6 +912,12 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
   const [blockerDrafts, setBlockerDrafts] = useState({})   // { [workOrderId]: what got in the way }
   const [hourDrafts, setHourDrafts]       = useState({})   // { [workOrderId]: hours on site }
+  // ⚠️ Day-level, not per-job. Who was on site and whether anyone got hurt are
+  // facts about the DAY — asking them once per work order would get three
+  // contradictory answers from the same person about the same crew.
+  const [whoOnSite, setWhoOnSite]         = useState('')
+  const [safetyNote, setSafetyNote]       = useState('')
+  const [injury, setInjury]               = useState(false)
   // ⚠️ 2 Sep — still tracked, currently unread. It used to travel to the step
   // comment as is_voice; daily_logs has no such column and does not need one —
   // a dictated account of the day is not worth less than a typed one. Kept
@@ -999,8 +1008,11 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // hours for access" is the most useful log of the lot, and requiring the
       // first box would throw it away. what_happened is NOT NULL, so fall back
       // to the blocker text rather than refusing the submit.
-      .filter(x => x.text.length > 0 || x.blockers.length > 0)
-      .map(x => ({ ...x, text: x.text || x.blockers }))
+      // ⚠️ A day-level fact is enough on its own. "Nothing to report on the
+      // jobs, but someone got hurt" must not be thrown away because both job
+      // boxes were empty.
+      .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0)
+      .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported — see the note.' : 'Nothing to add on the work itself.') }))
     if (toSend.length === 0) return
     if (recording) stopRecording()
     setSending(true)
@@ -1011,13 +1023,16 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, safetyNote, injury }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
         setDrafts({})
         setBlockerDrafts({})
         setHourDrafts({})
+        setWhoOnSite('')
+        setSafetyNote('')
+        setInjury(false)
         setVoiceWoIds(new Set())
         setSuccess(true)
         // Auto-collapse after a beat so the crew can move on without a
@@ -1092,6 +1107,44 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
             </button>
           </div>
         )}
+
+        {/* ⚠️ Asked ONCE for the day, above the per-job boxes. Who was on site
+            and whether anyone got hurt are facts about the day, not about a
+            work order — asking per job would get three different answers from
+            one person about the same crew. */}
+        <div className="mb-3 space-y-2">
+          <input
+            type="text"
+            value={whoOnSite}
+            onChange={(e) => setWhoOnSite(e.target.value)}
+            placeholder="Who was on site today? (crew, subs, anyone else)"
+            maxLength={500}
+            className="w-full text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+          />
+          <textarea
+            value={safetyNote}
+            onChange={(e) => setSafetyNote(e.target.value)}
+            placeholder="Anything unsafe or a near miss? Even if nothing came of it."
+            rows={2}
+            maxLength={4000}
+            className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+          />
+          <label className="flex items-start gap-2 px-2 py-2 rounded-md bg-red-50 border border-red-200 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={injury}
+              onChange={(e) => setInjury(e.target.checked)}
+              className="mt-0.5 flex-shrink-0"
+            />
+            <span className="text-[12px] leading-snug text-ink-800">
+              Someone was hurt today
+              <span className="block text-[11px] text-ink-500 mt-0.5">
+                This tells the office straight away. It is not a WorkSafe report — that
+                still has to be filed properly.
+              </span>
+            </span>
+          </label>
+        </div>
 
         <ul className="space-y-2.5">
           {workOrders.map(wo => (

@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, staff_member_id, work_order_id')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, staff_member_id, work_order_id, who_on_site, safety_note, injury')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -176,7 +176,7 @@ export default function DailyLogs() {
   const needle   = q.trim().toLowerCase()
   const hit      = (...vals) => !needle || vals.some(v => String(v ?? '').toLowerCase().includes(needle))
   const shownNotes = notes.filter(n => hit(n.note, n.note_date))
-  const shownLogs  = logs.filter(l => hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date))
+  const shownLogs  = logs.filter(l => hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date, l.who_on_site, l.safety_note))
 
   if (loading) {
     return <div className="p-8 text-sm text-ink-500">Loading the logs…</div>
@@ -379,9 +379,29 @@ export default function DailyLogs() {
               </div>
 
               <div className="px-5 py-4 space-y-3">
+                {/* ⚠️ Injury sits ABOVE everything, in red, before the account of
+                    the day. Daniel: "the quicker Solomon knows the better" —
+                    the same is true of the owner reading the page. */}
+                {log.injury && (
+                  <div className="rounded-lg bg-red-50 border border-red-300 px-3 py-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-red-700">Someone was hurt</p>
+                    <p className="text-[13px] text-ink-800 mt-1 leading-relaxed">
+                      Reported by the crew. This is not a WorkSafe report — that still has to be filed.
+                    </p>
+                  </div>
+                )}
+                {log.who_on_site && (
+                  <p className="text-[13px] text-ink-500">On site: {log.who_on_site}</p>
+                )}
                 <p className="text-[15px] text-ink-900 leading-relaxed whitespace-pre-wrap">
                   {log.what_happened}
                 </p>
+                {log.safety_note && (
+                  <div className="rounded-lg bg-orange-50 border border-orange-200 px-3 py-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-orange-700">Safety</p>
+                    <p className="text-[14px] text-ink-800 mt-1 leading-relaxed whitespace-pre-wrap">{log.safety_note}</p>
+                  </div>
+                )}
                 {log.blockers && (
                   <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Got in the way</p>

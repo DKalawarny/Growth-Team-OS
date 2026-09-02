@@ -284,7 +284,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .limit(20),
     supabase
       .from('daily_logs')
-      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, safety_note, injury')
       .eq('company_id', companyId)
       .order('log_date', { ascending: false })
       .limit(20),
@@ -642,6 +642,10 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       // different people's accounts and Solomon must be able to tell them apart
       // — the crew's is what was seen on site, the office note is an
       // interpretation of it, and where they disagree that gap is the finding.
+      who_on_site: l.who_on_site ?? null,
+      safety:      l.safety_note ?? null,
+      // ⚠️ Surfaced plainly. Daniel: "the quicker Solomon knows the better."
+      injury:      l.injury === true,
       office_note: l.pm_note ?? null,
       reviewed:    !!l.reviewed_at,
     })),
