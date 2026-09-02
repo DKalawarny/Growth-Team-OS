@@ -278,7 +278,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // nature. Solomon needs to be able to weigh them differently.
     supabase
       .from('office_notes')
-      .select('note_date, note')
+      .select('note_date, note, status')
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
       .limit(20),
@@ -634,7 +634,12 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       reviewed:    !!l.reviewed_at,
     })),
 
-    office_notes: (notesRes?.data ?? []).map(n => ({ date: n.note_date, note: n.note })),
+    // ⚠️ status matters to Solomon, not just to the page. An open note from
+    // three weeks ago is a thing the owner meant to do and has not — which is
+    // worth noticing once, and is invisible if you only ever send the text.
+    office_notes: (notesRes?.data ?? []).map(n => ({
+      date: n.note_date, note: n.note, status: n.status ?? 'open',
+    })),
 
     website_excerpt: bp.website_content
       ? bp.website_content.slice(0, WEBSITE_EXCERPT_CHARS)

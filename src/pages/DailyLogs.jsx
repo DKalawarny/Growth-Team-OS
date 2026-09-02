@@ -102,7 +102,7 @@ export default function DailyLogs() {
 
     const { data: noteRows } = await supabase
       .from('office_notes')
-      .select('id, note, note_date, created_at, author_profile')
+      .select('id, note, note_date, created_at, author_profile, status')
       .eq('company_id', profile.company_id)
       .order('created_at', { ascending: false })
       .limit(50)
@@ -149,6 +149,17 @@ export default function DailyLogs() {
     if (!error) { setNoteDraft(''); load() }
   }
 
+  // ⚠️ Done notes stay on the page. A note that got done is still the record
+  // that it needed doing — "need a new saw" ticked off three times in a quarter
+  // says something a disappearing checkbox would erase.
+  const setNoteStatus = async (id, status) => {
+    await supabase
+      .from('office_notes')
+      .update({ status, done_at: status === 'done' ? new Date().toISOString() : null })
+      .eq('id', id)
+    setNotes(ns => ns.map(n => (n.id === id ? { ...n, status } : n)))
+  }
+
   const deleteNote = async (id) => {
     await supabase.from('office_notes').delete().eq('id', id)
     load()
@@ -161,10 +172,16 @@ export default function DailyLogs() {
   return (
     <div className="p-6 md:p-8 max-w-3xl">
       <h1 className="text-xl font-bold text-ink-900">Daily logs</h1>
+      {/* ⚠️ 2 Sep — the old blurb explained the PLUMBING: "you cannot change
+          what they wrote... Solomon reads every log either way". Daniel: "I
+          don't like the description, the notes are more just for the owner,
+          it's to keep jobs sorted." Right — the reader does not care what
+          Solomon does with it, he cares what the page is FOR. Say that, and let
+          the two sections explain the difference between themselves. */}
       <p className="text-xs text-ink-500 mt-1.5 max-w-xl leading-relaxed">
-        What the crew wrote at the end of each day, in their own words. You can add
-        a note of your own beside any of them — you cannot change what they wrote,
-        and you do not need to: Solomon reads every log either way.
+        Your own running list, and what the crew wrote from site at the end of each
+        day. Between them they keep the jobs straight, instead of it living in your
+        head and half a dozen text messages.
       </p>
 
       {/* ⚠️ Office notes sit ABOVE the crew logs on purpose. This is the box the
@@ -177,9 +194,10 @@ export default function DailyLogs() {
           exists, so with an empty list the whole feature was invisible. */}
       <div className="mt-6 rounded-xl border border-ink-100 bg-white overflow-hidden">
         <div className="px-5 py-3 border-b border-ink-100">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Notes on the day</h2>
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your list</h2>
           <p className="text-[12px] text-ink-400 mt-0.5">
-            Anything worth knowing that is not about one job — a supplier, a client call, who is off next week.
+            Things to remember, chase or buy — not tied to any one job. Tick them off
+            as they go. Written by you and the office, not the crew.
           </p>
         </div>
         <div className="px-5 py-4">
@@ -203,8 +221,34 @@ export default function DailyLogs() {
             <ul className="mt-4 space-y-2.5">
               {notes.map(n => (
                 <li key={n.id} className="flex items-start gap-3 group">
-                  <span className="text-[12px] text-ink-400 flex-shrink-0 mt-0.5 w-20" title={n.note_date}>{humanDate(n.note_date)}</span>
-                  <p className="text-[14px] text-ink-800 leading-relaxed whitespace-pre-wrap flex-1">{n.note}</p>
+                  {/* ⚠️ Three explicit labels rather than a click-to-cycle circle.
+                      Daniel asked for check marks AND said "I just want assurance
+                      it's all self-explanatory so it works" — a control whose
+                      states you discover by clicking it is the opposite of that.
+                      "Working on it" is a real answer and a checkbox forces it
+                      into the wrong one, so three, not two. */}
+                  <div className="flex gap-1 flex-shrink-0 mt-0.5">
+                    {[['open', 'To do'], ['doing', 'Doing'], ['done', 'Done']].map(([val, label]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setNoteStatus(n.id, val)}
+                        className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${
+                          (n.status ?? 'open') === val
+                            ? val === 'done'
+                              ? 'bg-brand-600 border-brand-600 text-white'
+                              : 'bg-ink-900 border-ink-900 text-white'
+                            : 'border-ink-200 text-ink-400 hover:border-ink-300'
+                        }`}
+                      >
+                        {val === 'done' ? '✓ ' : ''}{label}
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-[12px] text-ink-400 flex-shrink-0 mt-1 w-20" title={n.note_date}>{humanDate(n.note_date)}</span>
+                  <p className={`text-[14px] leading-relaxed whitespace-pre-wrap flex-1 mt-0.5 ${
+                    n.status === 'done' ? 'text-ink-400 line-through' : 'text-ink-800'
+                  }`}>{n.note}</p>
                   {/* Only the author can delete — RLS enforces it, this just
                       hides a button that would fail for everyone else. */}
                   {n.author_profile === profile?.id && (
@@ -248,6 +292,20 @@ export default function DailyLogs() {
         )
       })()}
 
+      {/* ⚠️ The crew section gets its own header. Daniel: "the notes should be
+          explained better — general notes vs notes for that day's job the
+          foreman gave at the end of the day." Without a heading the two blocks
+          look like one list with different formatting. */}
+      <div className="mt-10 mb-3">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">
+          From the crew &middot; end of day
+        </h2>
+        <p className="text-[12px] text-ink-400 mt-0.5 max-w-xl leading-relaxed">
+          What each person wrote from site when they finished, about the job they were
+          on. You cannot edit it &mdash; add your own note underneath instead.
+        </p>
+      </div>
+
       {logs.length === 0 && (
         <div className="mt-8 rounded-xl border border-ink-100 bg-white px-5 py-6">
           <p className="text-sm font-semibold text-ink-900">No crew logs yet.</p>
@@ -290,7 +348,7 @@ export default function DailyLogs() {
 
                 <div className="pt-1">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-1.5">
-                    Your note
+                    Your note on this job
                   </label>
                   <textarea
                     value={draft}
