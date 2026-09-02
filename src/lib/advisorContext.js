@@ -166,7 +166,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : Promise.resolve(null)
 
   const [bpRes, msRes, ciRes, kfRes, fsRes, analysis, ragChunks, pastChats, safetyChunksRes,
-         staffRes, woRes, tplRes, memoryRows, coRes, logsRes] = await Promise.all([
+         staffRes, woRes, tplRes, memoryRows, coRes, notesRes, logsRes] = await Promise.all([
     supabase
       .from('business_profiles')
       .select('*')
@@ -272,6 +272,16 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // see whether work is really being set up properly rather than taking the
     // owner's account of it. Asked about a crew member who coasts, Solomon
     // reached for precisely this data before it existed.
+    // Office notes — the day-to-day from whoever runs the desk. Kept separate
+    // from daily_logs because they are a different KIND of claim: the crew log
+    // is written by someone who was on site, an office note is second-hand by
+    // nature. Solomon needs to be able to weigh them differently.
+    supabase
+      .from('office_notes')
+      .select('note_date, note')
+      .eq('company_id', companyId)
+      .order('created_at', { ascending: false })
+      .limit(20),
     supabase
       .from('daily_logs')
       .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at')
@@ -623,6 +633,8 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       office_note: l.pm_note ?? null,
       reviewed:    !!l.reviewed_at,
     })),
+
+    office_notes: (notesRes?.data ?? []).map(n => ({ date: n.note_date, note: n.note })),
 
     website_excerpt: bp.website_content
       ? bp.website_content.slice(0, WEBSITE_EXCERPT_CHARS)
