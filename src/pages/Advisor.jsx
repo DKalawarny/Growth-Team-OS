@@ -185,7 +185,18 @@ export default function Advisor() {
         maxTokens: 120,
       })
 
-      if (!opener) return
+      // ⚠️ 3 Sep — SKIP means say nothing. Daniel, on the daily opener: "is the
+      // daily response always going to be like this, I feel like it could get
+      // annoying." He was right, and the cause was structural: the prompt
+      // required a question EVERY day, with a generic fallback when there was
+      // nothing real to ask. A message that arrives whether or not there is
+      // something to say is a notification, and notifications get ignored —
+      // which then costs us the mornings when there IS something.
+      //
+      // Most days should now be silent. That is the correct outcome, not a
+      // failure, and there is deliberately no fallback message here.
+      const trimmed = (opener ?? '').trim()
+      if (!trimmed || /^SKIP\b/i.test(trimmed)) return
 
       // Save to DB so it's part of permanent conversation history.
       const { data: row, error: err } = await supabase
@@ -195,7 +206,7 @@ export default function Advisor() {
           user_id:    profile.id,
           chat_type:  'advisor',
           role:       'assistant',
-          content:    opener,
+          content:    trimmed,
         })
         .select()
         .single()
