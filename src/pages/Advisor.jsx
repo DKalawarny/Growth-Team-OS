@@ -14,7 +14,7 @@ import { buildAdvisorContext, STALE_FINANCIALS_DAYS } from '../lib/advisorContex
 import { fetchLatestSnapshots, syncQuickBooks, fetchIntegration } from '../lib/quickbooks'
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
-import { rememberFromExchange } from '../lib/memory'
+import { rememberFromExchange, claimDueCommitment } from '../lib/memory'
 
 /**
  * Advisor — the owner's daily AI coaching chat.
@@ -168,6 +168,16 @@ export default function Advisor() {
     try {
       const context = await buildAdvisorContext(profile.company_id, { userId: profile.id })
 
+      // ⭐ The one thing he said he would do that has come due and has never
+      // been asked about. This is the whole reason the opener is allowed to
+      // speak at all on most days — everything else it might raise (a
+      // milestone, a job closing) he can already see on a screen. Nobody else
+      // in his life asks him this.
+      //
+      // Claiming it MARKS it asked, whether or not the model ends up using it.
+      // See claimDueCommitment — one ask per commitment, ever, deliberately.
+      const owed = await claimDueCommitment(profile.company_id, profile.id).catch(() => null)
+
       // Lightweight prompt — 200 tokens max. Reads context, asks one specific question.
       const openerContext = context
         ? `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(context, null, 2)}`
@@ -181,7 +191,13 @@ export default function Advisor() {
         model: HAIKU,
         promptKey:     'MORNING_OPENER_PROMPT',
         stableContext: openerContext,
-        messages: [{ role: 'user', content: `Open the check-in. The owner's name is ${ownerFirst} — use ONLY this name in your greeting, no other names. Time context: ${tod} — ${dayStr}.` }],
+        messages: [{ role: 'user', content: [
+          `Open the check-in. The owner's name is ${ownerFirst} — use ONLY this name in your greeting, no other names.`,
+          `Time context: ${tod} — ${dayStr}.`,
+          owed
+            ? `\n\nHE SAID HE WOULD DO THIS AND YOU HAVE NEVER ASKED:\n"${owed.statement}"${owed.due_on ? ` (by ${owed.due_on})` : ''}${owed.detail ? `\nContext: ${owed.detail}` : ''}\nAsk him about it, once, plainly. See FOLLOWING UP ON WHAT HE SAID HE WOULD DO.`
+            : '',
+        ].filter(Boolean).join(' ') }],
         maxTokens: 120,
       })
 

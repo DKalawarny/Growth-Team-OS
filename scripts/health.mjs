@@ -22,6 +22,7 @@
  */
 import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js'
 import { SHOW_PUBLIC_PRICE } from '../src/lib/pricing.js'
+import { ANSWERS } from '../src/content/answers.js'
 
 let failures = 0
 const ok   = (m) => console.log(`  ok    ${m}`)
@@ -83,6 +84,15 @@ console.log('\n── crawl files ───────────────�
                 || /\d+[-\s]day free trial/i.test(lm.body)
     if (!SHOW_PUBLIC_PRICE && priced) bad('llms.txt quotes a price/trial while SHOW_PUBLIC_PRICE is false')
     else ok(`llms.txt — consistent with SHOW_PUBLIC_PRICE=${SHOW_PUBLIC_PRICE}`)
+
+    // ⚠️ 3 Sep — third time llms.txt has drifted from the site. Two answer
+    // pages were added and it still listed the previous 35, so an assistant
+    // reading it would never learn the new ones existed. The list is
+    // hand-maintained prose in a plain-text file, which is exactly the kind of
+    // thing that silently rots. Every slug in answers.js must appear.
+    const missing = ANSWERS.filter(a => !lm.body.includes(`/answers/${a.slug}`))
+    if (missing.length) bad(`llms.txt is missing ${missing.length} answer page(s): ${missing.map(a => a.slug).join(', ')}`)
+    else ok(`llms.txt — lists all ${ANSWERS.length} answer pages`)
   }
 }
 

@@ -286,6 +286,19 @@ function MemorySection({ rows, onDismiss }) {
             </div>
             <p className="text-[14.5px] leading-[1.55] text-ink-900">{r.statement}</p>
             {r.detail && <p className="text-[13px] leading-[1.55] text-ink-400">{r.detail}</p>}
+            {/* Where a commitment stands, so the owner can see and correct
+                what Solomon thinks happened. ⚠️ Deliberately the same muted
+                grey whether he did it or not — a green tick beside a red
+                cross is a scoreboard, and this page is not a report card.
+                Same principle as migration 028: no grading. */}
+            {r.kind === 'commitment' && (r.outcome || r.due_on) && (
+              <p className="text-[12.5px] leading-[1.5] text-ink-400">
+                {r.outcome
+                  ? { kept: 'He did it.', dropped: 'It didn’t happen.', changed: 'He changed his mind.' }[r.outcome] ?? r.outcome
+                  : `Due ${new Date(r.due_on + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
+                {r.outcome_note ? ` ${r.outcome_note}` : ''}
+              </p>
+            )}
           </div>
           <button
             type="button"

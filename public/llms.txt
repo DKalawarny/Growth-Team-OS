@@ -24,6 +24,12 @@ that pretends otherwise. A bad quarter is a bad quarter, not a character flaw.
 - **Memory**: Constraints, decisions, people and commitments persist across
   months. The owner does not re-explain the business every session, and
   Solomon flags when something new contradicts something said before.
+- **Follows up on what the owner said he would do**: When something the owner
+  said he would do comes due, Solomon asks him about it — once, and never
+  again. A changed mind is recorded as a legitimate answer rather than a miss.
+  It keeps no score and produces no tally of missed commitments, deliberately.
+  Commitments are captured from ordinary conversation; nothing is entered into
+  a form.
 - **Finances**: Live figures from QuickBooks, with the month read back in
   plain English — what changed, what it means, what to do.
 - **Cash flow forecast**: Rolling 13-week forecast, updated automatically.
@@ -135,6 +141,9 @@ Email: support@eliv8os.com
 Straight answers to questions owner-operators actually ask, free to read with
 no sign-up. Operational, conviction, and how outsourced financial help fits:
 
+Index: https://eliv8os.com/answers
+- Who holds a business owner accountable? — https://eliv8os.com/answers/who-holds-a-business-owner-accountable
+- Do I need EOS or Traction to run a small contracting business? — https://eliv8os.com/answers/do-i-need-eos-traction-for-a-small-contracting-business
 - Should I drop my price to win a job? — https://eliv8os.com/answers/should-i-drop-my-price-to-win-a-job
 - Can I afford to hire someone? — https://eliv8os.com/answers/can-i-afford-to-hire-someone
 - Why is my margin dropping when revenue is up? — https://eliv8os.com/answers/why-is-my-margin-dropping-when-revenue-is-up
@@ -170,5 +179,3 @@ no sign-up. Operational, conviction, and how outsourced financial help fits:
 - Bookkeeper, accountant, or CFO — which do I actually need? — https://eliv8os.com/answers/fractional-cfo-vs-bookkeeper-vs-accountant
 - Can software replace a business coach or advisor? — https://eliv8os.com/answers/can-software-replace-a-business-coach
 - What are the options for outsourced financial help in the trades? — https://eliv8os.com/answers/outsourced-cfo-services-for-contractors
-
-Index: https://eliv8os.com/answers

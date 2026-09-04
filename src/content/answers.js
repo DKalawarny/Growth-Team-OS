@@ -34,6 +34,52 @@
 
 export const ANSWERS = [
   {
+    slug: 'who-holds-a-business-owner-accountable',
+    question: 'Who holds a business owner accountable?',
+    category: 'The owner',
+    updated: '2026-09-03',
+    answer:
+      'Structurally, nobody. Employees are waiting on your decisions, your accountant reports what already happened, and your family is not going to audit your quarter. Most owners answer to no one, which is why things said with real intent in June are still undone in September. The fix is a standing arrangement, not more willpower.',
+    body: [
+      { h: 'This is a structural gap, not a discipline problem',
+        p: 'Almost everyone else in a company has somebody who asks. The crew answers to a foreman, the foreman answers to you. You answer to a bank covenant if you have one and otherwise to nothing. Owners tend to read the resulting drift as a personal failing, which is the least useful reading available — the same person is perfectly reliable about anything a customer is waiting on.' },
+      { h: 'Why the obvious substitutes mostly do not work',
+        p: 'A spouse has to live with you afterwards. An employee cannot press an owner without risking their job. An accountant sees the year after it happened. Peer groups and coaches genuinely do work, and they cost between five hundred and several thousand a month, which is the actual reason most owners of small field businesses do not have one rather than any objection to the idea.' },
+      { h: 'What the arrangement has to look like to survive',
+        p: 'It has to ask about something specific you actually said, not about goals in general. It has to ask once and let it go, because anything that chases you gets muted within a month. And it has to treat a changed mind as a real answer — an owner who reconsiders because the facts moved has done the thing you want him doing. If the arrangement punishes that, you will simply stop saying what you intend to do out loud, and the whole thing runs on you saying it.' },
+      { h: 'What it must not become',
+        p: 'A tally. The moment anything starts counting how many things you said and did not do, it has become a report card, and report cards change nobody. The value is entirely in one specific question arriving at the right time, from something that remembered when you did not.' },
+    ],
+    faqs: [
+      { q: 'Is a business coach worth it for a small contractor?', a: 'Often yes, and the honest limit is cost and frequency. A good coach at monthly intervals is a real check. Between sessions you are back on your own, and most drift happens between sessions.' },
+      { q: 'Can my office manager hold me accountable?', a: 'Rarely, and it is unfair to ask. Pressing the owner carries a risk for them that it does not carry for you. Some can do it; most correctly will not.' },
+      { q: 'What about a business partner?', a: 'A partner is the strongest version of this when the relationship is honest, which is also why partnerships that avoid hard conversations tend to drift in both directions at once.' },
+    ],
+  },
+  {
+    slug: 'do-i-need-eos-traction-for-a-small-contracting-business',
+    question: 'Do I need EOS or Traction to run a small contracting business?',
+    category: 'Getting help',
+    updated: '2026-09-03',
+    answer:
+      'EOS works, and it is built for a company with a leadership team — several people with real ownership of areas, meeting weekly. If you are the owner, the estimator and the person answering the phone, you do not have the team the system assumes, and running it alone usually collapses into a spreadsheet nobody updates.',
+    body: [
+      { h: 'What EOS actually gives you',
+        p: 'A shared language and a rhythm: quarterly priorities with a single named owner, a weekly meeting that surfaces issues instead of burying them, and a chart of who is accountable for what. Tens of thousands of companies run it. When there is a leadership team to align, it is genuinely one of the better answers available, and the software built for it — Ninety, Bloom Growth — is mature.' },
+      { h: 'The assumption underneath it',
+        p: 'Every part of it assumes several people. Rocks have owners other than you. The weekly meeting needs attendees. The accountability chart is only interesting when the boxes hold different names. At eight or twelve people with one office person, you are filling in a system designed to coordinate a group with a group of one, and the maintenance cost lands entirely on the person it was meant to free up.' },
+      { h: 'When it is worth doing anyway',
+        p: 'If you have two or three people who genuinely own outcomes and you are past roughly twenty employees, the structure will probably pay for itself. If you are planning to sell, a documented operating rhythm is worth real money to a buyer. And if the chaos you are trying to fix is between people rather than inside your own head, a shared system is the right shape of fix.' },
+      { h: 'What to do instead if you are not there yet',
+        p: 'Pick the two pieces that survive without a team: a small number of things that matter this quarter, written where you will see them, and one honest weekly look at whether they moved. That is most of the benefit without the overhead. The failure mode of every operating system at this size is that maintaining it becomes the work.' },
+    ],
+    faqs: [
+      { q: 'Is Ninety.io or Bloom Growth worth paying for?', a: 'If you are running EOS with a leadership team, yes — they are built precisely for it. If you are not running EOS, you are buying a container for a methodology you do not have.' },
+      { q: 'Do I need an EOS Implementer?', a: 'Most companies that succeed with it used one, at least to start. That cost is worth knowing about up front, because self-implementation is where a lot of attempts quietly stop.' },
+      { q: 'At what size does EOS start making sense?', a: 'There is no hard line, but the system starts paying off when you have several people owning outcomes rather than executing tasks — commonly somewhere past twenty employees.' },
+    ],
+  },
+  {
     slug: 'should-i-drop-my-price-to-win-a-job',
     question: 'Should I drop my price to win a job?',
     category: 'Pricing',

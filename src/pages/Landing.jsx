@@ -170,6 +170,7 @@ export default function Landing() {
           own headline. */}
       <HeroSection />
       <SolomonSection />
+      <FollowsUpSection />
       <WhatHeKnowsSection />
       <ConvictionSection />
       <PriceSection />
@@ -348,6 +349,72 @@ function HeroSection() {
             ? `No credit card · ${TRIAL_DAYS} days free · Cancel anytime`
             : `No credit card · ${PILOT_PRICE_LINE} · Cancel anytime`}
         </p>
+      </div>
+    </section>
+  )
+}
+
+/* ⭐ 3 Sep — THE SELL. Daniel, after seeing monday.com: "how can we really
+ * separate ourselves, should we do more or gear towards something." Gearing
+ * toward, and this is the thing.
+ *
+ * Everything else on this page is a claim a competitor could also make. This
+ * one they structurally cannot:
+ *   - a bookkeeper reports what already happened
+ *   - monday.com reports what is late on a board somebody has to maintain
+ *   - a general chatbot gives good advice and forgets it on close
+ *   - EOS software (Ninety, Bloom) really does track commitments — as Rocks
+ *     typed into a form each quarter by a leadership team running a
+ *     methodology, usually with a paid implementer. Our reader IS the
+ *     leadership team, and he is in a truck.
+ * Here it falls out of a conversation he was already having. Nobody enters
+ * anything. Same argument as the foreman daily log.
+ *
+ * ⚠️ THE RESTRAINT IS THE SELL, NOT A CAVEAT. Every reader's mental model of
+ * "software that holds you accountable" is nagging, and the standing criticism
+ * of AI coaches is that they either agree with everything or turn into a
+ * report card. So the third paragraph — asks once, changed your mind is a real
+ * answer, never keeps score — is doing more selling than the second one. Do
+ * not cut it for length.
+ *
+ * Placed before WhatHeKnows deliberately: this claim stands on memory, not on
+ * the books being connected, so it does not need the numbers section first.
+ * Section order argument is at the top of this file. */
+function FollowsUpSection() {
+  return (
+    <section className="bg-white py-24 border-b border-gray-100">
+      <div className="max-w-2xl mx-auto px-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+          It remembers what you said you&rsquo;d do.<br />
+          <span className="text-gray-400">Nobody else is going to ask.</span>
+        </h2>
+
+        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
+          <p>
+            Somewhere in a conversation in June you said you were going to stop
+            quoting anything under eight grand. Nobody wrote it down. Your
+            bookkeeper tells you what already happened, your scheduling software
+            tells you what&rsquo;s late, and everyone else on the payroll is
+            waiting on you rather than asking you anything.
+          </p>
+          <p>
+            Solomon writes it down. Then one morning, when it has come due, it
+            asks you whether that held.
+          </p>
+          <p>
+            Once. It asks once, and then it never raises it again. If you
+            changed your mind, that is a complete answer &mdash; an owner who
+            reconsiders because the facts moved has done the right thing, and it
+            is recorded as exactly that. It does not count your misses, it will
+            never tell you how you are doing on the things you said, and there
+            is no score anywhere in it.
+          </p>
+          <p>
+            That restraint is the whole design. Something that keeps a tally of
+            where you fell short is not an advisor. It is a report card, and you
+            already know how much those change anyone.
+          </p>
+        </div>
       </div>
     </section>
   )
