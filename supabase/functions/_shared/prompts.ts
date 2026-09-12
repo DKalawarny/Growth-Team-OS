@@ -2486,6 +2486,8 @@ Return ONLY valid JSON in this shape:
   "moves": [
     {
       "order": 1,
+      "libraryKey": "the key from the MOVES LIBRARY this is based on, or \"custom\" if you invented it",
+      "outdoor": true,
       "title": "the move, in their words, naming the actual thing",
       "when": "a real time — 'This Saturday', 'Before the end of the month'",
       "detail": "one or two plain sentences on what doing it looks like",
@@ -2544,6 +2546,28 @@ CONSTRUCTION RULES — these are absolute
 - If the horizon they chose does not survive their own numbers, say so in the
   headline and set the gates to the real pace. Do not quietly plan a different
   timeline and let them find out.
+
+WHAT THEY ADDED THEMSELVES
+Assets, immovables and spending marked `custom: true` were typed in by the
+person because they were not on our list. That makes them MORE important than
+the built-in ones, not less — a thing someone owns and never counted is usually
+the fastest move they have, and it is never on anybody's list.
+
+Treat a custom entry exactly like a library one: map it to the nearest move in
+the library if one genuinely fits, and if none does, invent a move for it
+following the same shape — what it needs, how fast it pays, what it grows into,
+what it costs at home, and which months it works. A jet ski is peer rental in
+summer and nothing in February; say both. Never ignore a custom entry, and never
+hand it a vaguer move than you would hand a truck.
+
+`libraryKey` says which library move you used, or "custom" if you invented one.
+Set `outdoor` true for any move that depends on weather.
+
+⚠️ TWO RULES BELOW ARE CHECKED BY MACHINE, NOT BY READING
+- Every move needs a non-empty `gate`. A move without one has no next step.
+- If move 1 is outdoor and they live somewhere with a real winter, `seasonPlan`
+  must cover the off-season. A plan that earns nothing from November to March is
+  not a plan they can follow, and they will find that out in November.
 
 THE SEEN CARD — the rule that matters most
 "seen" quotes them back to themselves and names what they missed. It only works

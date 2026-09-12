@@ -95,7 +95,12 @@ export default function AdminReview() {
             .gte('created_at', since)
             .order('created_at', { ascending: true }),
           supabase.from('profiles').select('id, name'),
-          supabase.from('companies').select('id, name'),
+          // ⚠️ Real companies only. A personal account is the placeholder row
+          // behind a way-out user (migration 047); counting them here would
+          // read a few hundred people with no business as a few hundred
+          // customers, and every ratio off that number would be wrong in the
+          // flattering direction.
+          supabase.from('companies').select('id, name').eq('is_personal', false),
         ])
         if (cancelled) return
 

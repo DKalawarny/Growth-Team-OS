@@ -57,8 +57,12 @@ async function ensureProfile(user) {
   // failure is harmless (it is idempotent), so fall through and let it decide.
   if (!error && profile) return
 
-  const { error: rpcErr } = await supabase.rpc('bootstrap_company', {
-    p_company_name: 'Personal',
+  // ⭐ bootstrap_personal_account, NOT bootstrap_company — it does the same
+  // provisioning and then marks the company `is_personal` (migration 047), so
+  // the row is excluded from every company count and its owner is never routed
+  // into business onboarding. It is guarded so an existing Eliv8 OS customer
+  // who opens this intake keeps their real company unflagged.
+  const { error: rpcErr } = await supabase.rpc('bootstrap_personal_account', {
     p_full_name: user.user_metadata?.full_name ?? null,
   })
   if (rpcErr) throw new Error(`Could not set up your account: ${rpcErr.message}`)

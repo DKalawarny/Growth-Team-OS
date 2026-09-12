@@ -114,9 +114,14 @@ function AppLayout() {
 }
 
 function RequireAuth({ children }) {
-  const { session, profile, onboarded, loading } = useAuth()
+  const { session, profile, onboarded, loading, isPersonal } = useAuth()
   if (loading) return <LoadingScreen />
   if (!session) return <Navigate to="/login" replace />
+  // ⭐ A personal account (the way out) has no business and never will, so
+  // `onboarded` is permanently false and the redirect below would drop them
+  // into BUSINESS onboarding — asked their annual revenue by a product they
+  // have never heard of. Send them back to their own product instead.
+  if (isPersonal) return <Navigate to="/wayout" replace />
   if (!profile) return <Navigate to="/onboarding" replace />
   // ⚠️ Having a profile is not proof of setup. The profile is created at
   // signup; the business profile at the END of onboarding. Someone who closed

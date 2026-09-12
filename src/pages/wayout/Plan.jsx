@@ -54,7 +54,10 @@ export default function Plan() {
     setError('')
     try {
       const generated = await generateMap(s.answers)
-      const problems = mapProblems(generated)
+      // ⚠️ The answers are required, not optional — the winter-pairing and
+      // relocation checks are about THIS person's constraints, and without them
+      // both silently pass.
+      const problems = mapProblems(generated, s.answers)
       if (problems.length) {
         // Better to say the plan came back wrong than to render half of one to
         // someone who has paid for it.

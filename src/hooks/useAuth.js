@@ -199,9 +199,22 @@ function useAuthState() {
 
   const isAdvisor = advisorClients.length > 0
 
+  // ⭐ A personal account is the placeholder company behind a way-out user
+  // (migration 047). They have no business_profiles row and never will, so
+  // `onboarded` is permanently false for them — and without this flag
+  // RequireAuth turns that into a redirect into BUSINESS onboarding, asking
+  // someone who came here because they feel stuck in their life for their
+  // annual revenue and team size.
+  //
+  // ⚠️ Read from the company row, not from the absence of a business profile.
+  // "No business profile" is also what a half-finished Eliv8 OS signup looks
+  // like, and those people DO need to be sent to onboarding.
+  const isPersonal = company?.is_personal === true
+
   return {
     session,
     onboarded,
+    isPersonal,
     profile: effectiveProfile,
     company,
     role:           profile?.role ?? null,
