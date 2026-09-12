@@ -1,0 +1,107 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "S1.dc.html",
+      "x": 480,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "S2.dc.html",
+      "x": 960,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "S3.dc.html",
+      "x": 1440,
+      "y": 0,
+      "w": 390,
+      "h": 1500
+    },
+    {
+      "file": "S4.dc.html",
+      "x": 1920,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "S5.dc.html",
+      "x": 2400,
+      "y": 0,
+      "w": 390,
+      "h": 1180
+    },
+    {
+      "file": "S6.dc.html",
+      "x": 2880,
+      "y": 0,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "Map.dc.html",
+      "x": 0,
+      "y": 1700,
+      "w": 390,
+      "h": 1560
+    },
+    {
+      "file": "Paywall.dc.html",
+      "x": 480,
+      "y": 1700,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "Diagnostic.dc.html",
+      "x": 960,
+      "y": 1700,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "Result.dc.html",
+      "x": 1440,
+      "y": 1700,
+      "w": 390,
+      "h": 844
+    }
+  ],
+  "annotations": [
+    {
+      "id": "intake",
+      "x": 0,
+      "y": -150,
+      "w": 560,
+      "text": "THE INTAKE — paid, six screens.\nThe order is the product: what is fixed, who is affected, what you have, the money, what you would trade, and only then where you want to end up."
+    },
+    {
+      "id": "deliver",
+      "x": 0,
+      "y": 1550,
+      "w": 520,
+      "text": "THE MAP is what they paid for. The gate between two moves is the sentence no course gives them."
+    },
+    {
+      "id": "front",
+      "x": 960,
+      "y": 1550,
+      "w": 520,
+      "text": "THE FREE DIAGNOSTIC — public, six taps, rules not a model. Naming what does NOT fit is what earns the next click."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

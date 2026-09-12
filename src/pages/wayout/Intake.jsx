@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
-import { WAYOUT_OPENING, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
+import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 
@@ -139,14 +139,14 @@ export default function Intake({ preview = false, previewReflections = null }) {
     kickOffReflection(screen)
 
     if (preview) {
-      if (step === WAYOUT_TOTAL_SCREENS) { navigate(`${WAYOUT_BASE}/preview`); return }
+      if (step > WAYOUT_TOTAL_SCREENS) { navigate(`${WAYOUT_BASE}/preview`); return }
       setStep(step + 1)
       return
     }
 
     setSaving(true)
     try {
-      if (step === WAYOUT_TOTAL_SCREENS) {
+      if (step > WAYOUT_TOTAL_SCREENS) {
         await markComplete(session.id, answers)
         navigate(`${WAYOUT_BASE}/plan`)
         return
@@ -216,6 +216,41 @@ export default function Intake({ preview = false, previewReflections = null }) {
     )
   }
 
+  // ── The open door ─────────────────────────────────────────────────────────
+  // ⚠️ Deliberately NOT counted in the brand mark. The opening screen promises
+  // six questions and this is a seventh box; presenting it as "7 of 6" would
+  // make the promise a lie at the exact moment someone is deciding whether to
+  // tell the truth.
+  if (step > WAYOUT_TOTAL_SCREENS) {
+    const f = WAYOUT_OPEN.field
+    return (
+      <WayoutShell wide>
+        <div className="wayout__spread">
+        <div className="wayout__col">
+          <p className="wayout__q">{WAYOUT_OPEN.question}</p>
+          <p className="wayout__lead">{WAYOUT_OPEN.lead}</p>
+        </div>
+        <div className="wayout__col">
+          <label className="wayout__label" htmlFor="wayout-story">{f.label}</label>
+          <textarea
+            id="wayout-story"
+            className="wayout__textarea wayout__textarea--tall"
+            placeholder={f.placeholder}
+            value={answers[f.key] ?? ''}
+            onChange={e => setValue(f.key, e.target.value)}
+          />
+          <p className="wayout__hint">{WAYOUT_OPEN.hint}</p>
+          {errors._save && <p className="wayout__error">{errors._save}</p>}
+          <div className="wayout__nav">
+            <button className="wayout__back" onClick={back} aria-label="Back">←</button>
+            <button className="wayout__btn" onClick={next} disabled={saving}>{WAYOUT_OPEN.cta}</button>
+          </div>
+        </div>
+        </div>
+      </WayoutShell>
+    )
+  }
+
   // ── S1–S6 ─────────────────────────────────────────────────────────────────
   // The reflection shown here was generated from the PREVIOUS screen.
   const prev = WAYOUT_SCREENS[step - 2]
@@ -267,7 +302,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
       <div className="wayout__nav">
         <button className="wayout__back" onClick={back} aria-label="Back">←</button>
         <button className="wayout__btn" onClick={next} disabled={saving}>
-          {step === WAYOUT_TOTAL_SCREENS ? 'See the plan' : 'Next'}
+          {step === WAYOUT_TOTAL_SCREENS ? 'Almost done' : 'Next'}
         </button>
       </div>
       </div>

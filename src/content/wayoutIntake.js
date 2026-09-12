@@ -247,7 +247,12 @@ export const WAYOUT_SCREENS = [
       {
         key: 'takeHome',
         kind: 'number',
-        label: 'Monthly take-home',
+        // 🔴 "Monthly take-home" alone was ambiguous, and S2 has already
+        // established there may be a partner. Yours or the household's changes
+        // the quit number — the single figure the whole plan aims at — and
+        // nothing told us which one we had been given.
+        label: 'Your monthly take-home',
+        hint: 'Just yours. There is a question about the household next.',
         required: true,
         emptyMessage: 'A rough number is fine.',
       },
@@ -258,6 +263,13 @@ export const WAYOUT_SCREENS = [
         hint: 'Rent or mortgage, debt, kids. The things that happen whether you like it or not.',
         required: true,
         emptyMessage: 'A rough number is fine.',
+      },
+      {
+        key: 'householdTakeHome',
+        kind: 'number',
+        label: 'Anyone else’s income in the household',
+        hint: 'Leave it blank if it is only you.',
+        required: false,
       },
       {
         key: 'savings',
@@ -306,7 +318,7 @@ export const WAYOUT_SCREENS = [
       {
         key: 'tradeRank',
         kind: 'rank',
-        label: 'Drag these into order — what you’d give up first at the top.',
+        label: 'Put these in order — what you’d give up first at the top.',
         required: true,
         emptyMessage: 'Put them in an order, even a rough one.',
         options: [
@@ -316,6 +328,24 @@ export const WAYOUT_SCREENS = [
           { key: 'family-proximity', label: 'Proximity to family' },
           { key: 'status', label: 'Status' },
           { key: 'savings', label: 'Savings' },
+        ],
+      },
+      {
+        // 🔴 The plan is a sequence and we were asking the horizon in YEARS
+        // while never asking how many hours a week exist to build it in. Five
+        // hours and twenty-five hours are different plans, not the same plan
+        // at different speeds.
+        key: 'hoursPerWeek',
+        kind: 'choice',
+        label: 'Realistically, how many hours a week can you give this?',
+        hint: 'Be honest rather than hopeful — the order of the moves depends on it.',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: '0-5',   label: 'Under 5' },
+          { key: '5-10',  label: '5 to 10' },
+          { key: '10-20', label: '10 to 20' },
+          { key: '20+',   label: 'More than 20' },
         ],
       },
       {
@@ -343,6 +373,17 @@ export const WAYOUT_SCREENS = [
         key: 'seasonNote',
         kind: 'text',
         label: 'What’s the season like there, and what’s the economy doing?',
+        required: false,
+      },
+      {
+        // ⭐ Without this the plan can confidently hand someone the exact thing
+        // that already failed them, which ends their trust in the rest of it.
+        // It is also where the real reason usually surfaces — most things do
+        // not fail because they were the wrong idea.
+        key: 'alreadyTried',
+        kind: 'text',
+        label: 'What have you already tried, and what happened?',
+        placeholder: 'Even something that only lasted a month.',
         required: false,
       },
       {
@@ -390,6 +431,41 @@ export const WAYOUT_SCREENS = [
 ]
 
 /** Screens whose completion triggers a reflection card on the NEXT screen. */
+/**
+ * The open door — the last step, after the six questions.
+ *
+ * ⭐⭐ WHY IT IS LAST AND NOT FIRST. Asked cold at the start, "tell me about
+ * your life" gets a shrug and two lines — nobody knows what kind of detail
+ * matters yet. Asked after six specific questions, and immediately after "what
+ * are you running from and running toward", people know exactly what this thing
+ * is for and write the real thing. The most useful sentence in the whole intake
+ * usually lands here.
+ *
+ * ⭐ It is also the only field that can carry what no list can: an illness, a
+ * bankruptcy, a marriage that is ending, a record, a kid who needs more than
+ * the others, the job that is about to go. Every one of those changes the plan,
+ * and none of them is a chip.
+ *
+ * ⚠️ NOT NUMBERED, so the promise on the opening screen — "six honest
+ * questions" — stays true. It is a door, not a seventh interrogation.
+ *
+ * ⚠️ NOT REQUIRED. A forced life story gets "n/a", and then we have taught them
+ * the box is a formality.
+ */
+export const WAYOUT_OPEN = {
+  question: 'Anything else?',
+  lead: 'The questions were narrow on purpose. This is where you say the thing they missed.',
+  field: {
+    key: 'story',
+    kind: 'text',
+    label: 'What else should I know about your situation?',
+    placeholder: 'Whatever matters. What went wrong before, what you are carrying, what you have already tried, what you would never do again.',
+    required: false,
+  },
+  hint: 'Take as long as you want. Nobody reads this but the plan.',
+  cta: 'See the plan',
+}
+
 export const REFLECT_AFTER = WAYOUT_SCREENS.filter(s => s.reflectAfter).map(s => s.id)
 
 export const WAYOUT_TOTAL_SCREENS = WAYOUT_SCREENS.length

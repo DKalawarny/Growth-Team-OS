@@ -300,6 +300,9 @@
   resize: none;
 }
 .wayout__textarea { min-height: 64px; }
+/* ⭐ The open door gets a box that visibly expects more than a sentence. A
+   three-line field tells someone to be brief, whatever the label says. */
+.wayout__textarea--tall { min-height: 220px; }
 .wayout__input:focus,
 .wayout__textarea:focus { outline: none; border-bottom-color: var(--green); }
 .wayout__input::placeholder,

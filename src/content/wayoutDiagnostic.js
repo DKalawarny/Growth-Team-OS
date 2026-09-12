@@ -51,11 +51,11 @@ export const DIAGNOSTIC_QUESTIONS = [
   },
   {
     key: 'asset',
-    question: 'What do you already own?',
+    question: 'What have you already got?',
     options: [
-      { key: 'vehicle', label: 'A truck or trailer' },
+      { key: 'vehicle', label: 'A vehicle or tools' },
       { key: 'space',   label: 'A spare room, garage or land' },
-      { key: 'skill',   label: 'A skill or ticket' },
+      { key: 'skill',   label: 'A skill, trade or free evenings' },
       { key: 'none',    label: 'Not much' },
     ],
   },
