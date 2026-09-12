@@ -2,6 +2,7 @@ import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { enforceMapContract } from './mapContract'
+import { parseModelJson } from './parseModelJson'
 
 export { enforceMapContract, mapProblems } from './mapContract'
 
@@ -183,9 +184,9 @@ export async function reflect(screenAnswers) {
  * costing cents and dollars.
  */
 export async function generateMap(answers) {
-  // json:true makes callClaude return the parsed object (it runs unwrapJson,
-  // which also strips the markdown fences models add despite being told not to).
-  const map = await callClaude({
+  // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to the
+  // outer braces but does not parse. See parseModelJson.
+  const raw = await callClaude({
     promptKey: 'WAYOUT_MAP_PROMPT',
     stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
     messages: [{ role: 'user', content: JSON.stringify(answers, null, 2) }],
@@ -196,9 +197,7 @@ export async function generateMap(answers) {
     kind: 'map',
   })
 
-  if (!map || typeof map !== 'object') {
-    throw new Error('The plan came back unreadable. Try again in a moment.')
-  }
+  const map = parseModelJson(raw, 'The plan')
   return enforceMapContract(map, answers)
 }
 
@@ -217,7 +216,7 @@ export async function generateMap(answers) {
  * confident answer built on stale facts is worse than no answer.
  */
 export async function generatePlaybook({ answers, map, move }) {
-  const play = await callClaude({
+  const raw = await callClaude({
     promptKey: 'WAYOUT_PLAYBOOK_PROMPT',
     stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
     messages: [{
@@ -229,15 +228,15 @@ export async function generatePlaybook({ answers, map, move }) {
         the_plan: { headline: map?.headline, moves: map?.moves, cut: map?.cut },
       }, null, 2),
     }],
-    maxTokens: 2500,
+    // ⚠️ The schema is large — a script, three arrays and nine fields. 2500 was
+    // tight enough that a wordy answer would truncate, and truncated JSON fails
+    // in a way that reads like a model problem rather than a budget one.
+    maxTokens: 4000,
     json: true,
     model: SONNET,
     toolId: TOOL_ID,
     kind: 'playbook',
   })
 
-  if (!play || typeof play !== 'object') {
-    throw new Error('That came back unreadable. Try again in a moment.')
-  }
-  return play
+  return parseModelJson(raw, 'The play-by-play')
 }

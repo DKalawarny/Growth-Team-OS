@@ -3,11 +3,20 @@
  *
  * ⭐ THIS FILE IS THE ONLY PLACE THE USER-FACING NAME IS WRITTEN.
  *
- * The name is not settled. Daniel's own test for it: it should be what someone
- * would search or say when they feel trapped, not a brand word. "The way out"
- * passes that test, which is why it is here as a real candidate rather than a
- * placeholder — but domain and app-store availability have not been checked,
- * and a name like this will have neighbours.
+ * 🔴 "the way out" IS A PLACEHOLDER — Daniel's call, 12 Sep. Not a shortlist
+ * entry, not a leading candidate: a working label so the build can carry on
+ * while the real name is decided separately.
+ *
+ * ⚠️ THE RISK A PLACEHOLDER CARRIES IS THAT IT QUIETLY BECOMES THE NAME. It
+ * happened on the other product — a headline sat in the code marked PLACEHOLDER
+ * for weeks, nine replacement attempts were rejected, and it only settled when
+ * the words came from him. So this note stays until it is replaced, and nothing
+ * downstream is allowed to depend on the word.
+ *
+ * ⭐ His own test, for when it is decided: it should be what someone would
+ * search or say when they feel trapped, not a brand word. And check domain and
+ * app-store availability before committing — a name this plain will have
+ * neighbours.
  *
  * So the name is a ONE-LINE CHANGE and nothing else moves:
  *
