@@ -2480,8 +2480,8 @@ Return ONLY valid JSON in this shape:
     "insight": "what that means that they did not say, in 1-2 sentences"
   },
   "stats": [
-    { "label": "Freed by cutting", "value": 0, "prefix": "$", "suffix": "/mo" },
-    { "label": "Your quit number", "value": 0, "prefix": "$", "suffix": "" }
+    { "label": "Freed by cutting", "value": 0, "prefix": "$", "suffix": "/mo", "caption": "optional — what this is, in four or five words" },
+    { "label": "Your quit number", "value": 0, "prefix": "$", "suffix": "", "caption": "optional — when they reach it, e.g. \"on track for next summer\"" }
   ],
   "moves": [
     {
@@ -2541,6 +2541,10 @@ CONSTRUCTION RULES — these are absolute
   on things that are not must-pay. The second is whatever number actually gates
   their plan — usually the monthly income that lets them quit, or the figure
   gate 2 turns on. Both must be derived from their own numbers.
+  ⭐ Give each a "caption" when you can honestly derive one. A figure with
+  nothing anchoring it is a slogan: "$10,000" says nothing, "$10,000 — on track
+  for next summer" is a thing they can aim at. Omit the caption rather than
+  inventing a date the numbers do not support.
 - If goalType is "More time", the moves are delegation, subtraction and pricing.
   Never a second job. They told you time is the scarce thing; do not spend it.
 - If the horizon they chose does not survive their own numbers, say so in the

@@ -47,11 +47,41 @@
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
+  background: var(--paper);
   /* Respect the notch on iOS. Twelve overlays in the other product have this
      and one did not, which is how a close button ended up under the Dynamic
      Island for two bug reports. */
   padding-top: max(40px, env(safe-area-inset-top));
   padding-bottom: max(32px, env(safe-area-inset-bottom));
+}
+
+/* ── Desktop: put the card back ──────────────────────────────────────────
+   ⚠️ The design reference is a phone CARD on a tinted ground, and the first
+   build kept the card's contents and dropped the card. On a phone that is
+   right — full bleed is what a phone wants. On a wide window it left a narrow
+   column stranded at the top of a large white page, which reads as unfinished
+   rather than as deliberately narrow.
+
+   So above 700px the ground goes tinted and the column becomes the paper card
+   the design actually drew: rounded, softly shadowed, and centred in the
+   viewport. Nothing inside changes — this is framing, not a second layout,
+   and there is still only one design. */
+@media (min-width: 700px) {
+  .wayout { background: #E9E3D3; }
+
+  .wayout__frame {
+    max-width: 430px;
+    /* Sits in the viewport rather than filling it. min-height keeps a short
+       screen (the diagnostic is four lines) from collapsing into a stub, and
+       `auto` lets a long screen — S5 has five fields — grow past it instead of
+       being clipped. */
+    min-height: min(820px, calc(100dvh - 96px));
+    height: auto;
+    margin: 48px auto;
+    padding: 48px 30px 34px;
+    border-radius: 40px;
+    box-shadow: 0 24px 50px rgba(35, 48, 31, 0.16);
+  }
 }
 
 /* ── Brand mark ─────────────────────────────────────────────────────────── */
@@ -88,7 +118,7 @@
   margin: 0 0 14px;
 }
 .wayout h2 {
-  font-size: 30px;
+  font-size: 32px;
   line-height: 1.1;
   letter-spacing: -0.025em;
   font-weight: 800;
@@ -102,10 +132,13 @@
   margin: 0 0 20px;
 }
 .wayout__lead {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.45;
   color: var(--soft);
   margin: 0 0 26px;
+  /* A measure, not a width. Long lines are what make a lead read as marketing
+     copy rather than as someone talking to you. */
+  max-width: 28ch;
 }
 .wayout__label {
   display: block;
@@ -121,22 +154,26 @@
   line-height: 1.4;
 }
 .wayout__fine {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--soft);
-  margin-top: 18px;
-  line-height: 1.5;
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.4;
 }
 
 /* ⚠️ The mark must never span a line break — a highlight broken across two
    lines reads as a rendering fault. `box-decoration-break` keeps the ends
    rounded on both fragments if it ever does wrap on a very narrow screen. */
 .wayout mark {
-  background: var(--hi);
+  /* A highlighter stroke through the lower two-thirds of the line, not a filled
+     block behind the text — the text stays on paper and the ink sits under it. */
+  background: linear-gradient(transparent 38%, var(--hi) 38% 92%, transparent 92%);
   color: inherit;
   padding: 0 2px;
-  border-radius: 3px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  /* ⚠️ This is what keeps the phrase off a line break. A highlight broken
+     across two lines reads as a rendering fault, and a comment saying so does
+     not prevent it. */
+  white-space: nowrap;
 }
 
 /* ⭐ Used EXACTLY ONCE in the whole product (S0 fine print). A second one and
@@ -175,7 +212,7 @@
   width: 56px;
   height: 56px;
   border-radius: 999px;
-  border: 2px solid var(--line);
+  border: 2px solid #DCD6C6;
   background: transparent;
   color: var(--ink);
   font-size: 20px;
@@ -187,32 +224,36 @@
 .wayout__textarea {
   width: 100%;
   box-sizing: border-box;
-  background: var(--tint);
-  border: 2px solid transparent;
-  border-radius: 14px;
-  padding: 15px 16px;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid var(--ink);
+  border-radius: 0;
+  padding: 8px 0;
   font: inherit;
-  font-size: 16px;   /* ⚠️ 16px or iOS Safari zooms the page on focus. */
+  /* ⚠️ 18px, and never below 16px — iOS Safari zooms the whole page on focus
+     for anything smaller, which on a six-screen form is a fight every time. */
+  font-size: 18px;
+  line-height: 1.45;
   color: var(--ink);
-  resize: vertical;
+  resize: none;
 }
-.wayout__textarea { min-height: 96px; line-height: 1.45; }
+.wayout__textarea { min-height: 64px; }
 .wayout__input:focus,
-.wayout__textarea:focus { outline: none; border-color: var(--green); }
+.wayout__textarea:focus { outline: none; border-bottom-color: var(--green); }
 .wayout__input::placeholder,
-.wayout__textarea::placeholder { color: #A8AF9D; }
+.wayout__textarea::placeholder { color: #A9AE9C; }
 
 .wayout__money { position: relative; }
 .wayout__money span {
   position: absolute;
-  left: 16px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   color: var(--soft);
   font-weight: 600;
   pointer-events: none;
 }
-.wayout__money .wayout__input { padding-left: 32px; }
+.wayout__money .wayout__input { padding-left: 20px; }
 
 .wayout__error {
   color: #A4442F;
@@ -224,8 +265,8 @@
 /* ── Chips ──────────────────────────────────────────────────────────────── */
 .wayout__chips { display: flex; flex-wrap: wrap; gap: 9px; }
 .wayout__chip {
-  border: 2px solid var(--line);
-  background: transparent;
+  border: 2px solid #DCD6C6;
+  background: #fff;
   border-radius: 999px;
   padding: 10px 15px;
   font: inherit;
@@ -279,87 +320,142 @@
 .wayout__rankbtns button:disabled { opacity: .3; cursor: default; }
 
 /* ── The map (S7) ───────────────────────────────────────────────────────── */
-.wayout__who { color: var(--soft); font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+.wayout__who { color: var(--soft); font-size: 15px; margin: 30px 0 6px; }
 
+/* ⭐ THE SEEN CARD IS THE EMOTIONAL PAYLOAD, so it gets the weight.
+   Someone has just spent fifteen minutes answering questions about their
+   money, their marriage and what they would give up. This is the sentence
+   where the product says it was listening — their own words, then the thing
+   sitting in plain view underneath them. A tinted box does not carry that. */
 .wayout__seen {
-  margin: 18px 0 0;
-  padding: 16px 18px 16px 20px;
+  margin: 20px 0 0;
+  padding: 20px 20px 20px 22px;
   border-left: 5px solid var(--sun);
   background: #FFF5DC;
-  border-radius: 0 14px 14px 0;
-  font-size: 15.5px;
-  line-height: 1.45;
+  border-radius: 0 16px 16px 0;
+  font-size: 17px;
+  line-height: 1.5;
 }
-.wayout__seen b { font-weight: 700; }
+.wayout__seen q { font-style: normal; color: var(--soft); }
+.wayout__seen b { font-weight: 700; display: block; margin-top: 8px; }
 
 .wayout__stats { display: flex; gap: 12px; margin: 22px 0 0; }
-.wayout__stat {
-  flex: 1;
-  background: var(--tint);
-  border-radius: 16px;
-  padding: 16px;
+.wayout__stat { flex: 1; background: var(--tint); border-radius: 16px; padding: 14px 16px; }
+.wayout__stat span { display: block; font-size: 13px; color: var(--soft); }
+.wayout__stat b {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
 }
-.wayout__stat span { display: block; font-size: 13px; color: var(--soft); font-weight: 600; margin-bottom: 6px; }
-.wayout__stat b { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+/* ⚠️ A number with no anchor is a number nobody believes. "$10,000" is the
+   figure the whole plan aims at; without a "by when" it is a slogan. */
+.wayout__statwhen { display: block; font-size: 12px; color: var(--soft); margin-top: 4px; }
 
-.wayout__moves { margin-top: 10px; }
+.wayout h3 { font-size: 17px; font-weight: 700; margin: 26px 0 4px; }
+
+/* ── The three moves ─────────────────────────────────────────────────────
+   ⭐⭐ THE ORDER IS THE PRODUCT, SO THE ORDER HAS TO BE VISIBLE.
+   Three identical rows with three identical boxes say "pick one" — which is
+   the one thing this plan is not. So the moves hang off a spine: move one is
+   live, the two below are visibly downstream, and the GATE sits on the spine
+   between them.
+
+   The gate is the sentence that makes this a plan rather than a list of
+   ideas — "when side income beats your paycheque by half, three months
+   running" is the thing no course and no chatbot gives anyone. It was buried
+   in grey body text. Now it is the connective tissue, which is what it is. */
+.wayout__moves { margin-top: 6px; position: relative; }
+
 .wayout__move {
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  background: var(--tint);
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: 10px;
+  padding: 12px 0;
   width: 100%;
   border: 0;
+  background: transparent;
   font: inherit;
   text-align: left;
   cursor: pointer;
   color: var(--ink);
 }
-.wayout__chk {
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  border: 2px solid var(--line);
-  background: transparent;
-  display: grid;
-  place-items: center;
-  transition: transform .18s ease, background .18s ease, border-color .18s ease;
-}
-.wayout__move--now .wayout__chk { background: var(--sun); border-color: var(--sun); }
-.wayout__move--done .wayout__chk { background: var(--green); border-color: var(--green); transform: scale(1.08); }
-.wayout__chk svg { width: 15px; height: 15px; opacity: 0; }
+.wayout__chk { /* set above */ }
+.wayout__chk svg { width: 16px; height: 16px; opacity: 0; transition: opacity .15s; }
 .wayout__move--now .wayout__chk svg,
 .wayout__move--done .wayout__chk svg { opacity: 1; }
-.wayout__move p { margin: 0 0 4px; font-weight: 700; font-size: 16.5px; line-height: 1.3; }
-.wayout__move small { font-size: 14px; color: var(--soft); line-height: 1.45; display: block; }
+.wayout__move p { margin: 0; font-size: 17px; line-height: 1.3; font-weight: 700; }
+.wayout__move small {
+  display: block;
+  font-size: 14px;
+  color: var(--soft);
+  font-weight: 500;
+  margin-top: 3px;
+  line-height: 1.35;
+}
 .wayout__move small b { color: var(--green); font-weight: 700; }
-.wayout__gate { display: block; margin-top: 6px; font-size: 13.5px; color: var(--soft); }
 
-.wayout__cut { margin-top: 10px; }
+/* The gate, sitting between one move and the next. Indented to the spine so it
+   reads as the step between them rather than as a caption on either. */
+.wayout__gate {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 2px 0 6px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--soft);
+}
+.wayout__gate::before {
+  /* The spine segment. Aligned to the centre of the 26px tick box above it. */
+  content: '';
+  flex: none;
+  width: 26px;
+  align-self: stretch;
+  background: linear-gradient(var(--line), var(--line)) center / 2px 100% no-repeat;
+}
+.wayout__gate span { padding: 4px 0 8px; }
+.wayout__gate b { color: var(--ink); font-weight: 700; }
+
+/* ── Crossed off ─────────────────────────────────────────────────────────
+   ⭐ This is the credibility section, not a footnote. "Delivery driving" with
+   a line through it means nothing; the REASON is what proves the thing thought
+   about this person instead of listing side hustles at them. Rows that open. */
+.wayout__cut { margin-top: 8px; border-top: 1px solid var(--line); }
 .wayout__cutrow {
   width: 100%;
   text-align: left;
   border: 0;
+  border-bottom: 1px solid var(--line);
   background: transparent;
   font: inherit;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 13px 0;
   cursor: pointer;
-  color: var(--soft);
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.wayout__cutrow s { font-size: 16px; font-weight: 600; }
-.wayout__cutwhy { display: block; margin-top: 7px; font-size: 14.5px; line-height: 1.45; color: var(--soft); }
-
-.wayout__disclaimer {
-  margin-top: 26px;
+.wayout__cutrow s { font-size: 15.5px; font-weight: 600; color: var(--soft); text-decoration-color: #B9B29E; }
+.wayout__cutrow em {
+  margin-left: auto;
+  font-style: normal;
   font-size: 13px;
+  color: var(--green);
+  font-weight: 700;
+}
+.wayout__cutwhy {
+  flex-basis: 100%;
+  font-size: 14.5px;
   line-height: 1.5;
   color: var(--soft);
+  margin-top: 8px;
 }
+
+.wayout__disclaimer { margin-top: 22px; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
 
 /* ── Reveal ─────────────────────────────────────────────────────────────── */
 /* The map builds line by line. Everything starts hidden and is revealed by a

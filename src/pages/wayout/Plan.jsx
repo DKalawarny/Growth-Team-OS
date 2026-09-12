@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { loadOrCreateSession, generateMap, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
+import { tick, buzz } from '../../lib/wayout/feedback'
 
 /**
  * The way out — S7, the reveal.
@@ -172,14 +173,18 @@ function Map({ map }) {
   const at = s => (REDUCED ? { } : { animationDelay: `${s}s` })
 
   function toggle(i) {
+    let ticking = false
     setDone(d => {
       const next = new Set(d)
-      if (next.has(i)) next.delete(i); else next.add(i)
+      if (next.has(i)) next.delete(i)
+      else { next.add(i); ticking = true }
       return next
     })
-    // Haptic where the device has it. Silent everywhere else — never a sound
-    // the person did not ask for.
-    if (navigator.vibrate) navigator.vibrate(12)
+    // ⚠️ Only on the way ON. Ticking something off is an accomplishment;
+    // un-ticking it is a correction, and celebrating a correction is the kind
+    // of detail that makes an app feel like it is not listening.
+    buzz()
+    if (ticking) tick()
   }
 
   return (
@@ -197,7 +202,8 @@ function Map({ map }) {
           A fabricated one takes every other claim on the page down with it. */}
       {map.seen && (
         <div className="wayout__seen wayout__r" style={at(0.9)}>
-          “{map.seen.quote}” <b>{map.seen.insight}</b>
+          <q>“{map.seen.quote}”</q>
+          <b>{map.seen.insight}</b>
         </div>
       )}
 
@@ -207,6 +213,10 @@ function Map({ map }) {
             <div className="wayout__stat" key={i}>
               <span>{s.label}</span>
               <b><CountUp value={Number(s.value) || 0} prefix={s.prefix} suffix={s.suffix} /></b>
+              {/* ⚠️ Optional. A figure with no "by when" is a slogan, but an
+                  invented one is worse than none — so it renders only when the
+                  model actually derived it. */}
+              {s.caption && <span className="wayout__statwhen">{s.caption}</span>}
             </div>
           ))}
         </div>
@@ -216,25 +226,34 @@ function Map({ map }) {
 
       <div className="wayout__moves">
         {map.moves?.map((m, i) => (
-          <button
-            type="button"
-            key={i}
-            className={`wayout__move wayout__r${i === 0 ? ' wayout__move--now' : ''}${done.has(i) ? ' wayout__move--done' : ''}`}
-            style={at(2.6 + i * 0.2)}
-            onClick={() => toggle(i)}
-            aria-pressed={done.has(i)}
-          >
-            <span className="wayout__chk">
-              <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 8.5l3 3 7-7" />
-              </svg>
-            </span>
-            <span>
-              <p>{m.title}</p>
-              <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
-              {m.gate && <small className="wayout__gate">Next move starts when: {m.gate}</small>}
-            </span>
-          </button>
+          <div key={i}>
+            <button
+              type="button"
+              className={`wayout__move wayout__r${i === 0 ? ' wayout__move--now' : ''}${done.has(i) ? ' wayout__move--done' : ''}`}
+              style={at(2.6 + i * 0.3)}
+              onClick={() => toggle(i)}
+              aria-pressed={done.has(i)}
+            >
+              <span className="wayout__chk">
+                <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 8.5l3 3 7-7" />
+                </svg>
+              </span>
+              <span>
+                <p>{m.title}</p>
+                <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
+              </span>
+            </button>
+
+            {/* ⭐ The gate, on the spine, between this move and the next — the
+                sentence that makes this a plan instead of three ideas. Not
+                rendered after the last move: there is nothing it unlocks. */}
+            {m.gate && i < map.moves.length - 1 && (
+              <div className="wayout__gate wayout__r" style={at(2.75 + i * 0.3)}>
+                <span>Move {i + 2} starts when <b>{m.gate}</b></span>
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
@@ -251,6 +270,7 @@ function Map({ map }) {
                 aria-expanded={openCut === i}
               >
                 <s>{c.label}</s>
+                <em>{openCut === i ? 'Hide' : 'Why'}</em>
                 {openCut === i && <span className="wayout__cutwhy">{c.why}</span>}
               </button>
             ))}
