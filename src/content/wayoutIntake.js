@@ -156,9 +156,48 @@ export const WAYOUT_SCREENS = [
   // ── S2 ────────────────────────────────────────────────────────────────────
   {
     id: 's2',
-    question: 'Who’s in it with you?',
+    question: 'You, and who’s in it with you.',
     reflectAfter: false,
     fields: [
+      // 🔴 THE PLAN IS ADDRESSED TO THEM AND WE WERE INVENTING BOTH OF THESE.
+      // The design reference's own map header reads "Jake, 23. Nanaimo." — a
+      // name and an age we never asked for. Age in particular changes the
+      // horizon, the acceptable risk and what is realistic more than almost
+      // anything else on this form.
+      {
+        key: 'name',
+        kind: 'shorttext',
+        label: 'What should I call you?',
+        placeholder: 'First name is fine',
+        required: true,
+        emptyMessage: 'Just a first name.',
+      },
+      {
+        key: 'age',
+        kind: 'shorttext',
+        label: 'How old are you?',
+        placeholder: '',
+        required: true,
+        emptyMessage: 'Roughly is fine.',
+      },
+      {
+        // ⭐ Every move about the job you already have — the raise, the shift,
+        // four days, contracting back — depends on this, and we were guessing.
+        // "Ask for a four-day week" is meaningless to someone self-employed.
+        key: 'workType',
+        kind: 'choice',
+        label: 'What kind of work?',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: 'employed', label: 'Employed' },
+          { key: 'self', label: 'Self-employed' },
+          { key: 'contract', label: 'Contract' },
+          { key: 'casual', label: 'Casual or shifts' },
+          { key: 'seasonal', label: 'Seasonal' },
+          { key: 'none', label: 'Not working right now' },
+        ],
+      },
       {
         key: 'relationship',
         kind: 'choice',
@@ -183,6 +222,16 @@ export const WAYOUT_SCREENS = [
           { key: '12-17', label: '12–17' },
           { key: 'adult', label: 'Adult' },
         ],
+      },
+      {
+        // ⭐ We asked who would FIGHT it and never what they WANT. For someone
+        // stepping down, the whole plan routes through their partner, and
+        // knowing only that she exists is not enough to plan around her.
+        key: 'partnerWants',
+        kind: 'text',
+        label: 'If there’s someone else in this, what do they want?',
+        placeholder: 'Not what they’d object to — what they’d actually like.',
+        required: false,
       },
       {
         key: 'peopleNote',
@@ -491,6 +540,25 @@ export const WAYOUT_SCREENS = [
         required: false,
       },
       {
+        // ⭐ A plan whose first move they will never start is worth nothing.
+        // Someone who will not knock on doors will not knock on doors, and no
+        // amount of good sequencing survives that.
+        key: 'refuse',
+        kind: 'text',
+        label: 'What wouldn’t you do, whatever it paid?',
+        placeholder: 'Knocking on doors. Managing people. Anything on a phone.',
+        required: false,
+      },
+      {
+        // ⭐ Known timing changes the ORDER, and the order is the product. A
+        // lease ending in April or a car paid off in June moves everything.
+        key: 'coming',
+        kind: 'text',
+        label: 'Anything already coming that changes the picture?',
+        placeholder: 'A bonus, a lease ending, a car finally paid off, a pension date.',
+        required: false,
+      },
+      {
         key: 'worstVersion',
         kind: 'text',
         label: 'What’s the worst version of this you’d still say yes to?',
@@ -531,6 +599,17 @@ export const WAYOUT_SCREENS = [
         label: 'Three years out — where, doing what, with whom. What does a Tuesday look like?',
         required: true,
         emptyMessage: 'A few lines is enough.',
+      },
+      {
+        // ⭐⭐ THE QUESTION NOBODY HAS EVER ASKED THEM. For the person stepping
+        // down it is the number the entire plan turns on, and most people have
+        // never said it out loud — which is why the honest answer is sometimes
+        // "you passed it two years ago".
+        key: 'enough',
+        kind: 'text',
+        label: 'What would be enough?',
+        placeholder: 'A number, or a description of a week. Whatever “enough” actually looks like.',
+        required: false,
       },
       {
         key: 'fromToward',

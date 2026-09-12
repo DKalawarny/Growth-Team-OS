@@ -18,6 +18,38 @@
  * table holds six enum answers and a region, and nothing a person wrote.
  */
 
+/**
+ * The opening beat, before question one.
+ *
+ * 🔴 WITHOUT IT A COLD VISITOR GOT "1 of 6" AND "What are you actually after?"
+ * with no idea what they had clicked, how long it would take, or whether they
+ * were about to be sold something. This is the free front door, so it is the
+ * first thing anyone ever sees of this product.
+ *
+ * ⭐ IT DOES NOT MAKE A CLAIM, IT NAMES THE SITUATION. "You probably already
+ * know three things you could do" is something a person recognises about
+ * themselves; "get unstuck today" is advertising, and advertising register is
+ * what got nine headlines rejected on the other product. The proof is not in
+ * the copy, it is that thirty seconds later the thing tells them which path
+ * fits AND why the other three do not — which no landing page can claim as
+ * convincingly as the product can just do.
+ *
+ * ⚠️ "earning more or needing less" is load-bearing, not balance. Without it
+ * this reads as a make-money quiz, and the person who has done well and wants a
+ * smaller life — half the product — closes the tab on the first screen.
+ *
+ * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
+ * the paid opening screen. A second one and neither means anything.
+ */
+export const DIAGNOSTIC_OPENING = {
+  headline: 'You probably already know three things you could do.',
+  highlight: 'three things',
+  lead: 'The hard part is which one is first — and what to ignore.',
+  body: 'Six questions, about three minutes. At the end it names the path that actually fits you, and why the other three don\'t. Whether getting out means earning more or needing less.',
+  cta: 'Start',
+  fine: 'No account. Nothing to buy to see it.',
+}
+
 export const DIAGNOSTIC_QUESTIONS = [
   {
     key: 'goalType',

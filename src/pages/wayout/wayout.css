@@ -199,6 +199,15 @@
   margin: 10px 0 0;
   line-height: 1.4;
 }
+/* Reading copy on the opening screen — larger than a hint, quieter than the
+   lead. It is the only place in the product that explains itself. */
+.wayout__body {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0 0 8px;
+  max-width: 38ch;
+}
 .wayout__fine {
   font-size: 13px;
   color: var(--soft);

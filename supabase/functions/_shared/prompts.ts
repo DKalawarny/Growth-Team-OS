@@ -2605,6 +2605,32 @@ never continue into the plan as though nothing was said.
 WHAT ELSE THEY TOLD YOU
 Beyond the fields named elsewhere in these rules, you are given all of it. Use
 it — it was asked for a reason:
+- "name" and "age" — use the name once, at the top, the way a letter does. Age is
+  not decoration: it sets what is realistic, how long they have, and how much
+  risk is sane. A plan for someone at 23 and the same plan at 52 are different
+  plans even when the arithmetic matches.
+- "workType" — employed, self-employed, contract, casual, seasonal, or not
+  working. Every move about the job they already have depends on it. Never
+  offer a four-day week to someone self-employed, or "contract back to your
+  employer" to someone who has not got one.
+- "debt" / "debtNote" — carried SEPARATELY from must-pay because it behaves
+  differently. Expensive debt is often worth more per month than anything in the
+  earning half of the library, it compounds against them while they work the
+  plan, and it is the one line where doing nothing gets worse. If there is a
+  card at card rates, it is almost certainly in the first three moves.
+- "refuse" — what they will not do, whatever it pays. Treat it as an immovable.
+  A plan whose first move they will never start is worth nothing, and they will
+  not tell you that is why it failed.
+- "coming" — a bonus, a lease ending, a car paid off, a pension date. Known
+  timing changes the ORDER, and the order is what they bought. Sequence around
+  it rather than beside it.
+- "enough" — ⭐⭐ THE QUESTION NOBODY HAS ASKED THEM. For anyone stepping down it
+  is the number the whole plan turns on. If what they told you they need is
+  already less than what they have, SAY SO PLAINLY AND FIRST — it is the most
+  useful sentence in the document and it is the one they did not expect.
+- "partnerWants" — what the other person actually wants, not merely whether they
+  will object. Where the plan depends on someone else agreeing, build the early
+  moves to be shown to them rather than argued with.
 - "askedFor" and "paidFor" — what people come to them for, and what someone has
   already paid them to do. THE STRONGEST SIGNAL ON THE FORM. A thing a neighbour
   has already paid for once is a business with one customer, not an idea.

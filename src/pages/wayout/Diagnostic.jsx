@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
+import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
@@ -16,8 +16,17 @@ import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/prici
  * ⚠️ One tap advances. No Next button, because a six-question form with a Next
  * on every screen is twelve taps, and the promise on the page is three minutes.
  */
+/** Split a headline on its highlight phrase so the mark can wrap it. */
+function Marked({ text, highlight }) {
+  if (!highlight || !text?.includes(highlight)) return text
+  const [before, ...rest] = text.split(highlight)
+  return <>{before}<mark>{highlight}</mark>{rest.join(highlight)}</>
+}
+
 export default function Diagnostic() {
-  const [step, setStep]       = useState(0)
+  // ⚠️ -1 is the opening screen. Not "0 of 6" — it is not a question, and
+  // numbering it would make the promise of six into seven on the first breath.
+  const [step, setStep]       = useState(-1)
   const [answers, setAnswers] = useState({})
   const [done, setDone]       = useState(false)
 
@@ -45,6 +54,24 @@ export default function Diagnostic() {
 
   if (done) return <Result answers={answers} />
 
+  if (step === -1) {
+    return (
+      <WayoutShell noindex>
+        <div className="wayout__spread">
+        <div className="wayout__col">
+          <h1><Marked text={DIAGNOSTIC_OPENING.headline} highlight={DIAGNOSTIC_OPENING.highlight} /></h1>
+          <p className="wayout__lead">{DIAGNOSTIC_OPENING.lead}</p>
+        </div>
+        <div className="wayout__col">
+          <p className="wayout__body">{DIAGNOSTIC_OPENING.body}</p>
+          <button className="wayout__btn" onClick={() => setStep(0)}>{DIAGNOSTIC_OPENING.cta}</button>
+          <p className="wayout__fine">{DIAGNOSTIC_OPENING.fine}</p>
+        </div>
+        </div>
+      </WayoutShell>
+    )
+  }
+
   return (
     <WayoutShell count={`${step + 1} of ${DIAGNOSTIC_QUESTIONS.length}`} noindex>
       <p className="wayout__q">{q.question}</p>
@@ -60,11 +87,9 @@ export default function Diagnostic() {
           </button>
         ))}
       </div>
-      {step > 0 && (
-        <div className="wayout__nav">
-          <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
-        </div>
-      )}
+      <div className="wayout__nav">
+        <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
+      </div>
     </WayoutShell>
   )
 }

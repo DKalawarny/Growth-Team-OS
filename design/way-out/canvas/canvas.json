@@ -57,23 +57,51 @@
       "h": 1560
     },
     {
-      "file": "Paywall.dc.html",
+      "file": "MapSimpler.dc.html",
       "x": 480,
       "y": 1700,
       "w": 390,
-      "h": 844
+      "h": 1560
     },
     {
-      "file": "Diagnostic.dc.html",
+      "file": "Paywall.dc.html",
       "x": 960,
       "y": 1700,
       "w": 390,
       "h": 844
     },
     {
-      "file": "Result.dc.html",
+      "file": "Diagnostic.dc.html",
       "x": 1440,
       "y": 1700,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "Result.dc.html",
+      "x": 1920,
+      "y": 1700,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "OpenRecognition.dc.html",
+      "x": 0,
+      "y": 3400,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "OpenDemo.dc.html",
+      "x": 480,
+      "y": 3400,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "OpenQuestion.dc.html",
+      "x": 960,
+      "y": 3400,
       "w": 390,
       "h": 844
     }
@@ -90,8 +118,8 @@
       "id": "deliver",
       "x": 0,
       "y": 1550,
-      "w": 520,
-      "text": "THE MAP is what they paid for. The gate between two moves is the sentence no course gives them."
+      "w": 900,
+      "text": "THE MAP — the same product, both directions. JAKE closes the gap by earning more. MARCUS closes it by needing less, and his plan crosses OUT starting a business. One example is one product; this is why there are two."
     },
     {
       "id": "front",
@@ -99,6 +127,13 @@
       "y": 1550,
       "w": 520,
       "text": "THE FREE DIAGNOSTIC — public, six taps, rules not a model. Naming what does NOT fit is what earns the next click."
+    },
+    {
+      "id": "openers",
+      "x": 0,
+      "y": 3230,
+      "w": 1340,
+      "text": "THE OPENING SCREEN — three bets on the first fifteen seconds, same visual system.\n\nRECOGNITION names something true about the reader — safest, but still asks to be believed.\nDEMONSTRATION shows the shape of an answer before asking for anything — strongest proof, shows the hand early.\nQUESTION starts being useful immediately — best completion, but a stranger has been told nothing, and it can read as a quiz funnel."
     }
   ],
   "launch": {
