@@ -36,6 +36,8 @@ export const WAYOUT_MOVES = [
   // ── Truck / trailer ──────────────────────────────────────────────────────
   {
     key: 'hauling',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Hauling and dump runs',
     needs: ['truck'],
     timeToCash: 'days',
@@ -48,6 +50,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'junk-removal',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Junk removal',
     needs: ['truck', 'trailer'],
     timeToCash: 'days',
@@ -60,6 +64,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'small-moves',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Small moves and single-item deliveries',
     needs: ['truck', 'trailer'],
     timeToCash: 'days',
@@ -74,6 +80,8 @@ export const WAYOUT_MOVES = [
   // ── Pressure washer ──────────────────────────────────────────────────────
   {
     key: 'pressure-washing',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Pressure washing driveways, siding and decks',
     needs: ['pressure-washer'],
     timeToCash: 'days',
@@ -88,6 +96,8 @@ export const WAYOUT_MOVES = [
   // ── Mower / tools ────────────────────────────────────────────────────────
   {
     key: 'lawns',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Weekly lawn rounds',
     needs: ['mower'],
     timeToCash: 'weeks',
@@ -100,6 +110,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'snow-gutters-lights',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Snow clearing, gutters and holiday lights',
     needs: ['truck', 'mower', 'tools'],
     timeToCash: 'weeks',
@@ -112,6 +124,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'handyman',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Small repairs people keep putting off',
     needs: ['tools'],
     timeToCash: 'days',
@@ -126,6 +140,8 @@ export const WAYOUT_MOVES = [
   // ── Space ────────────────────────────────────────────────────────────────
   {
     key: 'room-longterm',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Long-term tenant in the spare room',
     needs: ['spare-room'],
     timeToCash: 'weeks',
@@ -138,6 +154,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'room-midterm',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Furnished mid-term let — 90 days and up',
     needs: ['spare-room'],
     timeToCash: 'weeks',
@@ -150,6 +168,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'storage-parking',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Renting out storage, or boat and RV parking',
     needs: ['garage', 'land', 'parking'],
     timeToCash: 'weeks',
@@ -164,6 +184,8 @@ export const WAYOUT_MOVES = [
   // ── Recreational assets ──────────────────────────────────────────────────
   {
     key: 'peer-rental',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Renting out the boat, jet ski or camper',
     needs: ['boat'],
     timeToCash: 'weeks',
@@ -178,6 +200,8 @@ export const WAYOUT_MOVES = [
   // ── Equity ───────────────────────────────────────────────────────────────
   {
     key: 'downsize',
+    direction: 'spend-less',
+    reaches: 'replaces-a-wage',
     title: 'Sell and downsize',
     needs: ['home-equity'],
     timeToCash: 'months',
@@ -191,6 +215,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'house-hack',
+    direction: 'spend-less',
+    reaches: 'replaces-a-wage',
     title: 'House-hack — rent part of what you already own',
     needs: ['home-equity', 'spare-room', 'garage'],
     timeToCash: 'months',
@@ -206,6 +232,8 @@ export const WAYOUT_MOVES = [
   // ── Skills ───────────────────────────────────────────────────────────────
   {
     key: 'freelance-skill',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Charging for the thing people already ask you to do',
     needs: ['licence', 'trade', 'admin', 'computers', 'design', 'care', 'cooking', 'language', 'business'],
     timeToCash: 'days',
@@ -218,6 +246,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'photos',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Real-estate photos and small-business content',
     needs: ['camera'],
     timeToCash: 'weeks',
@@ -238,6 +268,8 @@ export const WAYOUT_MOVES = [
   // people, and for a lot of them they are faster than anything with an engine.
   {
     key: 'contract-back-to-employer',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Go back to your own employer as a contractor',
     needs: ['employer', 'trade', 'licence', 'admin', 'computers'],
     timeToCash: 'weeks',
@@ -253,6 +285,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'sub-for-someone-busier',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Sub work off someone who has more than they can do',
     needs: ['sub-work', 'trade', 'licence', 'tools'],
     timeToCash: 'days',
@@ -265,6 +299,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'back-office',
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
     title: 'Do the paperwork small operators hate',
     needs: ['admin', 'computers', 'school-hours'],
     timeToCash: 'weeks',
@@ -277,6 +313,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'teach-what-you-know',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Teach or tutor the thing you already know',
     needs: ['teaching', 'language', 'trade', 'care', 'school-hours', 'audience'],
     timeToCash: 'weeks',
@@ -289,6 +327,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'driving-errands',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'Driving, deliveries and errands for people who cannot',
     needs: ['car', 'evenings', 'weekends'],
     timeToCash: 'days',
@@ -303,6 +343,8 @@ export const WAYOUT_MOVES = [
   // ── Time ─────────────────────────────────────────────────────────────────
   {
     key: 'seasonal-stack',
+    direction: 'earn',
+    reaches: 'supplement',
     title: 'A season of stacked shifts, aimed at one number',
     needs: [],
     timeToCash: 'immediate',
@@ -316,12 +358,304 @@ export const WAYOUT_MOVES = [
     climateTags: [],
   },
 
+  // ── THE JOB YOU ALREADY HAVE ─────────────────────────────────────────────
+  // 🔴 THIS WHOLE CATEGORY WAS MISSING, and it is the largest omission in the
+  // file. For most employed people the single biggest one-step change in their
+  // income is the job they already do, done for someone who pays more — and it
+  // is on nobody's list, because the internet's answer to "I need more money"
+  // is always a business. Earning more is the slowest and most expensive of the
+  // six ways to close the gap, and it was the only one here.
+  {
+    key: 'raise-with-evidence',
+    title: 'Ask for the raise, with the numbers written down',
+    needs: [],
+    direction: 'earn',
+    reaches: 'changes-the-baseline',
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'An uncomfortable week. Nothing else.',
+    growsInto: 'Every future raise and pension contribution starts from the new number.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'better-paid-employer',
+    title: 'The same work, for someone who pays more',
+    needs: [],
+    direction: 'earn',
+    reaches: 'changes-the-baseline',
+    timeToCash: 'months',
+    upfront: 'nothing',
+    effort: 'medium',
+    familyCost: 'Evenings applying, and a few awkward half-days.',
+    growsInto: 'Usually the biggest single jump available to anyone employed.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'shift-or-role',
+    title: 'Change the shift or the role where you already are',
+    needs: [],
+    direction: 'both',
+    reaches: 'changes-the-shape',
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'Depends entirely which way you move it — that is the point of doing it deliberately.',
+    growsInto: 'Nights and differentials pay more; days buy back the evenings.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'four-days',
+    title: 'Drop to four days',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'changes-the-shape',
+    timeToCash: 'immediate',
+    upfront: 'a fifth of the income',
+    effort: 'low',
+    familyCost: 'None. This is the one that gives rather than takes.',
+    growsInto: 'The day is the thing. It is not a step toward anything else.',
+    seasons: 'all',
+    climateTags: [],
+    // ⚠️ Only honest once the cutting has made the fifth day affordable. Offered
+    // before that it is a pay cut dressed as a plan.
+    requiresSlack: true,
+  },
+
+  // ── WHAT YOU EARN PER HOUR ───────────────────────────────────────────────
+  // ⚠️ The "never propose a course" rule is aimed at the $2,000 start-a-business
+  // industry, not at apprenticeship. A red seal, a Class 1, a ticket an employer
+  // will pay for — these are how a great many people actually got out, and
+  // banning them blocks a real way out for exactly the person this is for.
+  {
+    key: 'get-the-ticket',
+    title: 'Get the ticket that changes your rate',
+    needs: [],
+    direction: 'earn',
+    reaches: 'changes-the-baseline',
+    timeToCash: 'months',
+    upfront: 'course fees, often employer-paid',
+    effort: 'medium',
+    familyCost: 'Evenings or block release, for a defined stretch with an end date.',
+    growsInto: 'A rate rather than a wage, and it never goes back down.',
+    seasons: 'all',
+    climateTags: [],
+    needsProfessional: 'whoever runs the trade or licensing body where you live',
+  },
+
+  // ── WHAT LIFE COSTS ──────────────────────────────────────────────────────
+  // 🔴 We had three cuts and all three were consumer spending — eating out,
+  // subscriptions, the truck — while treating housing and debt as facts of
+  // nature. For most households those two lines are larger than everything
+  // else added together, and dealing with expensive debt is often worth more
+  // per month than any move in the earning half of this file.
+  {
+    key: 'cheaper-housing',
+    title: 'The same town, a cheaper place to live',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    timeToCash: 'months',
+    upfront: 'moving costs, a deposit',
+    effort: 'high',
+    familyCost: 'Real, and everyone gets a say. Schools and neighbours are the whole argument.',
+    growsInto: 'The largest single line most people can actually move.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'expensive-debt',
+    title: 'Deal with the debt that is eating the margin',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'An afternoon of admin nobody wants to do.',
+    growsInto: 'Every month after is a month the interest is not taking.',
+    seasons: 'all',
+    climateTags: [],
+    needsProfessional: 'a credit counsellor if it is more than one card',
+  },
+  {
+    key: 'one-vehicle',
+    title: 'One vehicle instead of two',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'supplement',
+    timeToCash: 'immediate',
+    upfront: 'nothing',
+    effort: 'medium',
+    familyCost: 'Daily logistics, permanently. Do not propose it where shifts do not overlap.',
+    growsInto: 'Payment, insurance and fuel, gone at once.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'fixed-bills',
+    title: 'Switch the bills that renew themselves',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'supplement',
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'None.',
+    growsInto: 'Small and permanent. Worth doing precisely because it needs no willpower.',
+    seasons: 'all',
+    climateTags: [],
+    subtract: true,
+    fiveYearTest: 'You will never notice this one again after the afternoon you do it.',
+  },
+  {
+    key: 'childcare',
+    title: 'Change the childcare arrangement',
+    needs: [],
+    direction: 'both',
+    reaches: 'changes-the-shape',
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'medium',
+    familyCost: 'The most sensitive thing in this file. It is the children.',
+    growsInto: 'Often the difference between one income and two, or between working and not.',
+    seasons: 'all',
+    climateTags: [],
+  },
+
+  // ── WHERE YOU LIVE ───────────────────────────────────────────────────────
+  {
+    key: 'move-cheaper-region',
+    title: 'Somewhere the same money goes further',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'replaces-a-wage',
+    timeToCash: 'months',
+    upfront: 'moving costs',
+    effort: 'high',
+    familyCost: 'Everything. Nobody does this alone and nobody does it quickly.',
+    growsInto: 'The one move that changes income and costs at the same time.',
+    seasons: 'all',
+    climateTags: [],
+    // 🔴 Ruled out entirely by an immovable. Never offer it to someone with
+    // shared custody, a partner's job or a parent who needs them close.
+    blockedByImmovables: true,
+  },
+  {
+    key: 'move-near-family',
+    title: 'Move to be near the people who need you',
+    needs: [],
+    direction: 'both',
+    reaches: 'changes-the-shape',
+    timeToCash: 'months',
+    upfront: 'moving costs',
+    effort: 'high',
+    familyCost: 'A whole life relocated — and usually the reason for doing it.',
+    growsInto: 'Childcare, care for a parent, and the years you do not get back.',
+    seasons: 'all',
+    climateTags: [],
+  },
+
+  // ── LESS, ON PURPOSE ─────────────────────────────────────────────────────
+  // ⭐⭐ THE HALF OF THE PRODUCT THAT DID NOT EXIST. Someone who has done well
+  // and decided it is not everything closes the same gap from the other side:
+  // not by earning more but by needing less. He can usually already afford the
+  // life he wants and nobody has ever done that arithmetic in front of him.
+  // ⚠️ For him the hard part is never the money. It is the people around him
+  // and his own idea of himself — the partner who likes the income, the school,
+  // the father-in-law who will call it a breakdown.
+  {
+    key: 'own-it-outright',
+    title: 'Sell, and own somewhere outright',
+    needs: ['home-equity'],
+    direction: 'spend-less',
+    reaches: 'replaces-a-wage',
+    timeToCash: 'months',
+    upfront: 'moving costs, fees, tax',
+    effort: 'high',
+    familyCost: 'The largest conversation in this file, and it is not a money conversation.',
+    growsInto: 'No mortgage is the same as a second income, and it cannot be taken away.',
+    seasons: 'all',
+    climateTags: [],
+    needsProfessional: 'an accountant, before anything is listed',
+  },
+  {
+    key: 'hand-it-over',
+    title: 'Hand the business to someone who wants to run it',
+    needs: ['business'],
+    direction: 'spend-less',
+    reaches: 'changes-the-shape',
+    timeToCash: 'months',
+    upfront: 'nothing',
+    effort: 'high',
+    familyCost: 'Identity, mostly. The hours come back immediately; the rest takes a year.',
+    growsInto: 'Ownership without the day. Often more profitable than running it tired.',
+    seasons: 'all',
+    climateTags: [],
+    needsProfessional: 'an accountant and a lawyer',
+  },
+  {
+    key: 'stop-travelling',
+    title: 'Take the version of this job that stays home',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'changes-the-shape',
+    timeToCash: 'months',
+    upfront: 'usually some income',
+    effort: 'medium',
+    familyCost: 'None — this is the one people take a pay cut for and never regret.',
+    growsInto: 'Two hundred evenings a year is not a lifestyle change, it is a different life.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'lower-paid-closer',
+    title: 'The job closer to home, for less',
+    needs: [],
+    direction: 'spend-less',
+    reaches: 'changes-the-shape',
+    timeToCash: 'months',
+    upfront: 'the difference in pay',
+    effort: 'medium',
+    familyCost: 'None, once the arithmetic says the difference is affordable.',
+    growsInto: 'The commute back, which for most people is a working month a year.',
+    seasons: 'all',
+    climateTags: [],
+    requiresSlack: true,
+  },
+
+  // ── A YEAR WITH A SHAPE ──────────────────────────────────────────────────
+  // ⭐ For someone whose goal is a season on and a season off, an off-season is
+  // not a hole to be plugged — it is the entire point. Earn twelve months of
+  // money in six and go. The rest of this file treats winter as a problem.
+  {
+    key: 'seasonal-business',
+    title: 'Build something that earns its year in six months',
+    needs: ['truck', 'trailer', 'mower', 'pressure-washer', 'tools', 'licence', 'trade'],
+    direction: 'earn',
+    reaches: 'replaces-a-wage',
+    timeToCash: 'months',
+    upfront: 'nothing beyond what you own',
+    effort: 'high',
+    familyCost: 'Brutal for six months and absent for the other six. Everyone has to want it.',
+    growsInto: 'A crew that runs the season, and a winter that is genuinely yours.',
+    seasons: 'Apr-Oct',
+    // ⚠️ NOT cold-winter. The off-season is deliberate, so the winter-pairing
+    // check must not treat this plan as broken — which is exactly what it did.
+    climateTags: ['seasonal-by-design'],
+  },
+
   // ── Subtract ─────────────────────────────────────────────────────────────
   // ⭐ These are first among equals. Cutting needs no customer, no season and
   // no permission, and it is the fastest money most people have. The prompt
   // requires at least one of these whenever discretionary spend is above zero.
   {
     key: 'cut-vehicle',
+    direction: 'spend-less',
+    reaches: 'supplement',
     title: 'Downgrade the vehicle',
     needs: [],
     timeToCash: 'immediate',
@@ -336,6 +670,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'cut-subscriptions',
+    direction: 'spend-less',
+    reaches: 'supplement',
     title: 'Cancel what renews without being noticed',
     needs: [],
     timeToCash: 'immediate',
@@ -350,6 +686,8 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'cut-eating-out',
+    direction: 'spend-less',
+    reaches: 'supplement',
     title: 'Cut eating out to a set number of times a month',
     needs: [],
     timeToCash: 'immediate',
@@ -388,6 +726,11 @@ export function movesLibraryForPrompt() {
   return WAYOUT_MOVES.map(m => {
     const bits = [
       `- ${m.key}: ${m.title}`,
+      // ⭐ direction and reach are what let the model tell a supplement from an
+      // exit, and an earn-more move from a need-less one. Without them it
+      // cannot honour "move three has to arrive" or plan for someone whose
+      // goal is a smaller life.
+      `  direction: ${m.direction ?? 'earn'} · reaches: ${m.reaches ?? 'supplement'}`,
       `  needs: ${m.needs.length ? m.needs.join(', ') : 'nothing they have to own'}`,
       `  first cash: ${m.timeToCash} · upfront: ${m.upfront} · effort: ${m.effort}`,
       `  cost at home: ${m.familyCost}`,
@@ -396,6 +739,9 @@ export function movesLibraryForPrompt() {
     ]
     if (m.subtract) bits.push(`  SUBTRACT. five-year test: ${m.fiveYearTest}`)
     if (m.needsProfessional) bits.push(`  ⚠️ must be flagged: talk to ${m.needsProfessional}`)
+    if (m.blockedByImmovables) bits.push('  🔴 RULED OUT by any immovable that keeps them where they are.')
+    if (m.requiresSlack) bits.push('  ⚠️ Only honest once the cutting has made it affordable — before that it is a pay cut dressed as a plan.')
+    if (m.climateTags.includes('seasonal-by-design')) bits.push('  ⭐ The off-season is the POINT, not a gap to fill.')
     return bits.join('\n')
   }).join('\n\n')
 }

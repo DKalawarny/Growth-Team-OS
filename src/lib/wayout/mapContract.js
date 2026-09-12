@@ -152,7 +152,14 @@ export function mapProblems(map, answers = {}) {
     // No December hole.
     const first = map.moves[0]
     const outdoor = first?.outdoor === true || Boolean(first?.season)
-    if (outdoor && looksColdClimate(answers)) {
+    // 🔴 A DELIBERATE OFF-SEASON IS NOT A HOLE. This check used to flag any
+    // outdoor first move in a cold climate with no winter work — which meant
+    // that for the landscaper who earns his year in six months and spends the
+    // winter somewhere warm, we looked at his correct plan and called it
+    // broken. When someone has asked for a season on and a season off, the
+    // empty half of the year is the thing they are buying.
+    const wantsSeasonal = answers?.yearShape === 'seasonal'
+    if (outdoor && !wantsSeasonal && looksColdClimate(answers)) {
       const hasPlan = Array.isArray(map.seasonPlan) && map.seasonPlan.length > 0
       if (!hasPlan) problems.push('outdoor first move in a cold climate with no off-season plan')
     }

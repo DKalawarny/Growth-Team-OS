@@ -336,6 +336,24 @@ export const WAYOUT_SCREENS = [
         required: false,
       },
       {
+        // ⭐ HOW BOLD THE PLAN IS ALLOWED TO BE. A 23-year-old's downside on a
+        // failed first move is a wasted Saturday. A 52-year-old's is his
+        // family's security. Same plan shape, completely different acceptable
+        // risk — and until now the product would have spoken to both with the
+        // same confidence.
+        key: 'atStake',
+        kind: 'choice',
+        label: 'If this doesn’t work out, what does it cost you?',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: 'time', label: 'Some wasted weekends' },
+          { key: 'savings', label: 'Money I’d rather not lose' },
+          { key: 'security', label: 'My family’s security' },
+          { key: 'cannot-fail', label: 'It can’t fail — there’s no cushion' },
+        ],
+      },
+      {
         key: 'discretionary',
         kind: 'chips',
         label: 'Spending that isn’t must-pay',
@@ -416,6 +434,25 @@ export const WAYOUT_SCREENS = [
         ],
       },
       {
+        // ⭐ THE AXIS THAT WAS MISSING ENTIRELY, and the product did worse than
+        // ignore it: the map check FLAGGED a plan as broken when someone in a
+        // cold climate had an outdoor first move and no winter work. For the
+        // landscaper who earns twelve months of money in six and spends the
+        // winter somewhere warm, the December hole IS the plan — and we would
+        // have looked at his correct answer and called it a failure.
+        key: 'yearShape',
+        kind: 'choice',
+        label: 'What shape of year are you after?',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: 'steady', label: 'Steady, all year' },
+          { key: 'seasonal', label: 'A season on, a season off' },
+          { key: 'fewer-hours', label: 'Fewer hours, every week' },
+          { key: 'dontmind', label: 'Don’t mind' },
+        ],
+      },
+      {
         key: 'horizon',
         kind: 'choice',
         label: 'How long are you giving this?',
@@ -473,11 +510,19 @@ export const WAYOUT_SCREENS = [
         kind: 'choice',
         required: true,
         emptyMessage: 'Pick the one that’s most true.',
+        // 🔴 Every option here used to be acquisitive except "more time", so
+        // someone who has done well and decided it is not everything had no
+        // way to say so — he would tick the nearest wrong thing and the plan
+        // would misread him from the first screen. A way out is closing the gap
+        // between what a life costs and what it gives back; you can close it
+        // from either side.
         options: [
           { key: 'money', label: 'More money' },
           { key: 'time', label: 'More time' },
           { key: 'independent', label: 'Not working for someone else' },
           { key: 'mobile', label: 'Freedom to move' },
+          { key: 'simpler', label: 'Less — a simpler life' },
+          { key: 'place', label: 'To be somewhere else' },
         ],
       },
       {
