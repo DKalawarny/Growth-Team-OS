@@ -81,6 +81,9 @@ const WayoutPreview    = import.meta.env.DEV
 const WayoutPreviewIn  = import.meta.env.DEV
   ? lazy(() => import('./pages/wayout/PreviewIntake'))
   : null
+const WayoutPreviewPb  = import.meta.env.DEV
+  ? lazy(() => import('./pages/wayout/PreviewPlaybook'))
+  : null
 
 const AdminBackfill  = lazy(() => import('./pages/AdminBackfill'))
 const AdminReview    = lazy(() => import('./pages/AdminReview'))
@@ -266,6 +269,10 @@ export default function App() {
         )}
         {import.meta.env.DEV && (
           <Route path="/wayout/preview/intake" element={<LazyRoute><WayoutPreviewIn /></LazyRoute>} />
+        )}
+        {/* ⚠️ Needs a session — it calls the real model. */}
+        {import.meta.env.DEV && (
+          <Route path="/wayout/preview/playbook" element={<LazyRoute><RequireSession><WayoutPreviewPb /></RequireSession></LazyRoute>} />
         )}
 
         {/* Public auth routes */}

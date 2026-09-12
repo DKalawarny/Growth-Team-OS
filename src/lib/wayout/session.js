@@ -201,3 +201,43 @@ export async function generateMap(answers) {
   }
   return enforceMapContract(map, answers)
 }
+
+// ── The play-by-play ────────────────────────────────────────────────────────
+
+/**
+ * How to actually do one move.
+ *
+ * ⭐ The separate, recurring half of the product. The map is bought once and
+ * says what to do and in what order; this says how, for the move they are
+ * standing on — because if they knew how, they would have done it already.
+ *
+ * ⚠️ It is generated for ONE move at a time and only when they reach it. Not as
+ * a paywall trick: move two's play-by-play written in January would be written
+ * against a situation that has changed by the time they get there, and a
+ * confident answer built on stale facts is worse than no answer.
+ */
+export async function generatePlaybook({ answers, map, move }) {
+  const play = await callClaude({
+    promptKey: 'WAYOUT_PLAYBOOK_PROMPT',
+    stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
+    messages: [{
+      role: 'user',
+      content: JSON.stringify({
+        // The whole picture, because the value is entirely in it being theirs.
+        answers,
+        the_move: move,
+        the_plan: { headline: map?.headline, moves: map?.moves, cut: map?.cut },
+      }, null, 2),
+    }],
+    maxTokens: 2500,
+    json: true,
+    model: SONNET,
+    toolId: TOOL_ID,
+    kind: 'playbook',
+  })
+
+  if (!play || typeof play !== 'object') {
+    throw new Error('That came back unreadable. Try again in a moment.')
+  }
+  return play
+}

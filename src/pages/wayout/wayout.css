@@ -590,6 +590,30 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__pip--done { background: var(--green); }
 .wayout__pip--now  { background: var(--sun); }
 
+/* ── The play-by-play ───────────────────────────────────────────────────── */
+/* ⭐ The script is set to be COPIED, not read. Monospace-ish rhythm, a quiet
+   rule down the side, generous line height — it should look like something you
+   send, not like a paragraph about sending something. */
+.wayout__script {
+  margin: 12px 0 0;
+  padding: 16px 18px;
+  background: var(--tint);
+  border-left: 3px solid var(--green);
+  border-radius: 0 14px 14px 0;
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.wayout__facts { margin: 12px 0 0; display: grid; gap: 2px 16px; }
+.wayout__facts dt { font-size: 13px; font-weight: 700; color: var(--soft); margin-top: 12px; }
+.wayout__facts dd { margin: 2px 0 0; font-size: 16px; line-height: 1.5; }
+.wayout__twocol { display: grid; gap: 4px 28px; }
+@media (min-width: 560px) { .wayout__twocol { grid-template-columns: 1fr 1fr; } }
+.wayout__list { margin: 10px 0 0; padding-left: 18px; font-size: 15.5px; line-height: 1.6; }
+.wayout__list li { margin-bottom: 4px; }
+.wayout__list--skip { color: var(--soft); }
+.wayout__list--skip li::marker { color: var(--line); }
+
 /* ── Reveal ─────────────────────────────────────────────────────────────── */
 /* The map builds line by line. Everything starts hidden and is revealed by a
    staggered delay set inline per element. */
