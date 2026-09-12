@@ -169,6 +169,15 @@ export async function callClaude({
   maxTokens = 1024,
   json      = false,
   model     = SONNET,
+  // ⚠️ This was missing. The edge function has always read `toolId` from the
+  // body and defaults it to 'untagged' — and 'untagged' is in TOOL_CAP_EXEMPT,
+  // so every call made through here has been landing in one unlabelled bucket
+  // in usage_events. It still obeyed the spend cap, so nothing was uncapped;
+  // what was lost was the ability to answer "what does this feature cost".
+  // Passing it changes nothing for existing callers (they send undefined and
+  // get the same 'untagged' default they already had).
+  toolId,
+  kind,
 }) {
   // ⭐ promptKey path: the prompt text stays on the server. The caller sends a
   // key and its own context; the edge function resolves the key and assembles
@@ -190,6 +199,8 @@ export async function callClaude({
       model,
       json,
       stream: false,
+      ...(toolId ? { toolId } : {}),
+      ...(kind   ? { kind }   : {}),
     }),
   })
 

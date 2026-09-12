@@ -829,6 +829,91 @@ bundling step above the failure.
 - Health-checked Claude + stripe-checkout (401 from anon = auth middleware
   working as intended, not a crash)
 
+## ⭐ THE WAY OUT — a second front door on this platform (11 Sep 2026)
+
+A "get unstuck" life-plan product living inside this repo and this Supabase
+project. **Not a second app**: same auth, same `claude` proxy, same database.
+Daniel's spec and design reference are in [`design/way-out/`](design/way-out/).
+
+🔴 **THE NAME IS NOT SETTLED AND THE CODE IS BUILT SO IT DOES NOT HAVE TO BE.**
+The internal slug is **`wayout`** — routes, filenames, the table, the prompt
+keys, the `toolId`. That never changes. **Every user-facing instance of the name
+is in [`src/lib/wayout/brand.js`](src/lib/wayout/brand.js) and nowhere else**, so
+landing on a name is a one-line edit. Do not write the product's name as a
+literal anywhere in `src/` — that is the wordmark failure (seven hand-rolled
+copies) waiting to happen again.
+⚠️ Daniel's test for the name: *what someone would search or say when they feel
+trapped, not a brand word.* "The way out" passes it, which is why it is in the
+file as a real candidate rather than a placeholder. **Check domain and app-store
+availability before committing** — a name like that will have neighbours.
+
+**Routes** (`/wayout/start` public · `/wayout` + `/wayout/plan` need a session):
+🔴 **They sit OUTSIDE `RequireAuth` and must stay there.** `RequireAuth` sends
+anyone without a business profile to `/onboarding` — right for Eliv8 OS, fatal
+here: a person with no business would be asked their annual revenue before being
+allowed to say why they feel stuck. `RequireSession` is the correct guard, the
+same one `AdvisorPortal` uses for the same reason.
+
+**Migration 046.** `wayout_sessions` is 🔴 **the only customer-facing table in
+this schema NOT scoped by `company_id`**, and that is deliberate — a company is a
+SHARED scope, and this table holds a person's custody arrangement, their money
+and what they are running from. Company-scoping it would show an employee's exit
+plan to their employer. Scoped on `auth.uid() = user_id`; nothing joins it to
+companies. Entitlement columns (`status`, `paid_at`, `map`) are locked by a
+trigger so the paywall is a database constraint, not a branch in a component.
+
+⭐ **Why the existing `claude` function needed almost no change:** `profiles.
+company_id` is NOT NULL and `bootstrap_company()` is idempotent, so
+`loadOrCreateSession` calls it and every user has the company row the spend cap,
+tool cap and `usage_events` write already expect. 🔴 **Without that call the
+intake looks fine and the MAP fails — after the person has paid**, because
+`authedUser()` throws when there is no profile and `reflect()` swallows its
+errors by design.
+
+Two changes were needed and both are additive: `callClaude` now forwards
+`toolId`/`kind` (it never did — every call through it landed in `untagged`), and
+`wayout` is in `TOOL_CAP_EXEMPT` **because the eleventh call of a month would
+otherwise 429 someone who has already been charged $39**. The spend cap still
+applies; nothing is exempt from the money.
+
+⭐⭐ **The seen card is the one thing that cannot be wrong.** It quotes the person
+back to themselves; a fabricated quote reads as "this is making things up about
+me" and takes every other claim on the page with it. The prompt says copy it
+verbatim — [`mapContract.js`](src/lib/wayout/mapContract.js) **checks**, and drops
+the card when the quote is not a verbatim substring of what they actually typed
+(chips don't count; they are our labels, not their words). 13 tests in
+`mapContract.test.js`, and the guard assertions were verified to FAIL against a
+deliberately broken check before being kept.
+
+⭐ **The free diagnostic is rule-based, not a model call, and has to be.**
+`/wayout/start` is public, so there is no JWT for the `claude` function — and a
+model call on the one page built to be hit by strangers and bots is a bill with
+no floor. Rules live in `src/content/wayoutDiagnostic.js`.
+
+🔴 **NOT DONE — in the order it matters:**
+1. **Payments.** `WAYOUT_PAYMENTS_LIVE = false` in
+   [`src/lib/wayout/pricing.js`](src/lib/wayout/pricing.js). Needs a live Stripe
+   one-time price at $39 CAD, its id in `STRIPE_PRICE_ID_WAYOUT`, and a `wayout`
+   branch in `stripe-webhook` setting `status='paid'` — the only thing migration
+   046 accepts as proof. Until then the paywall screen says plainly that it
+   cannot take money yet rather than rendering a button that goes nowhere.
+   ⚠️ Stripe on this account is still in TEST mode.
+2. **Nothing is deployed.** `supabase db push` for 046, and
+   `supabase functions deploy claude` for the two new prompts AND the
+   `TOOL_CAP_EXEMPT` line. **A git push does not ship either.**
+3. **Never run in a browser.** The build passes and the contract logic is tested,
+   but no screen has been clicked and no reflection or map has come back from a
+   real model. That is the 22 Aug lesson standing unresolved.
+4. **`noindex` on every way-out page** while the name is unsettled, and they are
+   deliberately absent from the sitemap. Remove the tag and add the routes to
+   `scripts/sitemap.mjs` **in the same commit**, or they are orphaned the way the
+   answer pages were.
+
+⚠️ Pre-existing and unrelated, found while running the suite: `anthropic.test.js`
+asserts `SOLOMON_TOOLS` is `['search_library', 'run_tool']` and the module now
+also exports `search_the_record`. **That test has been red on a clean tree** —
+it is a stale assertion, not a regression from this work.
+
 ## Parked — pick up here
 
 In rough order of priority.

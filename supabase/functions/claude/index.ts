@@ -114,6 +114,14 @@ const TOOL_CAP_EXEMPT = new Set([
   'solomon-memory',   // memory extraction, fires after an exchange
   'library-analysis', // reads the whole library after an upload — internal
   'untagged',         // low-level calls with no declared tool
+  // ⭐ `wayout` is metered by spend, like the advisor, and must not be counted.
+  // 🔴 The reason is the failure mode, not the volume: one intake is three
+  // reflections plus the map, and the map is generated AFTER the person has
+  // paid $39. A per-tool COUNT cap would mean the eleventh call of a month
+  // returns 429 to someone who has already been charged — the one moment in
+  // this product where a refusal is indefensible. The spend cap still applies;
+  // nothing is exempt from the money.
+  'wayout',
 ])
 
 const DEFAULT_SPEND_CAP_USD = 10.00

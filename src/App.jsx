@@ -56,6 +56,14 @@ const Playbooks      = lazy(() => import('./pages/Playbooks'))
 const DailyLogs      = lazy(() => import('./pages/DailyLogs'))
 const AnswerIndex    = lazy(() => import('./pages/marketing/Answers').then(m => ({ default: m.AnswerIndex })))
 const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => ({ default: m.AnswerPage })))
+// ── Lazy: the way out (internal slug `wayout`) ─────────────────────────────
+// A separately-named front door on this platform, not a second app: same auth,
+// same Supabase project, same Solomon proxy. It carries its own visual system
+// and its own fonts, all of which load only on these routes — see WayoutShell.
+const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
+const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
+const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
+
 const AdminBackfill  = lazy(() => import('./pages/AdminBackfill'))
 const AdminReview    = lazy(() => import('./pages/AdminReview'))
 const Analytics      = lazy(() => import('./pages/Analytics'))
@@ -212,6 +220,24 @@ export default function App() {
 
         {/* Free-tool lead magnet */}
         <Route path="/free-gbp-audit" element={<LazyRoute><FreeGbpAudit /></LazyRoute>} />
+
+        {/* ── The way out ──────────────────────────────────────────────────
+            🔴 THESE SIT OUTSIDE <RequireAuth> ON PURPOSE, AND MUST STAY THERE.
+            RequireAuth sends anyone without a business profile to /onboarding —
+            correct for Eliv8 OS, where every user owns a company, and fatal
+            here, where the user is a person with a life and no business. They
+            would be asked their annual revenue before being allowed to answer
+            why they feel stuck.
+
+            RequireSession is the right guard: it needs a signed-in user and
+            nothing else, the same call AdvisorPortal makes for the same reason
+            (an advisor who signed up by invite may not own a company either).
+
+            The diagnostic takes no guard at all — it is the marketing front
+            door and is meant to be hit by strangers. */}
+        <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
+        <Route path="/wayout"       element={<LazyRoute><RequireSession><WayoutIntake /></RequireSession></LazyRoute>} />
+        <Route path="/wayout/plan"  element={<LazyRoute><RequireSession><WayoutPlan /></RequireSession></LazyRoute>} />
 
         {/* Public auth routes */}
         <Route path="/login"          element={<LazyRoute><RedirectIfAuthed><Login /></RedirectIfAuthed></LazyRoute>} />

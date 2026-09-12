@@ -1,0 +1,380 @@
+/**
+ * The way out — its own visual system.
+ *
+ * ⭐ EVERYTHING IS SCOPED UNDER `.wayout`. This product is a separately-named
+ * front door: paper, green and one accent, no dark mode, no app chrome. Eliv8
+ * OS is a dense green-on-near-black-capable dashboard. Neither look should ever
+ * leak into the other, and a bare `:root` variable or an unscoped element
+ * selector is exactly how that happens — the two share one bundle and one
+ * stylesheet cascade.
+ *
+ * ⚠️ NO TAILWIND UTILITIES IN THE WAYOUT COMPONENTS. The tokens here are not
+ * in the @theme block and never should be; adding them would put a second
+ * product's palette into every eliv8os class name's autocomplete and invite
+ * exactly the mixing this file exists to prevent.
+ *
+ * ⚠️ The design deliberately commits to a single light look (SPEC §6: "no dark
+ * mode default"). `color-scheme: light` on the wrapper stops a dark-mode
+ * browser from inverting form controls inside it.
+ */
+
+.wayout {
+  --paper: #FFFDF8;
+  --tint:  #F5F1E6;
+  --ink:   #23301F;
+  --soft:  #6B7561;
+  --green: #2F7D4F;
+  --sun:   #FFB43A;
+  --hi:    #FFE566;
+  --line:  #E4DECB;
+
+  color-scheme: light;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Figtree, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* One column, phone-first. The design reference is a 390px phone; everything
+   below just stops growing at a comfortable reading measure rather than
+   becoming a second, wider design nobody drew. */
+.wayout__frame {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 40px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* Respect the notch on iOS. Twelve overlays in the other product have this
+     and one did not, which is how a close button ended up under the Dynamic
+     Island for two bug reports. */
+  padding-top: max(40px, env(safe-area-inset-top));
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+}
+
+/* ── Brand mark ─────────────────────────────────────────────────────────── */
+.wayout__brand {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+.wayout__brand i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sun);
+  display: inline-block;
+  flex: none;
+}
+.wayout__count {
+  margin-left: auto;
+  color: var(--soft);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Type ───────────────────────────────────────────────────────────────── */
+.wayout h1 {
+  font-size: 40px;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+.wayout h2 {
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  margin: 0 0 16px;
+}
+.wayout__q {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  margin: 0 0 20px;
+}
+.wayout__lead {
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--soft);
+  margin: 0 0 26px;
+}
+.wayout__label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 22px 0 10px;
+}
+.wayout__hint {
+  font-size: 14px;
+  color: var(--soft);
+  margin: 10px 0 0;
+  line-height: 1.4;
+}
+.wayout__fine {
+  font-size: 14px;
+  color: var(--soft);
+  margin-top: 18px;
+  line-height: 1.5;
+}
+
+/* ⚠️ The mark must never span a line break — a highlight broken across two
+   lines reads as a rendering fault. `box-decoration-break` keeps the ends
+   rounded on both fragments if it ever does wrap on a very narrow screen. */
+.wayout mark {
+  background: var(--hi);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ⭐ Used EXACTLY ONCE in the whole product (S0 fine print). A second one and
+   neither means anything. */
+.wayout__hand {
+  font-family: Caveat, ui-rounded, cursive;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--green);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.wayout__btn {
+  display: block;
+  width: 100%;
+  background: var(--green);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 18px;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 22px;
+}
+.wayout__btn:disabled { opacity: .55; cursor: default; }
+/* The single accent. Only the now-marker, the seen card's border and the map's
+   final button are allowed to use it. */
+.wayout__btn--sun { background: var(--sun); color: var(--ink); }
+
+.wayout__nav { display: flex; gap: 12px; align-items: center; margin-top: 26px; }
+.wayout__nav .wayout__btn { margin-top: 0; }
+.wayout__back {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+.wayout__input,
+.wayout__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--tint);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 15px 16px;
+  font: inherit;
+  font-size: 16px;   /* ⚠️ 16px or iOS Safari zooms the page on focus. */
+  color: var(--ink);
+  resize: vertical;
+}
+.wayout__textarea { min-height: 96px; line-height: 1.45; }
+.wayout__input:focus,
+.wayout__textarea:focus { outline: none; border-color: var(--green); }
+.wayout__input::placeholder,
+.wayout__textarea::placeholder { color: #A8AF9D; }
+
+.wayout__money { position: relative; }
+.wayout__money span {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft);
+  font-weight: 600;
+  pointer-events: none;
+}
+.wayout__money .wayout__input { padding-left: 32px; }
+
+.wayout__error {
+  color: #A4442F;
+  font-size: 14px;
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+/* ── Chips ──────────────────────────────────────────────────────────────── */
+.wayout__chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.wayout__chip {
+  border: 2px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+/* ⭐ A custom chip is styled identically to a built-in, on purpose. The jet-ski
+   case is the whole point of S3: if the thing someone added themselves looks
+   like an afterthought, they treat it as one. */
+.wayout__chip--on { border-color: var(--green); background: #E8F3EC; color: var(--green); }
+.wayout__chip--add { border-style: dashed; color: var(--soft); }
+
+/* ── Reflection card ────────────────────────────────────────────────────── */
+.wayout__reflect {
+  background: var(--tint);
+  border-radius: 16px;
+  padding: 15px 17px;
+  font-size: 15.5px;
+  line-height: 1.45;
+  margin-bottom: 22px;
+  color: var(--ink);
+}
+.wayout__reflect b { font-weight: 700; }
+
+/* ── Rank ───────────────────────────────────────────────────────────────── */
+.wayout__rank { display: flex; flex-direction: column; gap: 8px; }
+.wayout__rankrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--tint);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.wayout__rankrow span { color: var(--soft); font-variant-numeric: tabular-nums; width: 18px; }
+.wayout__rankbtns { margin-left: auto; display: flex; gap: 4px; }
+.wayout__rankbtns button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 0;
+  background: #FFFDF8;
+  color: var(--ink);
+  font-size: 15px;
+  cursor: pointer;
+}
+.wayout__rankbtns button:disabled { opacity: .3; cursor: default; }
+
+/* ── The map (S7) ───────────────────────────────────────────────────────── */
+.wayout__who { color: var(--soft); font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+
+.wayout__seen {
+  margin: 18px 0 0;
+  padding: 16px 18px 16px 20px;
+  border-left: 5px solid var(--sun);
+  background: #FFF5DC;
+  border-radius: 0 14px 14px 0;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+.wayout__seen b { font-weight: 700; }
+
+.wayout__stats { display: flex; gap: 12px; margin: 22px 0 0; }
+.wayout__stat {
+  flex: 1;
+  background: var(--tint);
+  border-radius: 16px;
+  padding: 16px;
+}
+.wayout__stat span { display: block; font-size: 13px; color: var(--soft); font-weight: 600; margin-bottom: 6px; }
+.wayout__stat b { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+
+.wayout__moves { margin-top: 10px; }
+.wayout__move {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--tint);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 10px;
+  width: 100%;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+}
+.wayout__chk {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.wayout__move--now .wayout__chk { background: var(--sun); border-color: var(--sun); }
+.wayout__move--done .wayout__chk { background: var(--green); border-color: var(--green); transform: scale(1.08); }
+.wayout__chk svg { width: 15px; height: 15px; opacity: 0; }
+.wayout__move--now .wayout__chk svg,
+.wayout__move--done .wayout__chk svg { opacity: 1; }
+.wayout__move p { margin: 0 0 4px; font-weight: 700; font-size: 16.5px; line-height: 1.3; }
+.wayout__move small { font-size: 14px; color: var(--soft); line-height: 1.45; display: block; }
+.wayout__move small b { color: var(--green); font-weight: 700; }
+.wayout__gate { display: block; margin-top: 6px; font-size: 13.5px; color: var(--soft); }
+
+.wayout__cut { margin-top: 10px; }
+.wayout__cutrow {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  color: var(--soft);
+}
+.wayout__cutrow s { font-size: 16px; font-weight: 600; }
+.wayout__cutwhy { display: block; margin-top: 7px; font-size: 14.5px; line-height: 1.45; color: var(--soft); }
+
+.wayout__disclaimer {
+  margin-top: 26px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+
+/* ── Reveal ─────────────────────────────────────────────────────────────── */
+/* The map builds line by line. Everything starts hidden and is revealed by a
+   staggered delay set inline per element. */
+.wayout__r {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: wayout-in .5s ease forwards;
+}
+@keyframes wayout-in { to { opacity: 1; transform: none; } }
+
+/* ⚠️ Reduced motion is not a softer animation here, it is NO animation. The
+   staggered build is up to four seconds long; for someone who has asked the OS
+   to stop moving things, that is four seconds of a page that looks broken. */
+@media (prefers-reduced-motion: reduce) {
+  .wayout__r { opacity: 1; transform: none; animation: none; }
+  .wayout__chk { transition: none; }
+}

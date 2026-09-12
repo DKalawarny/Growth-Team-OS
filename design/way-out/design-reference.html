@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The way out — v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FFFDF8;--ink:#23301F;--soft:#6B7561;--hi:#FFE566;--green:#2F7D4F;--sun:#FFB43A;--tint:#F5F1E6}
+  *{box-sizing:border-box}
+  body{margin:0;background:#E9E3D3;font-family:Figtree,system-ui,sans-serif;color:var(--ink);display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start;padding:48px 20px}
+  .phone{width:390px;min-height:820px;border-radius:40px;background:var(--paper);box-shadow:0 24px 50px rgba(35,48,31,.16);display:flex;flex-direction:column;padding:56px 28px 30px}
+  .hand{font-family:Caveat,cursive;font-weight:700}
+  .brand{font-size:15px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:8px}
+  .brand i{width:10px;height:10px;border-radius:50%;background:var(--sun);display:inline-block}
+  .brand span{margin-left:auto;font-weight:500;color:var(--soft)}
+  h1{font-size:40px;line-height:1.04;font-weight:800;letter-spacing:-.025em;margin:34px 0 0}
+  mark{background:linear-gradient(transparent 38%,var(--hi) 38% 92%,transparent 92%);padding:0 2px;white-space:nowrap}
+  .lead{font-size:18px;line-height:1.45;margin:18px 0 0;color:var(--soft);max-width:28ch}
+  .q{margin-top:auto}
+  label{font-size:18px;font-weight:700;line-height:1.3;display:block}
+  textarea{margin-top:10px;width:100%;border:0;border-bottom:3px solid var(--ink);background:transparent;font:inherit;font-size:18px;line-height:1.45;padding:8px 0;resize:none;color:var(--ink)}
+  textarea::placeholder{color:#A9AE9C}
+  .hint{font-size:14px;color:var(--soft);margin:10px 0 0}
+  .btn{display:block;width:100%;margin-top:22px;background:var(--green);color:#fff;border:0;border-radius:999px;padding:18px;font:inherit;font-size:18px;font-weight:700;cursor:pointer}
+  .btn.sun{background:var(--sun);color:var(--ink)}
+  .fine{font-size:13px;color:var(--soft);text-align:center;margin:12px 0 0;line-height:1.4}
+  .fine .hand{font-size:17px;color:var(--green)}
+  /* question screen */
+  .reflect{margin:30px 0 0;padding:16px 18px;border-radius:16px;background:var(--tint);font-size:16px;line-height:1.5}
+  .reflect b{font-weight:700}
+  .qbig{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:34px 0 0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+  .chip{border:2px solid #DCD6C6;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);background:#fff}
+  .chip.on{border-color:var(--green);background:#E8F3EC;color:var(--green)}
+  .next{display:flex;gap:12px;align-items:center;margin-top:auto}
+  .next .btn{margin:0}
+  .back{width:56px;height:56px;border-radius:50%;border:2px solid #DCD6C6;background:transparent;font-size:22px;flex:none}
+  /* map */
+  .who{font-size:15px;color:var(--soft);margin:30px 0 6px}
+  h2{font-size:32px;line-height:1.06;font-weight:800;letter-spacing:-.025em;margin:0}
+  .seen{margin:18px 0 0;padding:16px 18px 16px 20px;border-left:5px solid var(--sun);background:#FFF5DC;border-radius:0 14px 14px 0;font-size:15.5px;line-height:1.45}
+  .stats{display:flex;gap:12px;margin:20px 0 0}
+  .stat{flex:1;background:var(--tint);border-radius:16px;padding:14px 16px}
+  .stat span{display:block;font-size:13px;color:var(--soft)}
+  .stat b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+  h3{font-size:17px;font-weight:700;margin:26px 0 4px}
+  .move{display:flex;gap:14px;padding:12px 0;align-items:flex-start;cursor:pointer}
+  .chk{width:26px;height:26px;flex:none;border:2.5px solid var(--ink);border-radius:8px;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+  .chk svg{width:16px;height:16px;opacity:0;transition:opacity .15s}
+  .move.now .chk{background:var(--sun);border-color:var(--sun)}
+  .move.done .chk{background:var(--green);border-color:var(--green);transform:scale(1.08)}
+  .move.done .chk svg{opacity:1}
+  .move.done p{color:var(--soft);text-decoration:line-through;text-decoration-color:#B9B29E}
+  .move p{margin:0;font-size:17px;line-height:1.3;font-weight:700}
+  .move small{display:block;font-size:14px;color:var(--soft);font-weight:500;margin-top:3px;line-height:1.35}
+  .move small b{color:var(--green);font-weight:700}
+  .cut{margin:18px 0 0;font-size:14.5px;line-height:1.5}
+  .cut span{display:block;font-weight:700;margin-bottom:2px}
+  .cut s{color:var(--soft);text-decoration-color:#B9B29E}
+  /* reveal animation */
+  .r{opacity:0;transform:translateY(10px);animation:in .5s ease-out forwards}
+  @keyframes in{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.r{animation:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="brand"><i></i>the way out</div>
+  <h1>You're not stuck. You're missing <mark>the order</mark> of the steps.</h1>
+  <p class="lead">Six honest questions. Then a plan built from what you already have, written like a friend would.</p>
+  <div class="q">
+    <label>In one sentence, what does "out" look like for you?</label>
+    <textarea rows="2" placeholder="Not clocking in for someone else. Fridays with my kids."></textarea>
+    <p class="hint">Rough is fine. Better questions are coming.</p>
+    <button class="btn">Let's figure it out</button>
+    <p class="fine">About 15 minutes. Nothing to buy until you've seen your plan.<br><span class="hand">Not another course. Promise.</span></p>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="brand"><i></i>the way out<span>3 of 6</span></div>
+  <div class="reflect">Shared custody, kids in town. Got it. <b>So this plan stays within driving distance</b> and doesn't ask you to trade your Wednesdays.</div>
+  <p class="qbig">What do you already own that could earn?</p>
+  <div class="chips">
+    <div class="chip on">Truck</div><div class="chip">Trailer</div><div class="chip on">Pressure washer</div><div class="chip">Mower</div><div class="chip">Spare room</div><div class="chip">Garage</div><div class="chip">Home equity</div><div class="chip">Tools</div><div class="chip">Camera</div>
+  </div>
+  <label style="margin-top:26px">What do people ask you for help with?</label>
+  <textarea rows="2" placeholder="Fixing stuff. Hauling. My uncle's fence last summer."></textarea>
+  <p class="hint">This is where most people find something they forgot they had.</p>
+  <div class="next"><button class="back" aria-label="Back">←</button><button class="btn">Next</button></div>
+</div>
+
+<div class="phone" id="map">
+  <div class="brand"><i></i>your plan</div>
+  <p class="who r" style="animation-delay:.1s">Jake, 23. Nanaimo.</p>
+  <h2 class="r" style="animation-delay:.3s">Out of the warehouse in <mark>twelve months.</mark></h2>
+  <div class="seen r" style="animation-delay:.9s">You wrote "no real skills." You also mentioned rebuilding your uncle's fence and hauling for three neighbours. <b>That's a business that hasn't sent an invoice yet.</b></div>
+  <div class="stats r" style="animation-delay:1.6s">
+    <div class="stat"><span>Freed by cutting</span><b id="n1">$0/mo</b></div>
+    <div class="stat"><span>Your quit number</span><b id="n2">$0</b></div>
+  </div>
+  <h3 class="r" style="animation-delay:2.4s">Three moves. This order.</h3>
+  <div class="move now r" style="animation-delay:2.6s" onclick="this.classList.toggle('done')"><div class="chk"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg></div><div><p>Pressure wash, door to door</p><small><b>This Saturday.</b> Aim for three jobs. Runs April to October.</small></div></div>
+  <div class="move r" style="animation-delay:2.9s" onclick="this.classList.toggle('done')"><div class="chk"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg></div><div><p>Turn customers into weekly lawns</p><small>Month 2. Winter work: snow, gutters, Christmas lights.</small></div></div>
+  <div class="move r" style="animation-delay:3.2s" onclick="this.classList.toggle('done')"><div class="chk"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg></div><div><p>Hire one guy, then quit</p><small>Month 6. When side income beats your paycheque by half, three months running.</small></div></div>
+  <p class="cut r" style="animation-delay:3.6s"><span>Crossed off, on purpose</span><s>Delivery driving.</s> <s>A course.</s> <s>"Start a business."</s></p>
+  <div class="q r" style="animation-delay:4s">
+    <button class="btn sun">Start move one</button>
+    <p class="fine">Tap a move to tick it off. Ask why anything got crossed off.</p>
+  </div>
+</div>
+
+<script>
+  function count(el, to, prefix, suffix, delay){
+    setTimeout(function(){
+      var start=null, dur=900;
+      function step(t){ if(!start) start=t; var p=Math.min((t-start)/dur,1); var e=1-Math.pow(1-p,3);
+        el.textContent=prefix+Math.round(to*e).toLocaleString()+suffix; if(p<1) requestAnimationFrame(step); }
+      requestAnimationFrame(step);
+    }, delay);
+  }
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  count(document.getElementById('n1'),590,'$','/mo', rm?0:1700);
+  count(document.getElementById('n2'),10000,'$','', rm?0:1900);
+</script>
+</body>
+</html>
