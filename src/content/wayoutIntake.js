@@ -91,6 +91,64 @@ export const WAYOUT_SCREENS = [
         placeholder: '',
         required: false,
       },
+
+      // ⭐⭐ TWO PROFILE FIELDS, ASKED NEUTRALLY, WITH A REAL "DOESN'T APPLY".
+      //
+      // Daniel's framing, and it is the right one: a question is not an
+      // assertion. A four-box FAMILY · FRIENDS · FINANCE · FAITH grid on a
+      // screen a stranger sees would be announcing something at the door —
+      // the exact move he reversed on the other product three times, where the
+      // line that settled it was "a promise not to preach is still preaching".
+      // A field with N/A announces nothing and sorts nobody.
+      //
+      // ⭐ And the payoff here is practical, not philosophical: BOTH OF THESE
+      // ARE CONSTRAINTS ON THE WEEK, which is what this screen is for. Faith is
+      // usually a standing commitment — a Sunday morning, a Friday prayer, a
+      // Wednesday evening — and a plan that books door-knocking across it is a
+      // plan that gets abandoned in week two. Health is the ceiling on what
+      // anyone can take on, and it is the constraint that quietly ends plans.
+      //
+      // 🔴 COLLECTED DISCREETLY, USED BEHAVIOURALLY, NEVER SAID BACK. The map
+      // must never open with "as a Christian" or "given your back" — it simply
+      // does not schedule work on a Sunday morning, and does not propose
+      // hauling to someone who told us they cannot lift. Shown back as a label
+      // it becomes the thing it was carefully not being.
+      //
+      // ⚠️ FREE TEXT, NOT A PICKER. A list of faiths is a list someone can be
+      // missing from, and being absent from it is its own small insult. The
+      // same goes for a dropdown of conditions.
+      {
+        key: 'faith',
+        kind: 'chips',
+        label: 'A faith or practice?',
+        required: false,
+        options: [
+          { key: 'yes', label: 'Yes' },
+          { key: 'na', label: 'Doesn’t apply', exclusive: true },
+        ],
+      },
+      {
+        key: 'faithNote',
+        kind: 'shorttext',
+        placeholder: 'Which, and anything in your week it holds',
+        required: false,
+      },
+      {
+        key: 'health',
+        kind: 'chips',
+        label: 'Anything health-wise that limits what you can take on?',
+        required: false,
+        options: [
+          { key: 'yes', label: 'Yes' },
+          { key: 'na', label: 'Doesn’t apply', exclusive: true },
+        ],
+      },
+      {
+        key: 'healthNote',
+        kind: 'shorttext',
+        placeholder: 'Only as much as you want to say',
+        required: false,
+      },
     ],
     hint: 'The plan gets built around these, so it’s worth being honest about which are real.',
   },
@@ -321,13 +379,22 @@ export const WAYOUT_SCREENS = [
         label: 'Put these in order — what you’d give up first at the top.',
         required: true,
         emptyMessage: 'Put them in an order, even a rough one.',
+        // 🔴 THIS LIST USED TO BE SIX MATERIAL THINGS — comfort, space,
+        // stability, proximity, status, savings. The single question in the
+        // whole product about what someone actually values offered a menu of
+        // money and comfort, on a product whose point is that a life is worth
+        // more than its income. Someone who ranks status above their health has
+        // told us something no money question could.
         options: [
           { key: 'comfort', label: 'Comfort' },
           { key: 'space', label: 'Space' },
           { key: 'stability', label: 'Stability' },
-          { key: 'family-proximity', label: 'Proximity to family' },
           { key: 'status', label: 'Status' },
           { key: 'savings', label: 'Savings' },
+          { key: 'family-proximity', label: 'Being near family' },
+          { key: 'time-with-people', label: 'Time with the people you love' },
+          { key: 'health', label: 'Your health' },
+          { key: 'community', label: 'A community you’re part of' },
         ],
       },
       {
