@@ -151,7 +151,7 @@ export const WAYOUT_MOVES = [
   {
     key: 'storage-parking',
     title: 'Renting out storage, or boat and RV parking',
-    needs: ['garage', 'land'],
+    needs: ['garage', 'land', 'parking'],
     timeToCash: 'weeks',
     upfront: 'nothing',
     effort: 'low',
@@ -207,7 +207,7 @@ export const WAYOUT_MOVES = [
   {
     key: 'freelance-skill',
     title: 'Charging for the thing people already ask you to do',
-    needs: ['licence', 'skill'],
+    needs: ['licence', 'trade', 'admin', 'computers', 'design', 'care', 'cooking', 'language', 'business'],
     timeToCash: 'days',
     upfront: 'nothing',
     effort: 'low',
@@ -225,6 +225,77 @@ export const WAYOUT_MOVES = [
     effort: 'low',
     familyCost: 'Daytime shoots, which is the awkward part alongside a job.',
     growsInto: 'Retainers with two or three agents.',
+    seasons: 'all',
+    climateTags: [],
+  },
+
+  // ── Skills, time and people ──────────────────────────────────────────────
+  // 🔴 THESE EXIST BECAUSE THE LIBRARY USED TO ASSUME A DRIVEWAY. Every move
+  // above needs a vehicle, a tool or property. Someone renting a flat with a
+  // laptop and three free evenings could answer the whole intake honestly and
+  // have nothing here that fits — on a product whose entire promise is "built
+  // from what you already have". These are the moves for the rest of the
+  // people, and for a lot of them they are faster than anything with an engine.
+  {
+    key: 'contract-back-to-employer',
+    title: 'Go back to your own employer as a contractor',
+    needs: ['employer', 'trade', 'licence', 'admin', 'computers'],
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'Almost none at first — same work, different arrangement.',
+    growsInto: 'A second client, then the income is no longer one relationship.',
+    seasons: 'all',
+    climateTags: [],
+    // ⚠️ The fastest move on this list for an employed person, and the one
+    // nobody suggests. It also has a real risk: it can end the job. Say so.
+    caution: 'Read your contract first — some have a clause about this.',
+  },
+  {
+    key: 'sub-for-someone-busier',
+    title: 'Sub work off someone who has more than they can do',
+    needs: ['sub-work', 'trade', 'licence', 'tools'],
+    timeToCash: 'days',
+    upfront: 'nothing',
+    effort: 'medium',
+    familyCost: 'Their schedule, not yours, to begin with.',
+    growsInto: 'Their overflow becomes your own customers.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'back-office',
+    title: 'Do the paperwork small operators hate',
+    needs: ['admin', 'computers', 'school-hours'],
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'Evenings, and it can be done after bedtime.',
+    growsInto: 'Three or four retainers is a wage.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'teach-what-you-know',
+    title: 'Teach or tutor the thing you already know',
+    needs: ['teaching', 'language', 'trade', 'care', 'school-hours', 'audience'],
+    timeToCash: 'weeks',
+    upfront: 'nothing',
+    effort: 'low',
+    familyCost: 'Fits school hours better than almost anything else here.',
+    growsInto: 'Small groups instead of one at a time — the same hour, paid two or three times.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'driving-errands',
+    title: 'Driving, deliveries and errands for people who cannot',
+    needs: ['car', 'evenings', 'weekends'],
+    timeToCash: 'days',
+    upfront: 'nothing',
+    effort: 'medium',
+    familyCost: 'Whatever hours you give it. Easy to give it too many.',
+    growsInto: 'Regular clients beat any app — the app keeps the margin.',
     seasons: 'all',
     climateTags: [],
   },

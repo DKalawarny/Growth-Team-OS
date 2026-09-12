@@ -66,13 +66,22 @@ export const WAYOUT_SCREENS = [
         options: [
           { key: 'kids-home', label: 'Kids at home' },
           { key: 'custody', label: 'Shared custody' },
-          { key: 'parent', label: 'Aging parent nearby' },
-          { key: 'partner-job', label: 'Partner’s job is here' },
-          { key: 'health', label: 'Health needs care nearby' },
+          { key: 'parent', label: 'Aging parent' },
+          { key: 'partner-job', label: 'Partner’s job' },
+          { key: 'health', label: 'Health needs care' },
           { key: 'lease', label: 'Lease / mortgage' },
-          { key: 'legal', label: 'Separation or legal agreement' },
+          { key: 'legal', label: 'A legal agreement' },
           { key: 'partners', label: 'Business partners' },
-          { key: 'faith', label: 'A community I won’t leave' },
+          { key: 'faith', label: 'A community here' },
+          // 🔴 THIS WAS MISSING AND THE FIELD IS REQUIRED, so someone genuinely
+          // unconstrained could not get past screen one without inventing a
+          // tie. On the screen whose entire job is "tell me the truth about
+          // what is fixed", the form was insisting there had to be something.
+          //
+          // ⚠️ Exclusive: "Nothing" and "Shared custody" cannot both be true,
+          // and a plan built from a contradiction is worse than one built from
+          // a blank.
+          { key: 'nothing', label: 'Nothing, really', exclusive: true },
         ],
       },
       {
@@ -127,14 +136,28 @@ export const WAYOUT_SCREENS = [
   },
 
   // ── S3 ────────────────────────────────────────────────────────────────────
-  // ⭐ The screen the whole product turns on. The spec calls this the jet-ski
-  // case: the thing someone owns and never counted is usually the fastest move
-  // they have, and it is almost never on anyone's list. Custom chips must look
-  // and behave exactly like built-ins, or the custom entry reads as an
-  // afterthought and gets treated as one by the person filling it in.
+  // ⭐ The screen the whole product turns on — and the one most likely to lose
+  // someone, because it is where they find out whether this thing is for people
+  // like them.
+  //
+  // 🔴 THE FIRST VERSION OF THIS LIST SORTED PEOPLE AT THE DOOR. It was truck,
+  // trailer, mower, pressure washer, garage, land, home equity — a list for
+  // someone rural or suburban who owns a vehicle and property. A nurse renting
+  // a flat, a parent with school hours and no car, someone with a laptop and
+  // three free evenings: they tap nothing, on the screen built to tell them
+  // they have more than they think, and correctly conclude this is not for
+  // them. Same failure as targeting by identity, just wearing overalls.
+  //
+  // So the groups are the fix, not more chips. They say out loud that a skill,
+  // an evening and a person who would sub you work all count as things you
+  // already have — which is true, and is usually the faster move for anyone
+  // without a driveway.
+  //
+  // ⚠️ "have", not "own". Owning is a property word, and half of this list is
+  // not property.
   {
     id: 's3',
-    question: 'What do you already own that could earn?',
+    question: 'What have you already got that could earn?',
     reflectAfter: true,
     fields: [
       {
@@ -142,24 +165,64 @@ export const WAYOUT_SCREENS = [
         kind: 'chips',
         allowCustom: true,
         required: true,
-        emptyMessage: 'Add at least one. Most people own more than they think.',
-        options: [
-          { key: 'truck', label: 'Truck' },
-          { key: 'trailer', label: 'Trailer' },
-          { key: 'pressure-washer', label: 'Pressure washer' },
-          { key: 'mower', label: 'Mower' },
-          { key: 'tools', label: 'Tools' },
-          { key: 'spare-room', label: 'Spare room' },
-          { key: 'garage', label: 'Garage' },
-          { key: 'home-equity', label: 'Home equity' },
-          { key: 'camera', label: 'Camera' },
-          { key: 'boat', label: 'Boat / jet ski' },
-          { key: 'land', label: 'Land / yard' },
-          { key: 'business', label: 'A business' },
-          { key: 'licence', label: 'A licence or ticket' },
+        emptyMessage: 'Add at least one. Everyone has something here — it is not only tools and trucks.',
+        groups: [
+          {
+            label: 'Vehicles and gear',
+            options: [
+              { key: 'truck', label: 'Truck or van' },
+              { key: 'trailer', label: 'Trailer' },
+              { key: 'car', label: 'A car' },
+              { key: 'tools', label: 'Tools' },
+              { key: 'mower', label: 'Mower' },
+              { key: 'pressure-washer', label: 'Pressure washer' },
+              { key: 'camera', label: 'Camera' },
+              { key: 'boat', label: 'Boat / jet ski' },
+            ],
+          },
+          {
+            label: 'Space',
+            options: [
+              { key: 'spare-room', label: 'Spare room' },
+              { key: 'garage', label: 'Garage' },
+              { key: 'parking', label: 'Driveway or parking' },
+              { key: 'land', label: 'Land / yard' },
+              { key: 'home-equity', label: 'Home equity' },
+            ],
+          },
+          {
+            label: 'What you can do',
+            options: [
+              { key: 'licence', label: 'A ticket or licence' },
+              { key: 'trade', label: 'A trade' },
+              { key: 'admin', label: 'Books or admin' },
+              { key: 'computers', label: 'Good with computers' },
+              { key: 'design', label: 'Design or writing' },
+              { key: 'teaching', label: 'Teaching or tutoring' },
+              { key: 'care', label: 'Care or medical' },
+              { key: 'cooking', label: 'Cooking' },
+              { key: 'language', label: 'Another language' },
+              { key: 'business', label: 'A business already' },
+            ],
+          },
+          {
+            label: 'Time and people',
+            options: [
+              { key: 'evenings', label: 'Evenings' },
+              { key: 'weekends', label: 'Weekends' },
+              { key: 'school-hours', label: 'School hours' },
+              { key: 'sub-work', label: 'Someone who’d sub me work' },
+              { key: 'employer', label: 'An employer who’d contract me' },
+              { key: 'audience', label: 'A group or following' },
+            ],
+          },
         ],
       },
       {
+        // ⭐ These two catch what no list can. They are the most universal part
+        // of the screen — everyone has been asked for help with something — and
+        // they are what the seen card is usually built from, because they are
+        // the person's own words rather than our labels.
         key: 'askedFor',
         kind: 'text',
         label: 'What do people ask you for help with?',
@@ -211,10 +274,14 @@ export const WAYOUT_SCREENS = [
         options: [
           { key: 'eating-out', label: 'Eating out' },
           { key: 'subscriptions', label: 'Subscriptions' },
-          { key: 'vehicle', label: 'Vehicle beyond need' },
+          { key: 'vehicle', label: 'The vehicle' },
           { key: 'gym', label: 'Gym / hobbies' },
           { key: 'nights-out', label: 'Nights out' },
           { key: 'shopping', label: 'Shopping' },
+          // Not everyone has slack. Saying so out loud matters here: the cut
+          // list is where most plans find their first money, and someone with
+          // nothing to cut should be told that is an answer, not a failure.
+          { key: 'none', label: 'None of this — it’s all must-pay', exclusive: true },
         ],
       },
       {

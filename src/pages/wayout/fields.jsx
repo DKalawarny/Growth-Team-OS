@@ -25,9 +25,30 @@ export function Chips({ field, value = [], onChange }) {
 
   const selected = new Set(value.map(t => t.key))
 
+  // ⭐ A field may declare `groups` instead of a flat `options`. The grouping is
+  // not tidiness — on S3 it is the thing that stops the list reading as "tools
+  // and trucks", by saying out loud that a skill, an evening and a person who
+  // would sub you work are also things you already have.
+  const groups = field.groups ?? [{ label: null, options: field.options ?? [] }]
+
+  /**
+   * ⚠️ An option may be `exclusive` — "Nothing, really" on S1, "None of this"
+   * on S4. Picking it clears everything else, and picking anything else clears
+   * it. Without that the form happily accepts "Nothing is holding me back" AND
+   * "Shared custody", and the plan gets built from a contradiction.
+   */
+  const exclusiveKeys = new Set(
+    groups.flatMap(g => g.options).filter(o => o.exclusive).map(o => o.key),
+  )
+
   function toggle(opt) {
-    if (selected.has(opt.key)) onChange(value.filter(t => t.key !== opt.key))
-    else onChange([...value, { key: opt.key, label: opt.label, custom: false }])
+    if (selected.has(opt.key)) {
+      onChange(value.filter(t => t.key !== opt.key))
+      return
+    }
+    const chosen = { key: opt.key, label: opt.label, custom: false }
+    if (opt.exclusive) { onChange([chosen]); return }
+    onChange([...value.filter(t => !exclusiveKeys.has(t.key)), chosen])
   }
 
   function commitCustom() {
@@ -36,26 +57,35 @@ export function Chips({ field, value = [], onChange }) {
     // A slug, not the label, so two people typing "Jet ski" and "jet ski" do
     // not become two different assets to the model.
     const key = `custom-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
-    if (!selected.has(key)) onChange([...value, { key, label, custom: true }])
+    if (!selected.has(key)) {
+      onChange([...value.filter(t => !exclusiveKeys.has(t.key)), { key, label, custom: true }])
+    }
     setDraft('')
     setAdding(false)
   }
 
   return (
     <>
-      <div className="wayout__chips">
-        {field.options.map(opt => (
-          <button
-            type="button"
-            key={opt.key}
-            className={`wayout__chip${selected.has(opt.key) ? ' wayout__chip--on' : ''}`}
-            aria-pressed={selected.has(opt.key)}
-            onClick={() => toggle(opt)}
-          >
-            {opt.label}
-          </button>
-        ))}
+      {groups.map((g, gi) => (
+        <div key={g.label ?? gi}>
+          {g.label && <p className="wayout__group">{g.label}</p>}
+          <div className="wayout__chips">
+            {g.options.map(opt => (
+              <button
+                type="button"
+                key={opt.key}
+                className={`wayout__chip${selected.has(opt.key) ? ' wayout__chip--on' : ''}`}
+                aria-pressed={selected.has(opt.key)}
+                onClick={() => toggle(opt)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
+      <div className="wayout__chips">
         {/* Custom entries the person added, rendered exactly like built-ins. */}
         {value.filter(t => t.custom).map(t => (
           <button

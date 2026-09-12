@@ -63,6 +63,24 @@ const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => 
 const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
+// 🔴 DEV ONLY. A hardcoded map on a live site is a fabricated artifact wearing
+// the same design as a real one — the exact thing the verbatim-quote guard
+// exists to prevent. `import.meta.env.DEV` is a compile-time constant, so in a
+// production build this import and its route are removed entirely rather than
+// merely unreachable.
+// ⚠️ The ternary is load-bearing. Declaring this as a plain `lazy(() => import(…))`
+// and only guarding the ROUTE still emits the chunk — Rollup sees a dynamic
+// import at module scope and writes the file, so a fabricated map shipped to
+// production as an unreferenced but fetchable URL. Vite substitutes
+// `import.meta.env.DEV` with `false` at build time, which makes the import
+// unreachable code and drops it from the output entirely. Verified by grepping
+// dist, not by reasoning about it.
+const WayoutPreview    = import.meta.env.DEV
+  ? lazy(() => import('./pages/wayout/Preview'))
+  : null
+const WayoutPreviewIn  = import.meta.env.DEV
+  ? lazy(() => import('./pages/wayout/PreviewIntake'))
+  : null
 
 const AdminBackfill  = lazy(() => import('./pages/AdminBackfill'))
 const AdminReview    = lazy(() => import('./pages/AdminReview'))
@@ -243,6 +261,12 @@ export default function App() {
         <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
         <Route path="/wayout"       element={<LazyRoute><RequireSession><WayoutIntake /></RequireSession></LazyRoute>} />
         <Route path="/wayout/plan"  element={<LazyRoute><RequireSession><WayoutPlan /></RequireSession></LazyRoute>} />
+        {import.meta.env.DEV && (
+          <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
+        )}
+        {import.meta.env.DEV && (
+          <Route path="/wayout/preview/intake" element={<LazyRoute><WayoutPreviewIn /></LazyRoute>} />
+        )}
 
         {/* Public auth routes */}
         <Route path="/login"          element={<LazyRoute><RedirectIfAuthed><Login /></RedirectIfAuthed></LazyRoute>} />

@@ -24,7 +24,7 @@ import './wayout.css'
  * and add the routes to scripts/sitemap.mjs in the same commit, or they will
  * be orphaned the way the answer pages were.
  */
-export default function WayoutShell({ children, count, title, noindex = true }) {
+export default function WayoutShell({ children, count, title, noindex = true, wide = false }) {
   return (
     <div className="wayout">
       <Helmet>
@@ -38,7 +38,11 @@ export default function WayoutShell({ children, count, title, noindex = true }) 
         />
       </Helmet>
 
-      <div className="wayout__frame">
+      {/* `wide` is for the MAP only. An intake screen asks one question and the
+          narrow column is the point — widening it would put a second question
+          in the corner of someone's eye while they answer the first. The map
+          is a deliverable, not a question, so it earns the width. */}
+      <div className={`wayout__frame${wide ? ' wayout__frame--wide' : ''}`}>
         <div className="wayout__brand">
           <i />
           {/* ⚠️ The name comes from brand.js and nowhere else. */}

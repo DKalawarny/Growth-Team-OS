@@ -23,7 +23,15 @@ function Marked({ text, highlight }) {
   return <>{before}<mark>{highlight}</mark>{rest.join(highlight)}</>
 }
 
-export default function Intake() {
+/**
+ * ⚠️ `preview` is DEV ONLY (see Preview routes in App.jsx) and does exactly
+ * three things: skips the session load, skips every write, and serves a canned
+ * reflection. It changes no rendering at all — the screens, the validation and
+ * the field components are the same ones a paying person gets, which is the
+ * entire reason it is a prop here rather than a second copy of the intake that
+ * would drift from this one within a week.
+ */
+export default function Intake({ preview = false, previewReflections = null }) {
   const navigate = useNavigate()
 
   // step 0 is the opening screen; 1..6 are the intake screens.
@@ -31,7 +39,7 @@ export default function Intake() {
   const [answers, setAnswers]   = useState({})
   const [session, setSession]   = useState(null)
   const [errors, setErrors]     = useState({})
-  const [loading, setLoading]   = useState(true)
+  const [loading, setLoading]   = useState(!preview)
   const [saving, setSaving]     = useState(false)
   const [loadError, setLoadError] = useState('')
 
@@ -42,6 +50,7 @@ export default function Intake() {
   const inFlight = useRef(new Set())
 
   useEffect(() => {
+    if (preview) return undefined
     let cancelled = false
     loadOrCreateSession()
       .then(s => {
@@ -60,7 +69,7 @@ export default function Intake() {
       .catch(err => { if (!cancelled) setLoadError(err.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [navigate])
+  }, [navigate, preview])
 
   const screen = step === 0 ? null : WAYOUT_SCREENS[step - 1]
 
@@ -90,6 +99,16 @@ export default function Intake() {
         .filter(([, v]) => v != null && v !== ''),
     )
 
+    if (preview) {
+      // ⚠️ The sample copy is passed IN, not written here. Left inline it ended
+      // up in the production Intake chunk — unreachable, since nothing sets
+      // `preview` in a prod build, but sample text has no business riding along
+      // in the component a paying person loads.
+      const text = previewReflections?.[fromScreen.id]
+      if (text) setTimeout(() => setReflections(r => ({ ...r, [fromScreen.id]: text })), 600)
+      return
+    }
+
     reflect(screenAnswers)
       .then(text => { if (text) setReflections(r => ({ ...r, [fromScreen.id]: text })) })
       .catch(() => { /* reflect() already swallows; nothing to show either way */ })
@@ -102,9 +121,11 @@ export default function Intake() {
         setErrors({ [f.key]: f.emptyMessage })
         return
       }
-      setSaving(true)
-      try { await saveAnswers(session.id, answers) } catch { /* keep going; saved again on the next step */ }
-      setSaving(false)
+      if (!preview) {
+        setSaving(true)
+        try { await saveAnswers(session.id, answers) } catch { /* keep going; saved again on the next step */ }
+        setSaving(false)
+      }
       setStep(1)
       return
     }
@@ -116,6 +137,12 @@ export default function Intake() {
     if (Object.keys(missing).length) { setErrors(missing); return }
 
     kickOffReflection(screen)
+
+    if (preview) {
+      if (step === WAYOUT_TOTAL_SCREENS) { navigate(`${WAYOUT_BASE}/preview`); return }
+      setStep(step + 1)
+      return
+    }
 
     setSaving(true)
     try {
@@ -156,10 +183,14 @@ export default function Intake() {
   if (step === 0) {
     const f = WAYOUT_OPENING.field
     return (
-      <WayoutShell>
+      <WayoutShell wide>
+        <div className="wayout__spread">
+        <div className="wayout__col">
         <h1><Marked text={WAYOUT_OPENING.headline} highlight={WAYOUT_OPENING.highlight} /></h1>
         <p className="wayout__lead">{WAYOUT_OPENING.lead}</p>
+        </div>
 
+        <div className="wayout__col">
         <label className="wayout__label" htmlFor="wayout-out">{f.label}</label>
         <textarea
           id="wayout-out"
@@ -179,6 +210,8 @@ export default function Intake() {
           {WAYOUT_OPENING.fine}<br />
           <span className="wayout__hand">{WAYOUT_OPENING.handwritten}</span>
         </p>
+        </div>
+        </div>
       </WayoutShell>
     )
   }
@@ -189,9 +222,34 @@ export default function Intake() {
   const reflection = prev ? reflections[prev.id] : null
 
   return (
-    <WayoutShell count={`${step} of ${WAYOUT_TOTAL_SCREENS}`}>
-      {reflection && <div className="wayout__reflect">{reflection}</div>}
+    <WayoutShell wide count={`${step} of ${WAYOUT_TOTAL_SCREENS}`}>
+      <div className="wayout__spread">
 
+      {/* ⭐ The left panel exists because a single question floating in the
+          middle of a wide screen reads as an unfinished page. It is not filler:
+          it answers the two things someone silently wants to know fifteen
+          minutes into a form — how much further, and was any of that heard.
+          On a phone `display: contents` collapses it and the reflection sits
+          back above the question where it always was. */}
+      <div className="wayout__col wayout__aside">
+        <p className="wayout__step">Question {step} of {WAYOUT_TOTAL_SCREENS}</p>
+        <div className="wayout__pips" aria-hidden="true">
+          {WAYOUT_SCREENS.map((sc, i) => (
+            <span
+              key={sc.id}
+              className={`wayout__pip${i + 1 < step ? ' wayout__pip--done' : ''}${i + 1 === step ? ' wayout__pip--now' : ''}`}
+            />
+          ))}
+        </div>
+        {/* ⚠️ Only what is BEHIND them. Listing the questions still to come
+            would show the destination question early, and the whole reason the
+            order runs constraints-first is that seeing the dream first teaches
+            people to answer the constraints in a way that protects it. */}
+        {reflection && <div className="wayout__reflect">{reflection}</div>}
+        <p className="wayout__fine wayout__asidefine">Nothing to buy until you’ve seen your plan.</p>
+      </div>
+
+      <div className="wayout__col">
       <p className="wayout__q">{screen.question}</p>
 
       {screen.fields.map(f => (
@@ -211,6 +269,8 @@ export default function Intake() {
         <button className="wayout__btn" onClick={next} disabled={saving}>
           {step === WAYOUT_TOTAL_SCREENS ? 'See the plan' : 'Next'}
         </button>
+      </div>
+      </div>
       </div>
     </WayoutShell>
   )

@@ -162,7 +162,7 @@ function startCheckout() {
 
 // ── The map ─────────────────────────────────────────────────────────────────
 
-function Map({ map }) {
+export function Map({ map }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -188,9 +188,16 @@ function Map({ map }) {
   }
 
   return (
-    <WayoutShell title="Your plan">
+    <WayoutShell title="Your plan" wide>
       {/* The brand mark on this screen reads "your plan", not the product name.
           The map belongs to them. */}
+      {/* ⭐ Two halves, and only on a wide screen. The left is what the plan SAYS
+          about them — the goal, the thing they missed, the numbers. The right
+          is what they DO about it. On a phone `display: contents` collapses
+          this back to the single column it was, so there is still only one
+          design and nothing reflows into a second one nobody drew. */}
+      <div className="wayout__spread">
+      <div className="wayout__col">
       <p className="wayout__who wayout__r" style={at(0.1)}>{WAYOUT_MAP_LABEL}</p>
 
       <h2 className="wayout__r" style={at(0.3)}>
@@ -202,7 +209,9 @@ function Map({ map }) {
           A fabricated one takes every other claim on the page down with it. */}
       {map.seen && (
         <div className="wayout__seen wayout__r" style={at(0.9)}>
-          <q>“{map.seen.quote}”</q>
+          {/* ⚠️ <q> inserts its own quotation marks. Typing curly ones as well
+              rendered ““no real skills””. */}
+          <q>{map.seen.quote}</q>
           <b>{map.seen.insight}</b>
         </div>
       )}
@@ -222,6 +231,9 @@ function Map({ map }) {
         </div>
       )}
 
+      </div>
+
+      <div className="wayout__col">
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
 
       <div className="wayout__moves">
@@ -294,6 +306,8 @@ function Map({ map }) {
       </button>
 
       <p className="wayout__disclaimer wayout__r" style={at(4.1)}>{map.disclaimer}</p>
+      </div>
+      </div>
     </WayoutShell>
   )
 }

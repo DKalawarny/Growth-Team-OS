@@ -75,13 +75,59 @@
        screen (the diagnostic is four lines) from collapsing into a stub, and
        `auto` lets a long screen — S5 has five fields — grow past it instead of
        being clipped. */
-    min-height: min(820px, calc(100dvh - 96px));
+    min-height: min(640px, calc(100dvh - 96px));
     height: auto;
     margin: 48px auto;
     padding: 48px 30px 34px;
     border-radius: 40px;
     box-shadow: 0 24px 50px rgba(35, 48, 31, 0.16);
   }
+}
+
+/* ── The map as a spread ─────────────────────────────────────────────────
+   ⭐ The intake is one question at a time and the narrow column is the point.
+   The MAP is different: it is the thing someone paid for and will come back to,
+   and on a wide screen a phone-width strip of it floating in empty space reads
+   as a screenshot of an app rather than as a document.
+
+   So on a wide screen only, it becomes two halves — what the plan says about
+   them on the left, what they do about it on the right.
+
+   ⚠️ `display: contents` on the wrapper below the breakpoint is what keeps this
+   honest: on a phone the two halves are not containers at all, the children
+   flow as the single column they always were, and there is no second layout
+   to keep in sync. */
+.wayout__spread { display: contents; }
+
+@media (min-width: 1040px) {
+  .wayout__frame--wide {
+    max-width: 880px;
+    padding: 48px 44px 40px;
+  }
+
+  /* The intake's left panel. Quieter than the question beside it on purpose —
+     it is context, and the moment it competes for attention it has become the
+     second question on a one-question screen. */
+  .wayout__aside {
+    border-right: 1px solid var(--line);
+    padding-right: 36px;
+    align-self: stretch;
+  }
+  .wayout__aside .wayout__reflect { margin: 22px 0 0; }
+  .wayout__asidefine { text-align: left; margin-top: 26px; }
+  .wayout__frame--wide .wayout__spread {
+    display: grid;
+    /* The plan side is slightly narrower — the moves carry longer lines and a
+       gate sentence that should not wrap three times. */
+    grid-template-columns: 5fr 6fr;
+    gap: 0 40px;
+    align-items: start;
+  }
+  /* ⚠️ No grid rule for the brand mark: it is a child of the FRAME, not of the
+     spread, so it is not a grid item and `grid-column` on it would do nothing.
+     It sits above the two columns on its own, which is what we want anyway. */
+  .wayout__frame--wide .wayout__col:first-child .wayout__who { margin-top: 6px; }
+  .wayout__frame--wide .wayout__col:last-child > h3:first-child { margin-top: 6px; }
 }
 
 /* ── Brand mark ─────────────────────────────────────────────────────────── */
@@ -205,7 +251,23 @@
    final button are allowed to use it. */
 .wayout__btn--sun { background: var(--sun); color: var(--ink); }
 
-.wayout__nav { display: flex; gap: 12px; align-items: center; margin-top: 26px; }
+/* ⚠️ STICKY, because on the longer screens the way forward scrolled off.
+   S1 has nine chips plus a free text and a hint; on a phone the Next button
+   sits well below the fold, and on a six-screen form the commonest way to lose
+   someone is to make them hunt for the way on. The bar keeps the paper colour
+   and a hairline so it reads as the bottom of the card rather than a floating
+   toolbar. */
+.wayout__nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 26px;
+  position: sticky;
+  bottom: 0;
+  background: var(--paper);
+  padding: 12px 0 max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
 .wayout__nav .wayout__btn { margin-top: 0; }
 .wayout__back {
   flex: none;
@@ -264,13 +326,25 @@
 
 /* ── Chips ──────────────────────────────────────────────────────────────── */
 .wayout__chips { display: flex; flex-wrap: wrap; gap: 9px; }
+/* Group heading. Quiet — it is a signpost, not a question, and the moment it
+   competes with the question above it the screen has two of them. */
+.wayout__group {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--soft);
+  margin: 18px 0 8px;
+}
+.wayout__chips + .wayout__group,
+div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__chip {
   border: 2px solid #DCD6C6;
   background: #fff;
   border-radius: 999px;
-  padding: 10px 15px;
+  padding: 9px 14px;
   font: inherit;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
@@ -497,6 +571,21 @@
 }
 
 .wayout__disclaimer { margin-top: 22px; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
+
+/* ── Progress ────────────────────────────────────────────────────────────
+   ⚠️ Shown only on the wide layout, in the aside. On a phone the "3 of 6" in
+   the brand mark already says it, and a second progress indicator on a 390px
+   screen is spending the scarcest thing the design has. */
+.wayout__step { font-size: 14px; font-weight: 600; color: var(--soft); margin: 6px 0 10px; }
+.wayout__pips { display: flex; gap: 6px; }
+.wayout__pip {
+  height: 4px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--line);
+}
+.wayout__pip--done { background: var(--green); }
+.wayout__pip--now  { background: var(--sun); }
 
 /* ── Reveal ─────────────────────────────────────────────────────────────── */
 /* The map builds line by line. Everything starts hidden and is revealed by a
