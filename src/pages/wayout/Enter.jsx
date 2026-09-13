@@ -78,7 +78,28 @@ export default function Enter() {
   const [show, setShow]         = useState(false)
   const [busy, setBusy]         = useState(false)
   const [error, setError]       = useState('')
+  // ⚠️ Guidance is not an error. Rendering "you already have an account" in
+  // alarm red tells somebody they have done something wrong when they have not.
+  const [notice, setNotice]     = useState('')
   const [sent, setSent]         = useState(false)
+  // 🔴 THE DEAD END BEHIND THE DEAD END. Recovering from "already registered"
+  // by flipping to sign-in only helps somebody who knows the password. Daniel
+  // did not — his is an Eliv8 account from months ago — so the screen bounced
+  // him between "you already have an account" and "invalid credentials" with no
+  // exit. Eliv8's own login has a reset; this one never did.
+  const [resetSent, setResetSent] = useState(false)
+
+  async function sendReset() {
+    if (!email) { setError('Put your email in first and I’ll send the link.'); return }
+    setBusy(true)
+    setError('')
+    const { error: e3 } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    setBusy(false)
+    if (e3) setError(e3.message)
+    else setResetSent(true)
+  }
 
   async function submit(e) {
     e.preventDefault()
@@ -112,7 +133,12 @@ export default function Enter() {
       const already = /already registered|already exists/i.test(err?.message ?? '')
       if (already) {
         setMode('in')
-        setError('You already have an account with that email — sign in and your answers will come with you.')
+        setNotice('You already have an account with that email. Sign in and your answers come with you — or reset the password below if you don’t have it.')
+      } else if (/invalid login credentials/i.test(err?.message ?? '')) {
+        // ⚠️ Never "wrong password" — it might be the wrong email, and telling
+        // somebody which one is wrong is also telling a stranger which emails
+        // have accounts.
+        setError('That email and password don’t match. Reset it below if you’re not sure.')
       } else {
         setError(err.message || 'That did not work.')
       }
@@ -201,7 +227,13 @@ export default function Enter() {
               </label>
             )}
 
+            {notice && <p className="wayout__notice">{notice}</p>}
             {error && <p className="wayout__error">{error}</p>}
+            {resetSent && (
+              <p className="wayout__notice">
+                Sent. Open the link in that email and you’ll come straight back here.
+              </p>
+            )}
 
             <button
               className="wayout__btn"
@@ -211,6 +243,15 @@ export default function Enter() {
               {busy ? 'One moment…' : mode === 'new' ? 'Create it' : 'Sign in'}
             </button>
           </form>
+
+          {mode === 'in' && !resetSent && (
+            <p className="wayout__hint">
+              Can’t remember it?{' '}
+              <button type="button" className="wayout__linkbtn" onClick={sendReset} disabled={busy}>
+                Email me a reset link
+              </button>
+            </p>
+          )}
 
           <p className="wayout__hint">
             {mode === 'new' ? 'Already started? ' : 'First time? '}

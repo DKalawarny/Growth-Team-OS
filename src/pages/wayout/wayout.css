@@ -361,6 +361,16 @@
 }
 .wayout__money .wayout__input { padding-left: 20px; }
 
+/* Guidance, not alarm. */
+.wayout__notice {
+  background: var(--tint);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  margin: 16px 0 0;
+  color: var(--ink);
+}
 .wayout__error {
   color: #A4442F;
   font-size: 14px;
