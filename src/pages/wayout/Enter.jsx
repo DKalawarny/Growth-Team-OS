@@ -89,10 +89,17 @@ export default function Enter() {
   // exit. Eliv8's own login has a reset; this one never did.
   const [resetSent, setResetSent] = useState(false)
 
+  /** One place, so nothing can be left showing from a previous attempt. */
+  function clearMessages() {
+    setError('')
+    setNotice('')
+    setResetSent(false)
+  }
+
   async function sendReset() {
     if (!email) { setError('Put your email in first and I’ll send the link.'); return }
     setBusy(true)
-    setError('')
+    clearMessages()
     const { error: e3 } = await supabase.auth.resetPasswordForEmail(email, {
       // 🔴 ITS OWN PAGE. This used to land on Eliv8's /reset-password —
       // sending somebody mid-recovery into another product's branding at the
@@ -108,7 +115,12 @@ export default function Enter() {
     e.preventDefault()
     if (mode === 'new' && !agreed) return
     setBusy(true)
-    setError('')
+    // 🔴 THE NOTICE WAS ONLY EVER SET, NEVER CLEARED. So "you already have an
+    // account" stayed on screen through every retry and every mode switch,
+    // still telling somebody about a problem they had already dealt with. A
+    // message about a past state, left up, becomes a message about the current
+    // one — and on this screen it reads as "it still isn't working".
+    clearMessages()
 
     try {
       if (mode === 'new') {
@@ -261,7 +273,7 @@ export default function Enter() {
             <button
               type="button"
               className="wayout__linkbtn"
-              onClick={() => { setMode(mode === 'new' ? 'in' : 'new'); setError('') }}
+              onClick={() => { setMode(mode === 'new' ? 'in' : 'new'); clearMessages() }}
             >
               {mode === 'new' ? 'Sign in' : 'Create an account'}
             </button>
