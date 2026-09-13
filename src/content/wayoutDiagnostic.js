@@ -47,7 +47,7 @@ export const DIAGNOSTIC_OPENING = {
   lead: 'The hard part is which one is first — and what to ignore.',
   body: 'Six questions, about three minutes. At the end it names the path that actually fits you, and why the other three don\'t. Whether getting out means earning more or needing less.',
   cta: 'Start',
-  fine: 'No account. Nothing to buy to see it.',
+  fine: 'No account, and this part is genuinely free.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [
@@ -79,7 +79,9 @@ export const DIAGNOSTIC_QUESTIONS = [
   },
   {
     key: 'immovable',
+    multi: true,
     question: 'What can’t move?',
+    hint: 'Pick any that are true — the plan gets built around these.',
     options: [
       { key: 'kids',    label: 'Kids or custody' },
       { key: 'partner', label: 'A partner’s job' },
@@ -88,16 +90,29 @@ export const DIAGNOSTIC_QUESTIONS = [
     ],
   },
   {
+    // 🔴 FOUR OPTIONS COULD NOT HOLD THE PEOPLE THIS IS FOR. Daniel: "what if i
+    // have cash or selling house or something else". Someone with savings or a
+    // property to sell has the strongest position of anyone who reaches this
+    // screen — and had to answer "not much".
     key: 'asset',
+    multi: true,
     question: 'What have you already got?',
+    hint: 'Pick any that apply.',
     options: [
-      { key: 'vehicle', label: 'A vehicle or tools' },
-      { key: 'space',   label: 'A spare room, garage or land' },
-      { key: 'skill',   label: 'A skill, trade or free evenings' },
-      { key: 'none',    label: 'Not much' },
+      { key: 'vehicle',  label: 'A vehicle or tools' },
+      { key: 'space',    label: 'A spare room, garage or land' },
+      { key: 'skill',    label: 'A skill, trade or free evenings' },
+      { key: 'cash',     label: 'Savings or cash' },
+      { key: 'property', label: 'A property I could sell' },
+      { key: 'business', label: 'A business already' },
+      { key: 'other',    label: 'Something else' },
+      { key: 'none',     label: 'Not much', exclusive: true },
     ],
   },
   {
+    // ⚠️ It stopped at "more than a thousand", so the person who is doing well
+    // and wants a different life — half of who this is for — had no true
+    // answer. The top of the scale matters as much as the bottom.
     key: 'money',
     question: 'After the bills, what’s left in a month?',
     options: [
@@ -105,6 +120,7 @@ export const DIAGNOSTIC_QUESTIONS = [
       { key: 'tight',    label: 'A little' },
       { key: 'some',     label: 'A few hundred' },
       { key: 'lots',     label: 'More than a thousand' },
+      { key: 'plenty',   label: 'Plenty — money isn’t the problem' },
     ],
   },
   {
@@ -118,6 +134,19 @@ export const DIAGNOSTIC_QUESTIONS = [
     ],
   },
 ]
+
+/**
+ * ⭐ The one place to write on the free side. Daniel: "there is no where to
+ * write in depth about your situation" — true of the diagnostic, where every
+ * answer was a tap. Optional, one line, and it is what the result screen can
+ * actually speak to.
+ */
+export const DIAGNOSTIC_NOTE = {
+  question: 'Anything the taps missed?',
+  label: 'In a sentence — what’s actually going on?',
+  placeholder: 'Sold a business, economy turned, five kids, new job abroad…',
+  hint: 'Optional. The full version asks properly.',
+}
 
 export const PATHS = {
   'side-income': {
@@ -157,6 +186,9 @@ export const PATHS = {
  * whatever else they also want.
  */
 const wants = (a, k) => Array.isArray(a?.goalType) ? a.goalType.includes(k) : a?.goalType === k
+/** ⚠️ `immovable` and `asset` are lists now; everything below reads membership. */
+const has = (a, f, k) => Array.isArray(a?.[f]) ? a[f].includes(k) : a?.[f] === k
+const none = (a, f) => { const v = a?.[f]; return !v || (Array.isArray(v) && (!v.length || v.includes('none'))) }
 
 export function choosePath(a) {
   // Someone with nothing left over cannot start anything that needs money or
@@ -171,21 +203,26 @@ export function choosePath(a) {
 
   // Space and equity earn without taking evenings, so they beat a hustle for
   // anyone whose constraint is hours rather than capital.
-  if (a.asset === 'space') return 'asset-play'
+  // Cash or a property to sell is the strongest hand anyone arrives with, and
+  // it was previously unsayable.
+  if (has(a, 'asset', 'cash') || has(a, 'asset', 'property')) return 'asset-play'
+  if (has(a, 'asset', 'space')) return 'asset-play'
+  // Money is not their constraint, so nothing that earns more is the answer.
+  if (a.money === 'plenty') return 'cut-delegate'
 
   // Nothing pinning them down and a horizon long enough to act on it. This is
   // the only branch where relocation is honest — everyone else has an immovable
   // and a plan that ignores it is worthless to them.
-  if (a.immovable === 'nothing' && (wants(a, 'mobile') || a.horizon === '3y' || a.horizon === '5y')) {
+  if (has(a, 'immovable', 'nothing') && (wants(a, 'mobile') || a.horizon === '3y' || a.horizon === '5y')) {
     return 'relocate-or-stay'
   }
 
   // A vehicle or a ticket is a business that hasn't sent an invoice yet.
-  if (a.asset === 'vehicle' || a.asset === 'skill') return 'side-income'
+  if (has(a, 'asset', 'vehicle') || has(a, 'asset', 'skill') || has(a, 'asset', 'business')) return 'side-income'
 
   // No obvious asset and no room in the budget to buy one: start by finding the
   // money that is already there.
-  if (a.asset === 'none' && (a.money === 'tight' || a.money === 'some')) return 'cut-delegate'
+  if (none(a, 'asset') && (a.money === 'tight' || a.money === 'some')) return 'cut-delegate'
 
   return 'side-income'
 }
@@ -202,13 +239,13 @@ export function whyNot(chosen, a) {
       : wants(a, 'time')
         ? 'It works, but it spends evenings — and time is the thing you said you’re short of.'
         : 'Your fastest money isn’t a new venture right now.',
-    'cut-delegate': a.money === 'lots'
+    'cut-delegate': (a.money === 'lots' || a.money === 'plenty')
       ? 'You already have room in the budget. Cutting further buys less than using what you own.'
       : 'Worth doing, but on its own it won’t get you out — it buys runway, not a destination.',
-    'asset-play': a.asset === 'none'
+    'asset-play': none(a, 'asset')
       ? 'This one needs space, equity or a ticket, and you told us there isn’t much there yet.'
       : 'You have the asset, but something else pays faster from where you’re standing.',
-    'relocate-or-stay': a.immovable !== 'nothing'
+    'relocate-or-stay': !has(a, 'immovable', 'nothing')
       ? `You named something that keeps you here. A plan that ignores it isn’t a plan.`
       : 'Moving is a big lever, but it’s not the first one from where you are.',
   }

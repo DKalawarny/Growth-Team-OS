@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
+import { loadDraft, saveDraft } from '../../lib/wayout/draft'
+import { DIAGNOSTIC_OPENING, DIAGNOSTIC_NOTE, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
@@ -29,8 +30,37 @@ export default function Diagnostic() {
   const [step, setStep]       = useState(-1)
   const [answers, setAnswers] = useState({})
   const [done, setDone]       = useState(false)
+  // The one place to write on the free side.
+  const [note, setNote]       = useState('')
 
   const q = DIAGNOSTIC_QUESTIONS[step]
+
+  /** Record and land. Split out so the note step can call it too. */
+  function finish(all, written) {
+    setDone(true)
+    const path = choosePath(all)
+    const carried = {}
+    if (Array.isArray(all.goalType) && all.goalType.length) carried.goalType = all.goalType
+    if (all.horizon) carried.horizon = all.horizon
+    const IMM = {
+      kids:    { key: 'kids-home',   label: 'Kids at home' },
+      partner: { key: 'partner-job', label: 'Partner’s job' },
+      parent:  { key: 'parent',      label: 'Aging parent' },
+      nothing: { key: 'nothing',     label: 'Nothing, really' },
+    }
+    const imm = (Array.isArray(all.immovable) ? all.immovable : [all.immovable])
+      .map(k => IMM[k]).filter(Boolean).map(o => ({ ...o, custom: false }))
+    if (imm.length) carried.immovables = imm
+    // ⭐ What they wrote here is the best sentence on the free side — carry it
+    // into the intake's open box rather than losing it at the paywall.
+    if (written?.trim()) carried.story = written.trim()
+    if (Object.keys(carried).length) {
+      const existing = loadDraft()
+      saveDraft({ ...carried, ...(existing?.answers ?? {}) }, existing?.step ?? 0)
+    }
+    supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null }, path })
+      .then(({ error }) => { if (error) console.warn('[wayout] diagnostic not recorded:', error.message) })
+  }
 
   function pick(key) {
     // ⚠️ A multi question does NOT advance on tap — it toggles, and the person
@@ -38,7 +68,13 @@ export default function Diagnostic() {
     // many as are true" a lie the moment they tried it.
     if (q.multi) {
       const cur = Array.isArray(answers[q.key]) ? answers[q.key] : []
-      setAnswers({ ...answers, [q.key]: cur.includes(key) ? cur.filter(k => k !== key) : [...cur, key] })
+      const opt = q.options.find(o => o.key === key)
+      const exclusives = q.options.filter(o => o.exclusive).map(o => o.key)
+      let next
+      if (cur.includes(key)) next = cur.filter(k => k !== key)
+      else if (opt?.exclusive) next = [key]
+      else next = [...cur.filter(k => !exclusives.includes(k)), key]
+      setAnswers({ ...answers, [q.key]: next })
       return
     }
 
@@ -50,22 +86,43 @@ export default function Diagnostic() {
       return
     }
 
-    setDone(true)
-    // Record it, and never let a logging failure stop someone seeing their
-    // result. The row is how we find out whether this door converts at all,
-    // which is the only reason it exists — but it is our question, not theirs.
-    const path = choosePath(next)
-    supabase
-      .from('wayout_diagnostics')
-      .insert({ answers: next, path })
-      .then(({ error }) => { if (error) console.warn('[wayout] diagnostic not recorded:', error.message) })
+    setStep(DIAGNOSTIC_QUESTIONS.length)   // hand off to the note
   }
 
-  if (done) return <Result answers={answers} />
+  if (done) return <Result answers={answers} note={note} />
+
+  // ── The note ────────────────────────────────────────────────────────────
+  if (step === DIAGNOSTIC_QUESTIONS.length) {
+    return (
+      <WayoutShell wide noindex>
+        <div className="wayout__spread">
+          <div className="wayout__col">
+            <p className="wayout__q">{DIAGNOSTIC_NOTE.question}</p>
+            <p className="wayout__lead">Six taps can’t hold a situation. One line, if there’s one worth saying.</p>
+          </div>
+          <div className="wayout__col">
+            <label className="wayout__label" htmlFor="wayout-note">{DIAGNOSTIC_NOTE.label}</label>
+            <textarea
+              id="wayout-note"
+              className="wayout__textarea"
+              placeholder={DIAGNOSTIC_NOTE.placeholder}
+              value={note}
+              onChange={e => setNote(e.target.value)}
+            />
+            <p className="wayout__hint">{DIAGNOSTIC_NOTE.hint}</p>
+            <div className="wayout__nav">
+              <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
+              <button className="wayout__btn" onClick={() => finish(answers, note)}>See where you land</button>
+            </div>
+          </div>
+        </div>
+      </WayoutShell>
+    )
+  }
 
   if (step === -1) {
     return (
-      <WayoutShell noindex>
+      <WayoutShell wide noindex>
         <div className="wayout__spread">
         <div className="wayout__col">
           <h1><Marked text={DIAGNOSTIC_OPENING.headline} highlight={DIAGNOSTIC_OPENING.highlight} /></h1>
@@ -119,7 +176,7 @@ export default function Diagnostic() {
   )
 }
 
-function Result({ answers }) {
+function Result({ answers, note }) {
   const key  = choosePath(answers)
   const path = PATHS[key]
   const others = whyNot(key, answers)
@@ -129,7 +186,17 @@ function Result({ answers }) {
       <p className="wayout__who">The path that fits you</p>
       <h2>{path.name}</h2>
       <p className="wayout__lead">{path.lead}</p>
-      <p className="wayout__lead">{path.body}</p>
+      <p className="wayout__body">{path.body}</p>
+
+      {/* ⭐ Their own sentence, back on the screen. It is the only thing here
+          they wrote rather than tapped, and showing it is the cheapest proof
+          available that something was actually read. */}
+      {note?.trim() && (
+        <div className="wayout__seen" style={{ marginTop: 22 }}>
+          <q>{note.trim()}</q>
+          <b>The full version plans around this. It’s the part six taps can’t hold.</b>
+        </div>
+      )}
 
       {/* ⭐ Naming what does NOT fit, and why, is the part that earns the next
           click. A result screen that only praises the chosen path reads as a
@@ -145,6 +212,32 @@ function Result({ answers }) {
           </div>
         ))}
       </div>
+
+      {/* ⭐ Daniel: the result should also ask HOW they'd want to get there.
+          It is the one question the free side can pose without answering —
+          and it is what the six honest questions are for. */}
+      <h3 className="wayout__label">What it doesn’t know yet</h3>
+      <ul className="wayout__list">
+        <li>How you’d actually <b>want</b> to get there — and what you’d refuse to do.</li>
+        <li>What “enough” is for you, as a number or a week.</li>
+        <li>What you’ve already tried, and why it stopped.</li>
+        <li>Who else this has to work for.</li>
+      </ul>
+      <p className="wayout__hint">
+        Those change the order of the steps more than anything you just tapped.
+      </p>
+
+      {/* ⭐ Daniel: the result should also ask HOW they'd want to get there.
+          These are the questions the free side can pose without answering, and
+          naming them is what makes the next fifteen minutes feel worth it. */}
+      <h3 className="wayout__label">What it doesn’t know yet</h3>
+      <ul className="wayout__list">
+        <li>How you’d actually <b>want</b> to get there — and what you’d refuse to do.</li>
+        <li>What “enough” is for you, as a number or as a week.</li>
+        <li>What you’ve already tried, and why it stopped.</li>
+        <li>Who else this has to work for.</li>
+      </ul>
+      <p className="wayout__hint">Those change the order of the steps more than anything you just tapped.</p>
 
       <Link to={`${WAYOUT_BASE}?start=1`} className="wayout__btn" style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
         {WAYOUT_PAYMENTS_LIVE ? `Build my full map — ${WAYOUT_PRICE_LABEL}` : 'Answer the six questions'}

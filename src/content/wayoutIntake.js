@@ -40,7 +40,9 @@ export const WAYOUT_OPENING = {
     emptyMessage: 'A sentence is enough.',
   },
   cta: 'Let’s figure it out',
-  fine: 'About 15 minutes. Nothing to buy until you’ve seen your plan.',
+  // ⚠️ Set at render from pricing.js — the number has to be the same
+  // everywhere it appears, and it has to be TRUE about the actual flow.
+  fine: 'About 15 minutes.',
   // ⚠️ The ONLY handwritten line in the entire product (SPEC §6). Caveat is
   // loaded for this one string. If a second one appears, the first stops
   // meaning anything.
@@ -517,16 +519,11 @@ export const WAYOUT_SCREENS = [
       {
         key: 'locationText',
         kind: 'shorttext',
-        label: 'Where are you?',
-        placeholder: 'City or region',
+        label: 'Where are you based, and where does the work happen?',
+        hint: 'Season, local economy and what is even possible all turn on this. If the work is online or abroad, say so — it changes the answer.',
+        placeholder: 'Nanaimo BC · remote, clients in the US · two weeks on in Alberta',
         required: true,
-        emptyMessage: 'The plan depends on it — season and local economy both.',
-      },
-      {
-        key: 'seasonNote',
-        kind: 'text',
-        label: 'What’s the season like there, and what’s the economy doing?',
-        required: false,
+        emptyMessage: 'Roughly is fine.',
       },
       {
         // ⭐ Without this the plan can confidently hand someone the exact thing
@@ -556,12 +553,6 @@ export const WAYOUT_SCREENS = [
         kind: 'text',
         label: 'Anything already coming that changes the picture?',
         placeholder: 'A bonus, a lease ending, a car finally paid off, a pension date.',
-        required: false,
-      },
-      {
-        key: 'worstVersion',
-        kind: 'text',
-        label: 'What’s the worst version of this you’d still say yes to?',
         required: false,
       },
     ],
@@ -631,12 +622,6 @@ export const WAYOUT_SCREENS = [
         kind: 'text',
         label: 'What would be enough?',
         placeholder: 'A number, or a description of a week. Whatever “enough” actually looks like.',
-        required: false,
-      },
-      {
-        key: 'fromToward',
-        kind: 'text',
-        label: 'What are you running from, and what are you running toward?',
         required: false,
       },
     ],

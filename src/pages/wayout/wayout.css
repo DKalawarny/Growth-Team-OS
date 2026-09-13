@@ -30,6 +30,11 @@
 
   color-scheme: light;
   background: var(--paper);
+  /* ⭐ GRAIN. The ground was a flat beige fill, which is what made this read as
+     a web page rather than as paper — and paper is the whole register of the
+     product. One feTurbulence tile at very low opacity; it costs nothing, does
+     not tile visibly, and is the difference between a surface and a colour. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
   color: var(--ink);
   font-family: Figtree, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   min-height: 100vh;
@@ -101,8 +106,12 @@
 
 @media (min-width: 1040px) {
   .wayout__frame--wide {
-    max-width: 880px;
-    padding: 48px 44px 40px;
+    /* ⚠️ "the fitment on the page" — a 430px column in the middle of a 1700px
+       screen looks unfinished however good the contents are. Wider, and the
+       columns are deliberately UNEQUAL: even halves read as a grid, 7:5 reads
+       as a composition. */
+    max-width: 1080px;
+    padding: 60px 56px 48px;
   }
 
   /* The intake's left panel. Quieter than the question beside it on purpose —
@@ -119,13 +128,19 @@
     display: grid;
     /* The plan side is slightly narrower — the moves carry longer lines and a
        gate sentence that should not wrap three times. */
-    grid-template-columns: 5fr 6fr;
-    gap: 0 40px;
+    grid-template-columns: 7fr 5fr;
+    gap: 0 64px;
     align-items: start;
   }
   /* ⚠️ No grid rule for the brand mark: it is a child of the FRAME, not of the
      spread, so it is not a grid item and `grid-column` on it would do nothing.
      It sits above the two columns on its own, which is what we want anyway. */
+  /* Only here, where there is a measure to carry it. */
+  .wayout .wayout__frame--wide h1 {
+    font-size: clamp(44px, 3.6vw, 60px);
+    line-height: 0.99;
+    letter-spacing: -0.032em;
+  }
   .wayout__frame--wide .wayout__col:first-child .wayout__who { margin-top: 6px; }
   .wayout__frame--wide .wayout__col:last-child > h3:first-child { margin-top: 6px; }
 }
@@ -156,12 +171,21 @@
 }
 
 /* ── Type ───────────────────────────────────────────────────────────────── */
+/* ⭐ EDITORIAL SCALE. 40px on a phone is right; 40px on a 1700px screen is
+   timid, and timid type is most of why this read as bland. It scales with the
+   viewport and tightens as it grows, which is what makes large type look
+   deliberate rather than merely big. */
+/* ⚠️ THE SIZE BELONGS TO THE COLUMN, NOT THE VIEWPORT. Scaling h1 on vw alone
+   put 76px type in a 430px card — two words a line, seven lines tall, and
+   overflowing. Big type needs a measure to be big IN. The narrow card keeps
+   40px; only the wide frame, which has the width to carry it, scales up. */
 .wayout h1 {
   font-size: 40px;
-  line-height: 1.04;
-  letter-spacing: -0.025em;
+  line-height: 1.02;
+  letter-spacing: -0.028em;
   font-weight: 800;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
+  text-wrap: balance;
 }
 .wayout h2 {
   font-size: 32px;
@@ -219,12 +243,20 @@
 /* ⚠️ The mark must never span a line break — a highlight broken across two
    lines reads as a rendering fault. `box-decoration-break` keeps the ends
    rounded on both fragments if it ever does wrap on a very narrow screen. */
+/* ⭐ A STROKE SOMEBODY MADE, not a rectangle a browser filled. The uneven ends
+   and the slight tilt are the point: the promise on the opening screen is that
+   this is written like a friend would write it, and a perfectly level band of
+   colour is the opposite of that claim. */
 .wayout mark {
-  /* A highlighter stroke through the lower two-thirds of the line, not a filled
-     block behind the text — the text stays on paper and the ink sits under it. */
-  background: linear-gradient(transparent 38%, var(--hi) 38% 92%, transparent 92%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='30' preserveAspectRatio='none'%3E%3Cpath d='M3 21 C 40 13, 92 25, 142 16 S 188 12, 197 18' stroke='%23FFE566' stroke-width='17' stroke-linecap='round' fill='none' opacity='.92'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  /* ⚠️ Capped in px, not a percentage. At 62% of a 76px line the "stroke"
+     became a solid highlighter slab — louder than the words it was meant to
+     sit under. A pen nib is a fixed width whatever the letters do. */
+  background-size: 100% 0.42em;
+  background-position: 0 88%;
   color: inherit;
-  padding: 0 2px;
+  padding: 0 4px;
   /* ⚠️ This is what keeps the phrase off a line break. A highlight broken
      across two lines reads as a rendering fault, and a comment saying so does
      not prevent it. */
@@ -631,6 +663,32 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__list--skip { color: var(--soft); }
 .wayout__list--skip li::marker { color: var(--line); }
 
+/* ⭐ THE ENTRY SCREENS HAD NO MOTION AT ALL while the map had a whole staged
+   reveal — so the first thing anyone saw was the most inert thing in the
+   product. One short settle on the frame, nothing per-element and nothing
+   staggered: enough that the page arrives rather than blinks into place.
+   ⚠️ Off entirely under reduced motion, not merely shortened. */
+@media (prefers-reduced-motion: no-preference) {
+  .wayout__frame {
+    animation: wayout-settle .44s cubic-bezier(.2, .7, .3, 1) both;
+  }
+  @keyframes wayout-settle {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* The offer, after the plan. Quiet — it follows something they already have. */
+.wayout__offer {
+  margin-top: 30px;
+  padding: 22px 24px;
+  background: var(--tint);
+  border-radius: 18px;
+}
+.wayout__offer h3 { margin: 0 0 10px; font-size: 19px; line-height: 1.25; letter-spacing: -.02em; }
+.wayout__offer p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--soft); }
+.wayout__offer .wayout__hint { margin-top: 12px; }
+
 /* ── Reveal ─────────────────────────────────────────────────────────────── */
 /* The map builds line by line. Everything starts hidden and is revealed by a
    staggered delay set inline per element. */
@@ -648,3 +706,128 @@ div:first-child > .wayout__group { margin-top: 14px; }
   .wayout__r { opacity: 1; transform: none; animation: none; }
   .wayout__chk { transition: none; }
 }
+
+/* ═══ THE FRONT DOOR ═══════════════════════════════════════════════════════
+   ⭐ The product is the hero. Everything here exists to put an actual plan on
+   screen with depth, and to let light move behind it without anything moving
+   on top of it.
+   ⚠️ Flipping to a dark ground is a token change on `.wayout--hero`, not a
+   rebuild — the judgement that dark-plus-green reads as a trading platform to
+   this audience is a judgement, and it should be cheap to be wrong about. */
+.wayout--hero {
+  --ground: var(--tint);
+  --hero-ink: var(--ink);
+  --hero-soft: var(--soft);
+  --hero-accent: var(--green);
+  position: relative;
+  overflow: hidden;
+  background: var(--ground);
+}
+
+.wayout__aura,
+.wayout__grain { position: absolute; inset: 0; pointer-events: none; }
+
+.wayout__aura {
+  inset: -20%;
+  background:
+    radial-gradient(620px 480px at 22% 30%, #FFE9BC 0%, transparent 62%),
+    radial-gradient(560px 460px at 78% 68%, #F4E6CE 0%, transparent 60%);
+  animation: wayout-drift 19s ease-in-out infinite alternate;
+}
+@keyframes wayout-drift {
+  from { transform: translate3d(-2.5%, -2%, 0) scale(1); }
+  to   { transform: translate3d(3%, 2.5%, 0) scale(1.07); }
+}
+/* ⚠️ Off, not merely slower. And it is the only animation on this screen. */
+@media (prefers-reduced-motion: reduce) {
+  .wayout__aura { animation: none; }
+}
+
+.wayout__grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+.wayout__hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  gap: 40px;
+  align-content: center;
+  padding: 56px 24px max(40px, env(safe-area-inset-bottom));
+  max-width: 1240px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media (min-width: 1000px) {
+  .wayout__hero {
+    /* ⚠️ minmax, not a fixed 460 — a fixed track plus a rotation pushed the
+       card past the right edge and it was being cropped. */
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+    gap: 72px;
+    align-items: center;
+    padding: 64px 64px;
+  }
+}
+
+.wayout__herocopy { display: flex; flex-direction: column; }
+
+/* ⚠️ The size belongs to the column. This one has a column wide enough to carry
+   it, which the narrow card screens do not — see the note on `.wayout h1`. */
+/* ⚠️ `h1.` IS LOAD-BEARING. `.wayout h1` is specificity 0,1,1 and a bare class
+   is 0,1,0, so the base 40px rule was winning and the headline never grew. I
+   had hit this exact collision an hour earlier, written a comment about it, and
+   then repeated it — a comment is not a guard. */
+h1.wayout__heroline {
+  font-size: clamp(54px, 7.4vw, 88px);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  color: var(--hero-ink);
+  margin: 48px 0 0;
+}
+.wayout__heroline span { color: var(--hero-accent); }
+
+.wayout__herolead {
+  font-size: 20px;
+  line-height: 1.45;
+  color: var(--hero-soft);
+  margin: 26px 0 0;
+  max-width: 27ch;
+}
+.wayout__herocta { margin-top: 40px; }
+.wayout__herocta .wayout__btn {
+  display: inline-block;
+  width: auto;
+  padding: 19px 38px;
+  margin-top: 0;
+  text-decoration: none;
+  text-align: center;
+}
+.wayout__herocta .wayout__fine { text-align: left; margin-top: 14px; }
+
+/* ── The plan, floating ────────────────────────────────────────────────── */
+.wayout__heroplan {
+  background: var(--paper);
+  border-radius: 30px;
+  padding: 34px 30px 30px;
+  box-shadow: 0 60px 110px rgba(35, 48, 31, .26), 0 8px 24px rgba(35, 48, 31, .10);
+}
+@media (min-width: 1000px) {
+  /* The tilt is the whole reason it reads as an object rather than a panel. */
+  /* Enough to read as an object, not enough to make the text look wonky. */
+  .wayout__heroplan { transform: rotate(-3.5deg); }
+}
+.wayout__heroplan h2 { font-size: 27px; line-height: 1.06; margin: 0; }
+.wayout__heroplan .wayout__who { margin: 20px 0 6px; }
+.wayout__heroplan .wayout__stats { margin-top: 18px; }
+.wayout__heroplan .wayout__stat b { font-size: 23px; }
+.wayout__heroplan .wayout__move { padding: 8px 0; cursor: default; }
+.wayout__heroplan .wayout__move p { font-size: 14.5px; }
+.wayout__herocut {
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+.wayout__herocut s { text-decoration-color: #B9B29E; }

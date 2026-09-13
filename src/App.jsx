@@ -64,6 +64,7 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
+const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
 // 🔴 DEV ONLY. A hardcoded map on a live site is a fabricated artifact wearing
 // the same design as a real one — the exact thing the verbatim-quote guard
 // exists to prevent. `import.meta.env.DEV` is a compile-time constant, so in a
@@ -281,6 +282,9 @@ export default function App() {
 
             The diagnostic takes no guard at all — it is the marketing front
             door and is meant to be hit by strangers. */}
+        {/* ⭐ The front door. The diagnostic moves one step in — someone who
+            arrives cold sees the product before being asked a question. */}
+        <Route path="/wayout/hello" element={<LazyRoute><WayoutLanding /></LazyRoute>} />
         <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
         {/* Its own front door. Public, and deliberately NOT wrapped in
             RedirectIfAuthed — an Eliv8 owner who lands here should be able to

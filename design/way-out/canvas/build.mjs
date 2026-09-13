@@ -381,6 +381,233 @@ ${['A side business|You are short of time, not money. This spends the thing you 
 ${btn('Start move one', { sun: true, top: 26 })}
   <p style="margin-top: 22px; font-size: 12.5px; line-height: 1.5; color: ${T.soft};">This is a map of options, not financial or legal advice. Check the numbers before you act.</p>`, { pad: '56px 28px 34px' })
 
+
+// ── ATMOSPHERE — two bets on why anyone would stop ───────────────────────────
+// ⭐ Daniel's argument, and it beat mine: "its the same reason someone chooses a
+// cafe with a nice atmosphere over gas station coffee... attention sells, bland
+// doesnt." I had set relief AGAINST desire and treated atmosphere as decoration.
+// A good cafe is not lying about its coffee by having good light.
+//
+// ⭐⭐ The honest difference from the hustle sellers is not that we are plainer.
+// It is that they sell a dream with NO ROUTE. We can show a quieter dream and
+// hand over the route — which is a stronger position, not a more modest one.
+//
+// 🔴 SO THESE LEAD WITH THE DESTINATION, WHICH NOTHING IN THE PRODUCT HAS EVER
+// SHOWN. Every screen so far is process — questions, steps, forms. We ask
+// someone to describe their Tuesday and never once reflect it back. "An
+// ordinary Tuesday" is deliberately the anti-lambo: the thing people actually
+// want, stated so plainly it cannot be mistaken for a pitch.
+
+const WIDE = 1200, TALL = 780
+
+const atmosShell = (bodyHtml, groundCss) => `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap">
+  <style>
+    body { margin: 0; font-family: ${FONT}; }
+    a { color: ${T.green}; } a:hover { color: #24603c; }
+  </style>
+</helmet>
+<div style="width: ${WIDE}px; height: ${TALL}px; box-sizing: border-box; position: relative; overflow: hidden; font-family: ${FONT}; color: ${T.ink}; ${groundCss}">
+${bodyHtml}
+</div>
+</x-dc>
+</body>
+</html>
+`
+
+// Grain, as a tile. The flat fill is most of why the current screens read as a
+// web page rather than as paper.
+const GRAIN = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");`
+
+// ── A — WARM AND MADE ───────────────────────────────────────────────────────
+// Achievable today, no photography. Light comes from a single warm source, the
+// way late afternoon comes through one window — deliberately NOT a corner-to-
+// corner gradient, which is the tell of a generated page.
+F['AtmosMade.dc.html'] = atmosShell(`
+  <div style="position: absolute; inset: 0; background: radial-gradient(900px 620px at 78% 18%, #FFF3D6 0%, #FBEFD9 38%, ${T.tint} 72%, #EDE5D2 100%);"></div>
+  <div style="position: absolute; inset: 0; ${GRAIN}"></div>
+
+  <!-- ⭐ The product's own metaphor, finally used: three marks and a line. It is
+       the same spine the map draws, so the identity and the deliverable agree. -->
+  <svg viewBox="0 0 420 520" width="380" style="position: absolute; right: 72px; bottom: -30px; opacity: .9;">
+    <path d="M58 470 C 150 410, 96 300, 176 250 S 300 170, 330 62"
+          fill="none" stroke="${T.ink}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 11" opacity=".38"/>
+    <circle cx="58" cy="470" r="13" fill="${T.sun}"/>
+    <circle cx="176" cy="250" r="9" fill="none" stroke="${T.ink}" stroke-width="2.5" opacity=".55"/>
+    <circle cx="330" cy="62" r="9" fill="none" stroke="${T.ink}" stroke-width="2.5" opacity=".55"/>
+    <text x="84" y="476" font-family="${FONT}" font-size="15" font-weight="700" fill="${T.ink}" opacity=".75">this Saturday</text>
+    <text x="198" y="256" font-family="${FONT}" font-size="15" font-weight="600" fill="${T.ink}" opacity=".45">month two</text>
+    <text x="352" y="68" font-family="${FONT}" font-size="15" font-weight="600" fill="${T.ink}" opacity=".45">a Tuesday that's yours</text>
+  </svg>
+
+  <div style="position: relative; padding: 72px 72px 0; max-width: 660px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: ${T.green};">
+      <span style="width: 10px; height: 10px; border-radius: 50%; background: ${T.sun};"></span>the way out
+    </div>
+
+    <h1 style="font-size: 64px; line-height: .98; letter-spacing: -.035em; font-weight: 800; margin: 76px 0 0; max-width: 13ch;">
+      Three years from now, an <mark style="background: linear-gradient(transparent 40%, ${T.hi} 40% 88%, transparent 88%); padding: 0 3px;">ordinary Tuesday</mark>.
+    </h1>
+    <p style="font-size: 21px; line-height: 1.4; color: ${T.soft}; margin: 26px 0 0; max-width: 30ch;">
+      Where, doing what, with whom. Six honest questions, then the order of the steps to get there.
+    </p>
+
+    <div style="margin-top: auto; padding-bottom: 64px;">
+      <button style="background: ${T.green}; color: #fff; border: 0; border-radius: 999px; padding: 19px 40px; font: inherit; font-family: ${FONT}; font-size: 18px; font-weight: 700; min-height: 44px;">Start with three minutes</button>
+      <p style="font-size: 14px; color: ${T.soft}; margin: 14px 0 0;">No account. Nothing to buy until you've seen your plan.</p>
+    </div>
+  </div>
+`, `background: ${T.paper};`)
+
+// ── B — PHOTOGRAPHIC ────────────────────────────────────────────────────────
+// ⚠️ THE IMAGE IS A PLACEHOLDER and is drawn, not photographed — judge the
+// COMPOSITION here, not the picture. The real version needs an actual
+// photograph: specific and unglamorous (a workshop at 7am, a kitchen table, a
+// truck in the rain at the end of a good day), never stock success imagery,
+// which reads as exactly the thing this product is not.
+F['AtmosPhoto.dc.html'] = atmosShell(`
+  <div style="position: absolute; inset: 0; background:
+      radial-gradient(760px 520px at 70% 30%, #F6D9A1 0%, #D9B27C 34%, #8C7355 66%, #4A4034 100%);"></div>
+  <!-- a window, roughly where the light is coming from -->
+  <div style="position: absolute; right: 120px; top: 96px; width: 300px; height: 330px; background: linear-gradient(180deg, #FFF6E2, #F3D9A8); opacity: .55; filter: blur(1px);"></div>
+  <div style="position: absolute; right: 120px; top: 96px; width: 300px; height: 330px; border: 10px solid rgba(40,32,22,.35);"></div>
+  <div style="position: absolute; right: 268px; top: 96px; width: 8px; height: 330px; background: rgba(40,32,22,.35);"></div>
+  <div style="position: absolute; inset: 0; ${GRAIN} opacity: .8;"></div>
+  <!-- scrim, so type is legible whatever the final photograph is -->
+  <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(28,24,18,.82) 0%, rgba(28,24,18,.55) 46%, rgba(28,24,18,.12) 100%);"></div>
+
+  <div style="position: relative; padding: 72px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; color: #FFFDF8;">
+    <div style="display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: #FFFDF8;">
+      <span style="width: 10px; height: 10px; border-radius: 50%; background: ${T.sun};"></span>the way out
+    </div>
+
+    <div style="margin-top: auto; max-width: 620px;">
+      <h1 style="font-size: 64px; line-height: .98; letter-spacing: -.035em; font-weight: 800; margin: 0; color: #FFFDF8;">
+        Three years from now, an ordinary Tuesday.
+      </h1>
+      <p style="font-size: 21px; line-height: 1.4; margin: 24px 0 0; color: rgba(255,253,248,.82); max-width: 32ch;">
+        Where, doing what, with whom. Six honest questions, then the order of the steps to get there.
+      </p>
+      <div style="margin-top: 36px; padding-bottom: 8px;">
+        <button style="background: ${T.sun}; color: ${T.ink}; border: 0; border-radius: 999px; padding: 19px 40px; font: inherit; font-family: ${FONT}; font-size: 18px; font-weight: 700; min-height: 44px;">Start with three minutes</button>
+        <p style="font-size: 14px; margin: 14px 0 0; color: rgba(255,253,248,.7);">No account. Nothing to buy until you've seen your plan.</p>
+      </div>
+    </div>
+  </div>
+`, `background: #4A4034;`)
+
+
+// ── HERO = THE PRODUCT ───────────────────────────────────────────────────────
+// ⭐⭐ From Daniel's reference (omen.trade). What is worth taking from it is NOT
+// the darkness — it is that the PRODUCT is the hero: a phone, huge, floating
+// with real depth, showing a real number and a real chart, with ambient light
+// moving BEHIND it while the type stays still, and one colour doing all the
+// work.
+//
+// 🔴 MY EARLIER MOCKUPS HAD NO PRODUCT ON THEM AT ALL. Type on a card. That is
+// why two "different directions" read as no change — I was varying wallpaper
+// while the reference puts the thing you get at the centre of the screen.
+//
+// ⚠️ What must NOT be taken: near-black + neon green + gradient text is the
+// exact palette of crypto and trading, and this audience has been burned by
+// precisely that. Same composition, our materials.
+
+const heroPlan = (dark) => {
+  const paper = dark ? '#15171A' : T.paper
+  const ink   = dark ? '#F2F0EA' : T.ink
+  const soft  = dark ? '#9AA090' : T.soft
+  const line  = dark ? '#2C3030' : T.line
+  const tint  = dark ? '#1D2022' : T.tint
+  return `
+  <div style="position: absolute; right: -40px; top: 74px; width: 460px; transform: rotate(-7deg) scale(1.02); transform-origin: 50% 0%;
+              background: ${paper}; border-radius: 34px; padding: 40px 34px 34px; box-sizing: border-box;
+              box-shadow: 0 60px 110px rgba(0,0,0,${dark ? '.62' : '.30'}), 0 8px 24px rgba(0,0,0,${dark ? '.4' : '.12'});">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: ${dark ? '#7FC79C' : T.green};">
+      <span style="width: 9px; height: 9px; border-radius: 50%; background: ${T.sun};"></span>your plan
+    </div>
+    <p style="margin: 22px 0 6px; font-size: 14px; color: ${soft};">Marcus, 52. Two kids at home.</p>
+    <h2 style="margin: 0; font-size: 29px; line-height: 1.04; letter-spacing: -.03em; font-weight: 800; color: ${ink};">
+      Four days a week by March. <span style="background: linear-gradient(transparent 42%, ${T.hi} 42% 90%, transparent 90%); color: ${dark ? '#15171A' : T.ink}; padding: 0 3px;">You can already afford it.</span>
+    </h2>
+    <div style="display: flex; gap: 10px; margin: 20px 0 0;">
+      <div style="flex: 1; background: ${tint}; border-radius: 14px; padding: 12px 14px;">
+        <span style="display: block; font-size: 11.5px; color: ${soft};">What your life costs</span>
+        <b style="display: block; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: ${ink};">$4,100</b>
+      </div>
+      <div style="flex: 1; background: ${tint}; border-radius: 14px; padding: 12px 14px;">
+        <span style="display: block; font-size: 11.5px; color: ${soft};">The day costs</span>
+        <b style="display: block; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: ${ink};">$1,580</b>
+      </div>
+    </div>
+    <p style="margin: 22px 0 8px; font-size: 14.5px; font-weight: 700; color: ${ink};">Three moves. This order.</p>
+    ${[['Work out what your life actually costs','One evening.',true],
+       ['Show Jen the number first','Next week.',false],
+       ['Ask for the four-day week','March.',false]].map(([t,w,now]) => `
+    <div style="display: flex; gap: 11px; align-items: flex-start; padding: 9px 0;">
+      <span style="width: 21px; height: 21px; flex: none; border-radius: 6px; margin-top: 1px;
+                   border: 2px solid ${now ? T.sun : line}; background: ${now ? T.sun : 'transparent'};"></span>
+      <span><p style="margin: 0; font-size: 14.5px; font-weight: 700; color: ${ink};">${t}</p>
+      <small style="font-size: 12.5px; color: ${soft};"><b style="color: ${dark ? '#7FC79C' : T.green};">${w}</b></small></span>
+    </div>`).join('')}
+    <p style="margin: 14px 0 0; font-size: 12.5px; color: ${soft};">
+      <s style="text-decoration-color: ${line};">A side business.</s> <s style="text-decoration-color: ${line};">Selling the house.</s> — crossed off, with the reason.
+    </p>
+  </div>`
+}
+
+const heroCopy = (dark) => `
+  <div style="position: relative; padding: 66px 72px 0; max-width: 600px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: ${dark ? '#F2F0EA' : T.green};">
+      <span style="width: 10px; height: 10px; border-radius: 50%; background: ${T.sun};"></span>the way out
+    </div>
+    <h1 style="font-size: 92px; line-height: .9; letter-spacing: -.045em; font-weight: 800; margin: 88px 0 0; color: ${dark ? '#F2F0EA' : T.ink};">
+      Three<br>moves.<br>
+      <span style="color: ${dark ? '#7FC79C' : T.green};">In order.</span>
+    </h1>
+    <p style="font-size: 20px; line-height: 1.45; margin: 28px 0 0; max-width: 27ch; color: ${dark ? '#9AA090' : T.soft};">
+      Six honest questions, and the one thing nobody tells you: which of them is first, and what to ignore.
+    </p>
+    <div style="margin-top: auto; padding-bottom: 58px;">
+      <button style="background: ${dark ? '#7FC79C' : T.green}; color: ${dark ? '#0F1112' : '#fff'}; border: 0; border-radius: 999px; padding: 19px 38px; font: inherit; font-family: ${FONT}; font-size: 18px; font-weight: 700; min-height: 44px;">Start with three minutes</button>
+      <p style="font-size: 14px; margin: 14px 0 0; color: ${dark ? '#9AA090' : T.soft};">No account. Nothing to buy until you've seen your plan.</p>
+    </div>
+  </div>`
+
+// ⭐ AMBIENT MOTION, BEHIND THE CONTENT AND NEVER ON IT. Slow enough to be felt
+// rather than watched — the reference's light drifts while its type sits still,
+// and that restraint is what makes it read as expensive rather than busy.
+const AURA = (a, b) => `
+  <div style="position: absolute; inset: -20%; background:
+      radial-gradient(620px 480px at 22% 30%, ${a} 0%, transparent 62%),
+      radial-gradient(560px 460px at 78% 68%, ${b} 0%, transparent 60%);
+      animation: drift 19s ease-in-out infinite alternate;"></div>
+  <style>
+    @keyframes drift { from { transform: translate3d(-2.5%, -2%, 0) scale(1); } to { transform: translate3d(3%, 2.5%, 0) scale(1.07); } }
+    @media (prefers-reduced-motion: reduce) { [style*="animation: drift"] { animation: none !important; } }
+  </style>`
+
+F['HeroWarm.dc.html'] = atmosShell(`
+  ${AURA('#FFE9BC', '#F4E6CE')}
+  <div style="position: absolute; inset: 0; ${GRAIN}"></div>
+  ${heroPlan(false)}
+  ${heroCopy(false)}
+`, `background: ${T.tint};`)
+
+F['HeroDark.dc.html'] = atmosShell(`
+  ${AURA('rgba(90,150,110,.30)', 'rgba(255,180,58,.16)')}
+  <div style="position: absolute; inset: 0; ${GRAIN} opacity: .7;"></div>
+  ${heroPlan(true)}
+  ${heroCopy(true)}
+`, `background: #0F1112;`)
+
 for (const [name, src] of Object.entries(F)) writeFileSync(name, src)
 
 const W = 390, GAP = 90, ROW = 980
@@ -388,6 +615,8 @@ const row1 = ['Main.dc.html','S1.dc.html','S2.dc.html','S3.dc.html','S4.dc.html'
 const row2 = ['Map.dc.html','MapSimpler.dc.html','Paywall.dc.html']
 const row3 = ['Diagnostic.dc.html','Result.dc.html']
 const row4 = ['OpenRecognition.dc.html','OpenDemo.dc.html','OpenQuestion.dc.html']
+const row5 = ['AtmosMade.dc.html','AtmosPhoto.dc.html']
+const row6 = ['HeroWarm.dc.html','HeroDark.dc.html']
 const h = f => f === 'S3.dc.html' ? 1500 : f === 'S5.dc.html' ? 1180 : (f === 'Map.dc.html' || f === 'MapSimpler.dc.html') ? 1560 : 844
 
 writeFileSync('canvas.json', JSON.stringify({
@@ -396,11 +625,15 @@ writeFileSync('canvas.json', JSON.stringify({
     ...row2.map((f,i) => ({ file: f, x: i*(W+GAP), y: 1700, w: W, h: h(f) })),
     ...row3.map((f,i) => ({ file: f, x: (i+3)*(W+GAP), y: 1700, w: W, h: h(f) })),
     ...row4.map((f,i) => ({ file: f, x: i*(W+GAP), y: 3400, w: W, h: 844 })),
+    ...row5.map((f,i) => ({ file: f, x: i*(1200+120), y: 4520, w: 1200, h: 780 })),
+    ...row6.map((f,i) => ({ file: f, x: i*(1200+120), y: 5560, w: 1200, h: 780 })),
   ],
   annotations: [
     { id: 'intake', x: 0, y: -150, w: 560, text: 'THE INTAKE — paid, six screens.\nThe order is the product: what is fixed, who is affected, what you have, the money, what you would trade, and only then where you want to end up.' },
     { id: 'deliver', x: 0, y: 1550, w: 900, text: 'THE MAP — the same product, both directions. JAKE closes the gap by earning more. MARCUS closes it by needing less, and his plan crosses OUT starting a business. One example is one product; this is why there are two.' },
     { id: 'front', x: 960, y: 1550, w: 520, text: 'THE FREE DIAGNOSTIC — public, six taps, rules not a model. Naming what does NOT fit is what earns the next click.' },
+    { id: 'hero', x: 0, y: 5390, w: 1500, text: 'HERO = THE PRODUCT. From the omen.trade reference — what is worth taking is not the darkness, it is that the PRODUCT is the hero, floating with depth, ambient light moving BEHIND while the type stays still, one colour doing the work.\n\nMy earlier mockups had no product on them at all, which is why two directions read as no change.\n\nSame composition, two grounds — the question is whether this survives going dark, or whether dark + green reads as the trading-platform neighbourhood this audience has been burned by.' },
+    { id: 'atmos', x: 0, y: 4350, w: 1400, text: 'ATMOSPHERE — why anyone stops.\n\nBoth lead with the DESTINATION, which no screen in the product has ever shown: it is all process, and we ask someone to describe their Tuesday and never reflect it back. "An ordinary Tuesday" is deliberately the anti-lambo.\n\nA / WARM AND MADE — buildable today, no photography. The dotted path with three marks is the product\'s own metaphor and the same spine the map draws.\nB / PHOTOGRAPHIC — higher ceiling, needs a real photograph. THE IMAGE HERE IS DRAWN: judge the composition, not the picture.' },
     { id: 'openers', x: 0, y: 3230, w: 1340, text: 'THE OPENING SCREEN — three bets on the first fifteen seconds, same visual system.\n\nRECOGNITION names something true about the reader — safest, but still asks to be believed.\nDEMONSTRATION shows the shape of an answer before asking for anything — strongest proof, shows the hand early.\nQUESTION starts being useful immediately — best completion, but a stranger has been told nothing, and it can read as a quiz funnel.' },
   ],
   launch: { view: 'canvas' },

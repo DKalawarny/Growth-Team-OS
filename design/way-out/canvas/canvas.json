@@ -104,6 +104,34 @@
       "y": 3400,
       "w": 390,
       "h": 844
+    },
+    {
+      "file": "AtmosMade.dc.html",
+      "x": 0,
+      "y": 4520,
+      "w": 1200,
+      "h": 780
+    },
+    {
+      "file": "AtmosPhoto.dc.html",
+      "x": 1320,
+      "y": 4520,
+      "w": 1200,
+      "h": 780
+    },
+    {
+      "file": "HeroWarm.dc.html",
+      "x": 0,
+      "y": 5560,
+      "w": 1200,
+      "h": 780
+    },
+    {
+      "file": "HeroDark.dc.html",
+      "x": 1320,
+      "y": 5560,
+      "w": 1200,
+      "h": 780
     }
   ],
   "annotations": [
@@ -127,6 +155,20 @@
       "y": 1550,
       "w": 520,
       "text": "THE FREE DIAGNOSTIC — public, six taps, rules not a model. Naming what does NOT fit is what earns the next click."
+    },
+    {
+      "id": "hero",
+      "x": 0,
+      "y": 5390,
+      "w": 1500,
+      "text": "HERO = THE PRODUCT. From the omen.trade reference — what is worth taking is not the darkness, it is that the PRODUCT is the hero, floating with depth, ambient light moving BEHIND while the type stays still, one colour doing the work.\n\nMy earlier mockups had no product on them at all, which is why two directions read as no change.\n\nSame composition, two grounds — the question is whether this survives going dark, or whether dark + green reads as the trading-platform neighbourhood this audience has been burned by."
+    },
+    {
+      "id": "atmos",
+      "x": 0,
+      "y": 4350,
+      "w": 1400,
+      "text": "ATMOSPHERE — why anyone stops.\n\nBoth lead with the DESTINATION, which no screen in the product has ever shown: it is all process, and we ask someone to describe their Tuesday and never reflect it back. \"An ordinary Tuesday\" is deliberately the anti-lambo.\n\nA / WARM AND MADE — buildable today, no photography. The dotted path with three marks is the product's own metaphor and the same spine the map draws.\nB / PHOTOGRAPHIC — higher ceiling, needs a real photograph. THE IMAGE HERE IS DRAWN: judge the composition, not the picture."
     },
     {
       "id": "openers",

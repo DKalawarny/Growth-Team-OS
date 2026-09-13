@@ -4,7 +4,7 @@ import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { loadOrCreateSession, generateMap, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
-import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
+import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 
 /**
@@ -84,25 +84,24 @@ export default function Plan() {
       <WayoutShell title="Your plan">
         <p className="wayout__q">That didn’t come through.</p>
         <p className="wayout__lead">{error}</p>
-        {session?.status === 'paid' && (
-          <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
-            {building ? 'Building…' : 'Try again'}
-          </button>
-        )}
+        <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
+          {building ? 'Building…' : 'Try again'}
+        </button>
       </WayoutShell>
     )
   }
 
-  // ── Finished the questions, hasn't paid ───────────────────────────────────
-  if (session?.status === 'complete') return <Paywall />
-
-  // ── Paid, map not generated yet ───────────────────────────────────────────
-  if (session?.status === 'paid' && !map) {
+  // ── Finished the questions, no map yet ────────────────────────────────────
+  // ⭐ NO PAYWALL HERE ANY MORE. The assessment is free: finish the questions
+  // and it is written. The money is for the play-by-play, after they have read
+  // it and know whether it was any good.
+  if (!map) {
     return (
       <WayoutShell title="Your plan">
         <p className="wayout__q">Building your plan.</p>
         <p className="wayout__lead">
-          Reading back through everything you wrote. About twenty seconds.
+          Reading back through everything you wrote. About twenty seconds, and
+          there is nothing to pay for it.
         </p>
         <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
           {building ? 'Building…' : 'Build it'}
@@ -304,6 +303,23 @@ export function Map({ map }) {
       <button className="wayout__btn wayout__btn--sun wayout__r" style={at(4)} onClick={() => toggle(0)}>
         Start move one
       </button>
+
+      {/* ⭐⭐ THE OFFER LIVES HERE NOW, AFTER THEY HAVE THE ANSWER. Nobody can
+          fear an ambush in a flow where the assessment is already theirs, and
+          the thing being sold is the honest one: not what to do — they have
+          that, free, above — but how to actually do it. */}
+      <div className="wayout__offer wayout__r" style={at(4.2)}>
+        <h3>Move one is yours. Do you know how to do it?</h3>
+        <p>
+          The plan above is the what, and it’s free. The play-by-play is the how
+          — for your town, your hours, and the people who’ve already paid you:
+          what to charge, the words to send, what to skip, and what usually goes
+          wrong the first time.
+        </p>
+        {WAYOUT_PAYMENTS_LIVE
+          ? <p className="wayout__hint">{WAYOUT_PRICE_LABEL} for the move you’re on. {guaranteeLine()}</p>
+          : <p className="wayout__hint">Free while this is being built.</p>}
+      </div>
 
       <p className="wayout__disclaimer wayout__r" style={at(4.1)}>{map.disclaimer}</p>
       </div>

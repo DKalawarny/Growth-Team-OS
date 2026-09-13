@@ -8,6 +8,7 @@ import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto
 import { saveDraft, loadDraft } from '../../lib/wayout/draft'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
+import { priceLine, priceShort, guaranteeLine } from '../../lib/wayout/pricing'
 
 /**
  * The way out — the opening screen and the six intake screens.
@@ -104,6 +105,19 @@ export default function Intake({ preview = false, previewReflections = null }) {
 
   const screen = step === 0 ? null : WAYOUT_SCREENS[step - 1]
 
+  // 🔴 EVERY ADVANCE LANDED WHEREVER THE LAST ONE ENDED. These screens are long
+  // enough to scroll, and React keeps the scroll position across a state
+  // change, so pressing Next at the bottom of screen three dropped you at the
+  // bottom of screen four — past the question you were being asked. The app
+  // shell has ScrollToTopOnNavigate for route changes; this is a step change
+  // inside one route, so nothing was watching it.
+  //
+  // ⚠️ 'instant', not smooth: a half-second scroll animation between every
+  // question reads as the page fighting you.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [step])
+
   function setValue(key, value) {
     setAnswers(a => ({ ...a, [key]: value }))
     // Clear the inline error the moment they answer, rather than making them
@@ -165,13 +179,18 @@ export default function Intake({ preview = false, previewReflections = null }) {
       return
     }
 
-    const missing = {}
-    for (const f of screen.fields) {
-      if (!isAnswered(f, answers[f.key])) missing[f.key] = f.emptyMessage ?? 'Add an answer.'
+    // 🔴 `screen` IS UNDEFINED ON THE OPEN-BOX STEP — it is step 7 of a
+    // six-screen array. This loop ran unconditionally and threw before reaching
+    // the navigation, so "See the plan" never worked for anybody, and the crash
+    // was silent: a TypeError in a click handler just does nothing visible.
+    if (screen) {
+      const missing = {}
+      for (const f of screen.fields) {
+        if (!isAnswered(f, answers[f.key])) missing[f.key] = f.emptyMessage ?? 'Add an answer.'
+      }
+      if (Object.keys(missing).length) { setErrors(missing); return }
+      kickOffReflection(screen)
     }
-    if (Object.keys(missing).length) { setErrors(missing); return }
-
-    kickOffReflection(screen)
 
     if (preview) {
       if (step > WAYOUT_TOTAL_SCREENS) { navigate(`${WAYOUT_BASE}/preview`); return }
@@ -257,9 +276,12 @@ export default function Intake({ preview = false, previewReflections = null }) {
         </button>
 
         <p className="wayout__fine">
-          {WAYOUT_OPENING.fine}<br />
+          {WAYOUT_OPENING.fine} {priceLine()}<br />
           <span className="wayout__hand">{WAYOUT_OPENING.handwritten}</span>
         </p>
+        {/* A real promise, stated before they spend the fifteen minutes rather
+            than buried where it only helps after the fact. */}
+        {guaranteeLine() && <p className="wayout__fine">{guaranteeLine()}</p>}
         </div>
         </div>
       </WayoutShell>
@@ -331,7 +353,9 @@ export default function Intake({ preview = false, previewReflections = null }) {
             order runs constraints-first is that seeing the dream first teaches
             people to answer the constraints in a way that protects it. */}
         {reflection && <div className="wayout__reflect">{reflection}</div>}
-        <p className="wayout__fine wayout__asidefine">Nothing to buy until you’ve seen your plan.</p>
+        {/* ⭐ Stays on screen for all six questions. Someone who reads the
+            price at minute one cannot be ambushed at minute fifteen. */}
+        <p className="wayout__fine wayout__asidefine">{priceShort()}</p>
       </div>
 
       <div className="wayout__col">
