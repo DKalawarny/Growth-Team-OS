@@ -53,6 +53,8 @@ export const WAYOUT_SCREENS = [
   // ── S1 ────────────────────────────────────────────────────────────────────
   {
     id: 's1',
+    section: 'The constraints',
+    why: 'Everything else gets built around these, so this is the screen where being straight with yourself matters most. A plan that ignores one of them is no use to you.',
     question: 'What can’t move?',
     // No reflection card before the first screen — there is nothing to reflect
     // on yet, and a card here would have to be generic, which teaches the user
@@ -123,6 +125,7 @@ export const WAYOUT_SCREENS = [
         key: 'faith',
         kind: 'chips',
         label: 'A faith or practice?',
+        hint: 'Asked because it usually holds part of the week — a Sunday, a Friday, a standing evening — and a plan that books work across it is one you’ll abandon.',
         required: false,
         options: [
           { key: 'yes', label: 'Yes' },
@@ -136,12 +139,20 @@ export const WAYOUT_SCREENS = [
         required: false,
       },
       {
+        // ⚠️ Daniel: "meant more about exercise, getting in shape — that can be
+        // part of being stuck. The idea is that this helps your whole life."
+        // Framing it only as a limitation missed half of it: for a lot of
+        // people getting their body back IS the way out, or the thing that has
+        // to happen before anything else will hold.
         key: 'health',
         kind: 'chips',
-        label: 'Anything health-wise that limits what you can take on?',
+        label: 'Your health — where is it in this?',
+        hint: 'Both directions count: something that limits what you can take on, or getting back in shape as part of what you’re actually after.',
         required: false,
         options: [
-          { key: 'yes', label: 'Yes' },
+          { key: 'limits', label: 'Something limits me' },
+          { key: 'goal', label: 'Getting fitter is part of it' },
+          { key: 'energy', label: 'I’m worn out' },
           { key: 'na', label: 'Doesn’t apply', exclusive: true },
         ],
       },
@@ -158,6 +169,8 @@ export const WAYOUT_SCREENS = [
   // ── S2 ────────────────────────────────────────────────────────────────────
   {
     id: 's2',
+    section: 'Who it has to work for',
+    why: 'Almost nothing here happens alone. A plan the people around you haven’t agreed to stalls in month two, and nobody ever writes that down as the reason.',
     question: 'You, and who’s in it with you.',
     reflectAfter: false,
     fields: [
@@ -214,6 +227,7 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'kidsAges',
+        allowCustom: true,
         kind: 'chips',
         label: 'Kids’ ages',
         required: false,
@@ -266,6 +280,8 @@ export const WAYOUT_SCREENS = [
   // not property.
   {
     id: 's3',
+    section: 'What you can start from',
+    why: 'Not a wish list — what is already in your life. Most people own or can do more than they count, and the first move almost always comes from this screen.',
     question: 'What have you already got that could earn?',
     reflectAfter: true,
     fields: [
@@ -350,6 +366,8 @@ export const WAYOUT_SCREENS = [
   // ── S4 ────────────────────────────────────────────────────────────────────
   {
     id: 's4',
+    section: 'The arithmetic',
+    why: 'Rough is fine; nothing here is checked. These are the numbers your plan gets built from, and they decide what is actually possible rather than what sounds good.',
     question: 'Money, plainly.',
     reflectAfter: false,
     fields: [
@@ -361,15 +379,18 @@ export const WAYOUT_SCREENS = [
         // the quit number — the single figure the whole plan aims at — and
         // nothing told us which one we had been given.
         label: 'Your monthly take-home',
-        hint: 'Just yours. There is a question about the household next.',
+        hint: 'What actually lands in your account, after tax. Just yours — the household comes next.',
         required: true,
         emptyMessage: 'A rough number is fine.',
       },
       {
+        // 🔴 Daniel: "missing major payments, mortgage etc". The label said
+        // "must-pay" and left people guessing what counted, so the single most
+        // important number on the form was being answered inconsistently.
         key: 'mustPay',
         kind: 'number',
-        label: 'Monthly must-pay',
-        hint: 'Rent or mortgage, debt, kids. The things that happen whether you like it or not.',
+        label: 'What has to go out every month, whatever happens',
+        hint: 'Rent or mortgage, insurance, utilities, phone, food, fuel, childcare, loan and card minimums, child support. Everything that happens whether you like it or not.',
         required: true,
         emptyMessage: 'A rough number is fine.',
       },
@@ -383,7 +404,8 @@ export const WAYOUT_SCREENS = [
       {
         key: 'savings',
         kind: 'number',
-        label: 'Savings on hand',
+        label: 'Savings you could actually reach',
+        hint: 'Cash you could use without penalties. It decides how long a bad month is survivable, which decides how bold the plan can be.',
         required: false,
       },
       {
@@ -394,7 +416,8 @@ export const WAYOUT_SCREENS = [
         // same confidence.
         key: 'atStake',
         kind: 'choice',
-        label: 'If this doesn’t work out, what does it cost you?',
+        label: 'If the first thing you try doesn’t work, what does it cost you?',
+        hint: 'This sets how bold the plan is allowed to be. Wasted weekends and a mortgage are different amounts of room.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
@@ -408,6 +431,7 @@ export const WAYOUT_SCREENS = [
         key: 'discretionary',
         kind: 'chips',
         label: 'Spending that isn’t must-pay',
+        hint: 'Not to shame anyone — the cut list is usually the fastest money on the page, and it is the only move that needs no customer and nobody’s permission.',
         allowCustom: true,
         required: false,
         options: [
@@ -424,13 +448,17 @@ export const WAYOUT_SCREENS = [
         ],
       },
       {
+        // 🔴 It asked "does it get you to the goal?" — on screen four, when the
+        // goal is not asked until screen six. People were being tested against
+        // something they had not been told yet.
         key: 'fiveYearTest',
         kind: 'text',
         // ⭐ The five-to-ten-year test, asked as one question rather than as a
         // grid per item. A grid turns this into data entry and people abandon
         // it; asked once, in their own words, it is the sentence the cut list
         // gets built from.
-        label: 'For each of those: does it get you to the goal? Will it matter in five years?',
+        label: 'Which of those would you actually miss?',
+        hint: 'Not which ones you could justify — which ones you’d feel the loss of in a year. The rest is usually the fastest money anyone has.',
         required: false,
       },
     ],
@@ -439,13 +467,22 @@ export const WAYOUT_SCREENS = [
   // ── S5 ────────────────────────────────────────────────────────────────────
   {
     id: 's5',
+    section: 'What it can cost you, and what’s realistic',
+    why: 'Two different things decide the ORDER of the steps: what you’d genuinely trade away, and how much time and risk you actually have. This is both.',
     question: 'What would you trade, and where are you?',
     reflectAfter: true,
     fields: [
       {
+        // 🔴 Daniel: "make this a ranking system 1-10 by number, not arrows —
+        // and what is Space?" Arrows on nine items is nine rounds of nudging,
+        // and one-word labels meant people were ranking things they had to
+        // guess the meaning of. Scoring each one is faster, allows ties, and
+        // says something an ordering cannot: that two of them matter enormously
+        // and the rest barely register.
         key: 'tradeRank',
-        kind: 'rank',
-        label: 'Put these in order — what you’d give up first at the top.',
+        kind: 'score',
+        label: 'How much does each of these matter to you?',
+        hint: '1 is “I’d give this up tomorrow”, 10 is “don’t touch it”. The plan will not trade away the things you score highest, whatever the arithmetic says.',
         required: true,
         emptyMessage: 'Put them in an order, even a rough one.',
         // 🔴 THIS LIST USED TO BE SIX MATERIAL THINGS — comfort, space,
@@ -455,14 +492,14 @@ export const WAYOUT_SCREENS = [
         // more than its income. Someone who ranks status above their health has
         // told us something no money question could.
         options: [
-          { key: 'comfort', label: 'Comfort' },
-          { key: 'space', label: 'Space' },
-          { key: 'stability', label: 'Stability' },
-          { key: 'status', label: 'Status' },
-          { key: 'savings', label: 'Savings' },
+          { key: 'comfort', label: 'Comfort — the standard of living you’re used to' },
+          { key: 'space', label: 'Space — room in the house, a yard, somewhere to work' },
+          { key: 'stability', label: 'Stability — knowing what’s coming in each month' },
+          { key: 'status', label: 'Status — how it looks to other people' },
+          { key: 'savings', label: 'Savings — the cushion staying where it is' },
           { key: 'family-proximity', label: 'Being near family' },
           { key: 'time-with-people', label: 'Time with the people you love' },
-          { key: 'health', label: 'Your health' },
+          { key: 'health', label: 'Your health and fitness' },
           { key: 'community', label: 'A community you’re part of' },
         ],
       },
@@ -473,8 +510,9 @@ export const WAYOUT_SCREENS = [
         // at different speeds.
         key: 'hoursPerWeek',
         kind: 'choice',
-        label: 'Realistically, how many hours a week can you give this?',
-        hint: 'Be honest rather than hopeful — the order of the moves depends on it.',
+        // 🔴 "hours a week to what? doesn't say."
+        label: 'How many hours a week could you put into changing things?',
+        hint: 'On top of what you already do — evenings, a weekend morning, whatever is genuinely spare. Be honest rather than hopeful: this decides the order of the moves more than anything else here.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
@@ -491,22 +529,25 @@ export const WAYOUT_SCREENS = [
         // landscaper who earns twelve months of money in six and spends the
         // winter somewhere warm, the December hole IS the plan — and we would
         // have looked at his correct answer and called it a failure.
+        // 🔴 "what shape of year — terribly worded."
         key: 'yearShape',
         kind: 'choice',
-        label: 'What shape of year are you after?',
+        label: 'Do you want money coming in evenly, or is earning it in bursts fine?',
+        hint: 'Some of the best options are seasonal — hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
-          { key: 'steady', label: 'Steady, all year' },
-          { key: 'seasonal', label: 'A season on, a season off' },
-          { key: 'fewer-hours', label: 'Fewer hours, every week' },
+          { key: 'steady', label: 'Evenly — the same every month' },
+          { key: 'seasonal', label: 'In bursts — flat out, then time off' },
+          { key: 'fewer-hours', label: 'Fewer hours every week, all year' },
           { key: 'dontmind', label: 'Don’t mind' },
         ],
       },
       {
         key: 'horizon',
         kind: 'choice',
-        label: 'How long are you giving this?',
+        label: 'How long before you want to be there?',
+        hint: 'Not a deadline — it tells the plan whether to take the fast rough route or the slower one that lasts.',
         required: true,
         emptyMessage: 'Pick one.',
         options: [
@@ -561,6 +602,8 @@ export const WAYOUT_SCREENS = [
   // ── S6 ────────────────────────────────────────────────────────────────────
   {
     id: 's6',
+    section: 'Where it ends up',
+    why: 'The destination, in your words. The plan is written backwards from here, so the more specific you are, the less generic it can be.',
     question: 'Where does this end up?',
     reflectAfter: false,
     fields: [
@@ -620,8 +663,11 @@ export const WAYOUT_SCREENS = [
         // "you passed it two years ago".
         key: 'enough',
         kind: 'text',
-        label: 'What would be enough?',
-        placeholder: 'A number, or a description of a week. Whatever “enough” actually looks like.',
+        // 🔴 "too vague of a question". It is the most important number on the
+        // form and it was asked in three words with no anchor.
+        label: 'What would you need coming in each month for this to be worth it?',
+        hint: 'A number if you have one. If not, describe the week you’d be happy with and it’ll work the number out. This is the figure the whole plan aims at — and sometimes the useful answer is that you passed it already.',
+        placeholder: '$4,500 and my Fridays · enough that I stop checking the balance',
         required: false,
       },
     ],

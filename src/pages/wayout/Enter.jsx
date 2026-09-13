@@ -58,6 +58,7 @@ export default function Enter() {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [agreed, setAgreed]     = useState(false)
+  const [show, setShow]         = useState(false)
   const [busy, setBusy]         = useState(false)
   const [error, setError]       = useState('')
   const [sent, setSent]         = useState(false)
@@ -86,7 +87,18 @@ export default function Enter() {
         navigate(next, { replace: true })
       }
     } catch (err) {
-      setError(err.message || 'That did not work.')
+      // 🔴 THIS WAS A DEAD END DRESSED AS AN ERROR. Supabase says "User already
+      // registered" and the screen just showed it — no way forward, on the
+      // screen standing between somebody and the plan they have just spent
+      // fifteen minutes on. They have an account; the only useful response is
+      // to sign them in, not to report a database constraint at them.
+      const already = /already registered|already exists/i.test(err?.message ?? '')
+      if (already) {
+        setMode('in')
+        setError('You already have an account with that email — sign in and your answers will come with you.')
+      } else {
+        setError(err.message || 'That did not work.')
+      }
     } finally {
       setBusy(false)
     }
@@ -134,15 +146,28 @@ export default function Enter() {
             />
 
             <label className="wayout__label" htmlFor="wayout-password">Password</label>
-            <input
-              id="wayout-password"
-              className="wayout__input"
-              type="password"
-              autoComplete={mode === 'new' ? 'new-password' : 'current-password'}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            <div className="wayout__pw">
+              <input
+                id="wayout-password"
+                className="wayout__input"
+                type={show ? 'text' : 'password'}
+                autoComplete={mode === 'new' ? 'new-password' : 'current-password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              {/* ⚠️ Eliv8's sign-in has this and ours did not. On a phone, with a
+                  password someone is inventing on the spot, a hidden field is
+                  the commonest reason a first attempt fails. */}
+              <button
+                type="button"
+                className="wayout__pwtoggle"
+                onClick={() => setShow(v => !v)}
+                aria-pressed={show}
+              >
+                {show ? 'Hide' : 'Show'}
+              </button>
+            </div>
 
             {/* ⚠️ Consent is required to create an account and the submit stays
                 disabled until it is ticked — the same rule Eliv8 signup follows,

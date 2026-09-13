@@ -196,6 +196,47 @@ export function Rank({ field, value, onChange }) {
   )
 }
 
+// ── Score ───────────────────────────────────────────────────────────────────
+
+/**
+ * Score each item 1–10.
+ *
+ * ⭐ Daniel: "make this a ranking system 1-10 by number, not arrows". Arrows on
+ * nine items is nine rounds of nudging to express one opinion. Scoring is one
+ * tap per row, allows ties, and says something an ordering cannot: that two of
+ * these matter enormously and the rest barely register. An ordering forces a
+ * lie — it makes you put something seventh that you actually do not care about
+ * at all.
+ *
+ * ⚠️ Buttons rather than a slider or a number box: a slider on a phone is a
+ * fight, and a number field opens a keypad for a single digit.
+ */
+export function Score({ field, value, onChange }) {
+  const scores = value ?? {}
+  return (
+    <div className="wayout__scores">
+      {field.options.map(opt => (
+        <div className="wayout__scorerow" key={opt.key}>
+          <span className="wayout__scorelabel">{opt.label}</span>
+          <div className="wayout__scale" role="group" aria-label={opt.label}>
+            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+              <button
+                type="button"
+                key={n}
+                className={`wayout__scorebtn${scores[opt.key] === n ? ' wayout__scorebtn--on' : ''}`}
+                aria-pressed={scores[opt.key] === n}
+                onClick={() => onChange({ ...scores, [opt.key]: n })}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── Money ───────────────────────────────────────────────────────────────────
 
 /**
@@ -253,6 +294,7 @@ export function Field({ field, value, onChange }) {
     chips:     Chips,
     choice:    Choice,
     rank:      Rank,
+    score:     Score,
     number:    Money,
     text:      LongText,
     shorttext: ShortText,

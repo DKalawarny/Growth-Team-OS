@@ -348,6 +348,18 @@ export default function Intake({ preview = false, previewReflections = null }) {
             />
           ))}
         </div>
+        {/* ⭐⭐ WHAT THIS SECTION IS, AND WHY IT IS BEING ASKED. Daniel: "the way
+            these are worded are very open, doesn't say why it's being asked."
+            A question with no stated reason reads as data collection — and
+            people answer data collection carefully rather than honestly, which
+            is the opposite of what this form needs. */}
+        {screen?.section && (
+          <div className="wayout__section">
+            <h2 className="wayout__sectiontitle">{screen.section}</h2>
+            <p className="wayout__sectionwhy">{screen.why}</p>
+          </div>
+        )}
+
         {/* ⚠️ Only what is BEHIND them. Listing the questions still to come
             would show the destination question early, and the whole reason the
             order runs constraints-first is that seeing the dream first teaches

@@ -16,6 +16,8 @@
 export function isAnswered(field, value) {
   if (!field.required) return true
   if (Array.isArray(value)) return value.length > 0
+  // A score field is a map of key → 1-10; answered once anything is scored.
+  if (value && typeof value === 'object') return Object.keys(value).length > 0
   if (typeof value === 'string') return value.trim().length > 0
   if (typeof value === 'number') return true
   return value != null
