@@ -47,7 +47,12 @@ export const DIAGNOSTIC_OPENING = {
   lead: 'The hard part is which one is first — and what to ignore.',
   body: 'Six questions, about three minutes. At the end it names the path that actually fits you, and why the other three don\'t. Whether getting out means earning more or needing less.',
   cta: 'Start',
-  fine: 'No account, and this part is genuinely free.',
+  // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
+  // first page, no bait and switch." "This part is free" implies other parts
+  // are not, which is the sentence a person braced for a bait-and-switch is
+  // scanning for. Say the entire arrangement in one breath, before a single
+  // tap, and there is nothing left to dread.
+  fine: 'No account. Three minutes here, and the full plan afterwards, both free — you only pay if you later want the step-by-step for actually doing it.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [
