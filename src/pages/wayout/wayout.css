@@ -599,6 +599,14 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__pip--done { background: var(--green); }
 .wayout__pip--now  { background: var(--sun); }
 
+/* ── Its own front door ─────────────────────────────────────────────────── */
+.wayout__consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 20px; font-size: 15px; line-height: 1.45; }
+.wayout__consent input { margin-top: 3px; width: 20px; height: 20px; accent-color: var(--green); flex: none; }
+.wayout__linkbtn {
+  background: none; border: 0; padding: 0; font: inherit;
+  color: var(--green); font-weight: 700; text-decoration: underline; cursor: pointer;
+}
+
 /* ── The play-by-play ───────────────────────────────────────────────────── */
 /* ⭐ The script is set to be COPIED, not read. Monospace-ish rhythm, a quiet
    rule down the side, generous line height — it should look like something you

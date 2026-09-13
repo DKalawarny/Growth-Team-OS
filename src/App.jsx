@@ -63,6 +63,7 @@ const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => 
 const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
+const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 // 🔴 DEV ONLY. A hardcoded map on a live site is a fabricated artifact wearing
 // the same design as a real one — the exact thing the verbatim-quote guard
 // exists to prevent. `import.meta.env.DEV` is a compile-time constant, so in a
@@ -158,6 +159,25 @@ function RequireSession({ children }) {
   const { session, loading } = useAuth()
   if (loading) return <LoadingScreen />
   if (!session) return <Navigate to="/login" replace />
+  return children
+}
+
+/**
+ * ⭐ THE WAY OUT'S OWN SESSION GUARD.
+ *
+ * 🔴 RequireSession sends people to `/login` — Eliv8's door, headed "someone in
+ * your corner who reads the numbers", which then lands them in a business
+ * dashboard. Someone halfway through writing about their marriage should never
+ * see either. This keeps them inside their own product and returns them to the
+ * exact screen they were on.
+ */
+function RequireWayout({ children }) {
+  const { session, loading } = useAuth()
+  const location = useLocation()
+  if (loading) return <LoadingScreen />
+  if (!session) {
+    return <Navigate to={`/wayout/enter?next=${encodeURIComponent(location.pathname)}`} replace />
+  }
   return children
 }
 
@@ -262,8 +282,13 @@ export default function App() {
             The diagnostic takes no guard at all — it is the marketing front
             door and is meant to be hit by strangers. */}
         <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
-        <Route path="/wayout"       element={<LazyRoute><RequireSession><WayoutIntake /></RequireSession></LazyRoute>} />
-        <Route path="/wayout/plan"  element={<LazyRoute><RequireSession><WayoutPlan /></RequireSession></LazyRoute>} />
+        {/* Its own front door. Public, and deliberately NOT wrapped in
+            RedirectIfAuthed — an Eliv8 owner who lands here should be able to
+            carry on into the way out rather than being bounced to a dashboard
+            belonging to the other product. */}
+        <Route path="/wayout/enter" element={<LazyRoute><WayoutEnter /></LazyRoute>} />
+        <Route path="/wayout"       element={<LazyRoute><RequireWayout><WayoutIntake /></RequireWayout></LazyRoute>} />
+        <Route path="/wayout/plan"  element={<LazyRoute><RequireWayout><WayoutPlan /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (
           <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
         )}
@@ -272,7 +297,7 @@ export default function App() {
         )}
         {/* ⚠️ Needs a session — it calls the real model. */}
         {import.meta.env.DEV && (
-          <Route path="/wayout/preview/playbook" element={<LazyRoute><RequireSession><WayoutPreviewPb /></RequireSession></LazyRoute>} />
+          <Route path="/wayout/preview/playbook" element={<LazyRoute><RequireWayout><WayoutPreviewPb /></RequireWayout></LazyRoute>} />
         )}
 
         {/* Public auth routes */}
