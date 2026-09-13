@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
-import { loadOrCreateSession, saveAnswers, markComplete, reflect } from '../../lib/wayout/session'
+import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
+import { saveDraft, loadDraft } from '../../lib/wayout/draft'
+import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 
 /**
@@ -33,6 +35,7 @@ function Marked({ text, highlight }) {
  */
 export default function Intake({ preview = false, previewReflections = null }) {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
 
   // step 0 is the opening screen; 1..6 are the intake screens.
   const [step, setStep]         = useState(0)
@@ -52,24 +55,52 @@ export default function Intake({ preview = false, previewReflections = null }) {
   useEffect(() => {
     if (preview) return undefined
     let cancelled = false
-    loadOrCreateSession()
-      .then(s => {
-        if (cancelled) return
-        setSession(s)
-        setAnswers(s.answers ?? {})
-        // A paid session is finished — send them to the plan they bought
-        // rather than showing an empty form on top of it.
-        if (s.status === 'paid') navigate(`${WAYOUT_BASE}/plan`, { replace: true })
-        // Someone who got part-way through resumes where they stopped rather
-        // than re-reading questions they already answered.
-        else if (s.answers && Object.keys(s.answers).length > 0) {
-          setStep(firstUnansweredStep(s.answers))
+
+    // ⭐ NO ACCOUNT NEEDED TO ANSWER. Someone signed out works from a local
+    // draft and is not asked for anything until the end — a wall in front of a
+    // product that has not done anything yet is the worst place to put one.
+    supabase.auth.getUser().then(({ data }) => {
+      if (cancelled) return
+      if (!data?.user) {
+        const d = loadDraft()
+        // ⭐ A COLD ARRIVAL GOES TO THE FRONT DOOR, NOT THE TILL. This screen
+        // is the start of the fifteen-minute paid flow; the diagnostic is three
+        // minutes, free, and proves something before asking for anything. A
+        // stranger landing straight here is being asked for the big commitment
+        // by a product that has not yet done a single thing for them.
+        //
+        // ⚠️ Only when there is genuinely nothing in progress: a draft means
+        // they are mid-flow, and `?start=1` is how the diagnostic's own result
+        // screen sends people here deliberately, so neither gets bounced.
+        if (!d && !params.get('start')) {
+          navigate(`${WAYOUT_BASE}/start`, { replace: true })
+          return
         }
-      })
-      .catch(err => { if (!cancelled) setLoadError(err.message) })
-      .finally(() => { if (!cancelled) setLoading(false) })
+        if (d) { setAnswers(d.answers ?? {}); setStep(d.step ?? 0) }
+        setLoading(false)
+        return
+      }
+      loadOrCreateSession()
+        .then(adoptDraftInto)
+        .then(s => {
+          if (cancelled) return
+          setSession(s)
+          setAnswers(s.answers ?? {})
+          // A paid session is finished — send them to the plan they bought
+          // rather than showing an empty form on top of it.
+          if (s.status === 'paid') navigate(`${WAYOUT_BASE}/plan`, { replace: true })
+          // Someone part-way through resumes where they stopped rather than
+          // re-reading questions they already answered.
+          else if (s.answers && Object.keys(s.answers).length > 0) {
+            setStep(firstUnansweredStep(s.answers))
+          }
+        })
+        .catch(err => { if (!cancelled) setLoadError(err.message) })
+        .finally(() => { if (!cancelled) setLoading(false) })
+    })
+
     return () => { cancelled = true }
-  }, [navigate, preview])
+  }, [navigate, preview, params])
 
   const screen = step === 0 ? null : WAYOUT_SCREENS[step - 1]
 
@@ -122,9 +153,13 @@ export default function Intake({ preview = false, previewReflections = null }) {
         return
       }
       if (!preview) {
-        setSaving(true)
-        try { await saveAnswers(session.id, answers) } catch { /* keep going; saved again on the next step */ }
-        setSaving(false)
+        if (session) {
+          setSaving(true)
+          try { await saveAnswers(session.id, answers) } catch { /* saved again next step */ }
+          setSaving(false)
+        } else {
+          saveDraft(answers, 1)
+        }
       }
       setStep(1)
       return
@@ -140,6 +175,21 @@ export default function Intake({ preview = false, previewReflections = null }) {
 
     if (preview) {
       if (step > WAYOUT_TOTAL_SCREENS) { navigate(`${WAYOUT_BASE}/preview`); return }
+      setStep(step + 1)
+      return
+    }
+
+    // ── No account yet ──────────────────────────────────────────────────
+    // 🔴 THE WALL MOVED TO THE END. They answer everything as a stranger, and
+    // are only asked for an account at the point where they can see what they
+    // would be keeping. Nothing is lost by saying no — the draft is still here.
+    if (!session) {
+      if (step > WAYOUT_TOTAL_SCREENS) {
+        saveDraft(answers, step)
+        navigate(`${WAYOUT_BASE}/enter?next=${encodeURIComponent(`${WAYOUT_BASE}/plan`)}`)
+        return
+      }
+      saveDraft(answers, step + 1)
       setStep(step + 1)
       return
     }

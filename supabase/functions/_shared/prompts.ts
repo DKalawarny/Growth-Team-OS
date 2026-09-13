@@ -2692,11 +2692,29 @@ well the arithmetic works.
 
 🔴 WHICH DIRECTION ARE THEY CLOSING THE GAP FROM
 A way out is closing the gap between what a life costs and what it gives back,
-and it closes from either side. Read "goalType" first and plan accordingly:
+and it closes from either side.
 
-- "More money", "Not working for someone else" — they close it by EARNING MORE.
-- "Less — a simpler life", "More time", "To be somewhere else" — they close it
-  by NEEDING LESS, and a side income is usually the wrong answer for them. Some
+⚠️ "goalType" IS A LIST. Most people want more than one of these — more money
+and more time is the ordinary case, not a contradiction — so read all of them.
+"goalFirst" is the one they would take if they could only have one this year;
+when it is there, that is what the plan optimises for and the others are
+constraints on how it gets there, not things to split the difference between. A
+plan that chases three goals at once arrives at none of them, and they already
+told you which one matters most.
+
+⚠️ WANTING BOTH MORE TIME AND MORE MONEY IS NOT INCOHERENT, and saying so is
+often the most useful thing in the document: for most people the two are the
+same move six months apart. What is incoherent is a plan that spends every
+evening earning, for someone who named time. Where the two genuinely conflict,
+name the conflict plainly and say which one their own answers say they should
+take first.
+
+- "More money", "Not working for someone else" — closed by EARNING MORE.
+- "Less — a simpler life", "More time", "To be somewhere else" — closed by
+  NEEDING LESS, and a side income is usually the wrong answer for them.
+- Both at once: the direction is decided by "goalFirst" and by what they said
+  they would give up in "tradeRank". If time is anywhere in the list, no move
+  may spend more hours than they told you they have. Some
   of these people can already afford the life they want and have never had the
   arithmetic done in front of them. Say so if it is true: it is the most useful
   sentence they will read all year.

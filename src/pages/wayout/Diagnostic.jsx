@@ -33,6 +33,15 @@ export default function Diagnostic() {
   const q = DIAGNOSTIC_QUESTIONS[step]
 
   function pick(key) {
+    // ⚠️ A multi question does NOT advance on tap — it toggles, and the person
+    // says when they are done. Advancing on the first tap would make "pick as
+    // many as are true" a lie the moment they tried it.
+    if (q.multi) {
+      const cur = Array.isArray(answers[q.key]) ? answers[q.key] : []
+      setAnswers({ ...answers, [q.key]: cur.includes(key) ? cur.filter(k => k !== key) : [...cur, key] })
+      return
+    }
+
     const next = { ...answers, [q.key]: key }
     setAnswers(next)
 
@@ -76,17 +85,33 @@ export default function Diagnostic() {
     <WayoutShell count={`${step + 1} of ${DIAGNOSTIC_QUESTIONS.length}`} noindex>
       <p className="wayout__q">{q.question}</p>
       <div className="wayout__chips">
-        {q.options.map(opt => (
-          <button
-            type="button"
-            key={opt.key}
-            className="wayout__chip"
-            onClick={() => pick(opt.key)}
-          >
-            {opt.label}
-          </button>
-        ))}
+        {q.options.map(opt => {
+          const on = q.multi
+            ? (answers[q.key] ?? []).includes(opt.key)
+            : answers[q.key] === opt.key
+          return (
+            <button
+              type="button"
+              key={opt.key}
+              className={`wayout__chip${on ? ' wayout__chip--on' : ''}`}
+              aria-pressed={on}
+              onClick={() => pick(opt.key)}
+            >
+              {opt.label}
+            </button>
+          )
+        })}
       </div>
+      {q.hint && <p className="wayout__hint">{q.hint}</p>}
+      {q.multi && (
+        <button
+          className="wayout__btn"
+          disabled={!(answers[q.key] ?? []).length}
+          onClick={() => setStep(step + 1)}
+        >
+          Next
+        </button>
+      )}
       <div className="wayout__nav">
         <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
       </div>
@@ -121,7 +146,7 @@ function Result({ answers }) {
         ))}
       </div>
 
-      <Link to={WAYOUT_BASE} className="wayout__btn" style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
+      <Link to={`${WAYOUT_BASE}?start=1`} className="wayout__btn" style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
         {WAYOUT_PAYMENTS_LIVE ? `Build my full map — ${WAYOUT_PRICE_LABEL}` : 'Answer the six questions'}
       </Link>
       <p className="wayout__hint">

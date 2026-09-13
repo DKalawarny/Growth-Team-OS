@@ -3,6 +3,7 @@ import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { enforceMapContract } from './mapContract'
 import { parseModelJson } from './parseModelJson'
+import { loadDraft, clearDraft } from './draft'
 
 export { enforceMapContract, mapProblems } from './mapContract'
 
@@ -97,13 +98,46 @@ export async function loadOrCreateSession() {
   if (existing && existing.status !== 'paid') return existing
   if (existing?.status === 'paid') return existing
 
+  // ⭐ ADOPT WHATEVER THEY ANSWERED BEFORE THEY HAD AN ACCOUNT. They filled in
+  // six screens as a stranger; this is the moment that becomes theirs.
+  const draft = loadDraft()
+  const answers = draft?.answers ?? {}
+
   const { data: created, error: insErr } = await supabase
     .from('wayout_sessions')
-    .insert({ user_id: user.id })
+    .insert({ user_id: user.id, answers })
     .select()
     .single()
   if (insErr) throw new Error(`Could not start: ${insErr.message}`)
+
+  // 🔴 CLEARED THE MOMENT IT IS SAVED, not eventually. It holds a custody
+  // arrangement, their pay, their debts and whatever they wrote at the end, and
+  // the machine may not be theirs alone.
+  if (draft) clearDraft()
   return created
+}
+
+/**
+ * Carry a draft into a session that already exists but is still empty — the
+ * case where someone made an account earlier, came back, answered as a guest in
+ * another tab, and then signed in.
+ */
+export async function adoptDraftInto(session) {
+  const draft = loadDraft()
+  if (!draft || !Object.keys(draft.answers ?? {}).length) return session
+  const existing = Object.keys(session.answers ?? {}).length
+  // ⚠️ Never overwrite real answers with a stray draft. Theirs wins.
+  if (existing > 0) { clearDraft(); return session }
+
+  const { data, error } = await supabase
+    .from('wayout_sessions')
+    .update({ answers: draft.answers })
+    .eq('id', session.id)
+    .select()
+    .single()
+  if (error) return session
+  clearDraft()
+  return data
 }
 
 /**

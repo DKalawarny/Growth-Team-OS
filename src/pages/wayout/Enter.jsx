@@ -26,13 +26,35 @@ import { WAYOUT_BASE, WAYOUT_NAME_TITLE } from '../../lib/wayout/brand'
  * account. What differs is only what a person sees and where they are returned
  * to.
  */
+/**
+ * ⚠️ What this screen says depends on where the person was going. Bounced here
+ * on the way to the first question, they have nothing saved yet; bounced here
+ * on the way to the plan, they do.
+ */
+function headingFor(next) {
+  if (next.endsWith('/plan')) return 'Your plan needs an account.'
+  return 'Before the questions.'
+}
+
+function leadFor(next) {
+  if (next.endsWith('/plan')) {
+    return 'So the plan is still here tomorrow, and on your phone rather than just this browser.'
+  }
+  return 'Six questions, about fifteen minutes. The account is so your answers are still here if you stop halfway.'
+}
+
 export default function Enter() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   // Where they were headed before they were asked to sign in.
   const next = params.get('next') || WAYOUT_BASE
 
-  const [mode, setMode]         = useState('in')   // 'in' | 'new'
+  // 🔴 DEFAULTS TO CREATING AN ACCOUNT, not signing in. The door used to open on
+  // "Welcome back — your answers and your plan are where you left them" for
+  // someone who had never made one. On a product with no users, first-time IS
+  // the common case, and greeting a stranger as a returning customer is the
+  // kind of small dishonesty people notice immediately.
+  const [mode, setMode]         = useState('new')  // 'new' | 'in'
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [agreed, setAgreed]     = useState(false)
@@ -86,11 +108,15 @@ export default function Enter() {
     <WayoutShell title={mode === 'new' ? 'Start' : 'Sign in'}>
       <div className="wayout__spread">
         <div className="wayout__col">
-          <h1>{mode === 'new' ? 'Keep your answers.' : 'Welcome back.'}</h1>
+          {/* ⚠️ The copy follows where they were HEADED. Someone bounced here on
+              the way to the questions has not answered any yet, so telling them
+              their answers are safe is a sentence about nothing. Someone headed
+              for the plan has one. */}
+          <h1>{mode === 'in' ? 'Welcome back.' : headingFor(next)}</h1>
           <p className="wayout__lead">
-            {mode === 'new'
-              ? 'An account so the plan is still here tomorrow, and on your phone.'
-              : 'Your answers and your plan are where you left them.'}
+            {mode === 'in'
+              ? 'Your answers and your plan are where you left them.'
+              : leadFor(next)}
           </p>
         </div>
 

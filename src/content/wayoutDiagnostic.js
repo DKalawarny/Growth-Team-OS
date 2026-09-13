@@ -53,7 +53,13 @@ export const DIAGNOSTIC_OPENING = {
 export const DIAGNOSTIC_QUESTIONS = [
   {
     key: 'goalType',
+    // 🔴 SINGLE-SELECT WAS WRONG AND IT WAS THE FIRST THING ANYONE SAW. Wanting
+    // more time AND more money is the normal case, not an edge case — forcing
+    // one gives a wrong answer and tells the person on screen one that this
+    // thing does not understand ordinary life.
+    multi: true,
     question: 'What are you actually after?',
+    hint: 'Pick as many as are true.',
     options: [
       { key: 'money',       label: 'More money' },
       { key: 'time',        label: 'More time' },
@@ -144,6 +150,14 @@ export const PATHS = {
  * nobody can explain, and the whole value of the result screen is being able to
  * say why the other three don't fit.
  */
+/**
+ * ⚠️ goalType is now a LIST. Everything below reads membership rather than
+ * equality, and the ladder's order does the work of resolving a combination:
+ * if time is anywhere in the answer, a plan that spends evenings is wrong
+ * whatever else they also want.
+ */
+const wants = (a, k) => Array.isArray(a?.goalType) ? a.goalType.includes(k) : a?.goalType === k
+
 export function choosePath(a) {
   // Someone with nothing left over cannot start anything that needs money or
   // evenings first. Cutting is the only move that pays immediately and asks
@@ -153,7 +167,7 @@ export function choosePath(a) {
 
   // They told us time is the scarce thing. A second job spends the exact thing
   // they came here short of.
-  if (a.goalType === 'time') return 'cut-delegate'
+  if (wants(a, 'time')) return 'cut-delegate'
 
   // Space and equity earn without taking evenings, so they beat a hustle for
   // anyone whose constraint is hours rather than capital.
@@ -162,7 +176,7 @@ export function choosePath(a) {
   // Nothing pinning them down and a horizon long enough to act on it. This is
   // the only branch where relocation is honest — everyone else has an immovable
   // and a plan that ignores it is worthless to them.
-  if (a.immovable === 'nothing' && (a.goalType === 'mobile' || a.horizon === '3y' || a.horizon === '5y')) {
+  if (a.immovable === 'nothing' && (wants(a, 'mobile') || a.horizon === '3y' || a.horizon === '5y')) {
     return 'relocate-or-stay'
   }
 
@@ -185,7 +199,7 @@ export function whyNot(chosen, a) {
   const reasons = {
     'side-income': a.money === 'negative'
       ? 'Starting something new needs a float you told us you don’t have this month.'
-      : a.goalType === 'time'
+      : wants(a, 'time')
         ? 'It works, but it spends evenings — and time is the thing you said you’re short of.'
         : 'Your fastest money isn’t a new venture right now.',
     'cut-delegate': a.money === 'lots'

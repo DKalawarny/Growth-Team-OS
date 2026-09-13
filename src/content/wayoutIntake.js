@@ -29,7 +29,7 @@ export const WAYOUT_OPENING = {
   headline: 'You’re not stuck. You’re missing the order of the steps.',
   // The word to mark. Must appear verbatim in headline and must not wrap.
   highlight: 'the order',
-  lead: 'Six honest questions. Then a plan built from what you already have, written like a friend would.',
+  lead: 'Six honest questions. Then a plan built from what you already have — or what you’d be glad to be rid of.',
   field: {
     key: 'out',
     kind: 'text',
@@ -574,16 +574,38 @@ export const WAYOUT_SCREENS = [
     reflectAfter: false,
     fields: [
       {
+        // 🔴 Same correction as the diagnostic: people want several of these at
+        // once, and a plan built on one of them because the form only allowed
+        // one is built on a misreading.
         key: 'goalType',
-        kind: 'choice',
+        kind: 'chips',
+        label: 'Pick as many as are true.',
         required: true,
-        emptyMessage: 'Pick the one that’s most true.',
+        emptyMessage: 'Pick at least one.',
         // 🔴 Every option here used to be acquisitive except "more time", so
         // someone who has done well and decided it is not everything had no
         // way to say so — he would tick the nearest wrong thing and the plan
         // would misread him from the first screen. A way out is closing the gap
         // between what a life costs and what it gives back; you can close it
         // from either side.
+        options: [
+          { key: 'money', label: 'More money' },
+          { key: 'time', label: 'More time' },
+          { key: 'independent', label: 'Not working for someone else' },
+          { key: 'mobile', label: 'Freedom to move' },
+          { key: 'simpler', label: 'Less — a simpler life' },
+          { key: 'place', label: 'To be somewhere else' },
+        ],
+      },
+      {
+        // ⭐ AND THEN THE QUESTION THE WHOLE PRODUCT IS ABOUT. You can want
+        // three things; a plan still has to put them in an order, and that is
+        // the thing being sold. Asking which comes first is not a limitation —
+        // it is the product's own premise applied to the goals.
+        key: 'goalFirst',
+        kind: 'choice',
+        label: 'If you could only have one of them this year, which?',
+        required: false,
         options: [
           { key: 'money', label: 'More money' },
           { key: 'time', label: 'More time' },

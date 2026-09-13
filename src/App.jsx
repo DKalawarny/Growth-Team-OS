@@ -287,7 +287,10 @@ export default function App() {
             carry on into the way out rather than being bounced to a dashboard
             belonging to the other product. */}
         <Route path="/wayout/enter" element={<LazyRoute><WayoutEnter /></LazyRoute>} />
-        <Route path="/wayout"       element={<LazyRoute><RequireWayout><WayoutIntake /></RequireWayout></LazyRoute>} />
+        {/* ⭐ PUBLIC. The six questions are answerable with no account — held in a
+            local draft and adopted on sign-up. The account is asked for at the
+            END, where someone can see what they would be keeping. */}
+        <Route path="/wayout"       element={<LazyRoute><WayoutIntake /></LazyRoute>} />
         <Route path="/wayout/plan"  element={<LazyRoute><RequireWayout><WayoutPlan /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (
           <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
