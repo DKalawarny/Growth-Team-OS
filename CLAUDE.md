@@ -914,6 +914,27 @@ asserts `SOLOMON_TOOLS` is `['search_library', 'run_tool']` and the module now
 also exports `search_the_record`. **That test has been red on a clean tree** —
 it is a stale assertion, not a regression from this work.
 
+### 🔴 THE WAY OUT SHARES ELIV8'S AUTH — decision needed before the first real user
+
+One Supabase project means **one user table across both products**. Daniel hit
+it on 13 Sep: creating a way-out account with his own email returned "User
+already registered", because he is an Eliv8 owner.
+
+Today it is invisible to anyone who is not also an Eliv8 customer, and the data
+is already scoped to the PERSON, never the company (migration 046) — nothing a
+way-out user writes is reachable from the other product.
+
+⚠️ **The cost of separating only rises.** A split means a second Supabase
+project: its own auth, its own database, and either a duplicated `claude` edge
+function or a gateway in front of both. Before real accounts exist that is
+configuration. Afterwards it is an account migration with password resets sent
+to strangers who are mid-plan — the worst possible moment to ask somebody to log
+in again.
+
+⭐ **So it belongs with the name and the domain**, which are the same question
+asked three ways: what is this product on its own? Decide all three together,
+before the first real user.
+
 ## Parked — pick up here
 
 In rough order of priority.

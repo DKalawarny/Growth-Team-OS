@@ -21,10 +21,27 @@ import { WAYOUT_BASE, WAYOUT_NAME_TITLE } from '../../lib/wayout/brand'
  * landing page, and neither needed a domain to fix. When the name lands, the
  * hostname simply maps `/` here and nothing below changes.
  *
- * ⚠️ Same auth, same Supabase, same account — deliberately. The spec's rule is
- * one auth layer, and an Eliv8 owner who opens this keeps their existing
- * account. What differs is only what a person sees and where they are returned
- * to.
+ * ⚠️ Same auth, same Supabase, same account — deliberately, for now. The spec's
+ * rule is one auth layer, and an Eliv8 owner who opens this keeps the account
+ * they have. What differs is only what a person sees and where they land.
+ *
+ * 🔴 FLAGGED TO CHANGE (Daniel, 13 Sep). One Supabase project means ONE USER
+ * TABLE across both products, which is why his own email collided here with
+ * "User already registered" — he is an Eliv8 owner. For a real way-out user
+ * that is invisible today, and their data is already scoped to the PERSON and
+ * never the company (migration 046), so nothing of theirs is reachable from the
+ * other product.
+ *
+ * ⚠️ BUT THE COST OF SEPARATING ONLY GOES UP. Splitting means a second Supabase
+ * project — its own auth, its own database, and either a duplicated `claude`
+ * edge function or a shared gateway in front of both. Do it before real people
+ * have accounts and it is configuration. Do it after and it is an account
+ * migration with password resets for strangers who are mid-plan, which is the
+ * worst possible moment to email somebody asking them to log in again.
+ *
+ * ⭐ So the decision point is BEFORE THE FIRST REAL USER, and it lands at the
+ * same time as the domain and the name — all three are "what is this product
+ * on its own" questions.
  */
 /**
  * ⚠️ What this screen says depends on where the person was going. Bounced here
