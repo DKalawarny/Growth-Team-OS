@@ -94,7 +94,10 @@ export default function Enter() {
     setBusy(true)
     setError('')
     const { error: e3 } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      // 🔴 ITS OWN PAGE. This used to land on Eliv8's /reset-password —
+      // sending somebody mid-recovery into another product's branding at the
+      // least confident moment they will ever have with us.
+      redirectTo: `${window.location.origin}${WAYOUT_BASE}/reset`,
     })
     setBusy(false)
     if (e3) setError(e3.message)

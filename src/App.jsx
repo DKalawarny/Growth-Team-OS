@@ -64,6 +64,7 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
+const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
 const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
 // 🔴 DEV ONLY. A hardcoded map on a live site is a fabricated artifact wearing
 // the same design as a real one — the exact thing the verbatim-quote guard
@@ -291,6 +292,9 @@ export default function App() {
             carry on into the way out rather than being bounced to a dashboard
             belonging to the other product. */}
         <Route path="/wayout/enter" element={<LazyRoute><WayoutEnter /></LazyRoute>} />
+        {/* Its own password reset. The email must never hand somebody to the
+            other product's branding mid-recovery. */}
+        <Route path="/wayout/reset" element={<LazyRoute><WayoutReset /></LazyRoute>} />
         {/* ⭐ PUBLIC. The six questions are answerable with no account — held in a
             local draft and adopted on sign-up. The account is asked for at the
             END, where someone can see what they would be keeping. */}
