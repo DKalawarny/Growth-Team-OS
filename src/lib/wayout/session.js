@@ -1,7 +1,7 @@
 import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
-import { enforceMapContract } from './mapContract'
+import { enforceMapContract, mapProblems } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
 
@@ -218,21 +218,50 @@ export async function reflect(screenAnswers) {
  * costing cents and dollars.
  */
 export async function generateMap(answers) {
-  // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to the
-  // outer braces but does not parse. See parseModelJson.
-  const raw = await callClaude({
-    promptKey: 'WAYOUT_MAP_PROMPT',
-    stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
-    messages: [{ role: 'user', content: JSON.stringify(answers, null, 2) }],
-    maxTokens: 3000,
-    json: true,
-    model: SONNET,
-    toolId: TOOL_ID,
-    kind: 'map',
-  })
+  // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
+  //
+  // 🔴 Daniel's first real map invented "$120,000 cash in hand at sale" from a
+  // person who had written six words about a house and no figure at all. The
+  // contract now catches that (see inventedFigures) — but catching it and
+  // showing an error screen to someone who answered thirty questions is not a
+  // product, it is a complaint. So a rejected map is written again with the
+  // rejection in front of it, and only a second failure is ever seen.
+  //
+  // ⚠️ The correction rides in the USER turn, not the system prompt. The system
+  // prefix is byte-identical on every call in this product's life and that is
+  // what makes the moves library affordable to send — a per-request line in it
+  // would bust the cache for everybody.
+  let problems = []
 
-  const map = parseModelJson(raw, 'The plan')
-  return enforceMapContract(map, answers)
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const content = attempt === 1
+      ? JSON.stringify(answers, null, 2)
+      : `${JSON.stringify(answers, null, 2)}\n\n`
+        + `YOUR PREVIOUS ATTEMPT WAS REJECTED BEFORE THEY SAW IT: ${problems.join('; ')}.\n`
+        + 'Write the whole plan again. Use only figures that appear above or follow '
+        + 'by adding, subtracting or converting between monthly and yearly. If a '
+        + 'number is not there, write the sentence without one.'
+
+    // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to the
+    // outer braces but does not parse. See parseModelJson.
+    const raw = await callClaude({
+      promptKey: 'WAYOUT_MAP_PROMPT',
+      stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
+      messages: [{ role: 'user', content }],
+      maxTokens: 3000,
+      json: true,
+      model: SONNET,
+      toolId: TOOL_ID,
+      kind: 'map',
+    })
+
+    const map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
+    problems = mapProblems(map, answers)
+    if (!problems.length) return map
+    console.warn(`[wayout] map attempt ${attempt} rejected:`, problems)
+  }
+
+  throw new Error(`The plan came back with something in it that isn’t yours (${problems.join(', ')}). Try again.`)
 }
 
 // ── The play-by-play ────────────────────────────────────────────────────────

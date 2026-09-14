@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -13,6 +13,11 @@ import { choosePath } from '../../content/wayoutDiagnostic'
  */
 
 const answers = {
+  // ⚠️ The numbers are not decoration. mustPay is REQUIRED by the intake, so a
+  // fixture without it tests a person who cannot exist — and every figure the
+  // map prints is now checked against these.
+  mustPay: 2000,
+  discretionary: 340,
   out: 'Not clocking in for someone else. Fridays with my kids.',
   askedFor: 'I rebuilt my uncle’s fence and hauled for three neighbours',
   paidFor: 'A guy paid me two hundred to clear his yard',
@@ -258,5 +263,77 @@ describe('the free diagnostic paths', () => {
   it('offers the move only when nothing is holding them', () => {
     expect(choosePath({ money: 'some', asset: 'none', goalType: 'mobile', immovable: 'nothing', horizon: '3y' }))
       .toBe('relocate-or-stay')
+  })
+})
+
+// ── Invented figures ────────────────────────────────────────────────────────
+//
+// 🔴 EVERY ONE OF THESE IS DANIEL'S FIRST REAL MAP, 13 SEP. He answered the
+// intake honestly, wrote "hopefully sale of my house" and no figure, and got
+// back "$5,000/mo — mortgage gone when the house sells" and "$120,000 — cash in
+// hand at sale". His words: "i never said it was a 5k mortgage or price of what
+// i get in the sale. and asuming numbers like house sale."
+
+describe('invented figures', () => {
+  // What he actually gave: a must-pay TOTAL and a sentence with no number in it.
+  const his = {
+    mustPay: 5000,
+    savings: 2000,
+    coming: 'hopefully sale of my house',
+    out: 'I want off the road and back with my kids on weekends.',
+  }
+
+  it('drops a stat whose figure came from nowhere', () => {
+    expect(statIsFounded({ label: 'Cash in hand at sale', value: 120000, prefix: '$' }, his)).toBe(false)
+  })
+
+  it('drops a stat that hangs HIS number on something he never priced', () => {
+    // 5,000 is his — it is his whole must-pay. Calling it a mortgage is the lie.
+    expect(statIsFounded(
+      { label: 'Mortgage gone', value: 5000, prefix: '$', caption: 'when the house sells' },
+      his,
+    )).toBe(false)
+  })
+
+  it('keeps a stat that is his own arithmetic', () => {
+    expect(statIsFounded({ label: 'Must-pay', value: 5000, prefix: '$', suffix: '/mo' }, his)).toBe(true)
+    // A year of it. Same fact, different unit.
+    expect(statIsFounded({ label: 'A year of must-pay', value: 60000, prefix: '$' }, his)).toBe(true)
+    // The gap between two of his own numbers.
+    expect(statIsFounded({ label: 'The gap', value: 3000, prefix: '$' }, his)).toBe(true)
+  })
+
+  it('catches a made-up figure in a move, where it cannot be edited out', () => {
+    const map = { moves: [{ title: 'List the house', detail: 'That is $120,000 in your hand.' }] }
+    expect(inventedFigures(map, his)[0]).toMatch(/120,000/)
+  })
+
+  it('lets a move talk about the sale without pricing it', () => {
+    const map = { moves: [{ title: 'Find out what the house would clear', detail: 'Ask three agents.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('does not flag times, counts or years as money', () => {
+    const map = { moves: [{ title: 'Four days', detail: 'Three months running, starting in 2026, 20 hours a week.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('trusts a figure he wrote about the sale himself', () => {
+    const own = { ...his, coming: 'house sale should clear about 120000' }
+    expect(statIsFounded({ label: 'At sale', value: 120000, prefix: '$' }, own)).toBe(true)
+  })
+
+  it('removes the unfounded stat from the map, which then fails as incomplete', () => {
+    const map = {
+      headline: 'Home by summer',
+      stats: [
+        { label: 'Must-pay', value: 5000, prefix: '$', suffix: '/mo' },
+        { label: 'Cash in hand at sale', value: 120000, prefix: '$' },
+      ],
+      moves: [], cut: [],
+    }
+    const out = enforceMapContract(map, his)
+    expect(out.stats).toHaveLength(1)
+    expect(mapProblems(out, his)).toContain('missing stats')
   })
 })

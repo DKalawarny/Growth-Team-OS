@@ -749,6 +749,19 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__offer p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--soft); }
 .wayout__offer .wayout__hint { margin-top: 12px; }
 
+/* Something alive while it thinks — three dots breathing, not a spinner. A
+   spinner says "waiting"; this says "working", which is what is true. */
+.wayout__working { display: flex; gap: 8px; margin-top: 30px; }
+.wayout__working i {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sun); display: inline-block;
+  animation: wayout-pulse 1.4s ease-in-out infinite;
+}
+.wayout__working i:nth-child(2) { animation-delay: .18s; background: var(--green); }
+.wayout__working i:nth-child(3) { animation-delay: .36s; }
+@keyframes wayout-pulse { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .wayout__working i { animation: none; opacity: .6; } }
+
 /* ── Reveal ─────────────────────────────────────────────────────────────── */
 /* The map builds line by line. Everything starts hidden and is revealed by a
    staggered delay set inline per element. */

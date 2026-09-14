@@ -76,6 +76,19 @@ export function enforceMapContract(map, answers) {
       .map((m, i) => ({ ...m, order: i + 1 }))
   }
 
+  // ⭐ A stat is the biggest type on the page, and its value is a clean number
+  // rather than prose — so an unfounded one can be dropped the way the seen
+  // card is, instead of failing the whole plan. If that leaves fewer than two,
+  // `mapProblems` says so and the map is written again.
+  if (Array.isArray(out.stats)) {
+    const kept = out.stats.filter(st => {
+      const ok = statIsFounded(st, answers)
+      if (!ok) console.warn('[wayout] stat dropped — figure is not theirs:', st?.label, st?.value)
+      return ok
+    })
+    out.stats = kept
+  }
+
   if (Array.isArray(out.cut)) out.cut = out.cut.slice(0, 4)
 
   out.disclaimer = out.disclaimer
@@ -172,6 +185,185 @@ export function mapProblems(map, answers = {}) {
   }
 
   if (!Array.isArray(map?.stats) || map.stats.length < 2) problems.push('missing stats')
+
+  // 🔴 THE ONE THAT COST DANIEL'S FIRST REAL MAP ITS CREDIBILITY. Prose cannot
+  // be edited down the way a stat can — a sentence with a made-up figure cut
+  // out of it is not a sentence — so this fails the map and `generateMap`
+  // writes it again, naming the offending figure in the retry.
+  inventedFigures(map, answers).forEach(p => problems.push(p))
   if (!Array.isArray(map?.cut) || map.cut.length < 2) problems.push('nothing crossed off')
   return problems
+}
+
+// ── Numbers ─────────────────────────────────────────────────────────────────
+
+/**
+ * ⭐⭐ A FIGURE THE PLAN PRINTS MUST BE A FIGURE THE PERSON GAVE.
+ *
+ * 🔴 DANIEL'S FIRST REAL MAP INVENTED TWO. It printed "$5,000/mo — mortgage
+ * gone when the house sells" and "$120,000 — cash in hand at sale". He had
+ * never said what his mortgage is, never said his house was worth anything in
+ * particular, and had written exactly six words: "hopefully sale of my house".
+ * The $5,000 was his MUST-PAY TOTAL — rent, insurance, fuel, food, childcare,
+ * the lot — relabelled as a mortgage payment. The $120,000 came from nowhere.
+ *
+ * ⚠️ THIS IS THE SEEN-CARD FAILURE IN A BIGGER FONT. A made-up quote reads as
+ * "it is making things up about me"; a made-up number reads the same way AND
+ * someone might act on it. The plan is being used to decide whether to sell a
+ * house. The prompt asking nicely is a preference; this is the guarantee.
+ *
+ * The rule: a money-shaped figure is allowed if it is one of their own numbers,
+ * a sum or difference of two of them, or one of those converted between monthly
+ * and yearly. That is the arithmetic the plan is FOR — closing the gap is
+ * subtraction — and it is the only arithmetic that cannot introduce a fact.
+ */
+
+/** Money-shaped figures only. "3 months" and "20 hours" are not claims about money. */
+function figuresIn(text) {
+  const out = []
+  const re = /(\$)?\s?(\d[\d,]*(?:\.\d+)?)\s?(k\b|m\b)?(%)?/gi
+  let m
+  while ((m = re.exec(String(text ?? ''))) !== null) {
+    const [, dollar, digits, scale, pct] = m
+    if (pct) continue                       // 50% is not a dollar figure
+    let value = parseFloat(digits.replace(/,/g, ''))
+    if (!Number.isFinite(value)) continue
+    if (/^k/i.test(scale ?? '')) value *= 1000
+    if (/^m/i.test(scale ?? '')) value *= 1000000
+    // A bare year is a date, not money. 2026 must not read as $2,026.
+    if (!dollar && !scale && Number.isInteger(value) && value >= 1900 && value <= 2100) continue
+    // Below $100 with no dollar sign is a count — hours, weeks, a score out of 10.
+    if (!dollar && !scale && value < 100) continue
+    out.push(value)
+  }
+  return out
+}
+
+/** Every number this person put in front of us, however they put it. */
+function theirNumbers(value, into = []) {
+  if (value == null) return into
+  if (typeof value === 'number') { if (Number.isFinite(value)) into.push(value); return into }
+  if (typeof value === 'string') { figuresIn(value).forEach(n => into.push(n)); return into }
+  if (Array.isArray(value)) { value.forEach(v => theirNumbers(v, into)); return into }
+  if (typeof value === 'object') { Object.values(value).forEach(v => theirNumbers(v, into)); return into }
+  return into
+}
+
+/**
+ * Their numbers, plus the arithmetic that adds no new fact.
+ *
+ * ⚠️ Deliberately GENEROUS. A false positive here rejects a correct plan and
+ * makes the person try again, which is a worse experience than the occasional
+ * figure that slips through — so pairwise sums and differences are allowed, and
+ * so is ×12 and ÷12, because "what it costs a year" is the same fact as "what
+ * it costs a month". Anything beyond that is the model knowing something about
+ * their life that it was never told.
+ */
+function allowedFigures(answers) {
+  const base = [...new Set(theirNumbers(answers))]
+
+  // ⚠️ DISTINCT PAIRS ONLY, AND THE `i < j` IS LOAD-BEARING. The first version
+  // of this let every number pair with ITSELF, so a $5,000 must-pay doubled to
+  // $10,000 and annualised to exactly $120,000 — which is the invented figure
+  // this check exists to catch, reconstructed by the check itself. Adding a
+  // number to itself is not reading their answer, it is inventing a second one.
+  const combined = new Set(base)
+  base.forEach((a, i) => base.forEach((b, j) => {
+    if (i >= j) return
+    combined.add(a + b)
+    combined.add(Math.abs(a - b))
+  }))
+
+  const out = new Set(combined)
+  // A month, a year, a week. Same fact, different unit.
+  combined.forEach(v => { out.add(v * 12); out.add(v / 12); out.add(v * 52); out.add(v / 52) })
+  // ⭐ "Three months of must-pay banked" is a real and honest gate, and it is
+  // still only their number. Small whole multiples of a BASE figure only —
+  // never of a converted one, or a year of must-pay triples into a mortgage.
+  base.forEach(v => { out.add(v * 2); out.add(v * 3); out.add(v * 6); out.add(v / 2) })
+
+  return [...out].filter(v => Number.isFinite(v) && v > 0)
+}
+
+/** Rounding is honest; a different number is not. 2% or a dollar, whichever is larger. */
+function traceable(value, allowed) {
+  return allowed.some(v => Math.abs(v - value) <= Math.max(1, value * 0.02))
+}
+
+/**
+ * ⭐ THE SECOND HALF OF DANIEL'S CATCH, AND THE HARDER ONE: the $5,000 WAS his
+ * number. What was invented was what it was CALLED.
+ *
+ * A figure hung on a sale, an inheritance, a payout or a pension is not
+ * arithmetic — it is a claim about a thing only they can price. So when a stat
+ * says "at sale", the figure has to come from the answer where THEY mentioned
+ * the sale. Someone who wrote "hopefully sale of my house" and no number has
+ * told us there may be a sale and nothing whatsoever about what it is worth.
+ */
+const SPECULATIVE = [
+  /\bsale\b|\bsell(s|ing)?\b|\bsold\b/i,
+  /\bequity\b/i,
+  /\binherit(ance|ed|ing)?\b/i,
+  /\bpension\b/i,
+  /\bbonus(es)?\b/i,
+  /\bseveran/i,
+  /\bsettlement\b/i,
+  /\bpay ?out\b/i,
+  /\bwindfall\b/i,
+  /\blump sum\b/i,
+  /\brefund\b/i,
+  /\bcommission\b/i,
+]
+
+function speculativeProblem(text, figures, answers) {
+  const claim = SPECULATIVE.find(re => re.test(String(text ?? '')))
+  if (!claim || !figures.length) return null
+  // Only what they wrote about that same thing counts — not their must-pay
+  // total, and not a chip they tapped about something else.
+  const theirs = []
+  theirNumbers(
+    Object.values(answers ?? {}).filter(v => typeof v === 'string' && claim.test(v)),
+    theirs,
+  )
+  const unfounded = figures.filter(f => !theirs.some(n => Math.abs(n - f) <= Math.max(1, f * 0.02)))
+  if (!unfounded.length) return null
+  return `${unfounded.map(f => `$${f.toLocaleString()}`).join(', ')} put on something they never priced`
+}
+
+/**
+ * Every figure in the map that this person did not give us.
+ * Returns plain sentences, because they end up in front of a human.
+ */
+export function inventedFigures(map, answers = {}) {
+  const allowed = allowedFigures(answers)
+  const found = []
+
+  const check = (text, where) => {
+    const figures = figuresIn(text)
+    const bad = figures.filter(f => !traceable(f, allowed))
+    if (bad.length) found.push(`${bad.map(f => `$${f.toLocaleString()}`).join(', ')} in ${where} is not a number they gave`)
+    const spec = speculativeProblem(text, figures, answers)
+    if (spec) found.push(`${where}: ${spec}`)
+  }
+
+  check(map?.headline, 'the headline');
+  (map?.moves ?? []).forEach((m, i) => {
+    check([m?.title, m?.detail, m?.gate, m?.when].filter(Boolean).join(' '), `move ${i + 1}`)
+  });
+  (map?.cut ?? []).forEach(c => check([c?.label, c?.why].filter(Boolean).join(' '), 'what was crossed off'));
+  (map?.seasonPlan ?? []).forEach(s => check(typeof s === 'string' ? s : Object.values(s ?? {}).join(' '), 'the off-season plan'))
+
+  return found
+}
+
+/**
+ * The same test for a stat, where the figure is a clean number rather than
+ * prose — so a bad one can simply be dropped instead of failing the whole map.
+ */
+export function statIsFounded(stat, answers = {}) {
+  const value = Number(stat?.value)
+  if (!Number.isFinite(value) || value === 0) return true
+  const label = [stat?.label, stat?.caption].filter(Boolean).join(' ')
+  if (!traceable(value, allowedFigures(answers))) return false
+  return !speculativeProblem(label, [value], answers)
 }

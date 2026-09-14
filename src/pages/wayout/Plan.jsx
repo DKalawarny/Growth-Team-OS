@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -35,6 +35,8 @@ export default function Plan() {
         setSession(s)
         if (s.status === 'draft') { navigate(WAYOUT_BASE, { replace: true }); return }
         if (s.map) setMap(s.map)
+        // ⭐ Straight in. They asked for it by finishing the questions.
+        else build(s)
       })
       .catch(err => { if (!cancelled) setError(err.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
@@ -54,16 +56,11 @@ export default function Plan() {
     setBuilding(true)
     setError('')
     try {
+      // ⭐ generateMap now validates and rewrites once itself — a map that
+      // comes back from it has passed mapProblems, including the check that
+      // every figure in it is one this person actually gave us. It throws
+      // rather than returning a plan with somebody else's numbers in it.
       const generated = await generateMap(s.answers)
-      // ⚠️ The answers are required, not optional — the winter-pairing and
-      // relocation checks are about THIS person's constraints, and without them
-      // both silently pass.
-      const problems = mapProblems(generated, s.answers)
-      if (problems.length) {
-        // Better to say the plan came back wrong than to render half of one to
-        // someone who has paid for it.
-        throw new Error(`The plan came back incomplete (${problems.join(', ')}). Try again.`)
-      }
       const { error: wErr } = await supabase
         .from('wayout_sessions')
         .update({ map: generated })
@@ -96,16 +93,20 @@ export default function Plan() {
   // and it is written. The money is for the play-by-play, after they have read
   // it and know whether it was any good.
   if (!map) {
+    // 🔴 THERE WAS A "BUILD IT" BUTTON HERE AND IT ASKED NOTHING. Daniel: "it's
+    // like an extra button for no reason." He had just answered thirty-odd
+    // questions and pressed See the plan; a second confirmation adds a decision
+    // where there is no decision to make, and the only thing it communicates is
+    // that the product is not sure he meant it.
     return (
       <WayoutShell title="Your plan">
-        <p className="wayout__q">Building your plan.</p>
+        <p className="wayout__q">Reading it back.</p>
         <p className="wayout__lead">
-          Reading back through everything you wrote. About twenty seconds, and
-          there is nothing to pay for it.
+          Going through everything you wrote — what can’t move, the numbers, what
+          you said you’d never do — and working out which of it comes first.
         </p>
-        <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
-          {building ? 'Building…' : 'Build it'}
-        </button>
+        <p className="wayout__lead">About twenty seconds. Nothing to pay.</p>
+        <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
       </WayoutShell>
     )
   }
