@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { loadOrCreateSession, generateMap, enforceMapContract, mapProblems } from '../../lib/wayout/session'
@@ -21,6 +21,7 @@ const REDUCED = typeof window !== 'undefined'
 
 export default function Plan() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const [session, setSession]   = useState(null)
   const [map, setMap]           = useState(null)
   const [loading, setLoading]   = useState(true)
@@ -39,6 +40,10 @@ export default function Plan() {
         // the database was written before it existed and this line handed it
         // straight to the screen. A contract that only runs at generation time
         // protects the next person and nobody who already has a plan.
+        // ⚠️ They just came back through the questions. The stored map was
+        // written about the answers they had BEFORE, so it is stale by
+        // definition — passing the contract does not make it theirs any more.
+        if (s.map && params.get('rebuild')) { build(s); return }
         if (s.map) {
           const clean = enforceMapContract(s.map, s.answers)
           const problems = mapProblems(clean, s.answers)
@@ -55,7 +60,7 @@ export default function Plan() {
       .catch(err => { if (!cancelled) setError(err.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [navigate])
+  }, [navigate, params])
 
   /**
    * Generate and store the map.
@@ -99,10 +104,23 @@ export default function Plan() {
    * who reads the assumptions and finds one wrong, is currently stuck with a
    * plan built for a person they are no longer.
    */
+  /**
+   * ⭐⭐ A PLAN CHANGES WHEN THE LIFE CHANGES. NOT ON A BUTTON.
+   *
+   * 🔴 The first version of this re-rolled the model on the SAME answers, and
+   * Daniel spotted the commercial half — "might be a way of someone taking
+   * advantage for free". The deeper problem is trust: identical answers
+   * producing a different plan says neither plan meant very much, and the whole
+   * product rests on the order being right rather than merely plausible.
+   *
+   * ⭐ Routing it through the questions fixes both at once. Someone whose
+   * partner changed their mind, or who read the assumptions and found one
+   * wrong, edits the thing that is actually wrong and gets a plan that answers
+   * it. Someone farming free plans has to re-answer thirty questions to get a
+   * different one — which is not a loophole, it is the product.
+   */
   function rebuild() {
-    if (!session || building) return
-    setMap(null)
-    build(session)
+    navigate(`${WAYOUT_BASE}?edit=1`)
   }
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
@@ -362,7 +380,7 @@ export function Map({ map, onRebuild, rebuilding = false }) {
           {/* ⭐ The sentence above is only true if something can act on it. */}
           {onRebuild && (
             <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
-              One of these is wrong — build it again
+              One of these is wrong — change my answers
             </button>
           )}
         </div>
@@ -393,8 +411,9 @@ export function Map({ map, onRebuild, rebuilding = false }) {
         <p className="wayout__rebuild wayout__r" style={at(4.15)}>
           Something changed since you answered?{' '}
           <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
-            {rebuilding ? 'Building…' : 'Build the plan again'}
+            Go back through the questions
           </button>
+          {' '}— the plan is rebuilt on what you change.
         </p>
       )}
 

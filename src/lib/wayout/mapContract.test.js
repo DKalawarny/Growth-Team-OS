@@ -406,3 +406,41 @@ describe('style notes — a rewrite reason, never a reason to ship nothing', () 
     }] })).toEqual([])
   })
 })
+
+describe('the detail is trimmed, not requested', () => {
+  // 🔴 Daniel's move three, verbatim — including the stray "all" the model
+  // left on the end, and the sentence banned an hour before it shipped.
+  const long = 'The sequence matters here: buy the property after the house closes, not '
+    + 'before, and only after you know what it genuinely cashflows — not what the listing '
+    + 'claims. Talk to an accountant who knows short-term rental tax before you buy. '
+    + 'A property manager handles the day-to-day so the road stays the road. The apps and '
+    + 'the BnB together are the two-engine model: one grows, one holds the floor. '
+    + 'Neither requires you to be in one place. all'
+
+  const out = enforceMapContract({ ...baseMap, moves: [
+    { ...baseMap.moves[0], detail: long },
+    ...baseMap.moves.slice(1),
+  ] }, answers)
+  const detail = out.moves[0].detail
+
+  it('keeps the sentence that names the move', () => {
+    expect(detail).toMatch(/^The sequence matters here/)
+  })
+
+  it('drops the accountant — who to call is the paid half', () => {
+    expect(detail).not.toMatch(/accountant/)
+  })
+
+  it('drops the debris on the end', () => {
+    expect(detail).not.toMatch(/\ball\s*$/)
+  })
+
+  it('leaves a short honest detail alone', () => {
+    const short = 'The truck and the washer are already sitting there. This is the same '
+      + 'round of houses you drive past anyway, turned into a Saturday that pays.'
+    const kept = enforceMapContract({ ...baseMap, moves: [
+      { ...baseMap.moves[0], detail: short }, ...baseMap.moves.slice(1),
+    ] }, answers)
+    expect(kept.moves[0].detail).toBe(short)
+  })
+})

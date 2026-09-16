@@ -73,7 +73,7 @@ export function enforceMapContract(map, answers) {
   if (Array.isArray(out.moves)) {
     out.moves = out.moves
       .slice(0, 3)
-      .map((m, i) => ({ ...m, order: i + 1 }))
+      .map((m, i) => ({ ...m, order: i + 1, detail: trimDetail(m?.detail) }))
   }
 
   // ⭐ A stat is the biggest type on the page, and its value is a clean number
@@ -440,6 +440,46 @@ const INSTRUCTION_SHAPED = [
 
 /** Roughly two plain sentences. Generous — this only has to catch a runaway. */
 const DETAIL_MAX = 380
+
+/**
+ * ⭐⭐ TAKE THE TWO SENTENCES. DO NOT ASK FOR THEM.
+ *
+ * 🔴 Style notes were advisory by design — they ride the early attempts and are
+ * dropped on the last, so prose could never withhold somebody's plan. The cost
+ * showed up immediately: a model that ignores them three times WINS. Daniel's
+ * move three shipped with "Talk to an accountant who knows short-term rental
+ * tax before you buy" — the exact sentence banned an hour earlier — and move
+ * two ran six hundred characters.
+ *
+ * ⚠️ Whole sentences only, and only from the END. Cutting mid-sentence produces
+ * garbage, and the first sentence is always the one that names the move — every
+ * over-long detail seen so far says the move, then drifts. So the trim is safe
+ * in a way a paraphrase never is: nothing is rewritten, only stopped.
+ *
+ * ⭐ It also swept up "Neither requires you to be in one place. all" — a stray
+ * fragment the model left on the end. Anything after the second sentence goes,
+ * whether it was instruction, repetition or debris.
+ */
+function trimDetail(detail) {
+  const text = String(detail ?? '').trim()
+  if (!text) return text
+
+  const sentences = text.match(/[^.!?]+[.!?]+(?:\s|$)/g) ?? [text]
+  const kept = []
+  for (const sentence of sentences) {
+    // An instruction is dropped wherever it sits, not just past the limit.
+    if (INSTRUCTION_SHAPED.some(({ re }) => re.test(sentence))) continue
+    if (kept.length >= 2 && kept.join('').length >= 200) break
+    kept.push(sentence)
+    if (kept.length >= 3) break
+  }
+
+  // ⚠️ Never return nothing. If every sentence was an instruction, the first
+  // one back is better than an empty move — mapProblems has no opinion on
+  // detail, so an empty string would render as a blank move and ship.
+  const out = kept.join('').trim()
+  return out || sentences[0].trim()
+}
 
 export function mapStyleNotes(map) {
   const notes = []

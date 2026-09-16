@@ -87,9 +87,17 @@ export default function Intake({ preview = false, previewReflections = null }) {
           if (cancelled) return
           setSession(s)
           setAnswers(s.answers ?? {})
+          // ⭐⭐ ?edit=1 IS HOW YOU CHANGE A PLAN. Daniel: "shouldn't they be
+          // able to tweak it once registered?" — and the deeper reason he is
+          // right is that rebuilding on the SAME answers hands back a different
+          // plan for no reason, which quietly says neither one meant anything.
+          // A plan should only change when something about the life changed.
+          // So the way back in is through the questions, with their own answers
+          // already in the boxes.
+          if (params.get('edit')) setStep(1)
           // A paid session is finished — send them to the plan they bought
           // rather than showing an empty form on top of it.
-          if (s.status === 'paid') navigate(`${WAYOUT_BASE}/plan`, { replace: true })
+          else if (s.status === 'paid') navigate(`${WAYOUT_BASE}/plan`, { replace: true })
           // Someone part-way through resumes where they stopped rather than
           // re-reading questions they already answered.
           else if (s.answers && Object.keys(s.answers).length > 0) {
@@ -217,7 +225,11 @@ export default function Intake({ preview = false, previewReflections = null }) {
     try {
       if (step > WAYOUT_TOTAL_SCREENS) {
         await markComplete(session.id, answers)
-        navigate(`${WAYOUT_BASE}/plan`)
+        // ⚠️ `rebuild` is what tells the plan their answers moved. Without it a
+        // stored map that still passes the contract renders untouched and they
+        // would walk every question to see the same plan — which is exactly
+        // what happened to Daniel this morning, one layer up.
+        navigate(`${WAYOUT_BASE}/plan${params.get('edit') ? '?rebuild=1' : ''}`)
         return
       }
       await saveAnswers(session.id, answers)
