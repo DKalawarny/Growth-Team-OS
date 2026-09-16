@@ -764,6 +764,18 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__given li:last-child { margin-bottom: 0; }
 .wayout__given .wayout__hint { margin-top: 12px; }
 
+/* Ask for the plan again. Deliberately a link, not a button — rebuilding is
+   always available and never the thing you are being steered towards. */
+.wayout__again {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; color: var(--green); font-weight: 600;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.wayout__again:hover { color: var(--ink); }
+.wayout__again:disabled { color: var(--soft); cursor: default; text-decoration: none; }
+.wayout__given .wayout__again { margin-top: 12px; display: inline-block; }
+.wayout__rebuild { margin-top: 34px; font-size: 15px; color: var(--soft); }
+
 /* Something alive while it thinks — three dots breathing, not a spinner. A
    spinner says "waiting"; this says "working", which is what is true. */
 .wayout__working { display: flex; gap: 8px; margin-top: 30px; }

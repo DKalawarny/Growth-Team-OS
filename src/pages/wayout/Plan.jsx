@@ -88,6 +88,23 @@ export default function Plan() {
     }
   }
 
+  /**
+   * ⭐⭐ THE ONE THING A PLAN MUST LET YOU DO: ASK FOR IT AGAIN.
+   *
+   * 🔴 There was no way to. Daniel changed the prompt, reloaded, and saw the
+   * same plan — because a stored map that passes the contract is handed
+   * straight to the screen, and nothing in the product could ask for another
+   * one. That is not a testing inconvenience: a plan is written about a life
+   * that moves. Someone whose partner changed their mind, whose job went, or
+   * who reads the assumptions and finds one wrong, is currently stuck with a
+   * plan built for a person they are no longer.
+   */
+  function rebuild() {
+    if (!session || building) return
+    setMap(null)
+    build(session)
+  }
+
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
 
   if (error && !map) {
@@ -126,7 +143,7 @@ export default function Plan() {
   }
 
   if (!map) return null
-  return <Map map={map} />
+  return <Map map={map} onRebuild={rebuild} rebuilding={building} />
 }
 
 // ── Paywall ─────────────────────────────────────────────────────────────────
@@ -176,7 +193,13 @@ function startCheckout() {
 
 // ── The map ─────────────────────────────────────────────────────────────────
 
-export function Map({ map }) {
+/**
+ * ⚠️ `onRebuild` IS OPTIONAL AND THE CONTROLS ARE GATED ON IT. Preview.jsx
+ * renders this same component with a hand-written map to check the design;
+ * there is no session behind it and nothing to rebuild, so offering a button
+ * that cannot work would be worse than not offering one.
+ */
+export function Map({ map, onRebuild, rebuilding = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -336,6 +359,12 @@ export function Map({ map }) {
             If any of these are wrong, the plan changes. That is worth more than
             finishing it.
           </p>
+          {/* ⭐ The sentence above is only true if something can act on it. */}
+          {onRebuild && (
+            <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
+              One of these is wrong — build it again
+            </button>
+          )}
         </div>
       )}
 
@@ -359,6 +388,15 @@ export function Map({ map }) {
           ? <p className="wayout__hint">{WAYOUT_PRICE_LABEL} for the move you’re on. {guaranteeLine()}</p>
           : <p className="wayout__hint">Free while this is being built.</p>}
       </div>
+
+      {onRebuild && (
+        <p className="wayout__rebuild wayout__r" style={at(4.15)}>
+          Something changed since you answered?{' '}
+          <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
+            {rebuilding ? 'Building…' : 'Build the plan again'}
+          </button>
+        </p>
+      )}
 
       <p className="wayout__disclaimer wayout__r" style={at(4.1)}>{map.disclaimer}</p>
       </div>
