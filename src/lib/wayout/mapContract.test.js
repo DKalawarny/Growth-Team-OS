@@ -337,3 +337,19 @@ describe('invented figures', () => {
     expect(mapProblems(out, his)).toContain('missing stats')
   })
 })
+
+describe('what it took as given', () => {
+  it('keeps them, capped at three — a longer list is a disclaimer nobody reads', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      assumptions: ['The trailer is paid off.', 'You can work Saturdays.', 'c', 'd', 'e'],
+    }, answers)
+    expect(out.assumptions).toHaveLength(3)
+    expect(out.assumptions[0]).toBe('The trailer is paid off.')
+  })
+
+  it('drops blanks rather than rendering an empty bullet', () => {
+    const out = enforceMapContract({ ...baseMap, assumptions: ['  ', '', 'Real one.'] }, answers)
+    expect(out.assumptions).toEqual(['Real one.'])
+  })
+})

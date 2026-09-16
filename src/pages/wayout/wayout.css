@@ -749,6 +749,21 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__offer p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--soft); }
 .wayout__offer .wayout__hint { margin-top: 12px; }
 
+/* What the plan took as given. Marked out from the plan around it — it is a
+   question being asked, not another thing being asserted. */
+.wayout__given {
+  margin-top: 30px;
+  padding: 20px 22px 18px;
+  border-left: 4px solid var(--sun);
+  background: var(--tint);
+  border-radius: 0 14px 14px 0;
+}
+.wayout__given h3 { margin: 0 0 10px; }
+.wayout__given ul { margin: 0; padding-left: 18px; }
+.wayout__given li { margin-bottom: 7px; line-height: 1.5; }
+.wayout__given li:last-child { margin-bottom: 0; }
+.wayout__given .wayout__hint { margin-top: 12px; }
+
 /* Something alive while it thinks — three dots breathing, not a spinner. A
    spinner says "waiting"; this says "working", which is what is true. */
 .wayout__working { display: flex; gap: 8px; margin-top: 30px; }

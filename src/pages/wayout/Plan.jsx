@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -34,7 +34,21 @@ export default function Plan() {
         if (cancelled) return
         setSession(s)
         if (s.status === 'draft') { navigate(WAYOUT_BASE, { replace: true }); return }
-        if (s.map) setMap(s.map)
+        // 🔴 A STORED MAP WAS NEVER RE-CHECKED. Daniel was still looking at
+        // "$120k" the day after the figures guard shipped, because the map in
+        // the database was written before it existed and this line handed it
+        // straight to the screen. A contract that only runs at generation time
+        // protects the next person and nobody who already has a plan.
+        if (s.map) {
+          const clean = enforceMapContract(s.map, s.answers)
+          const problems = mapProblems(clean, s.answers)
+          if (problems.length) {
+            console.warn('[wayout] stored map fails the contract, rewriting:', problems)
+            build(s)
+          } else {
+            setMap(clean)
+          }
+        }
         // ⭐ Straight in. They asked for it by finishing the questions.
         else build(s)
       })
@@ -299,6 +313,30 @@ export function Map({ map }) {
             </p>
           ))}
         </>
+      )}
+
+      {/* ⭐⭐ WHAT IT TOOK AS GIVEN, SAID OUT LOUD, IMMEDIATELY BEFORE THEY ACT.
+          Daniel read his own plan and said "there are so many assumptions here
+          not based off any numbers or data" — and none of them were figures.
+          They were smuggled in as adjectives: the rental was in "a year-round
+          demand market", it would be "under professional management". He never
+          said either.
+
+          A plan cannot always avoid assuming. It can always avoid PRETENDING.
+          Declared here, an assumption stops being a lie and becomes the most
+          useful thing on the page: the one question whose answer changes the
+          plan, asked of the only person who knows it. */}
+      {Array.isArray(map.assumptions) && map.assumptions.length > 0 && (
+        <div className="wayout__given wayout__r" style={at(3.85)}>
+          <h3 className="wayout__label">What this took as given</h3>
+          <ul>
+            {map.assumptions.map((a, i) => <li key={i}>{a}</li>)}
+          </ul>
+          <p className="wayout__hint">
+            If any of these are wrong, the plan changes. That is worth more than
+            finishing it.
+          </p>
+        </div>
       )}
 
       <button className="wayout__btn wayout__btn--sun wayout__r" style={at(4)} onClick={() => toggle(0)}>

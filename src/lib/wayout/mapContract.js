@@ -89,6 +89,15 @@ export function enforceMapContract(map, answers) {
     out.stats = kept
   }
 
+  // ⭐ Three at the outside. A list of nine assumptions is not honesty, it is
+  // a disclaimer — nobody reads it and nothing gets corrected.
+  if (Array.isArray(out.assumptions)) {
+    out.assumptions = out.assumptions
+      .map(a => String(a ?? '').trim())
+      .filter(Boolean)
+      .slice(0, 3)
+  }
+
   if (Array.isArray(out.cut)) out.cut = out.cut.slice(0, 4)
 
   out.disclaimer = out.disclaimer
