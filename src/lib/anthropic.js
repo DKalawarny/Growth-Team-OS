@@ -178,6 +178,12 @@ export async function callClaude({
   // get the same 'untagged' default they already had).
   toolId,
   kind,
+  // ⚠️ NO TIMEOUT MEANS NO FAILURE, ONLY A SPINNER. Daniel sat on "About twenty
+  // seconds" indefinitely and there was nothing in the product that could ever
+  // have ended it — a fetch with no signal waits as long as the browser will,
+  // which on a stalled connection is minutes. A caller that wants to bound it
+  // passes one; nothing existing changes.
+  signal,
 }) {
   // ⭐ promptKey path: the prompt text stays on the server. The caller sends a
   // key and its own context; the edge function resolves the key and assembles
@@ -192,6 +198,7 @@ export async function callClaude({
   const res = await fetch(claudeFunctionUrl(), {
     method: 'POST',
     headers,
+    signal,
     body: JSON.stringify({
       ...sys,
       messages,

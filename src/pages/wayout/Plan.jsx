@@ -26,6 +26,9 @@ export default function Plan() {
   const [map, setMap]           = useState(null)
   const [loading, setLoading]   = useState(true)
   const [building, setBuilding] = useState(false)
+  // Which go this is. 1 is the first; anything higher means the first one had
+  // something in it that was not theirs and is being written again.
+  const [pass, setPass] = useState(1)
   const [error, setError]       = useState('')
 
   useEffect(() => {
@@ -77,13 +80,14 @@ export default function Plan() {
    */
   async function build(s) {
     setBuilding(true)
+    setPass(1)
     setError('')
     try {
       // ⭐ generateMap now validates and rewrites once itself — a map that
       // comes back from it has passed mapProblems, including the check that
       // every figure in it is one this person actually gave us. It throws
       // rather than returning a plan with somebody else's numbers in it.
-      const generated = await generateMap(s.answers)
+      const generated = await generateMap(s.answers, setPass)
       const { error: wErr } = await supabase
         .from('wayout_sessions')
         .update({ map: generated })
@@ -156,14 +160,39 @@ export default function Plan() {
     // questions and pressed See the plan; a second confirmation adds a decision
     // where there is no decision to make, and the only thing it communicates is
     // that the product is not sure he meant it.
+    // ⭐⭐ SAY WHICH GO THIS IS. 🔴 Daniel sat on "About twenty seconds" watching
+    // three dots, with no way to tell working from broken — and he was probably
+    // right both times: three attempts genuinely IS three minutes, and the
+    // screen promised twenty seconds and then went silent about it.
+    //
+    // ⚠️ The second screen tells the truth about WHY, which is the better thing
+    // to say anyway: the first one had something in it that was not his. That
+    // is the guard doing its job, and a person who is told that is being
+    // reassured rather than kept waiting.
     return (
       <WayoutShell title="Your plan">
-        <p className="wayout__q">Reading it back.</p>
-        <p className="wayout__lead">
-          Going through everything you wrote — what can’t move, the numbers, what
-          you said you’d never do — and working out which of it comes first.
-        </p>
-        <p className="wayout__lead">About twenty seconds. Nothing to pay.</p>
+        {pass === 1 ? (
+          <>
+            <p className="wayout__q">Reading it back.</p>
+            <p className="wayout__lead">
+              Going through everything you wrote — what can’t move, the numbers,
+              what you said you’d never do — and working out which of it comes
+              first.
+            </p>
+            <p className="wayout__lead">About twenty seconds. Nothing to pay.</p>
+          </>
+        ) : (
+          <>
+            <p className="wayout__q">Writing it again.</p>
+            <p className="wayout__lead">
+              The first version had a number in it you never gave us. It isn’t
+              allowed to guess about your life, so it’s going back over it.
+            </p>
+            <p className="wayout__lead">
+              Another twenty seconds{pass > 2 ? ' — last go' : ''}.
+            </p>
+          </>
+        )}
         <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
       </WayoutShell>
     )

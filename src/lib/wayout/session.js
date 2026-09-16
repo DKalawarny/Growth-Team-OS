@@ -253,7 +253,14 @@ export async function reflect(screenAnswers) {
  * to write it per request rather than per person is the difference between this
  * costing cents and dollars.
  */
-export async function generateMap(answers) {
+/**
+ * ⚠️ A minute is already twice what this should take. Past that it is not slow,
+ * it is stuck, and "stuck" needs to be a sentence on the screen rather than a
+ * spinner that never stops.
+ */
+const MAP_TIMEOUT_MS = 60_000
+
+export async function generateMap(answers, onProgress = () => {}) {
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
   //
   // 🔴 Daniel's first real map invented "$120,000 cash in hand at sale" from a
@@ -292,20 +299,44 @@ export async function generateMap(answers) {
         + '  - If you genuinely had to take something as given, it goes in '
         + '"assumptions" and nowhere else.'
 
-    // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to the
-    // outer braces but does not parse. See parseModelJson.
-    const raw = await callClaude({
-      promptKey: 'WAYOUT_MAP_PROMPT',
-      stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
-      messages: [{ role: 'user', content }],
-      maxTokens: 3000,
-      json: true,
-      model: SONNET,
-      toolId: TOOL_ID,
-      kind: 'map',
-    })
+    // ⭐ SAY WHICH GO THIS IS. The screen promises twenty seconds; three
+    // attempts is three minutes, and a person watching an unchanging spinner
+    // has no way to tell working from broken. Telling them it is being written
+    // again is also the honest reason — something in the first one was not
+    // theirs.
+    onProgress(attempt)
 
-    const map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
+    // ⚠️ One controller per attempt. Reusing an aborted signal makes every
+    // later attempt fail instantly with the same error, which would turn one
+    // slow call into three and look identical to a three-attempt failure.
+    const controller = new AbortController()
+    const bell = setTimeout(() => controller.abort(), MAP_TIMEOUT_MS)
+
+    let map
+    try {
+      // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to
+      // the outer braces but does not parse. See parseModelJson.
+      const raw = await callClaude({
+        signal: controller.signal,
+        promptKey: 'WAYOUT_MAP_PROMPT',
+        stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
+        messages: [{ role: 'user', content }],
+        maxTokens: 3000,
+        json: true,
+        model: SONNET,
+        toolId: TOOL_ID,
+        kind: 'map',
+      })
+      map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
+    } catch (err) {
+      if (err?.name === 'AbortError') {
+        throw new Error('That took longer than it should have. Try again — it normally comes back in twenty seconds.')
+      }
+      throw err
+    } finally {
+      clearTimeout(bell)
+    }
+
     problems = mapProblems(map, answers)
 
     // ⭐ Style rides along on the early goes and is DROPPED on the last one.
@@ -314,6 +345,7 @@ export async function generateMap(answers) {
     const notes = attempt < 3 ? mapStyleNotes(map) : []
     if (!problems.length && !notes.length) return map
     problems = [...problems, ...notes]
+
     // ⭐ The map itself, not just the verdict. While Daniel is the only person
     // running this, being able to read what it tried is worth more than any
     // error copy — and it costs nothing.
