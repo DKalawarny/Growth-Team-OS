@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, saveAnswers, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -123,6 +123,41 @@ export default function Plan() {
     navigate(`${WAYOUT_BASE}?edit=1`)
   }
 
+  /**
+   * ⭐⭐ NOBODY REMEMBERS EVERYTHING AT INTAKE, AND WHAT THEY REMEMBER LATER IS
+   * USUALLY THE IMPORTANT ONE.
+   *
+   * Daniel: "forgetting details is something that can be changed once in the
+   * system." Going back through thirty questions to add one sentence is the
+   * wrong shape for that — the friction is not protecting anything, because the
+   * person has already answered everything once. What they are doing now is
+   * telling us something NEW, which is exactly the input the plan wants.
+   *
+   * ⚠️ It is kept as its own list, never merged into an existing answer. The
+   * intake asked specific questions and their answers to those still mean what
+   * they meant; this is a person coming back unprompted, which is a different
+   * and usually better kind of thing to know.
+   */
+  async function remember(text) {
+    const said = String(text ?? '').trim()
+    if (!said || !session || building) return
+    const answers = {
+      ...session.answers,
+      added: [...(session.answers?.added ?? []), said],
+    }
+    setMap(null)
+    setBuilding(true)
+    try {
+      await saveAnswers(session.id, answers)
+      const next = { ...session, answers }
+      setSession(next)
+      await build(next)
+    } catch (err) {
+      setError(err.message)
+      setBuilding(false)
+    }
+  }
+
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
 
   if (error && !map) {
@@ -161,7 +196,7 @@ export default function Plan() {
   }
 
   if (!map) return null
-  return <Map map={map} onRebuild={rebuild} rebuilding={building} />
+  return <Map map={map} onRebuild={rebuild} onRemember={remember} rebuilding={building} />
 }
 
 // ── Paywall ─────────────────────────────────────────────────────────────────
@@ -217,7 +252,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, rebuilding = false }) {
+export function Map({ map, onRebuild, onRemember, rebuilding = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -407,11 +442,18 @@ export function Map({ map, onRebuild, rebuilding = false }) {
           : <p className="wayout__hint">Free while this is being built.</p>}
       </div>
 
+      {/* ⭐⭐ THE THING THEY REMEMBER AFTERWARDS. It is usually the important
+          one — the illness, the debt they did not want to type, the person who
+          has already offered them work. The intake asks thirty questions and
+          still cannot ask the one that matters to this person, so the product
+          has to stay open after the plan rather than closing behind it. */}
+      {onRemember && <Remembered onRemember={onRemember} busy={rebuilding} />}
+
       {onRebuild && (
         <p className="wayout__rebuild wayout__r" style={at(4.15)}>
-          Something changed since you answered?{' '}
+          Or if more than one thing has changed,{' '}
           <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
-            Go back through the questions
+            go back through the questions
           </button>
           {' '}— the plan is rebuilt on what you change.
         </p>
@@ -421,6 +463,55 @@ export function Map({ map, onRebuild, rebuilding = false }) {
       </div>
       </div>
     </WayoutShell>
+  )
+}
+
+/**
+ * One box, for the thing they did not say.
+ *
+ * ⚠️ IT STARTS CLOSED. An open textarea under a finished plan reads as a form
+ * still to be filled in — as though the plan were provisional until they write
+ * something. The plan is theirs and it is finished; this is a door, not a step.
+ */
+function Remembered({ onRemember, busy }) {
+  const [open, setOpen] = useState(false)
+  const [text, setText] = useState('')
+
+  if (!open) {
+    return (
+      <p className="wayout__rebuild">
+        Thought of something you didn’t mention?{' '}
+        <button type="button" className="wayout__again" onClick={() => setOpen(true)}>
+          Add it
+        </button>
+      </p>
+    )
+  }
+
+  return (
+    <div className="wayout__given" style={{ marginTop: 30 }}>
+      <label className="wayout__label" htmlFor="wayout-remembered">
+        What else should it know?
+      </label>
+      <p className="wayout__hint" style={{ marginTop: 6 }}>
+        Whatever it is. The thing people leave out is usually the thing that
+        changes the order.
+      </p>
+      <textarea
+        id="wayout-remembered"
+        className="wayout__textarea"
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="My brother-in-law has been asking me to come in with him since the spring."
+      />
+      <button
+        className="wayout__btn"
+        disabled={busy || !text.trim()}
+        onClick={() => onRemember(text)}
+      >
+        {busy ? 'Building…' : 'Add it and build the plan again'}
+      </button>
+    </div>
   )
 }
 

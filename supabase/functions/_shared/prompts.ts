@@ -2644,6 +2644,18 @@ the best one there is: three people have paid you, two months in a row.
   headline and set the gates to the real pace. Do not quietly plan a different
   timeline and let them find out.
 
+WHAT THEY CAME BACK TO SAY
+"added" holds anything they wrote AFTER reading a plan. Nobody remembers
+everything while answering thirty questions, and what surfaces afterwards is
+rarely small — it is the illness, the debt they did not want to type, the person
+who has already offered them work.
+
+⭐ Treat it as the loudest thing in the whole intake. They were not asked for
+it; they came back on purpose, which means it was on their mind while they read
+what you wrote. If it contradicts an earlier answer, the later one wins — people
+correct themselves in the direction of the truth. If it changes which move is
+first, change which move is first and let the headline say so.
+
 WHAT THEY ADDED THEMSELVES
 Assets, immovables and spending marked "custom": true were typed in by the
 person because they were not on our list. That makes them MORE important than

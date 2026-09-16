@@ -444,3 +444,16 @@ describe('the detail is trimmed, not requested', () => {
     expect(kept.moves[0].detail).toBe(short)
   })
 })
+
+describe('what they remembered afterwards', () => {
+  it('counts as their words — the seen card may quote it', () => {
+    // 🔴 The fixed field list is this function's weakness: a free-text field
+    // missing from it makes every quote out of that field unverifiable, so the
+    // card is dropped for being honest. `added` was exactly that on day one.
+    const out = enforceMapContract({
+      ...baseMap,
+      seen: { quote: 'my brother-in-law has been asking me since the spring', insight: 'That is an offer.' },
+    }, { ...answers, added: ['My brother-in-law has been asking me since the spring.'] })
+    expect(out.seen).toBeTruthy()
+  })
+})

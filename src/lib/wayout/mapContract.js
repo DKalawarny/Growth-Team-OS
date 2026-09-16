@@ -39,6 +39,11 @@ export function enforceMapContract(map, answers) {
     answers.worstVersion,
     answers.tuesday,
     answers.fromToward,
+    // ⚠️ ADDED AFTER THE PLAN, AND IT COUNTS AS THEIR WORDS LIKE ANY OTHER.
+    // This list is hand-maintained, which is its weakness: a new free-text
+    // field that is not added here silently makes every quote from it
+    // unverifiable, and the seen card gets dropped for being honest.
+    ...(Array.isArray(answers.added) ? answers.added : []),
   ].filter(Boolean).join('\n').toLowerCase()
 
   if (out.seen?.quote) {
