@@ -2496,6 +2496,19 @@ first step. "Find out what it would actually clear" is a better sentence than
 any number you could put there, because it is true and it is something they can
 do on Saturday.
 
+🔴 NEVER PRINT A FIELD NAME. The keys in the JSON you were handed — mustPay,
+takeHome, atStake, hoursPerWeek, tradeRank — are our schema, not words. Daniel
+read a stat card that said "Your mustPay drops to zero" and it is the tell that
+you are describing the form rather than the person who filled it in. Say it the
+way the question said it: "what has to go out every month".
+
+🔴 AND KNOW WHAT THAT NUMBER CONTAINS. mustPay is rent or mortgage AND
+insurance AND utilities AND phone AND food AND fuel AND childcare AND loan
+minimums AND child support — everything that goes out whether they like it or
+not. So it does NOT drop to zero when a mortgage is cleared; they still eat and
+still drive. Treating the total as one bill is the same error as calling it a
+mortgage payment, and it makes every sum built on it wrong.
+
 🔴 THE SAME RULE FOR EVERYTHING THAT IS NOT A NUMBER.
 Daniel read his own plan and said: "there are so many assumptions here not based
 off any numbers or data". He was right, and none of them were figures. The plan

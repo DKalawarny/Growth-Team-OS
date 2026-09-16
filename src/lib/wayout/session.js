@@ -148,6 +148,40 @@ export async function adoptDraftInto(session) {
  * and a per-field patch would need a merge strategy for a form nobody else is
  * editing concurrently.
  */
+/**
+ * ⭐⭐ THREE. Daniel: "i dont think it should be unlimited."
+ *
+ * Enough for every honest reason to want another plan — the partner changed
+ * their mind, they remembered the debt, the job went. Not enough to fish.
+ *
+ * ⚠️ The number is a judgement, not an arithmetic result. Two felt mean for
+ * somebody whose first answer was wrong in a way they only saw on the plan;
+ * five is a person redecorating instead of starting.
+ */
+export const WAYOUT_MAX_REBUILDS = 3
+
+/** Count a regeneration. Returns what the count now is. */
+export async function countRebuild(sessionId, current = 0) {
+  const next = (current ?? 0) + 1
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ rebuilds: next })
+    .eq('id', sessionId)
+  // ⚠️ Not fatal. Failing to COUNT a rebuild must never stop the rebuild — the
+  // person asked for a plan and the bookkeeping is ours, not theirs.
+  if (error) console.warn('[wayout] rebuild not counted:', error.message)
+  return next
+}
+
+/** They asked to be told when the play-by-play is ready. */
+export async function wantPlaybook(sessionId) {
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ wants_playbook: new Date().toISOString() })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+}
+
 export async function saveAnswers(sessionId, answers) {
   const { error } = await supabase
     .from('wayout_sessions')

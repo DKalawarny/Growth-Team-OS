@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, saveAnswers, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, saveAnswers, countRebuild, wantPlaybook, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -43,7 +43,11 @@ export default function Plan() {
         // ⚠️ They just came back through the questions. The stored map was
         // written about the answers they had BEFORE, so it is stale by
         // definition — passing the contract does not make it theirs any more.
-        if (s.map && params.get('rebuild')) { build(s); return }
+        if (s.map && params.get('rebuild')) {
+          countRebuild(s.id, s.rebuilds).then(n => setSession(c => ({ ...c, rebuilds: n })))
+          build(s)
+          return
+        }
         if (s.map) {
           const clean = enforceMapContract(s.map, s.answers)
           const problems = mapProblems(clean, s.answers)
@@ -123,6 +127,11 @@ export default function Plan() {
     navigate(`${WAYOUT_BASE}?edit=1`)
   }
 
+  /** They asked to be told when the play-by-play exists. */
+  async function want() {
+    if (session) await wantPlaybook(session.id)
+  }
+
   /**
    * ⭐⭐ NOBODY REMEMBERS EVERYTHING AT INTAKE, AND WHAT THEY REMEMBER LATER IS
    * USUALLY THE IMPORTANT ONE.
@@ -149,7 +158,8 @@ export default function Plan() {
     setBuilding(true)
     try {
       await saveAnswers(session.id, answers)
-      const next = { ...session, answers }
+      const rebuilds = await countRebuild(session.id, session.rebuilds)
+      const next = { ...session, answers, rebuilds }
       setSession(next)
       await build(next)
     } catch (err) {
@@ -196,7 +206,19 @@ export default function Plan() {
   }
 
   if (!map) return null
-  return <Map map={map} onRebuild={rebuild} onRemember={remember} rebuilding={building} />
+  // ⭐ When the allowance is gone the doors close, and what is behind them is
+  // not a wall — it is the only honest thing left to say. See `Spent`.
+  const spent = (session?.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS
+  return (
+    <Map
+      map={map}
+      onRebuild={spent ? null : rebuild}
+      onRemember={spent ? null : remember}
+      onWantPlaybook={want}
+      rebuilding={building}
+      spent={spent}
+    />
+  )
 }
 
 // ── Paywall ─────────────────────────────────────────────────────────────────
@@ -252,7 +274,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onRemember, rebuilding = false }) {
+export function Map({ map, onRebuild, onRemember, onWantPlaybook, rebuilding = false, spent = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -421,25 +443,34 @@ export function Map({ map, onRebuild, onRemember, rebuilding = false }) {
         </div>
       )}
 
-      <button className="wayout__btn wayout__btn--sun wayout__r" style={at(4)} onClick={() => toggle(0)}>
-        Start move one
-      </button>
+      {/* ⭐⭐ THE OFFER, AFTER THEY ALREADY HAVE THE ANSWER. Nobody can fear an
+          ambush in a flow where the assessment is theirs before anything is
+          asked for, and the thing sold is the honest one: not what to do —
+          that is above, free — but how to actually do it.
 
-      {/* ⭐⭐ THE OFFER LIVES HERE NOW, AFTER THEY HAVE THE ANSWER. Nobody can
-          fear an ambush in a flow where the assessment is already theirs, and
-          the thing being sold is the honest one: not what to do — they have
-          that, free, above — but how to actually do it. */}
+          🔴 IT WAS FLAT. Daniel: "i dont like this sell ... its flat needs to
+          be exciting." It was a grey card on a cream page with a generic
+          heading and a paragraph, sitting under the most specific thing this
+          product has ever written about him. The fix is not louder words — it
+          is being SPECIFIC: it names HIS move one, in his plan's own words, and
+          lists what is actually inside rather than describing it. And it is the
+          one dark block on the page, so it reads as a door rather than another
+          section. */}
       <div className="wayout__offer wayout__r" style={at(4.2)}>
-        <h3>Move one is yours. Do you know how to do it?</h3>
-        <p>
-          The plan above is the what, and it’s free. The play-by-play is the how
-          — for your town, your hours, and the people who’ve already paid you:
-          what to charge, the words to send, what to skip, and what usually goes
-          wrong the first time.
+        <span className="wayout__offerkick">The next part</span>
+        <h3>{map.moves?.[0]?.title ?? 'Move one'}</h3>
+        <p className="wayout__offerlead">
+          You know what it is. This is how you do it — for your town, your
+          hours, and the people who have already paid you.
         </p>
-        {WAYOUT_PAYMENTS_LIVE
-          ? <p className="wayout__hint">{WAYOUT_PRICE_LABEL} for the move you’re on. {guaranteeLine()}</p>
-          : <p className="wayout__hint">Free while this is being built.</p>}
+        <ul className="wayout__offerlist">
+          <li>The first thing to do, and the day to do it</li>
+          <li>The words to send, short enough to send without editing</li>
+          <li>What to charge — and where that number comes from</li>
+          <li>What you do <b>not</b> need to buy yet</li>
+          <li>What goes wrong the first time, and what to do about it</li>
+        </ul>
+        <PlaybookCta onWant={onWantPlaybook} />
       </div>
 
       {/* ⭐⭐ THE THING THEY REMEMBER AFTERWARDS. It is usually the important
@@ -447,7 +478,9 @@ export function Map({ map, onRebuild, onRemember, rebuilding = false }) {
           has already offered them work. The intake asks thirty questions and
           still cannot ask the one that matters to this person, so the product
           has to stay open after the plan rather than closing behind it. */}
-      {onRemember && <Remembered onRemember={onRemember} busy={rebuilding} />}
+      {onRemember
+        ? <Remembered onRemember={onRemember} busy={rebuilding} />
+        : spent && <Spent />}
 
       {onRebuild && (
         <p className="wayout__rebuild wayout__r" style={at(4.15)}>
@@ -463,6 +496,72 @@ export function Map({ map, onRebuild, onRemember, rebuilding = false }) {
       </div>
       </div>
     </WayoutShell>
+  )
+}
+
+/**
+ * ⭐⭐ WHAT THE CTA CAN HONESTLY BE WHILE THE THING IT SELLS IS NOT BUILT.
+ *
+ * Not "buy" — there is nothing to buy. Not a button that goes nowhere, which is
+ * the `VideoSection` failure from the other product: an empty shelf reads worse
+ * than no shelf. "Tell me when this is ready" is a real answer to a real
+ * question, and it is also the number most worth having BEFORE building the
+ * paid half — whether people want the how badly enough to ask for it is the
+ * entire commercial thesis, and this measures it for the price of one column.
+ */
+function PlaybookCta({ onWant }) {
+  const [asked, setAsked] = useState(false)
+  const [err, setErr] = useState('')
+
+  if (WAYOUT_PAYMENTS_LIVE) {
+    return (
+      <>
+        <button className="wayout__btn wayout__btn--sun">Show me how — {WAYOUT_PRICE_LABEL}</button>
+        <p className="wayout__offerfine">{guaranteeLine()}</p>
+      </>
+    )
+  }
+
+  if (asked) {
+    return (
+      <p className="wayout__offerfine wayout__offerdone">
+        You’re on the list. You’ll hear from us once, when it’s ready.
+      </p>
+    )
+  }
+
+  return (
+    <>
+      <button
+        className="wayout__btn wayout__btn--sun"
+        onClick={async () => {
+          try { await onWant(); setAsked(true) } catch (e) { setErr(e.message) }
+        }}
+      >
+        Tell me when this is ready
+      </button>
+      <p className="wayout__offerfine">
+        {err || 'It’s being built now. Nothing to pay, and no email until it exists.'}
+      </p>
+    </>
+  )
+}
+
+/**
+ * ⭐⭐ WHEN THE REBUILDS ARE GONE, THE HONEST THING IS NOT A WALL.
+ *
+ * Daniel: "you could almost just keep changing things until you get the answer
+ * to what you are looking for." Somebody on their fourth rewrite does not have
+ * a planning problem any more, and a fifth plan helps them keep avoiding the
+ * thing they are afraid of. So the message is the product thesis said plainly,
+ * and it is true whether or not they ever pay for anything.
+ */
+function Spent() {
+  return (
+    <p className="wayout__rebuild">
+      You’ve changed this plan three times. That’s usually the sign it isn’t the
+      plan that needs work — move one is still there, and it’s still first.
+    </p>
   )
 }
 

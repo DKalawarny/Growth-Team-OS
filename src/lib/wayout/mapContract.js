@@ -108,7 +108,7 @@ export function enforceMapContract(map, answers) {
   out.disclaimer = out.disclaimer
     || 'This is a map of options, not financial or legal advice. Check the numbers before you act.'
 
-  return out
+  return deJargon(out)
 }
 
 /**
@@ -205,6 +205,10 @@ export function mapProblems(map, answers = {}) {
   // out of it is not a sentence — so this fails the map and `generateMap`
   // writes it again, naming the offending figure in the retry.
   inventedFigures(map, answers).forEach(p => problems.push(p))
+
+  // Anything deJargon could not translate. The map is rewritten rather than
+  // shipped with our schema showing.
+  fieldNamesLeaked(map).forEach(n => problems.push(`"${n}" is our field name, not a word — say it the way the question did`))
   if (!Array.isArray(map?.cut) || map.cut.length < 2) problems.push('nothing crossed off')
   return problems
 }
@@ -511,4 +515,61 @@ export function mapStyleNotes(map) {
   })
 
   return notes
+}
+
+/**
+ * ⭐⭐ OUR FIELD NAMES ARE NOT WORDS. THEY MUST NEVER REACH A PERSON.
+ *
+ * 🔴 Daniel's stat card read "Your mustPay drops to zero once the mortgage is
+ * gone". `mustPay` is the key on the intake field — our schema, printed in the
+ * largest caption on the page. It is the tell that the model is describing the
+ * JSON it was handed rather than the person who filled it in, and once you see
+ * it you cannot unsee it: the plan stops sounding written and starts sounding
+ * generated.
+ *
+ * ⚠️ A machine check, because it is exactly the kind of thing that reads fine
+ * to whoever wrote the prompt and glaring to everybody else.
+ */
+const FIELD_NAMES = [
+  'immovablesNote', 'faithNote', 'healthNote', 'workType', 'kidsAges',
+  'partnerWants', 'peopleNote', 'askedFor', 'paidFor', 'takeHome', 'mustPay',
+  'householdTakeHome', 'atStake', 'fiveYearTest', 'tradeRank', 'hoursPerWeek',
+  'yearShape', 'locationText', 'alreadyTried', 'goalType', 'goalFirst',
+  'seasonNote', 'worstVersion', 'fromToward', 'discretionary',
+]
+
+/** In their own words, for the ones that have one. */
+const FIELD_IN_WORDS = {
+  mustPay: 'what has to go out every month',
+  takeHome: 'what you take home',
+  householdTakeHome: 'what the household takes home',
+  hoursPerWeek: 'the hours you have',
+  locationText: 'where you live',
+  discretionary: 'what you spend on top',
+}
+
+export function fieldNamesLeaked(map) {
+  const text = JSON.stringify(map ?? {})
+  return FIELD_NAMES.filter(name => new RegExp(`\\b${name}\\b`).test(text))
+}
+
+/**
+ * Swap a leaked key for the phrase the question actually used.
+ *
+ * ⚠️ Only where there is an honest phrase for it. A key with no plain-English
+ * equivalent stays, gets reported by `mapProblems`, and the map is rewritten —
+ * substituting a guess would replace a visible fault with an invisible one.
+ */
+function deJargon(value) {
+  if (typeof value === 'string') {
+    return Object.entries(FIELD_IN_WORDS).reduce(
+      (out, [key, words]) => out.replace(new RegExp(`\\b${key}\\b`, 'g'), words),
+      value,
+    )
+  }
+  if (Array.isArray(value)) return value.map(deJargon)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, deJargon(v)]))
+  }
+  return value
 }

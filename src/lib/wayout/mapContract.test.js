@@ -457,3 +457,22 @@ describe('what they remembered afterwards', () => {
     expect(out.seen).toBeTruthy()
   })
 })
+
+describe('our field names never reach a person', () => {
+  it('translates the ones that have plain words — Daniel saw "mustPay" in a stat', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      stats: [
+        { label: 'Freed by cutting', value: 340, prefix: '$', caption: 'Your mustPay drops once the mortgage is gone' },
+        ...baseMap.stats.slice(1),
+      ],
+    }, answers)
+    expect(out.stats[0].caption).toMatch(/what has to go out every month/)
+    expect(JSON.stringify(out)).not.toMatch(/mustPay/)
+  })
+
+  it('reports the ones it cannot translate rather than guessing', () => {
+    const bad = { ...baseMap, headline: 'Your fiveYearTest says otherwise' }
+    expect(mapProblems(bad, answers).some(p => /fiveYearTest/.test(p))).toBe(true)
+  })
+})

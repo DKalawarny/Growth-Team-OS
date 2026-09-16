@@ -739,15 +739,71 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 
 /* The offer, after the plan. Quiet — it follows something they already have. */
+/* 🔴 THE OFFER WAS FLAT — Daniel: "its flat needs to be exciting". It was a
+   grey card on a cream page, under the most specific thing this product has
+   ever written about him. Two changes, and neither is louder words:
+
+   1. It is the ONLY dark block on the page, so it reads as a door rather than
+      another section. Everything above is paper; this is the way through it.
+   2. It names HIS move, in his plan's own words, and lists what is inside
+      rather than describing it in a paragraph.
+
+   ⚠️ Its own colours, not tokens — the page tokens are all built for ink on
+   cream, and every one of them is wrong the other way round. */
 .wayout__offer {
-  margin-top: 30px;
-  padding: 22px 24px;
-  background: var(--tint);
-  border-radius: 18px;
+  margin-top: 34px;
+  padding: 28px 26px 26px;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 140% at 80% 0%, rgba(255, 180, 58, .22) 0%, transparent 58%),
+    #1C2719;
+  color: #F3EFE2;
+  box-shadow: 0 18px 40px rgba(28, 39, 25, .28);
 }
-.wayout__offer h3 { margin: 0 0 10px; font-size: 19px; line-height: 1.25; letter-spacing: -.02em; }
-.wayout__offer p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--soft); }
-.wayout__offer .wayout__hint { margin-top: 12px; }
+.wayout__offerkick {
+  display: block;
+  font-size: 12.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sun);
+  margin-bottom: 12px;
+}
+.wayout__offer h3 {
+  margin: 0 0 12px;
+  font-size: 25px; line-height: 1.18; letter-spacing: -.025em; font-weight: 800;
+  color: #FFFDF8; text-wrap: balance;
+}
+.wayout__offerlead {
+  margin: 0 0 18px; font-size: 16px; line-height: 1.55;
+  color: rgba(243, 239, 226, .74);
+}
+.wayout__offerlist { list-style: none; margin: 0 0 22px; padding: 0; }
+.wayout__offerlist li {
+  position: relative;
+  padding: 9px 0 9px 28px;
+  font-size: 15.5px; line-height: 1.45;
+  color: #F3EFE2;
+  border-top: 1px solid rgba(243, 239, 226, .13);
+}
+.wayout__offerlist li:first-child { border-top: 0; }
+/* The tick is drawn, not a glyph — a checkmark character sits on a different
+   baseline in every fallback font and there is no fallback that gets it right. */
+.wayout__offerlist li::before {
+  content: ''; position: absolute; left: 3px; top: 15px;
+  width: 11px; height: 6px;
+  border-left: 2px solid var(--sun); border-bottom: 2px solid var(--sun);
+  transform: rotate(-45deg);
+}
+.wayout__offerlist b { font-weight: 700; color: #FFFDF8; }
+.wayout__offer .wayout__btn { width: 100%; }
+.wayout__offerfine {
+  margin: 14px 0 0; font-size: 14px; line-height: 1.5;
+  color: rgba(243, 239, 226, .6);
+}
+.wayout__offerdone { color: var(--sun); font-weight: 600; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .wayout__offer .wayout__btn { transition: transform .18s ease; }
+  .wayout__offer .wayout__btn:hover { transform: translateY(-2px); }
+}
 
 /* What the plan took as given. Marked out from the plan around it — it is a
    question being asked, not another thing being asserted. */
