@@ -476,3 +476,18 @@ describe('our field names never reach a person', () => {
     expect(mapProblems(bad, answers).some(p => /fiveYearTest/.test(p))).toBe(true)
   })
 })
+
+describe('only move one carries a detail', () => {
+  it('drops the detail on moves two and three', () => {
+    const out = enforceMapContract(baseMap, answers)
+    expect(out.moves[0].detail).toBeTruthy()
+    expect(out.moves[1].detail).toBeUndefined()
+    expect(out.moves[2].detail).toBeUndefined()
+  })
+
+  it('keeps the titles and gates — the order is the product, not the prose', () => {
+    const out = enforceMapContract(baseMap, answers)
+    expect(out.moves.map(m => m.title)).toHaveLength(3)
+    expect(out.moves.every(m => m.gate)).toBe(true)
+  })
+})

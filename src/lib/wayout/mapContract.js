@@ -78,7 +78,15 @@ export function enforceMapContract(map, answers) {
   if (Array.isArray(out.moves)) {
     out.moves = out.moves
       .slice(0, 3)
-      .map((m, i) => ({ ...m, order: i + 1, detail: trimDetail(m?.detail) }))
+      // ⚠️ Only move one carries a detail, and the contract enforces it rather
+      // than trusting the prompt — a model that writes one anyway would have it
+      // silently stored and then rendered by any future screen that reaches for
+      // `detail` without knowing the rule.
+      .map((m, i) => ({
+        ...m,
+        order: i + 1,
+        detail: i === 0 ? trimDetail(m?.detail) : undefined,
+      }))
   }
 
   // ⭐ A stat is the biggest type on the page, and its value is a clean number

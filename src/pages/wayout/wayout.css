@@ -820,6 +820,10 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__given li:last-child { margin-bottom: 0; }
 .wayout__given .wayout__hint { margin-top: 12px; }
 
+/* A move that has not happened yet. Deliberately quiet — it is a promise about
+   sequencing, not a teaser, and it must not look like a locked door. */
+.wayout__later { font-style: normal; color: var(--soft); opacity: .8; }
+
 /* Ask for the plan again. Deliberately a link, not a button — rebuilding is
    always available and never the thing you are being steered towards. */
 .wayout__again {

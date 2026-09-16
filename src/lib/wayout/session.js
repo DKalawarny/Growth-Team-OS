@@ -149,16 +149,18 @@ export async function adoptDraftInto(session) {
  * editing concurrently.
  */
 /**
- * ⭐⭐ THREE. Daniel: "i dont think it should be unlimited."
+ * ⭐⭐ ONE. Daniel's call, and it is better than the three I argued for.
  *
- * Enough for every honest reason to want another plan — the partner changed
- * their mind, they remembered the debt, the job went. Not enough to fish.
+ * Three was me hedging — leaving room for somebody to be wrong twice. But a
+ * person who knows they get ONE go back reads their answers properly and fixes
+ * everything they can see, which is a better use of the same rebuild. Three
+ * invites exactly the drift he was worried about: change one thing, look,
+ * change another, look again, and never start.
  *
- * ⚠️ The number is a judgement, not an arithmetic result. Two felt mean for
- * somebody whose first answer was wrong in a way they only saw on the plan;
- * five is a person redecorating instead of starting.
+ * ⚠️ It also has to be one for the go-back to be worth walking. Somebody with
+ * three cheap rewrites tweaks; somebody with one thinks first.
  */
-export const WAYOUT_MAX_REBUILDS = 3
+export const WAYOUT_MAX_REBUILDS = 1
 
 /** Count a regeneration. Returns what the count now is. */
 export async function countRebuild(sessionId, current = 0) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, saveAnswers, countRebuild, wantPlaybook, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, countRebuild, wantPlaybook, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -132,42 +132,6 @@ export default function Plan() {
     if (session) await wantPlaybook(session.id)
   }
 
-  /**
-   * ⭐⭐ NOBODY REMEMBERS EVERYTHING AT INTAKE, AND WHAT THEY REMEMBER LATER IS
-   * USUALLY THE IMPORTANT ONE.
-   *
-   * Daniel: "forgetting details is something that can be changed once in the
-   * system." Going back through thirty questions to add one sentence is the
-   * wrong shape for that — the friction is not protecting anything, because the
-   * person has already answered everything once. What they are doing now is
-   * telling us something NEW, which is exactly the input the plan wants.
-   *
-   * ⚠️ It is kept as its own list, never merged into an existing answer. The
-   * intake asked specific questions and their answers to those still mean what
-   * they meant; this is a person coming back unprompted, which is a different
-   * and usually better kind of thing to know.
-   */
-  async function remember(text) {
-    const said = String(text ?? '').trim()
-    if (!said || !session || building) return
-    const answers = {
-      ...session.answers,
-      added: [...(session.answers?.added ?? []), said],
-    }
-    setMap(null)
-    setBuilding(true)
-    try {
-      await saveAnswers(session.id, answers)
-      const rebuilds = await countRebuild(session.id, session.rebuilds)
-      const next = { ...session, answers, rebuilds }
-      setSession(next)
-      await build(next)
-    } catch (err) {
-      setError(err.message)
-      setBuilding(false)
-    }
-  }
-
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
 
   if (error && !map) {
@@ -213,7 +177,6 @@ export default function Plan() {
     <Map
       map={map}
       onRebuild={spent ? null : rebuild}
-      onRemember={spent ? null : remember}
       onWantPlaybook={want}
       rebuilding={building}
       spent={spent}
@@ -274,7 +237,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onRemember, onWantPlaybook, rebuilding = false, spent = false }) {
+export function Map({ map, onRebuild, onWantPlaybook, rebuilding = false, spent = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -363,9 +326,29 @@ export function Map({ map, onRebuild, onRemember, onWantPlaybook, rebuilding = f
                   <path d="M3 8.5l3 3 7-7" />
                 </svg>
               </span>
+              {/* ⭐⭐ THE DETAIL IS ONLY ON MOVE ONE, AND THAT IS A TRUTH
+                  BEFORE IT IS A PRICE. Daniel: "just give step one, the rest of
+                  it is inside?"
+
+                  ⚠️ What is NOT hidden is the shape: all three titles, the
+                  order, both gates, and everything crossed off. That matters —
+                  the order IS the product, a single move is what any chatbot
+                  gives, and hiding two of three would be the ambush he ruled
+                  out on the first screen.
+
+                  ⭐ What is held back is detail nobody can act on yet, and that
+                  is honest rather than commercial: move two is CONDITIONAL on
+                  move one's gate, so its detail is written about a situation
+                  that does not exist. It is also where the model invents most —
+                  every worst assumption so far lived in moves two and three,
+                  describing a rental it had never been told was let. Writing
+                  less about a future we do not have is a better plan, and it
+                  happens to leave the paid half something to be. */}
               <span>
                 <p>{m.title}</p>
-                <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
+                {i === 0
+                  ? <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
+                  : <small><b>{m.when}</b> <em className="wayout__later">Written once move {i} is done — it depends on how it lands.</em></small>}
               </span>
             </button>
 
@@ -478,9 +461,7 @@ export function Map({ map, onRebuild, onRemember, onWantPlaybook, rebuilding = f
           has already offered them work. The intake asks thirty questions and
           still cannot ask the one that matters to this person, so the product
           has to stay open after the plan rather than closing behind it. */}
-      {onRemember
-        ? <Remembered onRemember={onRemember} busy={rebuilding} />
-        : spent && <Spent />}
+      {spent && <Spent />}
 
       {onRebuild && (
         <p className="wayout__rebuild wayout__r" style={at(4.15)}>
@@ -559,58 +540,10 @@ function PlaybookCta({ onWant }) {
 function Spent() {
   return (
     <p className="wayout__rebuild">
-      You’ve changed this plan three times. That’s usually the sign it isn’t the
-      plan that needs work — move one is still there, and it’s still first.
+      You’ve been back through your answers once, and this is the plan they
+      make. Move one is still first — and it’s still the only one you can
+      start today.
     </p>
-  )
-}
-
-/**
- * One box, for the thing they did not say.
- *
- * ⚠️ IT STARTS CLOSED. An open textarea under a finished plan reads as a form
- * still to be filled in — as though the plan were provisional until they write
- * something. The plan is theirs and it is finished; this is a door, not a step.
- */
-function Remembered({ onRemember, busy }) {
-  const [open, setOpen] = useState(false)
-  const [text, setText] = useState('')
-
-  if (!open) {
-    return (
-      <p className="wayout__rebuild">
-        Thought of something you didn’t mention?{' '}
-        <button type="button" className="wayout__again" onClick={() => setOpen(true)}>
-          Add it
-        </button>
-      </p>
-    )
-  }
-
-  return (
-    <div className="wayout__given" style={{ marginTop: 30 }}>
-      <label className="wayout__label" htmlFor="wayout-remembered">
-        What else should it know?
-      </label>
-      <p className="wayout__hint" style={{ marginTop: 6 }}>
-        Whatever it is. The thing people leave out is usually the thing that
-        changes the order.
-      </p>
-      <textarea
-        id="wayout-remembered"
-        className="wayout__textarea"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="My brother-in-law has been asking me to come in with him since the spring."
-      />
-      <button
-        className="wayout__btn"
-        disabled={busy || !text.trim()}
-        onClick={() => onRemember(text)}
-      >
-        {busy ? 'Building…' : 'Add it and build the plan again'}
-      </button>
-    </div>
   )
 }
 

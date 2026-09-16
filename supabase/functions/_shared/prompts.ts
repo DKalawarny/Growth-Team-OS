@@ -2557,7 +2557,7 @@ Return ONLY valid JSON in this shape:
       "outdoor": true,
       "title": "the move, in their words, naming the actual thing",
       "when": "a real time — 'This Saturday', 'Before the end of the month'",
-      "detail": "one or two plain sentences naming WHAT this move is, in their life — never how to do it",
+      "detail": "MOVE ONE ONLY. One or two plain sentences naming WHAT this move is, in their life — never how to do it. Omit this field entirely on moves two and three.",
       "season": "optional — only for outdoor or seasonal work",
       "gate": "what has to be true before move 2 starts"
     }
@@ -2598,6 +2598,21 @@ CONSTRUCTION RULES — these are absolute
 - Every move carries a gate: the thing that must be true before the next one
   starts. A gate is checkable — "three paying customers", "$2,000 banked" —
   never "when you feel ready".
+
+🔴 ONLY MOVE ONE GETS A "detail". Moves two and three are a title, a "when"
+and a gate — nothing more.
+
+That is a truth before it is a policy. Move two is CONDITIONAL: it starts when
+move one's gate is met, and how move one lands changes what move two actually
+is. Detail written now describes a situation that does not exist yet, and it is
+where invention happens — every worst assumption in this product so far has
+lived in moves two and three, furnishing a rental nobody said was let and apps
+nobody said had subscribers. Writing less about a future you do not have is not
+a smaller plan. It is a more honest one.
+
+⚠️ The ORDER is still the whole product, so nothing about the shape is hidden:
+all three titles, both gates, everything crossed off. What you are leaving out
+is detail nobody can act on yet.
 
 🔴 "detail" SAYS WHAT THE MOVE IS. IT NEVER SAYS HOW TO DO IT.
 This plan is the WHAT and the ORDER. How to actually do the move is the
@@ -2656,18 +2671,6 @@ the best one there is: three people have paid you, two months in a row.
 - If the horizon they chose does not survive their own numbers, say so in the
   headline and set the gates to the real pace. Do not quietly plan a different
   timeline and let them find out.
-
-WHAT THEY CAME BACK TO SAY
-"added" holds anything they wrote AFTER reading a plan. Nobody remembers
-everything while answering thirty questions, and what surfaces afterwards is
-rarely small — it is the illness, the debt they did not want to type, the person
-who has already offered them work.
-
-⭐ Treat it as the loudest thing in the whole intake. They were not asked for
-it; they came back on purpose, which means it was on their mind while they read
-what you wrote. If it contradicts an earlier answer, the later one wins — people
-correct themselves in the direction of the truth. If it changes which move is
-first, change which move is first and let the headline say so.
 
 WHAT THEY ADDED THEMSELVES
 Assets, immovables and spending marked "custom": true were typed in by the
