@@ -233,14 +233,28 @@ export async function generateMap(answers) {
   // would bust the cache for everybody.
   let problems = []
 
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  // 🔴 TWO GOES WAS NOT ENOUGH AND DANIEL HIT THE WALL — three rewrites, no
+  // plan, "That didn't come through" over and over. A guard that can refuse
+  // forever is a guard that ships nothing.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
     const content = attempt === 1
       ? JSON.stringify(answers, null, 2)
       : `${JSON.stringify(answers, null, 2)}\n\n`
-        + `YOUR PREVIOUS ATTEMPT WAS REJECTED BEFORE THEY SAW IT: ${problems.join('; ')}.\n`
-        + 'Write the whole plan again. Use only figures that appear above or follow '
-        + 'by adding, subtracting or converting between monthly and yearly. If a '
-        + 'number is not there, write the sentence without one.'
+        + `REJECTED, ATTEMPT ${attempt - 1}. They have not seen it. What was wrong:\n`
+        + `${problems.map(p => `  - ${p}`).join('\n')}\n\n`
+        // ⚠️ SAY WHAT TO DO, NOT ONLY WHAT WAS WRONG. The first version of this
+        // handed back "$120,000 put on something they never priced" and the
+        // model produced the same figure again — being told a sentence is wrong
+        // does not tell you what the right sentence looks like.
+        + 'Write the whole plan again, and this time:\n'
+        + '  - Delete every figure listed above. Do not replace it with a different one.\n'
+        + '  - The sentence survives without it. "That would clear roughly $120,000" '
+        + 'becomes "Find out what it would actually clear" — which is true, and is '
+        + 'something they can do this week.\n'
+        + '  - A gate may be a COUNT instead of a sum: three paying customers, '
+        + 'two months in a row, one signed contract.\n'
+        + '  - If you genuinely had to take something as given, it goes in '
+        + '"assumptions" and nowhere else.'
 
     // ⚠️ json:true returns a STRING — unwrapJson strips fences and slices to the
     // outer braces but does not parse. See parseModelJson.
@@ -258,7 +272,10 @@ export async function generateMap(answers) {
     const map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
     problems = mapProblems(map, answers)
     if (!problems.length) return map
-    console.warn(`[wayout] map attempt ${attempt} rejected:`, problems)
+    // ⭐ The map itself, not just the verdict. While Daniel is the only person
+    // running this, being able to read what it tried is worth more than any
+    // error copy — and it costs nothing.
+    console.warn(`[wayout] map attempt ${attempt} rejected:`, problems, map)
   }
 
   throw new Error(`The plan came back with something in it that isn’t yours (${problems.join(', ')}). Try again.`)

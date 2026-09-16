@@ -353,3 +353,21 @@ describe('what it took as given', () => {
     expect(out.assumptions).toEqual(['Real one.'])
   })
 })
+
+describe('the speculative check is per sentence, not per move', () => {
+  const his = { mustPay: 5000, savings: 2000, coming: 'hopefully sale of my house' }
+
+  it('allows their own number in a move that also mentions a sale', () => {
+    // 🔴 The false positive that deadlocked Daniel: three rewrites, no plan.
+    const map = { moves: [{
+      title: 'Cut the must-pay',
+      detail: 'Your $5,000 a month does not change on its own. Selling the house would change it.',
+    }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('still catches the figure when it IS the claim about the sale', () => {
+    const map = { moves: [{ title: 'List it', detail: 'Selling would clear $120,000.' }] }
+    expect(inventedFigures(map, his)).toHaveLength(1)
+  })
+})

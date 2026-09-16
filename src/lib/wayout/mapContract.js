@@ -324,17 +324,36 @@ const SPECULATIVE = [
   /\bcommission\b/i,
 ]
 
+/** Everything they TYPED, as opposed to tapped or entered in a fixed field. */
+function freeText(value, into = []) {
+  if (typeof value === 'string') { into.push(value); return into }
+  if (Array.isArray(value)) { value.forEach(v => freeText(v, into)); return into }
+  if (value && typeof value === 'object') { Object.values(value).forEach(v => freeText(v, into)); return into }
+  return into
+}
+
 function speculativeProblem(text, figures, answers) {
-  const claim = SPECULATIVE.find(re => re.test(String(text ?? '')))
-  if (!claim || !figures.length) return null
-  // Only what they wrote about that same thing counts — not their must-pay
-  // total, and not a chip they tapped about something else.
-  const theirs = []
-  theirNumbers(
-    Object.values(answers ?? {}).filter(v => typeof v === 'string' && claim.test(v)),
-    theirs,
-  )
-  const unfounded = figures.filter(f => !theirs.some(n => Math.abs(n - f) <= Math.max(1, f * 0.02)))
+  if (!SPECULATIVE.some(re => re.test(String(text ?? '')))) return null
+  if (!figures.length) return null
+
+  // 🔴 THIS USED TO DEMAND THE FIGURE APPEAR IN THE SAME ANSWER AS THE WORD
+  // "sale", AND IT DEADLOCKED DANIEL — three rewrites, no plan, just "that
+  // didn't come through". People do not answer that tidily: the sale gets
+  // mentioned on one screen and the number lands on another, or inside a
+  // custom entry two levels down. A rule nobody can satisfy is not a strict
+  // rule, it is a broken one.
+  //
+  // ⭐ What still holds, and is the whole point: it must be a number they
+  // TYPED, in their own words, somewhere. A fixed field cannot price a house —
+  // "what has to go out every month" means must-pay and nothing else, so
+  // reaching for it to value a sale is exactly the $5,000 mortgage again. Free
+  // text is the only place someone can tell us what their house might clear.
+  const typed = []
+  theirNumbers(freeText(answers ?? {}), typed)
+
+  const unfounded = [...new Set(
+    figures.filter(f => !typed.some(n => Math.abs(n - f) <= Math.max(1, f * 0.02))),
+  )]
   if (!unfounded.length) return null
   return `${unfounded.map(f => `$${f.toLocaleString()}`).join(', ')} put on something they never priced`
 }
@@ -349,10 +368,24 @@ export function inventedFigures(map, answers = {}) {
 
   const check = (text, where) => {
     const figures = figuresIn(text)
-    const bad = figures.filter(f => !traceable(f, allowed))
+    const bad = [...new Set(figures.filter(f => !traceable(f, allowed)))]
     if (bad.length) found.push(`${bad.map(f => `$${f.toLocaleString()}`).join(', ')} in ${where} is not a number they gave`)
-    const spec = speculativeProblem(text, figures, answers)
-    if (spec) found.push(`${where}: ${spec}`)
+
+    // 🔴 SENTENCE BY SENTENCE, NOT MOVE BY MOVE. Checking the whole move meant
+    // that "Your $5,000 must-pay does not change. Selling the house would." was
+    // rejected — the $5,000 is correctly their must-pay and the word "selling"
+    // is two sentences away. A figure only makes a claim about a sale when it
+    // is IN the sentence about the sale.
+    String(text ?? '')
+      .split(/(?<=[.!?])\s+/)
+      .forEach(sentence => {
+        // ⚠️ Only figures that ARE theirs. One already reported as invented
+        // does not need reporting twice, and a retry message that says the same
+        // number two different ways reads like two separate faults.
+        const mine = figuresIn(sentence).filter(f => traceable(f, allowed))
+        const spec = speculativeProblem(sentence, mine, answers)
+        if (spec) found.push(`${where}: ${spec}`)
+      })
   }
 
   check(map?.headline, 'the headline');
