@@ -491,3 +491,49 @@ describe('only move one carries a detail', () => {
     expect(out.moves.every(m => m.gate)).toBe(true)
   })
 })
+
+describe('numbers people wrote as words', () => {
+  // 🔴 THE DEADLOCK, 16 Sep. Found by generating a real map against the live
+  // function and running it through this contract — not by reading code. The
+  // person wrote "a guy paid me two hundred to clear his yard"; the model used
+  // $200, their own figure from their own sentence; the guard called it
+  // invented, three times, and they got an error instead of a plan.
+  const his = {
+    paidFor: 'a guy paid me two hundred to clear his yard',
+    coming: 'hopefully sale of my house, should clear about 600000',
+    mustPay: 5000,
+  }
+
+  it('accepts the figure they spelled out', () => {
+    const map = { moves: [{ title: 'Yards', detail: 'You have already been paid $200 for this.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('reads a couple of grand, and forty-five thousand', () => {
+    const answers = { out: 'I have a couple grand put by and the truck owes me forty five thousand' }
+    const map = { moves: [{ title: 'x', detail: 'That is $2,000 liquid against $45,000 of truck.' }] }
+    expect(inventedFigures(map, answers)).toEqual([])
+  })
+
+  it('still catches a figure that is nowhere, in words or digits', () => {
+    const map = { moves: [{ title: 'x', detail: 'That clears $120,000.' }] }
+    expect(inventedFigures(map, his)).toHaveLength(1)
+  })
+})
+
+describe('field names are camelCase compounds only', () => {
+  it('leaves an ordinary English word alone', () => {
+    // 🔴 'discretionary' was in the field-name list. The model wrote the
+    // perfectly good "no discretionary spending named" and the substitution
+    // produced "no what you spend on top spending named" — visible nonsense in
+    // a stat caption, on the live page.
+    const out = enforceMapContract({
+      ...baseMap,
+      stats: [
+        { label: 'Freed by cutting', value: 340, prefix: '$', caption: 'no discretionary spending named' },
+        ...baseMap.stats.slice(1),
+      ],
+    }, answers)
+    expect(out.stats[0].caption).toBe('no discretionary spending named')
+  })
+})

@@ -265,11 +265,75 @@ function figuresIn(text) {
   return out
 }
 
+/**
+ * ⭐⭐ PEOPLE WRITE NUMBERS AS WORDS, AND THIS GUARD COULD NOT READ THEM.
+ *
+ * 🔴 THE DEADLOCK, FOUND BY GENERATING A REAL MAP AND RUNNING IT THROUGH THE
+ * CONTRACT. Someone wrote "a guy paid me two hundred to clear his yard". The
+ * model did exactly the right thing — used $200, their own figure, from their
+ * own sentence — and the check rejected it as invented, because `figuresIn`
+ * only ever looked for digits. Every attempt failed the same way, three times,
+ * and the person got an error instead of the plan.
+ *
+ * ⚠️ This is the third time the same shape has bitten: a guard built to stop
+ * fabrication rejecting something honest, because the rule was written against
+ * how a MODEL writes rather than how a PERSON does. "Two hundred", "a couple
+ * grand" and "600k" are all somebody telling you a number.
+ */
+const ONES = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8,
+  nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14,
+  fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+}
+const TENS = {
+  twenty: 20, thirty: 30, forty: 40, fifty: 50,
+  sixty: 60, seventy: 70, eighty: 80, ninety: 90,
+}
+const SCALES = { hundred: 100, thousand: 1000, grand: 1000, k: 1000, million: 1e6 }
+
+/** "two hundred", "a couple grand", "forty five thousand". */
+function wordNumbers(text) {
+  const words = String(text ?? '').toLowerCase().match(/[a-z]+/g) ?? []
+  const found = []
+  let current = 0
+  let running = 0
+  let live = false
+
+  const flush = () => {
+    if (live && (running + current) > 0) found.push(running + current)
+    current = 0; running = 0; live = false
+  }
+
+  for (const w of words) {
+    if (w === 'a' || w === 'an') { current = current || 1; continue }
+    if (w === 'couple' || w === 'few') { current = current || 2; live = true; continue }
+    if (ONES[w] != null) { current += ONES[w]; live = true; continue }
+    if (TENS[w] != null) { current += TENS[w]; live = true; continue }
+    if (SCALES[w] != null) {
+      const scale = SCALES[w]
+      // "hundred" multiplies what is beside it; "thousand" closes the group.
+      if (scale === 100) current = (current || 1) * 100
+      else { running += (current || 1) * scale; current = 0 }
+      live = true
+      continue
+    }
+    if (w === 'and' && live) continue
+    flush()
+  }
+  flush()
+  return found
+}
+
 /** Every number this person put in front of us, however they put it. */
 function theirNumbers(value, into = []) {
   if (value == null) return into
   if (typeof value === 'number') { if (Number.isFinite(value)) into.push(value); return into }
-  if (typeof value === 'string') { figuresIn(value).forEach(n => into.push(n)); return into }
+  if (typeof value === 'string') {
+    figuresIn(value).forEach(n => into.push(n))
+    // ⭐ And the ones they spelled out. See wordNumbers.
+    wordNumbers(value).forEach(n => into.push(n))
+    return into
+  }
   if (Array.isArray(value)) { value.forEach(v => theirNumbers(v, into)); return into }
   if (typeof value === 'object') { Object.values(value).forEach(v => theirNumbers(v, into)); return into }
   return into
@@ -543,7 +607,13 @@ const FIELD_NAMES = [
   'partnerWants', 'peopleNote', 'askedFor', 'paidFor', 'takeHome', 'mustPay',
   'householdTakeHome', 'atStake', 'fiveYearTest', 'tradeRank', 'hoursPerWeek',
   'yearShape', 'locationText', 'alreadyTried', 'goalType', 'goalFirst',
-  'seasonNote', 'worstVersion', 'fromToward', 'discretionary',
+  'seasonNote', 'worstVersion', 'fromToward',
+  // 🔴 'discretionary' WAS IN THIS LIST AND IT IS AN ORDINARY ENGLISH WORD.
+  // The model wrote the perfectly good "no discretionary spending named" and
+  // the substitution turned it into "no what you spend on top spending named".
+  // ⚠️ THE RULE IS NOW EXPLICIT: only camelCase compounds belong here, because
+  // those cannot occur in a sentence by accident. A single lowercase word can,
+  // and policing one means mangling prose that was never wrong.
 ]
 
 /** In their own words, for the ones that have one. */
@@ -553,7 +623,6 @@ const FIELD_IN_WORDS = {
   householdTakeHome: 'what the household takes home',
   hoursPerWeek: 'the hours you have',
   locationText: 'where you live',
-  discretionary: 'what you spend on top',
 }
 
 export function fieldNamesLeaked(map) {
