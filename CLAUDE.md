@@ -946,10 +946,12 @@ no floor. Rules live in `src/content/wayoutDiagnostic.js`.
    `scripts/sitemap.mjs` **in the same commit**, or they are orphaned the way the
    answer pages were.
 
-⚠️ Pre-existing and unrelated, found while running the suite: `anthropic.test.js`
-asserts `SOLOMON_TOOLS` is `['search_library', 'run_tool']` and the module now
-also exports `search_the_record`. **That test has been red on a clean tree** —
-it is a stale assertion, not a regression from this work.
+✅ **Fixed 16 Sep:** `anthropic.test.js` had asserted `SOLOMON_TOOLS` is
+`['search_library', 'run_tool']` since before `search_the_record` was added, so
+the suite was red on a clean tree for weeks. ⚠️ **A test nobody can make pass
+stops being read** — it hid whatever else might have broken. The order is the
+real assertion: `tools` renders BEFORE `system`, so reordering the list rewrites
+the cached prefix on every Advisor turn.
 
 ### 🔴 THE WAY OUT SHARES ELIV8'S AUTH — decision needed before the first real user
 

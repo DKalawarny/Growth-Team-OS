@@ -132,6 +132,13 @@ describe('tool definitions', () => {
     const first  = JSON.stringify(SOLOMON_TOOLS)
     const second = JSON.stringify((await import('./solomonTools')).SOLOMON_TOOLS)
     expect(second).toBe(first)
-    expect(SOLOMON_TOOLS.map(t => t.name)).toEqual(['search_library', 'run_tool'])
+    // ⚠️ ORDER IS THE ASSERTION, not just membership — `tools` renders BEFORE
+    // `system`, so reordering this list rewrites the cached prefix for every
+    // Advisor turn. `search_the_record` was added after this test was written
+    // and the assertion sat red on a clean tree for weeks, which is its own
+    // lesson: a test nobody can make pass stops being read at all.
+    expect(SOLOMON_TOOLS.map(t => t.name)).toEqual([
+      'search_library', 'search_the_record', 'run_tool',
+    ])
   })
 })

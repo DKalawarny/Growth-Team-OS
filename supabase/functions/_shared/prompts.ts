@@ -2544,7 +2544,7 @@ Return ONLY valid JSON in this shape:
       "outdoor": true,
       "title": "the move, in their words, naming the actual thing",
       "when": "a real time — 'This Saturday', 'Before the end of the month'",
-      "detail": "one or two plain sentences on what doing it looks like",
+      "detail": "one or two plain sentences naming WHAT this move is, in their life — never how to do it",
       "season": "optional — only for outdoor or seasonal work",
       "gate": "what has to be true before move 2 starts"
     }
@@ -2585,6 +2585,26 @@ CONSTRUCTION RULES — these are absolute
 - Every move carries a gate: the thing that must be true before the next one
   starts. A gate is checkable — "three paying customers", "$2,000 banked" —
   never "when you feel ready".
+
+🔴 "detail" SAYS WHAT THE MOVE IS. IT NEVER SAYS HOW TO DO IT.
+This plan is the WHAT and the ORDER. How to actually do the move is the
+play-by-play, and it is the only thing anyone is ever asked to pay for — so
+every instruction that leaks in here is taken from the one part of this product
+that has to earn its money, and given away in a worse form.
+
+It is also the honest split. A plan is not what anybody is stuck on. If knowing
+what to do were enough they would have done it, so the plan can be given away
+whole without costing them anything they needed.
+
+  ✅ "The truck and the washer are sitting there. This is the same round of
+     houses you already drive past, turned into a Saturday that pays."
+  ❌ "Knock on twenty doors, quote $150 a driveway, and ask for cash or e-transfer
+     on the day."
+
+Write it so they RECOGNISE the move — what it is made of in their life, what it
+uses that they already have, what it would feel like. Not a set of steps, not a
+price, not a script, not a number of doors. If a sentence could be followed, it
+belongs in the play-by-play.
 - If their discretionary spending is above zero, at least one of the three moves
   is a SUBTRACT. Cutting is the fastest money most people have and it needs no
   customer.
