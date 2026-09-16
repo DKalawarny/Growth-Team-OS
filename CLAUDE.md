@@ -885,6 +885,43 @@ the card when the quote is not a verbatim substring of what they actually typed
 `mapContract.test.js`, and the guard assertions were verified to FAIL against a
 deliberately broken check before being kept.
 
+⭐⭐ **16 SEP — THE FIRST REAL MAP INVENTED FIGURES AND ASSUMPTIONS.** Daniel
+caught both (`3c1d950`, `df2a256`, pushed).
+
+🔴 **The map prompt had NO rule against inventing numbers.** The
+`NEVER INVENT A NUMBER` block is real and lives in the **PLAYBOOK** prompt, four
+hundred lines down. ⚠️ A rule in the neighbouring prompt reads exactly like a
+rule that exists. Now both stated AND machine-checked (`inventedFigures`,
+`statIsFounded` in mapContract.js): a figure is allowed if it is one of their
+numbers, two added or subtracted, a monthly↔yearly conversion, or a small whole
+multiple. Bad stat → dropped; bad figure in prose → the map is rewritten
+(`generateMap` gets two goes, the second told what the first did wrong).
+⭐⭐ The harder half: **$5,000 WAS his must-pay total — what was invented was
+calling it a mortgage.** A figure hung on a sale/pension/payout must trace to the
+answer where THEY mentioned it.
+🔴 **My first guard manufactured the very figure it catches** — self-pairing made
+5,000 → 10,000 → ×12 = exactly 120,000. **Distinct pairs only; the `i < j` is
+load-bearing.**
+
+⭐⭐ **AND THE SAME RULE FOR WHAT ISN'T A NUMBER: a thing they NAMED is a fact;
+everything about it is not.** His rental was given "a year-round demand market"
+and "professional management" from a person who had mentioned a rental and
+nothing else. **Write about the thing they named. Do not furnish it.** Where a
+plan truly cannot avoid assuming, it goes in `assumptions` (max 3) and renders
+before "Start move one" as **What this took as given** — which makes the worst
+thing on the page the most useful, and a correction is what the paid
+play-by-play runs on.
+
+🔴 **A STORED MAP WAS NEVER RE-CHECKED.** `if (s.map) setMap(s.map)` handed the
+database straight to the screen, so the contract protected the next person and
+nobody who already had a plan. ⚠️ **Generalises: an output guard that runs only
+on write leaves every existing row unprotected.**
+
+⚠️ **Local `npm run build` failing with Puppeteer protocol timeouts was MACHINE
+LOAD, not code** — proven by reproducing it on a stashed clean tree (9m 4s vs the
+normal 563ms). ⭐ `npx vite build` alone is ~500ms and catches the CSS/JSX errors
+that actually break Netlify.
+
 ⭐ **The free diagnostic is rule-based, not a model call, and has to be.**
 `/wayout/start` is public, so there is no JWT for the `claude` function — and a
 model call on the one page built to be hit by strangers and bots is a bill with
