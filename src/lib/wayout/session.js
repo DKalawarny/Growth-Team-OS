@@ -254,11 +254,19 @@ export async function reflect(screenAnswers) {
  * costing cents and dollars.
  */
 /**
- * ⚠️ A minute is already twice what this should take. Past that it is not slow,
- * it is stuck, and "stuck" needs to be a sentence on the screen rather than a
- * spinner that never stops.
+ * ⚠️ NINETY SECONDS, AND THE NUMBER IS MEASURED RATHER THAN CHOSEN.
+ *
+ * Driving the real page repeatedly: the same generation came back in 27s, then
+ * 28s, then over 60s. A 28k-character system prompt with a 3,000-token answer
+ * is simply not a fast request, and the variance is wide — a cold prompt cache
+ * costs most of it. My first guess at 60s killed a call that was still working,
+ * which turns "slow" into "broken" and is the worse of the two.
+ *
+ * ⭐ The timeout exists to end a HANG, not to enforce a speed. Past ninety
+ * seconds something is genuinely wrong; before it, the honest thing is to wait
+ * and say so.
  */
-const MAP_TIMEOUT_MS = 60_000
+const MAP_TIMEOUT_MS = 90_000
 
 export async function generateMap(answers, onProgress = () => {}) {
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
@@ -330,7 +338,7 @@ export async function generateMap(answers, onProgress = () => {}) {
       map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
     } catch (err) {
       if (err?.name === 'AbortError') {
-        throw new Error('That took longer than it should have. Try again — it normally comes back in twenty seconds.')
+        throw new Error('That took longer than it should have — something is wrong at our end, not yours. Try again.')
       }
       throw err
     } finally {
@@ -339,11 +347,19 @@ export async function generateMap(answers, onProgress = () => {}) {
 
     problems = mapProblems(map, answers)
 
-    // ⭐ Style rides along on the early goes and is DROPPED on the last one.
-    // A plan withheld because a sentence was too long would be the guard
-    // refusing to ship all over again, in a nicer outfit.
+    // ⭐⭐ STYLE NEVER CAUSES A REWRITE. IT ONLY RIDES ONE THAT IS HAPPENING.
+    //
+    // 🔴 It used to force one, and that is what Daniel was sitting through.
+    // Driving the real page in a browser showed two and three full generations
+    // at ~25 seconds each — a minute and a half of "Reading it back" — and some
+    // of those rounds were bought for nothing more than a gate running to 150
+    // characters. Twenty-five seconds and a Sonnet call to shorten a sentence
+    // is a terrible trade, and the person paying for it is the one waiting.
+    //
+    // ⚠️ Truth still refuses outright. A figure that is not theirs is worth any
+    // number of seconds; prose is not.
+    if (!problems.length) return map
     const notes = attempt < 3 ? mapStyleNotes(map) : []
-    if (!problems.length && !notes.length) return map
     problems = [...problems, ...notes]
 
     // ⭐ The map itself, not just the verdict. While Daniel is the only person

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
@@ -29,6 +29,17 @@ export default function Plan() {
   // Which go this is. 1 is the first; anything higher means the first one had
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
+  // 🔴 NOTHING STOPPED TWO GENERATIONS RUNNING AT ONCE, AND IN DEV TWO ALWAYS
+  // DID. StrictMode mounts every effect twice; both calls reached the model,
+  // both took ~25 seconds, and both wrote a map — so every plan Daniel built
+  // today cost two Sonnet calls and the page waited for the slower one. Any
+  // re-run of the effect (a param change, a navigation) does the same thing in
+  // production, where it is not a dev artefact but a race: two maps written to
+  // one row, and whichever lands last wins for no reason anybody chose.
+  //
+  // ⚠️ A ref, not state — state would not have settled before the second call
+  // went out, which is precisely the window this has to close.
+  const buildingRef = useRef(false)
   const [error, setError]       = useState('')
 
   useEffect(() => {
@@ -79,6 +90,8 @@ export default function Plan() {
    * paywall is a database constraint, not a branch in a component.
    */
   async function build(s) {
+    if (buildingRef.current) return
+    buildingRef.current = true
     setBuilding(true)
     setPass(1)
     setError('')
@@ -97,6 +110,7 @@ export default function Plan() {
     } catch (err) {
       setError(err.message)
     } finally {
+      buildingRef.current = false
       setBuilding(false)
     }
   }
@@ -179,7 +193,12 @@ export default function Plan() {
               what you said you’d never do — and working out which of it comes
               first.
             </p>
-            <p className="wayout__lead">About twenty seconds. Nothing to pay.</p>
+            {/* ⚠️ "Twenty seconds" was a guess and it was wrong. Measured on
+                the real page the same generation took 27s, 28s and over 60s —
+                a 28k-character prompt writing a 3,000-token answer is not a
+                fast request. Promising twenty and taking sixty is how a working
+                page comes to look broken, and the fix is the honest number. */}
+            <p className="wayout__lead">Up to a minute. Nothing to pay.</p>
           </>
         ) : (
           <>
@@ -189,7 +208,7 @@ export default function Plan() {
               allowed to guess about your life, so it’s going back over it.
             </p>
             <p className="wayout__lead">
-              Another twenty seconds{pass > 2 ? ' — last go' : ''}.
+              Another minute at most{pass > 2 ? ' — last go' : ''}.
             </p>
           </>
         )}

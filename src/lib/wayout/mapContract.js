@@ -28,6 +28,10 @@
 export function enforceMapContract(map, answers) {
   const out = { ...map }
 
+  // Computed once — `allowedFigures` is O(n²) over their numbers and the trim
+  // asks about every sentence.
+  const allowed = allowedFigures(answers ?? {})
+
   const freeText = [
     answers.out,
     answers.immovablesNote,
@@ -85,7 +89,7 @@ export function enforceMapContract(map, answers) {
       .map((m, i) => ({
         ...m,
         order: i + 1,
-        detail: i === 0 ? trimDetail(m?.detail) : undefined,
+        detail: i === 0 ? trimDetail(m?.detail, allowed, answers) : undefined,
       }))
   }
 
@@ -111,7 +115,14 @@ export function enforceMapContract(map, answers) {
       .slice(0, 3)
   }
 
-  if (Array.isArray(out.cut)) out.cut = out.cut.slice(0, 4)
+  if (Array.isArray(out.cut)) {
+    out.cut = out.cut
+      .slice(0, 4)
+      .map(c => ({ ...c, why: trimDetail(c?.why, allowed, answers, true) }))
+      // ⚠️ A reason that loses every sentence is no longer a reason. Naming
+      // something crossed off without saying why is worse than not naming it.
+      .filter(c => String(c?.why ?? '').trim())
+  }
 
   out.disclaimer = out.disclaimer
     || 'This is a map of options, not financial or legal advice. Check the numbers before you act.'
@@ -365,8 +376,19 @@ function allowedFigures(answers) {
   }))
 
   const out = new Set(combined)
-  // A month, a year, a week. Same fact, different unit.
-  combined.forEach(v => { out.add(v * 12); out.add(v / 12); out.add(v * 52); out.add(v / 52) })
+  // A month or a year. Same fact, different unit.
+  //
+  // 🔴 ×52 AND ÷52 USED TO BE IN HERE AND THEY MADE THIS GUARD POROUS. Weekly
+  // money is not something this intake ever asks for, and multiplying every
+  // pairwise sum by 52 lays down such a dense net of values that almost any
+  // large figure lands within tolerance of one. A must-pay of 2,000 and a
+  // discretionary of 340 made $121,680 "traceable" — which is 2% from
+  // $120,000, the exact fabrication this whole check was built to catch.
+  //
+  // ⚠️ A generous closure is the right instinct; this one was generous enough
+  // to be decorative. It is not a guard if a wide enough search finds a path to
+  // any number.
+  combined.forEach(v => { out.add(v * 12); out.add(v / 12) })
   // ⭐ "Three months of must-pay banked" is a real and honest gate, and it is
   // still only their number. Small whole multiples of a BASE figure only —
   // never of a converted one, or a year of must-pay triples into a mortgage.
@@ -541,7 +563,7 @@ const DETAIL_MAX = 380
  * fragment the model left on the end. Anything after the second sentence goes,
  * whether it was instruction, repetition or debris.
  */
-function trimDetail(detail) {
+function trimDetail(detail, allowed = null, answers = null, allowEmpty = false) {
   const text = String(detail ?? '').trim()
   if (!text) return text
 
@@ -550,16 +572,41 @@ function trimDetail(detail) {
   for (const sentence of sentences) {
     // An instruction is dropped wherever it sits, not just past the limit.
     if (INSTRUCTION_SHAPED.some(({ re }) => re.test(sentence))) continue
+
+    // ⭐⭐ AND A SENTENCE CARRYING A NUMBER THAT IS NOT THEIRS GOES THE SAME WAY.
+    //
+    // 🔴 THIS IS WHY A PLAN TOOK FIFTY-ONE SECONDS. Measured by driving the real
+    // page: one generation is ~27s, attempt one got rejected over a single
+    // figure, and the whole 3,000-token map was written again. Rewriting
+    // everything because one sentence has a bad number in it is a terrible
+    // trade — the person waits twice as long for a plan that is mostly
+    // identical, and pays for two calls.
+    //
+    // ⚠️ The same surgery as the instruction case and safe for the same reason:
+    // whole sentences, nothing paraphrased, and the first sentence — the one
+    // that names the move — is almost never the one carrying a stray figure.
+    // A headline or a gate still forces a rewrite, because those cannot lose a
+    // sentence and still be what they are.
+    if (allowed && figuresIn(sentence).some(f => !traceable(f, allowed))) continue
+    if (allowed && speculativeProblem(sentence, figuresIn(sentence).filter(f => traceable(f, allowed)), answers)) continue
+
     if (kept.length >= 2 && kept.join('').length >= 200) break
     kept.push(sentence)
     if (kept.length >= 3) break
   }
 
-  // ⚠️ Never return nothing. If every sentence was an instruction, the first
-  // one back is better than an empty move — mapProblems has no opinion on
-  // detail, so an empty string would render as a blank move and ship.
+  // ⚠️ Never return nothing FOR A MOVE. If every sentence went, the first one
+  // back is better than an empty move — mapProblems has no opinion on detail,
+  // so an empty string would render as a blank move and ship.
+  //
+  // ⭐ A crossed-off reason is the opposite: `allowEmpty` lets it come back
+  // empty so the caller can drop the whole entry. "Buying a second truck" with
+  // no reason beside it is worse than not raising it — the reason IS the
+  // product there, and a bare strikethrough reads as a judgement with nothing
+  // behind it.
   const out = kept.join('').trim()
-  return out || sentences[0].trim()
+  if (out) return out
+  return allowEmpty ? '' : sentences[0].trim()
 }
 
 export function mapStyleNotes(map) {

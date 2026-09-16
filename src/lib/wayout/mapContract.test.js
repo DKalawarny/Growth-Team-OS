@@ -537,3 +537,48 @@ describe('field names are camelCase compounds only', () => {
     expect(out.stats[0].caption).toBe('no discretionary spending named')
   })
 })
+
+describe('a bad figure costs a sentence, not a whole rewrite', () => {
+  // 🔴 MEASURED, NOT GUESSED: driving the real page showed one generation at
+  // ~27s, attempt one rejected over a single figure, and the entire map written
+  // again — 51 seconds for a plan that came back almost identical. Daniel's
+  // report was "still not loading". It was loading; it was taking a minute.
+  // ⚠️ The shared fixture plus a sale they never priced — a thinner `answers`
+  // makes baseMap's own gate ("$2,000 banked") untraceable and the test then
+  // fails for a reason that has nothing to do with what it is checking.
+  const his = { ...answers, coming: 'hopefully sale of my house' }
+
+  it('drops the sentence with the invented number and keeps the move', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      moves: [{
+        ...baseMap.moves[0],
+        detail: 'List the house this month. That puts $120,000 in your hand.',
+      }, ...baseMap.moves.slice(1)],
+    }, his)
+    expect(out.moves[0].detail).toMatch(/List the house/)
+    expect(out.moves[0].detail).not.toMatch(/120,000/)
+    // And because it is gone, nothing forces a second generation.
+    expect(inventedFigures(out, his)).toEqual([])
+  })
+
+  it('still refuses when the figure is in the headline, which cannot lose a sentence', () => {
+    const out = enforceMapContract({ ...baseMap, headline: 'Your $120,000 year' }, his)
+    expect(mapProblems(out, his).some(p => /120,000/.test(p))).toBe(true)
+  })
+
+  it('drops a crossed-off reason that was nothing but a bad figure', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      cut: [
+        // ⚠️ Not "second truck" — baseMap already crosses that off for a good
+        // reason, and matching it made this test pass on the wrong entry.
+        { label: 'Buy the franchise', why: 'That is $40,000 you do not have.' },
+        ...baseMap.cut,
+      ],
+    }, his)
+    expect(out.cut.some(c => /franchise/.test(c.label))).toBe(false)
+    // The honest ones are untouched.
+    expect(out.cut.length).toBe(2)
+  })
+})
