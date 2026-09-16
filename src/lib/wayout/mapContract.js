@@ -409,3 +409,61 @@ export function statIsFounded(stat, answers = {}) {
   if (!traceable(value, allowedFigures(answers))) return false
   return !speculativeProblem(label, [value], answers)
 }
+
+// ── Style ───────────────────────────────────────────────────────────────────
+
+/**
+ * ⭐⭐ STYLE IS A REWRITE REASON, NEVER A REASON TO SHIP NOTHING.
+ *
+ * Kept deliberately apart from `mapProblems`, which is about TRUTH and
+ * structure and is allowed to refuse a map outright. This is about register,
+ * and register is never worth withholding somebody's plan over. `generateMap`
+ * feeds these back on the early attempts and drops them on the last one.
+ *
+ * 🔴 The failure that made this necessary: Daniel's move one detail ran five
+ * sentences and ended "Talk to your real-estate agent and an accountant before
+ * you list." Who to call is the play-by-play's job — `check_first` /
+ * `who_knows` — and it is the paid half of the product, given away in a worse
+ * form. ⭐ Length is the tell. "Is this a how?" cannot be checked by a machine;
+ * "is this five sentences when the spec said two" can, and in practice detail
+ * drifts into instructions by getting longer.
+ */
+
+/** Phrasings that are the play-by-play leaking into the plan. */
+const INSTRUCTION_SHAPED = [
+  { re: /\b(talk to|call|speak to|contact|ask)\s+(your|a|an)\s/i, why: 'tells them who to call — that is the play-by-play' },
+  { re: /\bknock on\b|\bdoor to door\b/i, why: 'tells them how to find customers' },
+  { re: /\bcharge\b|\bquote\b|\bprice it\b/i, why: 'tells them what to charge' },
+  { re: /\bpost (an?|it|the)\b|\blist it on\b|\bsign up (for|with)\b/i, why: 'tells them which service to use' },
+  { re: /\bsay\b.{0,20}\b(to them|like this)\b|\bsend (them )?(a|this)\b/i, why: 'gives them the words to send' },
+]
+
+/** Roughly two plain sentences. Generous — this only has to catch a runaway. */
+const DETAIL_MAX = 380
+
+export function mapStyleNotes(map) {
+  const notes = []
+
+  ;(map?.moves ?? []).forEach((m, i) => {
+    const detail = String(m?.detail ?? '')
+    if (detail.length > DETAIL_MAX) {
+      notes.push(
+        `move ${i + 1} detail is ${detail.length} characters — the spec is one or two plain `
+        + 'sentences. Say what the move IS and stop; the extra sentences are always the how.',
+      )
+    }
+    INSTRUCTION_SHAPED.forEach(({ re, why }) => {
+      if (re.test(detail)) notes.push(`move ${i + 1} detail ${why}. Cut that sentence.`)
+    })
+
+    // ⚠️ A gate is ONE checkable thing. "A written estimate AND a clear sense of
+    // how much goes where" is two, and the second half is not checkable at all
+    // — which means the person can never know whether move 2 has started.
+    const gate = String(m?.gate ?? '')
+    if (gate.length > 140) {
+      notes.push(`move ${i + 1} gate is too long to check. One thing that is true or not true.`)
+    }
+  })
+
+  return notes
+}

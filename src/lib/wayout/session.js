@@ -1,7 +1,7 @@
 import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
-import { enforceMapContract, mapProblems } from './mapContract'
+import { enforceMapContract, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
 
@@ -271,7 +271,13 @@ export async function generateMap(answers) {
 
     const map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
     problems = mapProblems(map, answers)
-    if (!problems.length) return map
+
+    // ⭐ Style rides along on the early goes and is DROPPED on the last one.
+    // A plan withheld because a sentence was too long would be the guard
+    // refusing to ship all over again, in a nicer outfit.
+    const notes = attempt < 3 ? mapStyleNotes(map) : []
+    if (!problems.length && !notes.length) return map
+    problems = [...problems, ...notes]
     // ⭐ The map itself, not just the verdict. While Daniel is the only person
     // running this, being able to read what it tried is worth more than any
     // error copy — and it costs nothing.

@@ -2605,6 +2605,22 @@ Write it so they RECOGNISE the move — what it is made of in their life, what i
 uses that they already have, what it would feel like. Not a set of steps, not a
 price, not a script, not a number of doors. If a sentence could be followed, it
 belongs in the play-by-play.
+
+⚠️ NEVER NAME WHO TO CALL. "Talk to your agent and an accountant before you
+list" is the single most common way this leaks, and who actually answers a
+question where they live is one of the most valuable things the play-by-play
+knows. Naming it here gives away the good version's whole reason for existing.
+
+⚠️ TWO SENTENCES IS TWO, NOT FIVE. Length is how this goes wrong: the first
+sentence names the move, and everything after it drifts into instructions or
+repeats the point in different words. Say what the move is and stop. A third
+sentence is allowed only when the move is genuinely two things.
+
+⚠️ AND THE GATE IS ONE CHECKABLE THING. "A written estimate and a clear sense of
+how much goes where" is two, and the second half cannot be checked at all — so
+they can never know whether move 2 has started, which is the only thing a gate
+is for. "You have a written net-proceeds figure" is a gate. A count is usually
+the best one there is: three people have paid you, two months in a row.
 - If their discretionary spending is above zero, at least one of the three moves
   is a SUBTRACT. Cutting is the fastest money most people have and it needs no
   customer.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -369,5 +369,40 @@ describe('the speculative check is per sentence, not per move', () => {
   it('still catches the figure when it IS the claim about the sale', () => {
     const map = { moves: [{ title: 'List it', detail: 'Selling would clear $120,000.' }] }
     expect(inventedFigures(map, his)).toHaveLength(1)
+  })
+})
+
+describe('style notes — a rewrite reason, never a reason to ship nothing', () => {
+  // 🔴 Daniel's move one, verbatim. His question: "is this to much of a
+  // description on how to do it?" It was, by one sentence and three lengths.
+  const his = { moves: [{
+    detail: 'Get a real net figure: sale price minus mortgage payoff, minus agent fees, '
+      + 'minus tax. That number decides whether you can buy a cashflowing BnB outright, '
+      + 'whether you need financing, and how much is left for the travel-trailer year. '
+      + 'Every other move in this plan is sized against that single figure. You cannot '
+      + 'size the BnB investment, the travel budget, or the safety runway until you have '
+      + 'it. Talk to your real-estate agent and an accountant before you list.',
+    gate: 'You have a written net-proceeds estimate in hand and a clear sense of how much '
+      + 'goes to BnB, how much to travel, and how much stays as reserve.',
+  }] }
+
+  it('catches the runaway length', () => {
+    expect(mapStyleNotes(his).some(n => /characters/.test(n))).toBe(true)
+  })
+
+  it('catches who-to-call, which is the paid half given away', () => {
+    expect(mapStyleNotes(his).some(n => /who to call/.test(n))).toBe(true)
+  })
+
+  it('catches a gate carrying two things instead of one', () => {
+    expect(mapStyleNotes(his).some(n => /gate is too long/.test(n))).toBe(true)
+  })
+
+  it('says nothing about a detail that names the move and stops', () => {
+    expect(mapStyleNotes({ moves: [{
+      detail: 'The truck and the washer are already sitting there. This is the same round '
+        + 'of houses you drive past anyway, turned into a Saturday that pays.',
+      gate: 'Three people have paid you.',
+    }] })).toEqual([])
   })
 })
