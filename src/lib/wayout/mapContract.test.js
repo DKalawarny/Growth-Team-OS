@@ -477,12 +477,14 @@ describe('our field names never reach a person', () => {
   })
 })
 
-describe('only move one carries a detail', () => {
-  it('drops the detail on moves two and three', () => {
+describe('every move carries a detail', () => {
+  it('keeps one on all three — withholding them read as vague, not restrained', () => {
+    // 🔴 This asserted the opposite for a day. Daniel on the result: "super
+    // vague, not enough meat". A title and a gate with nothing between them is
+    // a blank, and a blank does not protect the paid half — the WHAT/HOW line
+    // does, and that applies to every move equally.
     const out = enforceMapContract(baseMap, answers)
-    expect(out.moves[0].detail).toBeTruthy()
-    expect(out.moves[1].detail).toBeUndefined()
-    expect(out.moves[2].detail).toBeUndefined()
+    expect(out.moves.every(m => m.detail)).toBe(true)
   })
 
   it('keeps the titles and gates — the order is the product, not the prose', () => {
@@ -580,5 +582,72 @@ describe('a bad figure costs a sentence, not a whole rewrite', () => {
     expect(out.cut.some(c => /franchise/.test(c.label))).toBe(false)
     // The honest ones are untouched.
     expect(out.cut.length).toBe(2)
+  })
+})
+
+describe('an assumption states what was assumed and stops', () => {
+  // 🔴 VERBATIM, 17 Sep. Daniel: "this is a negative statement and it assumes.
+  // One type of business burnout — a service based business operates a lot
+  // different than managing a BnB."
+  const sprawling = 'I have assumed the BnB property will be run under professional '
+    + 'management from day one, because this plan only works if you are not the operator '
+    + '— you have already learned what happens when you are.'
+
+  it('keeps the assumption and cuts the verdict', () => {
+    const out = enforceMapContract({ ...baseMap, assumptions: [sprawling] }, answers)
+    expect(out.assumptions[0]).toBe('I have assumed the BnB property will be run under professional management from day one')
+    expect(out.assumptions[0]).not.toMatch(/because/)
+    expect(out.assumptions[0]).not.toMatch(/you have already/)
+  })
+
+  it('cuts a trailing clause joined by a dash, not only by a full stop', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      assumptions: ['I have assumed the trailer is paid off — you said you were done with payments'],
+    }, answers)
+    expect(out.assumptions[0]).toBe('I have assumed the trailer is paid off')
+  })
+})
+
+describe('the questions that sell the play-by-play', () => {
+  it('keeps questions', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      stuck: ['What do I say so an agent gives me a real number?', 'What if the first one says it depends?'],
+    }, answers)
+    expect(out.stuck).toHaveLength(2)
+  })
+
+  it('drops a line that answers itself — that is the thing being sold', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      stuck: ['Ask three agents for a written figure.', 'What do I say to get a real number?'],
+    }, answers)
+    expect(out.stuck).toEqual(['What do I say to get a real number?'])
+  })
+})
+
+describe('a gate is a fact, not an errand', () => {
+  it('flags an instruction gate — Daniel: "this statement doesnt make sense"', () => {
+    const notes = mapStyleNotes({ moves: [{
+      title: 'Close the house sale',
+      gate: 'Get a written net-proceeds figure from a lawyer or accountant, not an estimate',
+    }] })
+    expect(notes.some(n => /instruction/.test(n))).toBe(true)
+  })
+
+  it('flags a gate that just says the move again', () => {
+    const notes = mapStyleNotes({ moves: [{
+      title: 'Close the house sale and get the written proceeds figure',
+      gate: 'The house sale closed and the written proceeds figure exists',
+    }] })
+    expect(notes.some(n => /restates the move/.test(n))).toBe(true)
+  })
+
+  it('says nothing about a fact that becomes true', () => {
+    expect(mapStyleNotes({ moves: [{
+      title: 'Close the house sale',
+      gate: 'Three people have paid you.',
+    }] })).toEqual([])
   })
 })

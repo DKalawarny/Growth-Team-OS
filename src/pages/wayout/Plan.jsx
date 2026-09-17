@@ -412,9 +412,7 @@ export function Map({ map, onRebuild, onWantPlaybook, rebuilding = false, spent 
                   happens to leave the paid half something to be. */}
               <span>
                 <p>{m.title}</p>
-                {i === 0
-                  ? <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
-                  : <small><b>{m.when}</b> <em className="wayout__later">Written once move {i} is done — it depends on how it lands.</em></small>}
+                <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
               </span>
             </button>
 
@@ -509,16 +507,34 @@ export function Map({ map, onRebuild, onWantPlaybook, rebuilding = false, spent 
         <span className="wayout__offerkick">The next part</span>
         <h3>{map.moves?.[0]?.title ?? 'Move one'}</h3>
         <p className="wayout__offerlead">
-          You know what it is. This is how you do it — for your town, your
-          hours, and the people who have already paid you.
+          {Array.isArray(map.stuck) && map.stuck.length > 0
+            ? 'You know what the move is. These are the questions that turn up the moment you start it.'
+            : 'You know what it is. This is how you do it — for your town, your hours, and the people who have already paid you.'}
         </p>
-        <ul className="wayout__offerlist">
-          <li>The first thing to do, and the day to do it</li>
-          <li>The words to send, short enough to send without editing</li>
-          <li>What to charge — and where that number comes from</li>
-          <li>What you do <b>not</b> need to buy yet</li>
-          <li>What goes wrong the first time, and what to do about it</li>
-        </ul>
+        {/* ⭐⭐ THE QUESTIONS, NOT THE FEATURES. Daniel: "telling you what is
+            inside is weak, not a good sell." He is right, and the reason is
+            that a contents list describes a product to somebody who has not
+            got a problem yet. These are the snags that arrive within an hour
+            of starting HIS move one, in his own situation — the awkward
+            wording, the number nobody will volunteer, the bit where the first
+            person he asks says "it depends".
+
+            ⚠️ Questions only. The moment one carries its answer it stops being
+            a gap and becomes a sample, and the thing being sold is the answer.
+            The contract drops any line that is not a question. */}
+        {Array.isArray(map.stuck) && map.stuck.length > 0 ? (
+          <ul className="wayout__offerlist wayout__offerlist--q">
+            {map.stuck.map((q, i) => <li key={i}>{q}</li>)}
+          </ul>
+        ) : (
+          <ul className="wayout__offerlist">
+            <li>The first thing to do, and the day to do it</li>
+            <li>The words to send, short enough to send without editing</li>
+            <li>What to charge — and where that number comes from</li>
+            <li>What you do <b>not</b> need to buy yet</li>
+            <li>What goes wrong the first time, and what to do about it</li>
+          </ul>
+        )}
         <PlaybookCta onWant={onWantPlaybook} />
       </div>
 

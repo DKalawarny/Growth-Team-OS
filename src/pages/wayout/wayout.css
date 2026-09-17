@@ -793,6 +793,17 @@ div:first-child > .wayout__group { margin-top: 14px; }
   transform: rotate(-45deg);
 }
 .wayout__offerlist b { font-weight: 700; color: #FFFDF8; }
+
+/* The questions version. A tick beside a question reads as "answered", which is
+   the opposite of the point — these are the things they do NOT have answers to,
+   so the marker is a question mark and the type carries a little more weight. */
+.wayout__offerlist--q li { font-size: 16.5px; padding: 12px 0 12px 30px; }
+.wayout__offerlist--q li::before {
+  content: '?';
+  border: 0; transform: none;
+  left: 2px; top: 11px; width: auto; height: auto;
+  font-size: 17px; font-weight: 800; color: var(--sun);
+}
 .wayout__offer .wayout__btn { width: 100%; }
 .wayout__offerfine {
   margin: 14px 0 0; font-size: 14px; line-height: 1.5;

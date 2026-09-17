@@ -82,14 +82,16 @@ export function enforceMapContract(map, answers) {
   if (Array.isArray(out.moves)) {
     out.moves = out.moves
       .slice(0, 3)
-      // ⚠️ Only move one carries a detail, and the contract enforces it rather
-      // than trusting the prompt — a model that writes one anyway would have it
-      // silently stored and then rendered by any future screen that reaches for
-      // `detail` without knowing the rule.
+      // 🔴 EVERY MOVE CARRIES A DETAIL AGAIN. Withholding them on two and
+      // three was meant to protect the paid half and it gutted the plan
+      // instead — Daniel: "super vague, not enough meat". A title and a gate
+      // with nothing between them is not restraint, it is a blank. What keeps
+      // the paid half safe is the WHAT/HOW line, which every detail is trimmed
+      // against regardless of which move it belongs to.
       .map((m, i) => ({
         ...m,
         order: i + 1,
-        detail: i === 0 ? trimDetail(m?.detail, allowed, answers) : undefined,
+        detail: trimDetail(m?.detail, allowed, answers),
       }))
   }
 
@@ -110,8 +112,18 @@ export function enforceMapContract(map, answers) {
   // a disclaimer — nobody reads it and nothing gets corrected.
   if (Array.isArray(out.assumptions)) {
     out.assumptions = out.assumptions
-      .map(a => String(a ?? '').trim())
+      .map(a => firstSentence(String(a ?? '').trim()))
       .filter(Boolean)
+      .slice(0, 3)
+  }
+
+  // ⚠️ Questions only, and never their answers. `stuck` exists to make the gap
+  // felt; a line without a question mark is almost always the model answering
+  // itself, which hands over the one thing that is meant to be paid for.
+  if (Array.isArray(out.stuck)) {
+    out.stuck = out.stuck
+      .map(q => String(q ?? '').trim())
+      .filter(q => q.endsWith('?'))
       .slice(0, 3)
   }
 
@@ -427,6 +439,43 @@ const SPECULATIVE = [
   /\bcommission\b/i,
 ]
 
+/**
+ * ⭐⭐ AN ASSUMPTION IS ONE SENTENCE AND IT STOPS.
+ *
+ * 🔴 Daniel read this in his own plan: "I have assumed the BnB will be run
+ * under professional management from day one, because this plan only works if
+ * you are not the operator — you have already learned what happens when you
+ * are." Three faults in one sentence. It is a VERDICT ON HIM dressed as an
+ * assumption. It diagnoses him from something he never said — he mentioned a
+ * service business, and it concluded burnout and then generalised that to
+ * managing a rental, which is a different job entirely. And it is negative
+ * about him, which nothing in this plan is allowed to be.
+ *
+ * ⚠️ The cut is at the first sentence and it is deliberately blunt. Everything
+ * after "I have assumed X." is the model explaining itself, and explaining
+ * itself is where it starts telling the person about themselves. The rule
+ * cannot be "be careful"; it has to be a full stop.
+ */
+function firstSentence(text) {
+  const m = String(text ?? '').match(/^[^.!?]*[.!?]/)
+  let out = (m ? m[0] : String(text ?? '')).trim()
+
+  // A trailing clause joined by a dash is the same fault with different
+  // punctuation — "I have assumed X — you have already learned..."
+  out = out.split(/\s+[—–-]\s+/)[0]
+
+  // ⚠️ AND THE JUSTIFICATION, WHICH IS WHERE IT ACTUALLY WENT WRONG. The
+  // sentence Daniel objected to ran "...from day one, because this plan only
+  // works if you are not the operator". Cutting at the full stop left the
+  // whole verdict intact, because the verdict was a subordinate clause rather
+  // than a second sentence. An assumption never needs a "because": naming the
+  // thing is the entire job, and the reason is always where it starts
+  // explaining the person to themselves.
+  out = out.split(/\s+(?:because|since|so that|which means|as this|given that)\b/i)[0]
+
+  return out.replace(/[,;:\s]+$/, '').trim()
+}
+
 /** Everything they TYPED, as opposed to tapped or entered in a fixed field. */
 function freeText(value, into = []) {
   if (typeof value === 'string') { into.push(value); return into }
@@ -630,6 +679,25 @@ export function mapStyleNotes(map) {
     const gate = String(m?.gate ?? '')
     if (gate.length > 140) {
       notes.push(`move ${i + 1} gate is too long to check. One thing that is true or not true.`)
+    }
+
+    // 🔴 A GATE IS A FACT THAT BECOMES TRUE, NOT AN ERRAND. Daniel's read "a
+    // written net-proceeds figure from a lawyer or accountant, not an
+    // estimate" — an instruction wearing a gate's clothes, and wrong about how
+    // a house sale works: when one closes the lawyer hands you the figure.
+    // Telling someone to fetch a thing they will automatically receive says
+    // you do not know the situation.
+    if (/^(get|ask|call|find|make sure|ensure|obtain|confirm with|speak)\b/i.test(gate.trim())) {
+      notes.push(`move ${i + 1} gate is an instruction. Write the FACT that becomes true — "the sale has closed and you know what it cleared" — not the errand.`)
+    }
+
+    // ⚠️ And a gate that repeats the move teaches nothing. It is about what the
+    // NEXT move needs, not what this one did.
+    const title = String(m?.title ?? '').toLowerCase()
+    const words = gate.toLowerCase().match(/[a-z]{5,}/g) ?? []
+    const echoed = words.filter(w => title.includes(w))
+    if (words.length && echoed.length / words.length > 0.6) {
+      notes.push(`move ${i + 1} gate just restates the move. Say what move ${i + 2} needs to be true.`)
     }
   })
 
