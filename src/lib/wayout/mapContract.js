@@ -581,6 +581,35 @@ export function statIsFounded(stat, answers = {}) {
  * drifts into instructions by getting longer.
  */
 
+/**
+ * ⭐⭐ REASONS THAT ARE ABOUT A FEELING RATHER THAN A CONSTRAINT.
+ *
+ * 🔴 Daniel's deepest correction so far, and it is not about wording. He read
+ * "the apps have more chance with a calm launcher" and said: people are
+ * stressed or not calm USUALLY BECAUSE OF LACK OF ACTION. This is action.
+ *
+ * The instinct behind that sentence is the commonest failure in advice — it
+ * sounds like care and works as a trap. Somebody arrives stuck, and the plan
+ * tells them to wait until the pressure lifts; the pressure is coming FROM
+ * being stuck, so waiting is the one thing that guarantees it stays. It
+ * prescribes the disease as the cure, kindly.
+ *
+ * ⚠️ Only mechanical things defer a move: money that does not exist yet, hours
+ * already committed, a real dependency. Those are facts about the world. A
+ * mood is a fact about nobody — we have never met this person.
+ */
+const FEELING_AS_REASON = [
+  /\bcalm(er|ly)?\b/i,
+  /\bstress(ed|ful)?\b/i,
+  /\bpressure\b/i,
+  /\boverwhelm(ed|ing)?\b/i,
+  /\bburn(ed|t)? ?out\b/i,
+  /\bready\b/i,
+  /\bclear head|peace of mind|breathing room|headspace|bandwidth\b/i,
+  /\bone thing at a time\b/i,
+  /\btoo much (at once|on your plate)\b/i,
+]
+
 /** Phrasings that are the play-by-play leaking into the plan. */
 const INSTRUCTION_SHAPED = [
   { re: /\b(talk to|call|speak to|contact|ask)\s+(your|a|an)\s/i, why: 'tells them who to call — that is the play-by-play' },
@@ -698,6 +727,25 @@ export function mapStyleNotes(map) {
     const echoed = words.filter(w => title.includes(w))
     if (words.length && echoed.length / words.length > 0.6) {
       notes.push(`move ${i + 1} gate just restates the move. Say what move ${i + 2} needs to be true.`)
+    }
+  })
+
+  // 🔴 A MOOD IS NOT A REASON. Checked on what was crossed off and on the
+  // gates, because those are the two places the plan explains its own
+  // sequencing — and sequencing is exactly where "wait until you feel better"
+  // gets in and looks like wisdom.
+  ;(map?.cut ?? []).forEach(c => {
+    if (FEELING_AS_REASON.some(re => re.test(String(c?.why ?? '')))) {
+      notes.push(
+        `"${c?.label}" is crossed off over a feeling, not a constraint. Name the scarce `
+        + 'thing it would take — money, hours, a dependency — or do not cross it off. '
+        + 'People are usually stressed BECAUSE nothing is moving.',
+      )
+    }
+  })
+  ;(map?.moves ?? []).forEach((m, i) => {
+    if (FEELING_AS_REASON.some(re => re.test(String(m?.gate ?? '')))) {
+      notes.push(`move ${i + 1} gate waits on a feeling. A gate is a fact that becomes true.`)
     }
   })
 

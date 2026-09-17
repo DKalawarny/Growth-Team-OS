@@ -651,3 +651,32 @@ describe('a gate is a fact, not an errand', () => {
     }] })).toEqual([])
   })
 })
+
+describe('a mood is never a reason to wait', () => {
+  // 🔴🔴 Daniel, 17 Sep, on his own plan: "people are stressed or not calm
+  // usually because of lack of action. this is action." The plan had crossed
+  // off launching software that was already built, on the grounds that he would
+  // be calmer after the house sold. Shipping it costs almost nothing and would
+  // have started bringing money in.
+  it('flags something crossed off over a feeling', () => {
+    const notes = mapStyleNotes({
+      cut: [{
+        label: 'Launch the apps before the house sells',
+        why: 'Every major decision before the proceeds land is made under financial pressure. '
+          + 'The apps have more chance with a calm launcher.',
+      }],
+    })
+    expect(notes.some(n => /feeling, not a constraint/.test(n))).toBe(true)
+  })
+
+  it('accepts a reason that names the scarce thing', () => {
+    expect(mapStyleNotes({
+      cut: [{ label: 'Buy the second property', why: 'It needs money that does not exist until the sale closes.' }],
+    })).toEqual([])
+  })
+
+  it('flags a gate that waits on a feeling', () => {
+    const notes = mapStyleNotes({ moves: [{ title: 'Start the round', gate: 'You feel ready to take it on' }] })
+    expect(notes.some(n => /waits on a feeling/.test(n))).toBe(true)
+  })
+})

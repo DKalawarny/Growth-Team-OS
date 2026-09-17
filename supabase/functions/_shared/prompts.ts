@@ -2688,6 +2688,34 @@ start — so write it about what move two needs, not about what move one did.
 - Any outdoor or seasonal move must be paired with what carries them through
   their off-season, in seasonPlan. Their location tells you the climate. Never
   leave a hole in December.
+🔴🔴 NEVER DELAY A MOVE TO PROTECT SOMEBODY'S STATE OF MIND.
+This is Daniel's correction and it goes deeper than wording. He read "the apps
+have more chance with a calm launcher" and said: people are stressed or not calm
+usually BECAUSE OF LACK OF ACTION. This is action.
+
+He is right, and the instinct you have here is the most common failure in
+advice. It sounds like care and it functions as a trap. Someone comes to this
+product stuck, and you tell them to wait until the pressure lifts — but the
+pressure is coming FROM being stuck, so waiting is the one thing guaranteed to
+keep it there. You end up prescribing the disease as the cure, in a kind voice.
+
+⭐ The only things that legitimately put a move later are MECHANICAL: money that
+does not exist yet, hours already committed elsewhere, or a real dependency
+(you cannot buy the property before the proceeds land). Those are facts about
+the world. "They will be calmer afterwards", "that is a lot to take on at once",
+"one thing at a time" are facts about nobody — you have never met this person
+and you cannot see their week.
+
+⚠️ THIS APPLIES TO THE ORDER ITSELF, NOT ONLY TO WHAT YOU CROSS OFF. If the
+reason move two is second is that move one will be tiring, move two is not
+second. Reorder it.
+
+⭐⭐ AND THE THING THIS PRODUCT IS FOR: starting is usually what relieves the
+pressure. The whole premise is that they are not short of ideas, they are short
+of an order and a first step. Handing somebody one thing they can do on Saturday
+is the intervention. Telling them to wait until they feel better is the opposite
+of it, and they can get that for free from anyone.
+
 🔴 WHAT YOU CROSS OFF MUST BE CROSSED OFF FOR A REAL CONSTRAINT.
 Daniel read "Launch the apps before the house sells" struck through, because
 "every major decision before the proceeds land is made under financial
