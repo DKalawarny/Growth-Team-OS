@@ -72,7 +72,7 @@ export default function Plan() {
         // offer it — a limit enforced in the UI is a suggestion.
         if (s.map && params.get('rebuild')) {
           navigate(`${WAYOUT_BASE}/plan`, { replace: true })
-          if ((s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
+          if (!import.meta.env.DEV && (s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
             setMap(enforceMapContract(s.map, s.answers))
             return
           }
@@ -238,7 +238,18 @@ export default function Plan() {
   if (!map) return null
   // ⭐ When the allowance is gone the doors close, and what is behind them is
   // not a wall — it is the only honest thing left to say. See `Spent`.
-  const spent = (session?.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS
+  // ⚠️ THE CAP IS OFF IN DEV, AND IT HAS TO BE. One rebuild is right for a
+  // person — it stops them fishing for a plan they like, which is the behaviour
+  // this product exists to end. It is wrong for the person BUILDING it: Daniel
+  // changed the prompt six times today and could not see a single change,
+  // because his one rebuild was spent and the page correctly kept handing back
+  // the map he already had. A limit that blocks the author from ever seeing
+  // their own work is a limit that stops the work.
+  //
+  // ⭐ Safe now in a way it was not this morning: `?rebuild=1` is stripped the
+  // moment it is used, so this opens the deliberate links and nothing else. It
+  // cannot become the refresh loop that spent 82 generations in a day.
+  const spent = !import.meta.env.DEV && (session?.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS
   return (
     <Map
       map={map}
