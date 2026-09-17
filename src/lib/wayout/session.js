@@ -340,6 +340,15 @@ export async function generateMap(answers, onProgress = () => {}) {
       if (err?.name === 'AbortError') {
         throw new Error('That took longer than it should have — something is wrong at our end, not yours. Try again.')
       }
+      // ⚠️ A CAP IS OUR LIMIT, NOT THEIR MISTAKE, AND IT MUST NOT READ AS ONE.
+      // The edge function's wording is written for a business owner watching a
+      // budget ("get in touch if you need it raised"). Somebody who has just
+      // written down what they are running from should not be handed an
+      // accounting message — they should be told it is us, and that their
+      // answers are safe.
+      if (err?.code === 'daily_limit_exceeded' || err?.code === 'spend_cap_exceeded' || err?.status === 429) {
+        throw new Error('We\u2019ve hit our own limit for today — this one is on us, not you. Everything you wrote is saved. Try again tomorrow, or sooner if you can.')
+      }
       throw err
     } finally {
       clearTimeout(bell)

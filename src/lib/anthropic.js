@@ -213,12 +213,45 @@ export async function callClaude({
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '')
-    throw new Error(`Claude function error ${res.status}: ${errText.slice(0, 200)}`)
+    throw functionError(res.status, errText)
   }
 
   const data = await res.json()
   const raw  = data.text ?? ''
   return json ? unwrapJson(raw) : raw
+}
+
+/**
+ * ⭐⭐ THE CAPS ARE WORKING CORRECTLY AND THEY LOOK LIKE A CRASH.
+ *
+ * 🔴 Daniel hit the daily spend cap and the page said:
+ *   Claude function error 429: {"error":"Daily limit reached ($4.01 of $4.00
+ *   in the last 24 hours)...","code":"daily_limit_exceeded"}
+ *
+ * The edge function's own message is good — it is plain English and it says the
+ * limit resets. Everything wrong with that screen was added by US, wrapping it
+ * in a status code and a JSON blob. A raw error object in front of a person who
+ * just answered thirty questions about their marriage is the product breaking
+ * character, and it reads as broken rather than full.
+ *
+ * ⚠️ The status code still has to survive for callers that branch on it, so it
+ * goes on the error as a property rather than into the sentence.
+ */
+function functionError(status, body) {
+  let message = ''
+  let code = ''
+  try {
+    const parsed = JSON.parse(body)
+    message = parsed?.error ?? ''
+    code = parsed?.code ?? ''
+  } catch {
+    message = String(body ?? '').slice(0, 200)
+  }
+  // Only fall back to the raw shape when there is genuinely nothing to say.
+  const err = new Error(message || `The service returned ${status}.`)
+  err.status = status
+  err.code = code
+  return err
 }
 
 /**
@@ -422,7 +455,7 @@ export async function runToolCall({
       throw err
     }
     const errText = await res.text().catch(() => '')
-    throw new Error(`Claude function error ${res.status}: ${errText.slice(0, 200)}`)
+    throw functionError(res.status, errText)
   }
 
   const data = await res.json()
