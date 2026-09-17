@@ -163,6 +163,27 @@ export default function Plan() {
     navigate(`${WAYOUT_BASE}?edit=1`)
   }
 
+  /**
+   * ⭐ DEV ONLY: regenerate this session's map from the answers already stored,
+   * without walking the questions again.
+   *
+   * ⚠️ It exists because testing a PROMPT and changing a LIFE are different
+   * jobs and the product only supports the second. For a person, going back
+   * through their answers is the point — a plan should change when something
+   * about them changed, not on a button. For whoever is writing the prompt,
+   * thirty questions between every edit and its result is how you stop
+   * checking, and not checking is how the seen card shipped with no
+   * checkboxes and the map shipped inventing numbers.
+   *
+   * 🔴 Never reachable in production, and the check that proves it is a grep
+   * of the built chunk rather than an argument. See the note on the JSX — the
+   * first version of this left the markup in the bundle because the guard was
+   * on the prop instead of inside the branch.
+   */
+  function regenerateNow() {
+    if (session) { setMap(null); build(session) }
+  }
+
   /** They asked to be told when the play-by-play exists. */
   async function want() {
     if (session) await wantPlaybook(session.id)
@@ -255,6 +276,7 @@ export default function Plan() {
       map={map}
       onRebuild={spent ? null : rebuild}
       onWantPlaybook={want}
+      onRegenerate={import.meta.env.DEV ? regenerateNow : null}
       rebuilding={building}
       spent={spent}
     />
@@ -314,7 +336,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onWantPlaybook, rebuilding = false, spent = false }) {
+export function Map({ map, onRebuild, onWantPlaybook, onRegenerate, rebuilding = false, spent = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -555,6 +577,26 @@ export function Map({ map, onRebuild, onWantPlaybook, rebuilding = false, spent 
           still cannot ask the one that matters to this person, so the product
           has to stay open after the plan rather than closing behind it. */}
       {spent && <Spent />}
+
+      {/* Dev only — see regenerateNow. Deliberately plain and labelled, so it
+          can never be mistaken for something a person is meant to see.
+
+          ⚠️ THE `import.meta.env.DEV` HAS TO BE HERE, IN THE JSX, NOT ONLY ON
+          THE PROP. Passing `DEV ? fn : null` from the parent leaves this whole
+          branch in the shipped chunk — the prop is a runtime value, so nothing
+          can statically eliminate it, and the strings ride along into
+          production even though they never render. Written inline, Vite
+          substitutes `false` at build time and the minifier drops the branch.
+          🔴 I wrote a comment claiming it was dropped and then grepped the
+          built file, which said otherwise. Check the artifact. */}
+      {import.meta.env.DEV && onRegenerate && (
+        <p className="wayout__rebuild">
+          <button type="button" className="wayout__again" onClick={onRegenerate} disabled={rebuilding}>
+            {rebuilding ? 'Building…' : 'Regenerate from the same answers'}
+          </button>
+          {' '}— dev only, not in the build.
+        </p>
+      )}
 
       {onRebuild && (
         <p className="wayout__rebuild wayout__r" style={at(4.15)}>
