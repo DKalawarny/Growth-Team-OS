@@ -57,7 +57,25 @@ export default function Plan() {
         // ⚠️ They just came back through the questions. The stored map was
         // written about the answers they had BEFORE, so it is stale by
         // definition — passing the contract does not make it theirs any more.
+        //
+        // 🔴🔴 `?rebuild=1` IS AN INSTRUCTION, NOT A STATE, AND IT WAS NEITHER
+        // CONSUMED NOR CAPPED. It sat in the address bar, so every reload of
+        // that URL regenerated the entire plan — and with retries that is two
+        // or three model calls a time. 82 map generations in one day, $4.53,
+        // almost all of it a tab being refreshed. It also walked straight past
+        // the one-rebuild limit: `countRebuild` incremented and nothing on this
+        // path ever read it back.
+        //
+        // ⭐ Stripped from the URL the moment it is acted on, so a reload,
+        // a bookmark or a back button cannot spend money again. And the cap is
+        // checked HERE, where the spending happens, not only on the links that
+        // offer it — a limit enforced in the UI is a suggestion.
         if (s.map && params.get('rebuild')) {
+          navigate(`${WAYOUT_BASE}/plan`, { replace: true })
+          if ((s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
+            setMap(enforceMapContract(s.map, s.answers))
+            return
+          }
           countRebuild(s.id, s.rebuilds).then(n => setSession(c => ({ ...c, rebuilds: n })))
           build(s)
           return
