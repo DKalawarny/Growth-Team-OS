@@ -568,6 +568,18 @@ export function Map({ map, onRebuild, onWantPlaybook, onRegenerate, rebuilding =
             <li>What goes wrong the first time, and what to do about it</li>
           </ul>
         )}
+        {/* ⭐⭐ THE ONE LINE THAT STOPS THIS CARD BACKFIRING.
+            Three questions nobody can answer, straight after a plan that just
+            made somebody feel capable, can quietly undo it — they leave the
+            page feeling less ready than when they arrived. Naming the questions
+            as NORMAL turns the same list from a set of holes in them into a set
+            of things that have answers, which is also the truth. */}
+        {Array.isArray(map.stuck) && map.stuck.length > 0 && (
+          <p className="wayout__offerfine wayout__offernote">
+            Everyone hits these. None of them are hard once you have watched
+            somebody do it once.
+          </p>
+        )}
         <PlaybookCta onWant={onWantPlaybook} />
       </div>
 
@@ -679,6 +691,39 @@ function Spent() {
       make. Move one is still first — and it’s still the only one you can
       start today.
     </p>
+  )
+}
+
+/**
+ * What comes back instead of a plan when somebody is in the middle of something.
+ *
+ * ⚠️ Deliberately bare. No brand mark doing a little animation, no stats, no
+ * progress, no "your plan" — every piece of that furniture says this is a
+ * product experience, and it is not one. It is one page of plain text with the
+ * numbers in it, on the quietest surface this design has.
+ *
+ * ⚠️ And no wayout__r classes: the reveal animation staggers content in over
+ * four seconds. Making somebody watch a message about their safety fade in on
+ * a schedule is the kind of detail that tells them a machine wrote it.
+ */
+function CrisisNote({ message }) {
+  // The model writes markdown bold around the numbers it wants seen. Rendering
+  // the asterisks would be worse than losing the emphasis, so they are stripped
+  // and the paragraph breaks kept.
+  const paragraphs = String(message ?? '')
+    .replace(/\*\*/g, '')
+    .split(/\n{2,}/)
+    .map(p => p.trim())
+    .filter(Boolean)
+
+  return (
+    <WayoutShell title="Read this first">
+      <div className="wayout__crisis">
+        {paragraphs.map((p, i) => (
+          <p key={i} className={i === 0 ? 'wayout__q' : 'wayout__lead'}>{p}</p>
+        ))}
+      </div>
+    </WayoutShell>
   )
 }
 

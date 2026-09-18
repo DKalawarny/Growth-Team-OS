@@ -810,6 +810,9 @@ div:first-child > .wayout__group { margin-top: 14px; }
   color: rgba(243, 239, 226, .6);
 }
 .wayout__offerdone { color: var(--sun); font-weight: 600; }
+/* Sits between the questions and the button, so it reads as the answer to
+   them rather than as small print under the offer. */
+.wayout__offernote { margin: 0 0 18px; color: rgba(243, 239, 226, .78); font-size: 15px; }
 
 @media (prefers-reduced-motion: no-preference) {
   .wayout__offer .wayout__btn { transition: transform .18s ease; }
@@ -834,6 +837,13 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* A move that has not happened yet. Deliberately quiet — it is a promise about
    sequencing, not a teaser, and it must not look like a locked door. */
 .wayout__later { font-style: normal; color: var(--soft); opacity: .8; }
+
+/* A safety message. Slightly wider measure and more air than the plan, because
+   it will be read once, quickly, possibly on a phone under pressure. Nothing
+   moves and nothing is decorated. */
+.wayout__crisis { max-width: 34rem; }
+.wayout__crisis .wayout__q { font-size: 24px; line-height: 1.3; margin-bottom: 18px; }
+.wayout__crisis .wayout__lead { font-size: 17.5px; line-height: 1.65; margin-bottom: 16px; }
 
 /* Ask for the plan again. Deliberately a link, not a button — rebuilding is
    always available and never the thing you are being steered towards. */

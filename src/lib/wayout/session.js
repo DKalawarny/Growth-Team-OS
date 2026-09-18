@@ -268,6 +268,26 @@ export async function reflect(screenAnswers) {
  */
 const MAP_TIMEOUT_MS = 90_000
 
+/**
+ * Prose where JSON was asked for, when the prose is deliberate.
+ *
+ * ⚠️ The test has to separate a CRISIS ANSWER from BROKEN JSON, and it does it
+ * by looking for the shape we asked for rather than for distress words. A
+ * truncated or malformed map still starts with a brace or carries "headline";
+ * an answer that never tried to be a map has neither. Sniffing for the word
+ * "safety" instead would make the check wrong in both directions — it would
+ * swallow a genuinely broken response that happened to mention it, and miss a
+ * crisis answer phrased any other way.
+ */
+export function crisisFrom(raw) {
+  const text = String(raw ?? '').trim()
+  if (!text) return null
+  if (text.startsWith('{') || text.startsWith('[')) return null
+  if (/"headline"|"moves"|"stats"/.test(text)) return null
+  if (text.length < 150) return null
+  return { crisis: true, message: text }
+}
+
 export async function generateMap(answers, onProgress = () => {}) {
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
   //
@@ -335,6 +355,20 @@ export async function generateMap(answers, onProgress = () => {}) {
         toolId: TOOL_ID,
         kind: 'map',
       })
+      // ⭐⭐ A CRISIS ANSWER IS ALLOWED TO BREAK THE JSON, AND THE PRODUCT HAS
+      // TO CATCH IT. Found by testing: given somebody describing violence at
+      // home, the model correctly abandoned the three-move shape and wrote
+      // prose — 211 for a transition house, 911 for immediate danger, 988 to
+      // talk. It was a better answer than any JSON could have been.
+      //
+      // 🔴 And the client threw "The plan came back unreadable." The single
+      // most vulnerable person this product will ever meet got a parser error.
+      //
+      // ⚠️ The fix is NOT to force a crisis into the plan shape. It is to let
+      // the safety rule outrank the format, exactly as written, and render what
+      // comes back. See crisisFrom().
+      const crisis = crisisFrom(raw)
+      if (crisis) return crisis
       map = enforceMapContract(parseModelJson(raw, 'The plan'), answers)
     } catch (err) {
       if (err?.name === 'AbortError') {
