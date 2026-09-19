@@ -63,6 +63,7 @@ const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => 
 const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
+const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
 const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
@@ -300,6 +301,10 @@ export default function App() {
             END, where someone can see what they would be keeping. */}
         <Route path="/wayout"       element={<LazyRoute><WayoutIntake /></LazyRoute>} />
         <Route path="/wayout/plan"  element={<LazyRoute><RequireWayout><WayoutPlan /></RequireWayout></LazyRoute>} />
+        {/* The play-by-play for one move. Same guard as the plan — there is
+            nothing here for anyone without a session, and the page itself
+            sends them back if they have no map yet. */}
+        <Route path="/wayout/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (
           <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
         )}

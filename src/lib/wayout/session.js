@@ -1,7 +1,7 @@
 import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
-import { enforceMapContract, mapProblems, mapStyleNotes } from './mapContract'
+import { enforceMapContract, enforcePlaybookContract, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
 
@@ -451,5 +451,68 @@ export async function generatePlaybook({ answers, map, move }) {
     kind: 'playbook',
   })
 
-  return parseModelJson(raw, 'The play-by-play')
+  // ⚠️ THE SAME CRISIS PATH AS THE MAP. Somebody reaches the play-by-play
+  // AFTER the plan, which means they have been living with it for a while and
+  // things may have changed since they answered. The safety rule outranks the
+  // JSON here for exactly the same reason it does there.
+  const crisis = crisisFrom(raw)
+  if (crisis) return crisis
+
+  // ⭐⭐ AND THE SAME FIGURES GUARD. This is where money actually gets used —
+  // what to charge, what it costs to start — so it is the likeliest place in
+  // the whole product for a number that is not theirs to do damage. The map
+  // has been checked since the day it invented $120,000; the play-by-play was
+  // never checked at all, which made it the bigger hole of the two.
+  return enforcePlaybookContract(parseModelJson(raw, 'The play-by-play'), answers)
+}
+
+// ── Storing a play-by-play ──────────────────────────────────────────────────
+
+/**
+ * The play-by-play for one move, written once and kept.
+ *
+ * ⚠️ IT IS NOT REGENERATED ON EVERY VISIT, AND THAT IS NOT ONLY ABOUT COST.
+ * Somebody comes back to this page mid-week, having half-done the thing. A
+ * different answer waiting for them — different words to send, a different
+ * first step — would mean the instructions changed underneath them while they
+ * were following them. The plan may be re-planned; the play they are working
+ * from stays put.
+ */
+export async function loadPlaybook(sessionId, moveOrder) {
+  const { data, error } = await supabase
+    .from('wayout_playbooks')
+    .select('id, move_order, move, play')
+    .eq('session_id', sessionId)
+    .eq('move_order', moveOrder)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return data ?? null
+}
+
+/**
+ * ⚠️ The MOVE is stored beside the play, as it was when the play was written.
+ * A plan can be rebuilt, and a play-by-play for a move that no longer exists is
+ * worse than none — it is confident instructions for somebody else's week. The
+ * snapshot is what lets the page notice and say so.
+ */
+export async function savePlaybook({ sessionId, moveOrder, move, play }) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Signed out.')
+
+  const { error } = await supabase
+    .from('wayout_playbooks')
+    .upsert({
+      user_id: user.id,
+      session_id: sessionId,
+      move_order: moveOrder,
+      move,
+      play,
+    }, { onConflict: 'session_id,move_order' })
+  if (error) throw new Error(error.message)
+}
+
+/** Did the plan change under a play we already wrote? */
+export function playbookIsStale(stored, currentMove) {
+  if (!stored?.move || !currentMove) return false
+  return String(stored.move.title ?? '').trim() !== String(currentMove.title ?? '').trim()
 }

@@ -104,8 +104,15 @@ export default function Playbook({ play, index = 1 }) {
       )}
 
       {play.done_when && (
-        <p className="wayout__disclaimer"><b>Done when:</b> {play.done_when}</p>
+        <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
       )}
+
+      {/* ⚠️ THIS IS THE HALF THAT TELLS PEOPLE WHAT TO CHARGE AND WHAT TO SEND,
+          so it is the half that most needs to say what it is not. The map has
+          carried a disclaimer since it was built; the play-by-play had the
+          field added to its contract and nothing rendered it, which is the
+          same shape of gap as a rule living in one prompt and not another. */}
+      <p className="wayout__disclaimer">{play.disclaimer}</p>
     </WayoutShell>
   )
 }

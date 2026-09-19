@@ -184,9 +184,17 @@ export default function Plan() {
     if (session) { setMap(null); build(session) }
   }
 
-  /** They asked to be told when the play-by-play exists. */
-  async function want() {
-    if (session) await wantPlaybook(session.id)
+  /**
+   * Into the play-by-play for move one.
+   *
+   * ⚠️ Still records that they wanted it. The waiting-list column was the only
+   * measure of whether the gap is felt strongly enough to click, and that is
+   * the number that decides whether this is the right business — it is worth
+   * more now that clicking leads somewhere than it was when it led to a list.
+   */
+  async function openPlaybook() {
+    if (session) wantPlaybook(session.id).catch(() => {})
+    navigate(`${WAYOUT_BASE}/play/1`)
   }
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
@@ -275,7 +283,7 @@ export default function Plan() {
     <Map
       map={map}
       onRebuild={spent ? null : rebuild}
-      onWantPlaybook={want}
+      onOpenPlaybook={openPlaybook}
       onRegenerate={import.meta.env.DEV ? regenerateNow : null}
       rebuilding={building}
       spent={spent}
@@ -336,7 +344,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onWantPlaybook, onRegenerate, rebuilding = false, spent = false }) {
+export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, rebuilding = false, spent = false }) {
   const [done, setDone] = useState(() => new Set())
   const [openCut, setOpenCut] = useState(null)
 
@@ -580,7 +588,7 @@ export function Map({ map, onRebuild, onWantPlaybook, onRegenerate, rebuilding =
             somebody do it once.
           </p>
         )}
-        <PlaybookCta onWant={onWantPlaybook} />
+        <PlaybookCta onOpen={onOpenPlaybook} />
       </div>
 
       {/* ⭐⭐ THE THING THEY REMEMBER AFTERWARDS. It is usually the important
@@ -637,39 +645,22 @@ export function Map({ map, onRebuild, onWantPlaybook, onRegenerate, rebuilding =
  * paid half — whether people want the how badly enough to ask for it is the
  * entire commercial thesis, and this measures it for the price of one column.
  */
-function PlaybookCta({ onWant }) {
-  const [asked, setAsked] = useState(false)
-  const [err, setErr] = useState('')
-
-  if (WAYOUT_PAYMENTS_LIVE) {
-    return (
-      <>
-        <button className="wayout__btn wayout__btn--sun">Show me how — {WAYOUT_PRICE_LABEL}</button>
-        <p className="wayout__offerfine">{guaranteeLine()}</p>
-      </>
-    )
-  }
-
-  if (asked) {
-    return (
-      <p className="wayout__offerfine wayout__offerdone">
-        You’re on the list. You’ll hear from us once, when it’s ready.
-      </p>
-    )
-  }
-
+function PlaybookCta({ onOpen }) {
+  // ⭐⭐ IT EXISTS NOW, SO THE BUTTON DOES THE THING. This was a waiting list
+  // for one day, which was the honest CTA while there was nothing behind it —
+  // an empty shelf reads worse than no shelf. There is something behind it.
+  //
+  // ⚠️ The price still is not charged: WAYOUT_PAYMENTS_LIVE is false and
+  // migration 055 makes finishing the intake the entitlement. The copy says so
+  // plainly rather than implying a trial or a discount, because the one thing
+  // this product cannot survive is a promise it does not keep.
   return (
     <>
-      <button
-        className="wayout__btn wayout__btn--sun"
-        onClick={async () => {
-          try { await onWant(); setAsked(true) } catch (e) { setErr(e.message) }
-        }}
-      >
-        Tell me when this is ready
+      <button className="wayout__btn wayout__btn--sun" onClick={onOpen}>
+        {WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_LABEL}` : 'Show me how'}
       </button>
       <p className="wayout__offerfine">
-        {err || 'It’s being built now. Nothing to pay, and no email until it exists.'}
+        {WAYOUT_PAYMENTS_LIVE ? guaranteeLine() : 'Free while this is being built. Nothing to pay.'}
       </p>
     </>
   )

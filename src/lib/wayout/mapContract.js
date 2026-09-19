@@ -813,3 +813,51 @@ function deJargon(value) {
   }
   return value
 }
+
+// ── The play-by-play ────────────────────────────────────────────────────────
+
+/**
+ * ⭐⭐ THE PAID HALF GETS THE SAME GUARDS AS THE FREE ONE, AND NEEDS THEM MORE.
+ *
+ * 🔴 The map has been checked since the day it invented "$120,000 cash in hand
+ * at sale". The play-by-play was never checked at all — and it is the place
+ * money is actually USED: what to charge, what it costs to start, what to
+ * expect. A wrong figure in the plan sets a wrong expectation; a wrong figure
+ * here gets quoted to a customer.
+ *
+ * ⚠️ Prose is repaired, never rewritten. Regenerating a 4,000-token playbook
+ * over one sentence is the trade that made a plan take fifty-one seconds.
+ */
+export function enforcePlaybookContract(play, answers = {}) {
+  if (!play || typeof play !== 'object' || play.crisis) return play
+  const out = { ...play }
+  const allowed = allowedFigures(answers ?? {})
+
+  // ⚠️ `money.what_to_charge` and `how_you_know` are deliberately NOT trimmed
+  // for figures. Naming a rate is the job here, and the prompt's answer to not
+  // knowing one is to teach the check that finds it — "two or three local ads
+  // will list a price, that is your range" — which carries no figure at all.
+  // Trimming this field would delete the one thing the person paid for.
+  const prose = ['why_first', 'done_when']
+  prose.forEach(k => {
+    if (typeof out[k] === 'string') out[k] = trimDetail(out[k], allowed, answers, true) || out[k]
+  })
+  if (out.thisWeek && typeof out.thisWeek === 'object') {
+    out.thisWeek = { ...out.thisWeek }
+    if (typeof out.thisWeek.why_first === 'string') {
+      out.thisWeek.why_first = trimDetail(out.thisWeek.why_first, allowed, answers, true) || out.thisWeek.why_first
+    }
+  }
+
+  // The lists are short by design and a padded one is the tell that it ran out
+  // of true things to say.
+  if (Array.isArray(out.need_first))    out.need_first    = out.need_first.slice(0, 5)
+  if (Array.isArray(out.dont_need_yet)) out.dont_need_yet = out.dont_need_yet.slice(0, 5)
+  if (Array.isArray(out.goes_wrong))    out.goes_wrong    = out.goes_wrong.slice(0, 4)
+  if (Array.isArray(out.check_first))   out.check_first   = out.check_first.slice(0, 3)
+
+  out.disclaimer = out.disclaimer
+    || 'This is a plan, not financial, legal or tax advice. Check the numbers before you act.'
+
+  return out
+}
