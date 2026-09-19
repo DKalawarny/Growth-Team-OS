@@ -511,6 +511,60 @@ export async function savePlaybook({ sessionId, moveOrder, move, play }) {
   if (error) throw new Error(error.message)
 }
 
+/**
+ * Everything written so far for this session, so the plan can show what is
+ * done and what is reachable.
+ *
+ * ⚠️ One query, not three. The plan page renders three moves and a naive
+ * implementation asks per move — which is fine at this size and becomes the
+ * `useAuth` mistake at any other: the same row fetched N times because nobody
+ * looked at the shape of the page.
+ */
+export async function loadProgress(sessionId) {
+  const { data, error } = await supabase
+    .from('wayout_playbooks')
+    .select('move_order, done_at')
+    .eq('session_id', sessionId)
+  if (error) throw new Error(error.message)
+  const done = new Set()
+  const started = new Set()
+  ;(data ?? []).forEach(r => {
+    started.add(r.move_order)
+    if (r.done_at) done.add(r.move_order)
+  })
+  return { done, started }
+}
+
+/**
+ * ⚠️ THEIR CLAIM, NOT A VERIFICATION, AND NOTHING ASKS FOR PROOF.
+ *
+ * Requiring evidence — a number, a receipt, three named customers — turns this
+ * into something that audits people, and being audited is what they are
+ * already avoiding. Somebody who ticks a move they have not done has misled
+ * themselves, and the play-by-play it unlocks will plainly not fit. The product
+ * does not have to be the one to say so.
+ */
+export async function markMoveDone(sessionId, moveOrder, done = true) {
+  const { error } = await supabase
+    .from('wayout_playbooks')
+    .update({ done_at: done ? new Date().toISOString() : null })
+    .eq('session_id', sessionId)
+    .eq('move_order', moveOrder)
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * Can they open the play-by-play for this move yet?
+ *
+ * ⭐ The gate is the product. Move one is always open. Anything after it opens
+ * when the move before it is done — which is exactly what the plan already
+ * promises in writing under every move, and until now nothing enforced.
+ */
+export function moveIsOpen(order, done) {
+  if (order <= 1) return true
+  return done.has(order - 1)
+}
+
 /** Did the plan change under a play we already wrote? */
 export function playbookIsStale(stored, currentMove) {
   if (!stored?.move || !currentMove) return false

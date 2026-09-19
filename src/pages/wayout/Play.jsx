@@ -5,6 +5,7 @@ import Playbook from './Playbook'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import {
   loadOrCreateSession, generatePlaybook, loadPlaybook, savePlaybook, playbookIsStale,
+  loadProgress, markMoveDone, moveIsOpen,
 } from '../../lib/wayout/session'
 
 /**
@@ -29,6 +30,9 @@ export default function Play() {
   const [play, setPlay]       = useState(null)
   const [move, setMove]       = useState(null)
   const [stale, setStale]     = useState(false)
+  const [sessionId, setSessionId] = useState(null)
+  const [isDone, setIsDone]   = useState(false)
+  const [locked, setLocked]   = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
   // Same guard as the plan page: in dev the effect runs twice, and without this
@@ -49,8 +53,24 @@ export default function Play() {
           navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return
         }
 
+        setSessionId(s.id)
         const current = s.map.moves[order - 1]
         setMove(current)
+
+        // 🔴 THE GATE IS ENFORCED HERE TOO, NOT ONLY IN THE UI. The plan page
+        // only shows the door once the move above is ticked — but the URL is
+        // just a URL, and a product whose ordering can be skipped by typing
+        // /play/3 does not have an order, it has a menu. Generating move
+        // three's play-by-play for somebody who has not done move one also
+        // spends real money writing instructions that cannot work yet.
+        const prog = await loadProgress(s.id)
+        if (cancelled) return
+        setIsDone(prog.done.has(order))
+        if (!moveIsOpen(order, prog.done)) {
+          setLocked(true)
+          setLoading(false)
+          return
+        }
 
         const stored = await loadPlaybook(s.id, order)
         if (cancelled) return
@@ -83,12 +103,41 @@ export default function Play() {
     return () => { cancelled = true }
   }, [navigate, order])
 
+  async function toggleDone(next) {
+    setIsDone(next)
+    try { await markMoveDone(sessionId, order, next) } catch (err) { setError(err.message) }
+  }
+
   if (error) {
     return (
       <WayoutShell title="This week">
         <p className="wayout__q">That didn’t come through.</p>
         <p className="wayout__lead">{error}</p>
         <button className="wayout__btn" onClick={() => navigate(0)}>Try again</button>
+      </WayoutShell>
+    )
+  }
+
+  // ⚠️ Not an error, and not a wall with a price on it. They are early, which
+  // is the plan working — so it says which move they are on and sends them
+  // back to it rather than making them feel refused.
+  if (locked) {
+    return (
+      <WayoutShell title="Not this one yet">
+        <p className="wayout__q">Move {order - 1} comes first.</p>
+        <p className="wayout__lead">
+          {move?.title
+            ? `This one starts once that is done. It is written for where you will be then, not where you are now.`
+            : 'This one starts once the move before it is done.'}
+        </p>
+        <button className="wayout__btn" onClick={() => navigate(`${WAYOUT_BASE}/play/${order - 1}`)}>
+          Open move {order - 1}
+        </button>
+        <p className="wayout__rebuild">
+          <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/plan`)}>
+            Back to the plan
+          </button>
+        </p>
       </WayoutShell>
     )
   }
@@ -151,6 +200,38 @@ export default function Play() {
         </div>
       )}
       <Playbook play={play} index={order} />
+
+      {/* ⭐⭐ THE ONE ACTION THAT MOVES THE PRODUCT FORWARD. Ticking this is
+          what opens the next move — it is not a progress bar, it is the gate
+          the plan has been promising under every move since the first screen.
+
+          ⚠️ Their claim, and nothing asks for proof. Requiring evidence turns
+          this into something that audits people, and being audited is what
+          they are already avoiding. */}
+      <div className="wayout__doneit">
+        {isDone ? (
+          <p>
+            <b>Done.</b>{' '}
+            {order < 3
+              ? <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/play/${order + 1}`)}>Open move {order + 1}</button>
+              : <span>That was the last one.</span>}
+            {' · '}
+            <button type="button" className="wayout__again" onClick={() => toggleDone(false)}>Not yet, actually</button>
+          </p>
+        ) : (
+          <>
+            <button className="wayout__btn wayout__btn--sun" onClick={() => toggleDone(true)}>
+              {play.done_when ? 'That is done' : 'Mark this done'}
+            </button>
+            {play.done_when && <p className="wayout__hint">{play.done_when}</p>}
+          </>
+        )}
+        <p className="wayout__rebuild">
+          <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/plan`)}>
+            Back to the plan
+          </button>
+        </p>
+      </div>
     </>
   )
 }

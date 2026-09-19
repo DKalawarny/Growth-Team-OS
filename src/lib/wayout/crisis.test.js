@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { crisisFrom } from './session'
+import { crisisFrom, moveIsOpen } from './session'
 
 /**
  * 🔴🔴 THE MOST VULNERABLE PERSON THIS PRODUCT WILL EVER MEET GOT A PARSER
@@ -29,5 +29,23 @@ describe('a crisis answer is allowed to break the format', () => {
     expect(crisisFrom('Sorry, I cannot.')).toBeNull()
     expect(crisisFrom('')).toBeNull()
     expect(crisisFrom(null)).toBeNull()
+  })
+})
+
+describe('the gate is the product', () => {
+  it('move one is always open', () => {
+    expect(moveIsOpen(1, new Set())).toBe(true)
+  })
+
+  it('move two opens only when move one is done', () => {
+    expect(moveIsOpen(2, new Set())).toBe(false)
+    expect(moveIsOpen(2, new Set([1]))).toBe(true)
+  })
+
+  it('does not let move three open just because move one is done', () => {
+    // 🔴 The whole promise is the ORDER. Skipping the middle is the pile of
+    // ideas this product exists not to be.
+    expect(moveIsOpen(3, new Set([1]))).toBe(false)
+    expect(moveIsOpen(3, new Set([1, 2]))).toBe(true)
   })
 })

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, countRebuild, wantPlaybook, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, countRebuild, wantPlaybook, loadProgress, markMoveDone, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -29,6 +29,7 @@ export default function Plan() {
   // Which go this is. 1 is the first; anything higher means the first one had
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
+  const [progress, setProgress] = useState(null)
   // 🔴 NOTHING STOPPED TWO GENERATIONS RUNNING AT ONCE, AND IN DEV TWO ALWAYS
   // DID. StrictMode mounts every effect twice; both calls reached the model,
   // both took ~25 seconds, and both wrote a map — so every plan Daniel built
@@ -80,6 +81,7 @@ export default function Plan() {
           build(s)
           return
         }
+        loadProgress(s.id).then(p => { if (!cancelled) setProgress(p) }).catch(() => {})
         if (s.map) {
           const clean = enforceMapContract(s.map, s.answers)
           const problems = mapProblems(clean, s.answers)
@@ -192,9 +194,23 @@ export default function Plan() {
    * the number that decides whether this is the right business — it is worth
    * more now that clicking leads somewhere than it was when it led to a list.
    */
-  async function openPlaybook() {
+  async function openPlaybook(order = 1) {
     if (session) wantPlaybook(session.id).catch(() => {})
-    navigate(`${WAYOUT_BASE}/play/1`)
+    navigate(`${WAYOUT_BASE}/play/${order}`)
+  }
+
+  /**
+   * ⚠️ Optimistic, and it has to be. A tick that waits on a round trip before
+   * it moves feels broken, and this one also unlocks the next move — so the
+   * door has to appear in the same gesture that opened it.
+   */
+  async function setMoveDone(order, isDone) {
+    setProgress(p => {
+      const next = new Set(p?.done ?? [])
+      if (isDone) next.add(order); else next.delete(order)
+      return { ...(p ?? { started: new Set() }), done: next }
+    })
+    try { await markMoveDone(session.id, order, isDone) } catch (err) { setError(err.message) }
   }
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
@@ -285,6 +301,8 @@ export default function Plan() {
       onRebuild={spent ? null : rebuild}
       onOpenPlaybook={openPlaybook}
       onRegenerate={import.meta.env.DEV ? regenerateNow : null}
+      onMove={setMoveDone}
+      progress={progress}
       rebuilding={building}
       spent={spent}
     />
@@ -344,8 +362,14 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, rebuilding = false, spent = false }) {
-  const [done, setDone] = useState(() => new Set())
+export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, progress, rebuilding = false, spent = false }) {
+  // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
+  // nothing read it, and the gate under every move — "move 2 starts when…" —
+  // enforced nothing at all. A gate nothing enforces is a suggestion, and a
+  // plan whose order is a suggestion is the pile of ideas this exists not to
+  // be. Progress now comes from the database; Preview passes none and falls
+  // back to ticking locally so the design can still be checked.
+  const done = progress?.done ?? null
   const [openCut, setOpenCut] = useState(null)
 
   // Stagger, in seconds, matching the design reference. With reduced motion
@@ -354,19 +378,23 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, rebuilding =
   // that is four seconds of a page that looks broken.
   const at = s => (REDUCED ? { } : { animationDelay: `${s}s` })
 
+  const [localDone, setLocalDone] = useState(() => new Set())
+  const ticked = done ?? localDone
+
   function toggle(i) {
-    let ticking = false
-    setDone(d => {
+    // ⚠️ i is a zero-based index here and move_order is 1-based everywhere
+    // else. Converting at the boundary rather than carrying two conventions
+    // through the component, which is how off-by-ones get written.
+    const order = i + 1
+    const isDone = ticked.has(order)
+    if (!isDone) tick()
+    buzz()
+    if (done && onMove) { onMove(order, !isDone); return }
+    setLocalDone(d => {
       const next = new Set(d)
-      if (next.has(i)) next.delete(i)
-      else { next.add(i); ticking = true }
+      if (next.has(order)) next.delete(order); else next.add(order)
       return next
     })
-    // ⚠️ Only on the way ON. Ticking something off is an accomplishment;
-    // un-ticking it is a correction, and celebrating a correction is the kind
-    // of detail that makes an app feel like it is not listening.
-    buzz()
-    if (ticking) tick()
   }
 
   return (
@@ -423,10 +451,10 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, rebuilding =
           <div key={i}>
             <button
               type="button"
-              className={`wayout__move wayout__r${i === 0 ? ' wayout__move--now' : ''}${done.has(i) ? ' wayout__move--done' : ''}`}
+              className={`wayout__move wayout__r${i === 0 ? ' wayout__move--now' : ''}${ticked.has(i + 1) ? ' wayout__move--done' : ''}`}
               style={at(2.6 + i * 0.3)}
               onClick={() => toggle(i)}
-              aria-pressed={done.has(i)}
+              aria-pressed={ticked.has(i + 1)}
             >
               <span className="wayout__chk">
                 <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -463,6 +491,19 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, rebuilding =
             {m.gate && i < map.moves.length - 1 && (
               <div className="wayout__gate wayout__r" style={at(2.75 + i * 0.3)}>
                 <span>Move {i + 2} starts when <b>{m.gate}</b></span>
+                {/* ⭐ The gate is now a door. Once the move above it is ticked,
+                    the next play-by-play is reachable from the sentence that
+                    said it would be — rather than from a link that was always
+                    there and quietly made the gate decorative. */}
+                {onOpenPlaybook && ticked.has(i + 1) && (
+                  <button
+                    type="button"
+                    className="wayout__again"
+                    onClick={() => onOpenPlaybook(i + 2)}
+                  >
+                    Open move {i + 2}
+                  </button>
+                )}
               </div>
             )}
           </div>
