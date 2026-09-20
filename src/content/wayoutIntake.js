@@ -409,6 +409,32 @@ export const WAYOUT_SCREENS = [
         required: false,
       },
       {
+        // 🔴🔴 THIS FIELD DID NOT EXIST, AND DEBT IS OFTEN THE WHOLE PROBLEM.
+        // `mustPay` swallows the minimum PAYMENTS inside its total, so the plan
+        // could see that money left every month and never that clearing a
+        // balance would stop it — which makes the single most powerful move
+        // available to an indebted person invisible.
+        //
+        // ⭐⭐ AND THE RATE IS THE POINT, WHICH IS WHY IT IS ASKED FOR IN THE
+        // LABEL RATHER THAN HOPED FOR. Daniel: "your vehicle payment is x,
+        // interest is x — you could instead of paying off, invest this amount
+        // and the interest from the investment pays for this. Credit cards are
+        // high interest so those typically would have to go." Clearing a debt
+        // is a guaranteed return equal to its rate. Without the rate that
+        // comparison cannot be made at all; with it, it makes itself.
+        //
+        // ⚠️ Free text, not a number, and optional. People carry several debts
+        // at different rates, most do not know all of them, and a required
+        // field here would stop somebody at the exact question that embarrasses
+        // them most.
+        key: 'debt',
+        kind: 'text',
+        label: 'What you owe, and roughly what it costs you',
+        hint: 'Balances and rates if you know them — a statement will say. The rate is the whole difference between a debt worth clearing and one worth keeping, and almost nobody is ever shown that.',
+        placeholder: '$30k on cards at about 21%, $22k left on the truck at 4%',
+        required: false,
+      },
+      {
         // ⭐ HOW BOLD THE PLAN IS ALLOWED TO BE. A 23-year-old's downside on a
         // failed first move is a wasted Saturday. A 52-year-old's is his
         // family's security. Same plan shape, completely different acceptable
