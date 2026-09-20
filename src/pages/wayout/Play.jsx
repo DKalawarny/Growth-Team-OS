@@ -214,7 +214,7 @@ export default function Play() {
             <b>Done.</b>{' '}
             {order < 3
               ? <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/play/${order + 1}`)}>Open move {order + 1}</button>
-              : <span>That was the last one.</span>}
+              : <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/done`)}>That was the last one</button>}
             {' · '}
             <button type="button" className="wayout__again" onClick={() => toggleDone(false)}>Not yet, actually</button>
           </p>

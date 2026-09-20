@@ -64,6 +64,7 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
 const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
+const WayoutDone       = lazy(() => import('./pages/wayout/Done'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
 const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
@@ -305,6 +306,8 @@ export default function App() {
             nothing here for anyone without a session, and the page itself
             sends them back if they have no map yet. */}
         <Route path="/wayout/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
+        {/* After the third move — the only page that asks instead of telling. */}
+        <Route path="/wayout/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (
           <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
         )}

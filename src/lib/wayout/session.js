@@ -570,3 +570,28 @@ export function playbookIsStale(stored, currentMove) {
   if (!stored?.move || !currentMove) return false
   return String(stored.move.title ?? '').trim() !== String(currentMove.title ?? '').trim()
 }
+
+// ── What happened ───────────────────────────────────────────────────────────
+
+/**
+ * ⭐⭐ THE ONLY HONEST MEASURE THIS PRODUCT HAS.
+ *
+ * Everything else counted so far is interest — intakes finished, plans
+ * generated, play-by-plays opened. All of it is people BELIEVING it might work.
+ * This is the first thing that says whether it did.
+ *
+ * ⚠️ The negative answers are the valuable ones. A plan that got followed and
+ * did not land is a fixable problem, and until now there has been no way to
+ * see one.
+ */
+export async function recordOutcome(sessionId, outcome, note = '') {
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({
+      outcome,
+      outcome_at: new Date().toISOString(),
+      outcome_note: note.trim() || null,
+    })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+}

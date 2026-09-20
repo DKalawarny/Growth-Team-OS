@@ -845,6 +845,18 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__crisis .wayout__q { font-size: 24px; line-height: 1.3; margin-bottom: 18px; }
 .wayout__crisis .wayout__lead { font-size: 17.5px; line-height: 1.65; margin-bottom: 16px; }
 
+/* The record of what they did. Their moves, not our summary — so the type is
+   the same weight as the plan's, not shrunk into a receipt. */
+.wayout__ledger { list-style: none; margin: 22px 0 0; padding: 0; }
+.wayout__ledger li {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 13px 0; border-bottom: 1px solid var(--line);
+  font-size: 16.5px; line-height: 1.4; color: var(--soft);
+}
+.wayout__ledger li span { color: var(--line); font-weight: 700; flex: none; width: 14px; }
+.wayout__ledger li.is-done { color: var(--ink); }
+.wayout__ledger li.is-done span { color: var(--green); }
+
 /* Marking a move done. It sits after the whole play-by-play because that is
    when it becomes true — putting it at the top would make it a checkbox on a
    page they have not read. */
