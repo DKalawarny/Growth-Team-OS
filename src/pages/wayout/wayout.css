@@ -857,6 +857,12 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__ledger li.is-done { color: var(--ink); }
 .wayout__ledger li.is-done span { color: var(--green); }
 
+/* The gate condition, immediately above the button that claims it. It is the
+   thing being checked, so it reads at full weight rather than as a caption. */
+.wayout__gatecheck {
+  margin: 0 0 16px; font-size: 17px; line-height: 1.5; color: var(--ink);
+}
+
 /* Marking a move done. It sits after the whole play-by-play because that is
    when it becomes true — putting it at the top would make it a checkbox on a
    page they have not read. */

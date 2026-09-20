@@ -22,13 +22,36 @@ import {
  * thing; finding different words to send would mean the instructions changed
  * underneath them while they were following them.
  */
+/**
+ * ⭐⭐ KEYED BY THE MOVE, AND THAT IS THE WHOLE FIX.
+ *
+ * 🔴 Daniel: "i moved ahead to move two and its the same as one". It was — for
+ * the twenty-seven seconds move two took to write. Going from /play/1 to
+ * /play/2 is a PARAM CHANGE, not a remount, so React kept every piece of state:
+ * the previous move's play stayed on screen, `loading` was false because
+ * nothing had set it true again, and the page confidently rendered move one's
+ * instructions under move two's heading until the new one landed.
+ *
+ * ⚠️ The stored data was correct the entire time — each move had its own play.
+ * That is what makes this class of bug expensive: nothing is wrong anywhere a
+ * query can find it, and the person is simply reading the wrong week.
+ *
+ * ⚠️ Resetting each piece of state by hand in the effect works and is fragile
+ * — it is a list that has to be kept in step with the useState calls above it,
+ * and the failure mode of forgetting one is exactly this bug again, quieter.
+ * A key means the state CANNOT leak between moves, because there is none to
+ * leak: React unmounts and builds a fresh one.
+ */
 export default function Play() {
-  const navigate = useNavigate()
   const { move: moveParam } = useParams()
   // ⚠️ A URL segment is a string from anywhere — a typo, a stale link, or a
-  // handler that passed an event object. NaN must not fall through as if it
-  // were a move number.
+  // handler that passed an event object. NaN must not fall through as a move.
   const order = Number.parseInt(moveParam, 10)
+  return <PlayMove key={order} order={order} />
+}
+
+function PlayMove({ order }) {
+  const navigate = useNavigate()
 
   const [play, setPlay]       = useState(null)
   const [move, setMove]       = useState(null)
@@ -108,7 +131,13 @@ export default function Play() {
 
   async function toggleDone(next) {
     setIsDone(next)
-    try { await markMoveDone(sessionId, order, next) } catch (err) { setError(err.message) }
+    try {
+      await markMoveDone(sessionId, order, next)
+      // ⭐ Straight on. They said the gate is true, which is precisely the
+      // moment the next move becomes worth wanting — making them find their
+      // own way there is how a product loses somebody who was ready.
+      if (next) navigate(order < 3 ? `${WAYOUT_BASE}/play/${order + 1}` : `${WAYOUT_BASE}/done`)
+    } catch (err) { setError(err.message) }
   }
 
   if (error) {
@@ -223,10 +252,20 @@ export default function Play() {
           </p>
         ) : (
           <>
+            {/* 🔴 "That is done" read as a HEADING, not a button — Daniel:
+                "this doesnt really show you how to go to the next thing". The
+                gate text sat under it as grey hint, so the one action that
+                moves the product forward looked like a caption. Now the
+                condition comes FIRST, as the thing to check, and the button
+                says what happens rather than what state you are in. */}
+            <p className="wayout__gatecheck">{play.done_when}</p>
             <button className="wayout__btn wayout__btn--sun" onClick={() => toggleDone(true)}>
-              {play.done_when ? 'That is done' : 'Mark this done'}
+              {order < 3 ? `That's true — open move ${order + 1}` : 'That’s true — I’ve done all three'}
             </button>
-            {play.done_when && <p className="wayout__hint">{play.done_when}</p>}
+            <p className="wayout__hint">
+              Only when it is actually true. Move {order < 3 ? order + 1 : 3} is written for where you
+              are after this one, so ticking it early gets you a plan for somebody else.
+            </p>
           </>
         )}
         <p className="wayout__rebuild">
