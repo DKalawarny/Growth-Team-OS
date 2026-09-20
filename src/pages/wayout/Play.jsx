@@ -25,7 +25,10 @@ import {
 export default function Play() {
   const navigate = useNavigate()
   const { move: moveParam } = useParams()
-  const order = Number(moveParam)
+  // ⚠️ A URL segment is a string from anywhere — a typo, a stale link, or a
+  // handler that passed an event object. NaN must not fall through as if it
+  // were a move number.
+  const order = Number.parseInt(moveParam, 10)
 
   const [play, setPlay]       = useState(null)
   const [move, setMove]       = useState(null)

@@ -195,8 +195,14 @@ export default function Plan() {
    * more now that clicking leads somewhere than it was when it led to a list.
    */
   async function openPlaybook(order = 1) {
+    // ⚠️ Coerced as well as defaulted. The default above is right and was still
+    // not enough — see the note on the button. Anything that is not a real move
+    // number means move one, because that is what a person clicking a button
+    // that says "show me how" is asking for.
+    const n = Number(order)
+    const move = Number.isInteger(n) && n >= 1 && n <= 3 ? n : 1
     if (session) wantPlaybook(session.id).catch(() => {})
-    navigate(`${WAYOUT_BASE}/play/${order}`)
+    navigate(`${WAYOUT_BASE}/play/${move}`)
   }
 
   /**
@@ -697,7 +703,14 @@ function PlaybookCta({ onOpen }) {
   // this product cannot survive is a promise it does not keep.
   return (
     <>
-      <button className="wayout__btn wayout__btn--sun" onClick={onOpen}>
+      {/* 🔴 `onClick={onOpen}` HANDED REACT'S CLICK EVENT TO A DEFAULT
+          PARAMETER. `openPlaybook(order = 1)` got a SyntheticEvent instead of
+          1, the URL became /wayout/play/[object Object], Number() gave NaN and
+          the page bounced straight back to the plan. The default looked like
+          it covered the no-argument case and it was never reached.
+          ⚠️ A default parameter is not a guard when the caller is a DOM
+          handler — the event is always an argument. */}
+      <button className="wayout__btn wayout__btn--sun" onClick={() => onOpen()}>
         {WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_LABEL}` : 'Show me how'}
       </button>
       <p className="wayout__offerfine">
