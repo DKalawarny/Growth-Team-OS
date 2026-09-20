@@ -4,8 +4,8 @@ import WayoutShell from './WayoutShell'
 import Playbook from './Playbook'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import {
-  loadOrCreateSession, generatePlaybook, loadPlaybook, savePlaybook, playbookIsStale,
-  loadProgress, markMoveDone, moveIsOpen,
+  loadOrCreateSession, generatePlaybook, generateMoveQuestions, loadPlaybook, savePlaybook,
+  playbookIsStale, loadProgress, markMoveDone, moveIsOpen,
 } from '../../lib/wayout/session'
 
 /**
@@ -59,6 +59,9 @@ function PlayMove({ order }) {
   const [sessionId, setSessionId] = useState(null)
   const [isDone, setIsDone]   = useState(false)
   const [locked, setLocked]   = useState(false)
+  // ⭐ The questions asked before the play is written. See Asking below.
+  const [ask, setAsk]         = useState(null)
+  const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
   // Same guard as the plan page: in dev the effect runs twice, and without this
@@ -109,13 +112,29 @@ function PlayMove({ order }) {
 
         if (busy.current) return
         busy.current = true
-        setLoading(true)
+        setSession(s)
+
+        // ⭐⭐ ASK BEFORE ANSWERING. The intake asked about a LIFE; this is
+        // about one MOVE, and the questions that decide whether the advice is
+        // right could not have been asked earlier — they depend on which move
+        // the plan chose. Cheap, fast, and the reason this is worth paying for
+        // rather than a gate with a price on it.
+        const qs = await generateMoveQuestions({ answers: s.answers, map: s.map, move: current })
+        if (cancelled) return
+        if (qs.length) { setAsk({ questions: qs }); setLoading(false); busy.current = false; return }
+
+        // ⚠️ No questions is a valid outcome, not a failure. Some moves have
+        // nothing whose answer would change the week, and inventing one to
+        // have a gate would be a form.
+        //
+        // ⚠️ Inlined rather than calling `write` — the effect runs once per
+        // move and adding a function to its dependencies re-runs it on every
+        // render, which on this page means regenerating a play-by-play.
         const written = await generatePlaybook({ answers: s.answers, map: s.map, move: current })
         if (cancelled) return
-        // ⚠️ A crisis answer is never stored. It is about right now, not about
-        // this move, and keeping it would hand it back weeks later as though it
-        // were still true.
-        if (!written?.crisis) await savePlaybook({ sessionId: s.id, moveOrder: order, move: current, play: written })
+        if (!written?.crisis) {
+          await savePlaybook({ sessionId: s.id, moveOrder: order, move: current, play: written, asked: null })
+        }
         if (!cancelled) setPlay(written)
       } catch (err) {
         if (!cancelled) setError(err.message)
@@ -128,6 +147,31 @@ function PlayMove({ order }) {
     go()
     return () => { cancelled = true }
   }, [navigate, order])
+
+  /**
+   * Write the play, with whatever they told us about this move.
+   *
+   * ⚠️ A crisis answer is never stored. It is about right now, not about this
+   * move, and keeping it would hand it back weeks later as though it were
+   * still true.
+   */
+  async function write(s, current, asked) {
+    setLoading(true)
+    busy.current = true
+    try {
+      const written = await generatePlaybook({ answers: s.answers, map: s.map, move: current, asked })
+      if (!written?.crisis) {
+        await savePlaybook({ sessionId: s.id, moveOrder: order, move: current, play: written, asked })
+      }
+      setAsk(null)
+      setPlay(written)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      busy.current = false
+      setLoading(false)
+    }
+  }
 
   async function toggleDone(next) {
     setIsDone(next)
@@ -171,6 +215,19 @@ function PlayMove({ order }) {
           </button>
         </p>
       </WayoutShell>
+    )
+  }
+
+  // ⚠️ Before the loading check: the questions ARE the page at this point, and
+  // there is nothing to wait for.
+  if (ask && !play) {
+    return (
+      <Asking
+        move={move}
+        questions={ask.questions}
+        busy={loading}
+        onSubmit={answers => write(session, move, { questions: ask.questions, answers })}
+      />
     )
   }
 

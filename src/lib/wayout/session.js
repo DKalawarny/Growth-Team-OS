@@ -428,7 +428,58 @@ export async function generateMap(answers, onProgress = () => {}) {
  * against a situation that has changed by the time they get there, and a
  * confident answer built on stale facts is worse than no answer.
  */
-export async function generatePlaybook({ answers, map, move }) {
+/**
+ * The two or three things worth asking before writing a week of instructions.
+ *
+ * ⭐⭐ THIS IS WHAT MAKES THE PAID HALF WORTH PAYING FOR. Anybody can generate
+ * advice from a form. Asking the questions that change the answer, and then
+ * answering THAT, is what somebody who knows the work does — and it is the
+ * only version of a paywall this product can defend, because the person gets
+ * something on the way in rather than merely past a gate.
+ *
+ * ⚠️ Haiku, not Sonnet. Three questions is a small job and the cost of the
+ * paid half is already one Sonnet call; doubling it to ask would make the
+ * asking something to economise on, which is the wrong incentive to build in.
+ */
+export async function generateMoveQuestions({ answers, map, move }) {
+  try {
+    const raw = await callClaude({
+      promptKey: 'WAYOUT_MOVE_QUESTIONS_PROMPT',
+      messages: [{
+        role: 'user',
+        content: JSON.stringify({
+          answers,
+          the_plan: { headline: map?.headline, moves: map?.moves },
+          the_move: move,
+        }, null, 2),
+      }],
+      maxTokens: 700,
+      json: true,
+      model: HAIKU,
+      toolId: TOOL_ID,
+      kind: 'move-questions',
+    })
+    const parsed = parseModelJson(raw, 'The questions')
+    const questions = (parsed?.questions ?? [])
+      .filter(q => String(q?.q ?? '').trim())
+      .slice(0, 3)
+      .map(q => ({
+        q: String(q.q).trim(),
+        why: String(q.why ?? '').trim(),
+        options: Array.isArray(q.options) ? q.options.map(String).slice(0, 4) : [],
+      }))
+    return questions
+  } catch (err) {
+    // ⚠️ NON-FATAL, ALWAYS. If the questions cannot be written, the person
+    // still gets their play-by-play — slightly less accurate and entirely
+    // usable. Blocking the thing they came for on the step that improves it
+    // would be the tail wagging the dog.
+    console.warn('[wayout] move questions unavailable (non-fatal):', err)
+    return []
+  }
+}
+
+export async function generatePlaybook({ answers, map, move, asked = null }) {
   const raw = await callClaude({
     promptKey: 'WAYOUT_PLAYBOOK_PROMPT',
     stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
@@ -439,6 +490,9 @@ export async function generatePlaybook({ answers, map, move }) {
         answers,
         the_move: move,
         the_plan: { headline: map?.headline, moves: map?.moves, cut: map?.cut },
+        // ⭐ What they said thirty seconds ago, about this exact week, knowing
+        // what it was for. The freshest and most targeted thing in the call.
+        asked: asked ?? undefined,
       }, null, 2),
     }],
     // ⚠️ The schema is large — a script, three arrays and nine fields. 2500 was
@@ -481,7 +535,7 @@ export async function generatePlaybook({ answers, map, move }) {
 export async function loadPlaybook(sessionId, moveOrder) {
   const { data, error } = await supabase
     .from('wayout_playbooks')
-    .select('id, move_order, move, play')
+    .select('id, move_order, move, play, asked')
     .eq('session_id', sessionId)
     .eq('move_order', moveOrder)
     .maybeSingle()
@@ -495,7 +549,7 @@ export async function loadPlaybook(sessionId, moveOrder) {
  * worse than none — it is confident instructions for somebody else's week. The
  * snapshot is what lets the page notice and say so.
  */
-export async function savePlaybook({ sessionId, moveOrder, move, play }) {
+export async function savePlaybook({ sessionId, moveOrder, move, play, asked }) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Signed out.')
 
@@ -507,6 +561,7 @@ export async function savePlaybook({ sessionId, moveOrder, move, play }) {
       move_order: moveOrder,
       move,
       play,
+      ...(asked !== undefined ? { asked } : {}),
     }, { onConflict: 'session_id,move_order' })
   if (error) throw new Error(error.message)
 }

@@ -857,6 +857,15 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__ledger li.is-done { color: var(--ink); }
 .wayout__ledger li.is-done span { color: var(--green); }
 
+/* One question before the week gets written. Spaced like a question being
+   asked, not like a field in a form. */
+.wayout__askq { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
+.wayout__askq:first-of-type { border-top: 0; padding-top: 6px; }
+.wayout__askq .wayout__label { font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.wayout__askq .wayout__hint { margin-top: 4px; }
+.wayout__askq .wayout__chips { margin-top: 14px; }
+.wayout__askq .wayout__textarea { margin-top: 12px; min-height: 70px; }
+
 /* The gate condition, immediately above the button that claims it. It is the
    thing being checked, so it reads at full weight rather than as a caption. */
 .wayout__gatecheck {
