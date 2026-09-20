@@ -173,6 +173,34 @@ function PlayMove({ order }) {
     }
   }
 
+  /**
+   * ⭐ Ask again and rewrite this move's play-by-play.
+   *
+   * 🔴 Daniel changed the prompt, reloaded /play/1, and saw the old advice —
+   * "CORRECTION ISNT SHOWING". It was not: a stored play is loaded and the
+   * questions step never runs, which is correct for a person mid-week and
+   * useless for the person writing the thing. Exactly the same trap as the
+   * plan's rebuild cap locking the author out of his own product.
+   *
+   * ⚠️ DEV ONLY. For a real person the play is written once ON PURPOSE —
+   * coming back mid-week to different words to send would mean the
+   * instructions changed underneath them while they were following them. The
+   * product answer to "this does not fit" is the stale path and the questions,
+   * not a re-roll button.
+   */
+  async function rewrite() {
+    const s = await loadOrCreateSession()
+    const current = s.map.moves[order - 1]
+    setPlay(null)
+    setAsk(null)
+    setLoading(true)
+    setSession(s)
+    setMove(current)
+    const qs = await generateMoveQuestions({ answers: s.answers, map: s.map, move: current })
+    if (qs.length) { setAsk({ questions: qs }); setLoading(false); return }
+    await write(s, current, null)
+  }
+
   async function toggleDone(next) {
     setIsDone(next)
     try {
@@ -329,6 +357,17 @@ function PlayMove({ order }) {
           <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/plan`)}>
             Back to the plan
           </button>
+          {/* Dev only — see rewrite(). The guard is inline so Vite can drop the
+              branch at build time; on the prop it would ship the markup. */}
+          {import.meta.env.DEV && (
+            <>
+              {' · '}
+              <button type="button" className="wayout__again" onClick={rewrite}>
+                Ask again and rewrite
+              </button>
+              {' — dev only'}
+            </>
+          )}
         </p>
       </div>
     </>
