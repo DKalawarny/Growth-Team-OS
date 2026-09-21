@@ -128,7 +128,15 @@
     display: grid;
     /* The plan side is slightly narrower — the moves carry longer lines and a
        gate sentence that should not wrap three times. */
-    grid-template-columns: 7fr 5fr;
+    /* 🔴 minmax(0, …) IS LOAD-BEARING, NOT DECORATION. `7fr` is shorthand for
+       `minmax(auto, 7fr)`, and an `auto` minimum means a grid track will not
+       shrink below its content's minimum width. One long unbreakable stat
+       caption in the left column blew that track out and squeezed the moves
+       into a 225px strip — Daniel: "fitment is way off".
+       ⚠️ It is content-dependent, which is what makes it vicious: the same CSS
+       measured a perfect 527/377 on a test session whose captions were shorter,
+       so the layout was "fine" right up until somebody's real plan was not. */
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: 0 64px;
     align-items: start;
   }
@@ -491,7 +499,12 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__seen b { font-weight: 700; display: block; margin-top: 8px; }
 
 .wayout__stats { display: flex; gap: 12px; margin: 22px 0 0; }
-.wayout__stat { flex: 1; background: var(--tint); border-radius: 16px; padding: 14px 16px; }
+/* ⚠️ `min-width: 0` for the same reason as the grid note above, one level down:
+   a flex child also defaults to `min-width: auto`, so a long caption refuses to
+   shrink and pushes the whole row — and therefore the grid track it sits in —
+   wider than its share. This is the pair of defaults that made the plan page
+   collapse on one person's content and look perfect on another's. */
+.wayout__stat { flex: 1; min-width: 0; background: var(--tint); border-radius: 16px; padding: 14px 16px; }
 .wayout__stat span { display: block; font-size: 13px; color: var(--soft); }
 .wayout__stat b {
   display: block;
@@ -717,7 +730,8 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__facts dt { font-size: 13px; font-weight: 700; color: var(--soft); margin-top: 12px; }
 .wayout__facts dd { margin: 2px 0 0; font-size: 16px; line-height: 1.5; }
 .wayout__twocol { display: grid; gap: 4px 28px; }
-@media (min-width: 560px) { .wayout__twocol { grid-template-columns: 1fr 1fr; } }
+/* ⚠️ Same reason as the 7fr/5fr note above — a long item must wrap, not push. */
+@media (min-width: 560px) { .wayout__twocol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .wayout__list { margin: 10px 0 0; padding-left: 18px; font-size: 15.5px; line-height: 1.6; }
 .wayout__list li { margin-bottom: 4px; }
 .wayout__list--skip { color: var(--soft); }
