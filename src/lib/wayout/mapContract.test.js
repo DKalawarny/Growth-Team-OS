@@ -323,7 +323,11 @@ describe('invented figures', () => {
     expect(statIsFounded({ label: 'At sale', value: 120000, prefix: '$' }, own)).toBe(true)
   })
 
-  it('removes the unfounded stat from the map, which then fails as incomplete', () => {
+  it('removes the unfounded stat and backfills with one that is true', () => {
+    // ⚠️ This used to assert the map then failed as incomplete. It no longer
+    // does, and the change is deliberate: dropping a fabricated figure and
+    // leaving the page blank punished the reader for the model's mistake.
+    // Now the invented one goes and their own must-pay takes its place.
     const map = {
       headline: 'Home by summer',
       stats: [
@@ -333,8 +337,9 @@ describe('invented figures', () => {
       moves: [], cut: [],
     }
     const out = enforceMapContract(map, his)
-    expect(out.stats).toHaveLength(1)
-    expect(mapProblems(out, his)).toContain('missing stats')
+    expect(JSON.stringify(out.stats)).not.toMatch(/120,?000/)
+    expect(out.stats.length).toBeGreaterThan(0)
+    expect(out.stats[0].value).toBe(5000)
   })
 })
 
@@ -772,10 +777,13 @@ describe('the two headline figures are ours, not the model’s', () => {
   })
 
   it('does not invent a gap when they never gave an income', () => {
-    // ⚠️ A confident "$0 coming in" would be worse than a chosen stat, so with
-    // no income we derive nothing and leave the model's choice to the figures
-    // guard — which in this fixture correctly drops stats it cannot trace.
-    expect(deriveStats({ mustPay: 5000 })).toBeNull()
+    // ⚠️ A confident "$0 coming in" would be worse than saying less, so with no
+    // income we derive the one figure we have and no gap at all. This used to
+    // derive NOTHING, which the audit caught leaving a thinly-answered person
+    // with no numbers on their page whatsoever.
+    const only = deriveStats({ mustPay: 5000 })
+    expect(only).toHaveLength(1)
+    expect(only[0].value).toBe(5000)
     const out = enforceMapContract({ ...baseMap }, { mustPay: 5000 })
     expect((out.stats ?? []).some(s => /gap to close/i.test(s.label))).toBe(false)
   })

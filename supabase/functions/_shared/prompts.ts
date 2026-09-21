@@ -3868,6 +3868,38 @@ a company structure, never a figure. What they need depends on where they live
 and what they are doing, and being confidently wrong about it costs them more
 than saying nothing would have.
 
+🔴🔴 THE FIRST CUSTOMER IS FOR PROOF, NOT FOR REVENUE — AND WHICH ONE DEPENDS
+ON WHAT THEY SELL.
+
+Daniel: "we talked about it but it's not stated — getting someone to try it out
+for free for feedback and A REVIEW IS MORE IMPORTANT and easier to get the ball
+rolling, and then once they are on, to tell others who buy, you have clients."
+
+⚠️ THE ANSWER IS DIFFERENT FOR A PRODUCT AND FOR A SERVICE, and getting this
+backwards is how a plan sends somebody to ask a stranger for money before they
+have anything to show.
+
+  - SOMETHING BUILT ONCE AND SOLD MANY TIMES — software, an app, a course, a
+    template. The marginal cost of one more user is nothing, so the first
+    person's value is PROOF, not the money: somebody using it, telling you what
+    breaks, and saying so where other people can read it. "The first month is on
+    me — tell me what is wrong with it" is a far easier yes than a price, and
+    the sentence they write afterwards is what makes the next ten possible.
+    Charging comes after somebody has said out loud that it is worth something.
+  - WORK DONE ONCE FOR ONE PERSON — a cleared yard, a driveway, a day's labour.
+    Every hour costs them an hour, so free is not cheap, it is unpaid. Payment
+    IS the proof here and it arrives the same day. Ask for the money.
+
+⭐ AND SAY WHAT THE REVIEW IS FOR. The point of the first free user is not
+goodwill, it is the next sale: a named person who will say it worked, and who
+will tell somebody else. Name the asking — "once it has helped, ask them for
+two sentences and whether they know anybody else with the same problem" — as
+part of the move, because nobody does it unprompted and it is the whole reason
+the free one was worth doing.
+
+⚠️ NEVER free for an indefinite period, and never to more than a handful. A
+product given away to everybody has not been tested, it has been abandoned.
+
 ⭐ "dont_need_yet" IS AS IMPORTANT AS "need_first". Most people do not fail from
 under-preparing, they fail by spending three weeks and four hundred dollars on a
 logo, a website, a business name and a magnetic sign, and never knocking on a

@@ -944,8 +944,14 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* Asking about the move. Deliberately a conversation, not a chat product —
    no bubbles, no avatars, no typing indicator pretending to be a person. Two
    voices set apart by weight and indent, the way a letter and its reply are. */
+/* 🔴 `width: 100%` IS LOAD-BEARING ON A FLEX ITEM. `.wayout__frame` is a flex
+   column, and `margin: … auto …` on a flex item does not centre a full-width
+   block — it makes the item shrink to its content and centres THAT. The ask box
+   collapsed to 196px inside a 1080px card and read, in Daniel's words, like an
+   afterthought. Same family as the grid `minmax(0, …)` note above: a default
+   that is invisible until content or context changes. */
 .wayout__ask {
-  max-width: 46rem; margin: 34px auto 0;
+  width: 100%; max-width: 46rem; margin: 34px auto 0;
   padding-top: 26px; border-top: 1px solid var(--line);
 }
 .wayout__askmine {
@@ -965,7 +971,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
    when it becomes true — putting it at the top would make it a checkbox on a
    page they have not read. */
 .wayout__doneit {
-  max-width: 46rem; margin: 34px auto 0;
+  width: 100%; max-width: 46rem; margin: 34px auto 0;
   padding-top: 26px; border-top: 1px solid var(--line);
 }
 .wayout__doneit .wayout__hint { margin-top: 12px; }
@@ -986,7 +992,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* The plan moved on after this play was written. A notice, not an alarm — the
    week they already spent on it was not wasted and must not read as an error. */
 .wayout__stale {
-  max-width: 46rem; margin: 0 auto 4px; padding: 14px 20px;
+  width: 100%; max-width: 46rem; margin: 0 auto 4px; padding: 14px 20px;
   background: var(--tint); border-left: 4px solid var(--sun);
   border-radius: 0 12px 12px 0;
   font-size: 15px; line-height: 1.5; color: var(--soft);

@@ -4,12 +4,20 @@
  * ⚠️ SPLIT OUT OF session.js SO IT CAN BE TESTED. This is the logic that
  * decides whether the seen card is allowed to render, which is the one thing in
  * this product that cannot be wrong — and it was sitting in a module that
- * import { WAYOUT_READING } from '../../content/wayoutReading'
+ * // ⚠️ The .js extension is required, not stylistic. Vite resolves extensionless
+// imports; plain Node does not — and scripts/wayout-audit.mjs runs this module
+// under Node so the audit can use the very same guards the product uses,
+// rather than a copy that can drift from them.
+import { WAYOUT_READING } from '../../content/wayoutReading.js'
 imports the Supabase client, so it could not be loaded in a unit test at all.
  * Pure in, pure out, no I/O.
  */
 
-import { WAYOUT_READING } from '../../content/wayoutReading'
+// ⚠️ The .js extension is required, not stylistic. Vite resolves extensionless
+// imports; plain Node does not — and scripts/wayout-audit.mjs runs this module
+// under Node so the audit can use the very same guards the product uses,
+// rather than a copy that can drift from them.
+import { WAYOUT_READING } from '../../content/wayoutReading.js'
 
 /**
  * ⭐⭐ THE SEEN CARD IS THE ONE THING IN THIS PRODUCT THAT CANNOT BE WRONG.
@@ -72,6 +80,13 @@ export function enforceMapContract(map, answers) {
     }
   }
 
+  // ⚠️ THE INSIGHT BESIDE THE QUOTE WAS NEVER CHECKED. The quote is verified
+  // word for word — it is the one thing that cannot be wrong — and the sentence
+  // next to it, which is the most personal claim on the page, went unread.
+  if (out.seen?.insight) {
+    out.seen = { ...out.seen, insight: scrubFigures(out.seen.insight, answers) }
+  }
+
   // The highlight is rendered as a <mark> inside the headline by string match.
   // If it is not actually in the headline the mark silently does nothing, which
   // looks like a design bug rather than a data one.
@@ -112,20 +127,30 @@ export function enforceMapContract(map, answers) {
   // numbers on the page are subtraction on figures they typed, and putting a
   // language model in that loop is what made them move.
   const derived = deriveStats(answers)
-  if (derived) out.stats = derived
 
   // ⭐ A stat is the biggest type on the page, and its value is a clean number
   // rather than prose — so an unfounded one can be dropped the way the seen
   // card is, instead of failing the whole plan. If that leaves fewer than two,
   // `mapProblems` says so and the map is written again.
-  if (Array.isArray(out.stats)) {
-    const kept = out.stats.filter(st => {
-      const ok = statIsFounded(st, answers)
-      if (!ok) console.warn('[wayout] stat dropped — figure is not theirs:', st?.label, st?.value)
-      return ok
-    })
-    out.stats = kept
-  }
+  // ⭐⭐ IN THIS ORDER, AND THE ORDER IS THE POINT.
+  //   1. Our own pair, when both can be derived. Deterministic, and the answer
+  //      to "why does the dollar amount always change".
+  //   2. Otherwise the model's, minus any figure that is not theirs.
+  //   3. Otherwise the one number we can stand behind.
+  //
+  // ⚠️ My first attempt collapsed this to "ours if we have any", which threw
+  // away two perfectly good guarded stats to show one derived one. Preferring
+  // certainty is right; preferring LESS certainty is not.
+  const founded = (Array.isArray(out.stats) ? out.stats : []).filter(st => {
+    const ok = statIsFounded(st, answers)
+    if (!ok) console.warn('[wayout] stat dropped — figure is not theirs:', st?.label, st?.value)
+    return ok
+  })
+
+  if (derived && derived.length >= 2) out.stats = derived
+  else if (founded.length) out.stats = founded
+  else if (derived) out.stats = derived
+  else out.stats = []
 
   // ⭐ Three at the outside. A list of nine assumptions is not honesty, it is
   // a disclaimer — nobody reads it and nothing gets corrected.
@@ -255,7 +280,10 @@ export function mapProblems(map, answers = {}) {
     }
   }
 
-  if (!Array.isArray(map?.stats) || map.stats.length < 2) problems.push('missing stats')
+  // ⚠️ AT LEAST ONE, NOT EXACTLY TWO. See deriveStats — somebody who answered
+  // thinly can only honestly be shown one figure, and failing their whole plan
+  // over the second is refusing to serve the person with least to give.
+  if (!Array.isArray(map?.stats) || map.stats.length < 1) problems.push('missing stats')
 
   // 🔴 THE ONE THAT COST DANIEL'S FIRST REAL MAP ITS CREDIBILITY. Prose cannot
   // be edited down the way a stat can — a sentence with a made-up figure cut
@@ -732,6 +760,44 @@ const DETAIL_MAX = 380
  * fragment the model left on the end. Anything after the second sentence goes,
  * whether it was instruction, repetition or debris.
  */
+/**
+ * ⭐⭐ DROP ANY SENTENCE THAT SAYS SOMETHING UNTRUE ABOUT A NUMBER.
+ *
+ * 🔴 THE AUDIT FINDING, AND IT IS WORSE THAN THE BUG THAT PROMPTED IT. The
+ * figure guards ran on the MAP and almost nothing else. The play-by-play — the
+ * paid half, the place where money is actually USED, where somebody is told
+ * what to charge and what a thing costs to start — had them on exactly two of
+ * its fields. The conversation had none at all: an answer went from the model
+ * to the screen unread.
+ *
+ * ⚠️ The two newest surfaces were the two least guarded, which is how this goes
+ * every time: the checks get written for the thing that broke, and the next
+ * thing gets built beside them without inheriting anything.
+ *
+ * ⚠️ Whole sentences, never a rewrite. Same reasoning as trimDetail: nothing is
+ * paraphrased, it is only stopped — and a sentence that made a false claim
+ * about their money is better absent than repaired by a machine.
+ */
+export function scrubFigures(text, answers = {}) {
+  const src = String(text ?? '').trim()
+  if (!src) return src
+  const allowed = allowedFigures(answers ?? {})
+
+  const kept = (src.match(/[^.!?]+[.!?]+(?:\s|$)/g) ?? [src]).filter(sentence => {
+    const figures = figuresIn(sentence)
+    if (figures.some(f => !traceable(f, allowed))) return false
+    if (speculativeProblem(sentence, figures.filter(f => traceable(f, allowed)), answers)) return false
+    if (misnamedQuantity(sentence, answers).length) return false
+    return true
+  })
+
+  // ⚠️ Never return nothing from something. If every sentence made a false
+  // claim the answer is broken, not empty, and the caller decides what to do
+  // with a string it can see is unchanged.
+  const out = kept.join('').trim()
+  return out || src
+}
+
 function trimDetail(detail, allowed = null, answers = null, allowEmpty = false) {
   const text = String(detail ?? '').trim()
   if (!text) return text
@@ -922,22 +988,55 @@ function deJargon(value) {
 export function enforcePlaybookContract(play, answers = {}) {
   if (!play || typeof play !== 'object' || play.crisis) return play
   const out = { ...play }
-  const allowed = allowedFigures(answers ?? {})
 
   // ⚠️ `money.what_to_charge` and `how_you_know` are deliberately NOT trimmed
   // for figures. Naming a rate is the job here, and the prompt's answer to not
   // knowing one is to teach the check that finds it — "two or three local ads
   // will list a price, that is your range" — which carries no figure at all.
   // Trimming this field would delete the one thing the person paid for.
-  const prose = ['why_first', 'done_when']
-  prose.forEach(k => {
-    if (typeof out[k] === 'string') out[k] = trimDetail(out[k], allowed, answers, true) || out[k]
-  })
+  // 🔴 EVERY PROSE FIELD, NOT TWO OF THEM. See scrubFigures — this half of the
+  // product had figure guards on `why_first` and `done_when` and nowhere else,
+  // while being the half that tells somebody what to charge.
+  const scrub = v => (typeof v === 'string' ? scrubFigures(v, answers) : v)
+
+  out.done_when = scrub(out.done_when)
   if (out.thisWeek && typeof out.thisWeek === 'object') {
-    out.thisWeek = { ...out.thisWeek }
-    if (typeof out.thisWeek.why_first === 'string') {
-      out.thisWeek.why_first = trimDetail(out.thisWeek.why_first, allowed, answers, true) || out.thisWeek.why_first
+    out.thisWeek = {
+      ...out.thisWeek,
+      action: scrub(out.thisWeek.action),
+      why_first: scrub(out.thisWeek.why_first),
     }
+  }
+  if (out.words && typeof out.words === 'object') {
+    // ⚠️ The script is NOT scrubbed sentence-by-sentence. It is a message they
+    // will send as one piece, and half a message is worse than a wrong one —
+    // it is checked as a whole below instead, and dropped entire if it lies.
+    out.words = { ...out.words, context: scrub(out.words.context) }
+    if (typeof out.words.script === 'string' && scrubFigures(out.words.script, answers) !== out.words.script) {
+      console.warn('[wayout] script dropped — a figure in it is not theirs')
+      out.words = { ...out.words, script: '' }
+    }
+  }
+  if (out.money && typeof out.money === 'object') {
+    // ⚠️ `what_to_charge` is scrubbed like everything else now. Naming a rate is
+    // the job, and the honest answer when the rate is unknown carries no figure
+    // at all — so a figure here that is not theirs is exactly the thing that
+    // gets quoted to a customer.
+    out.money = {
+      ...out.money,
+      what_to_charge: scrub(out.money.what_to_charge),
+      how_you_know: scrub(out.money.how_you_know),
+      getting_paid: scrub(out.money.getting_paid),
+    }
+  }
+  ;['need_first', 'dont_need_yet'].forEach(k => {
+    if (Array.isArray(out[k])) out[k] = out[k].map(scrub)
+  })
+  if (Array.isArray(out.goes_wrong)) {
+    out.goes_wrong = out.goes_wrong.map(g => ({ ...g, what: scrub(g?.what), do: scrub(g?.do) }))
+  }
+  if (Array.isArray(out.check_first)) {
+    out.check_first = out.check_first.map(c => ({ ...c, thing: scrub(c?.thing), who_knows: scrub(c?.who_knows) }))
   }
 
   // The lists are short by design and a padded one is the tell that it ran out
@@ -983,7 +1082,12 @@ export function readingIsReal(read, shelf) {
     .replace(/[–—]/g, '-')
     .replace(/\s+/g, ' ')
 
-  const title = norm(read?.title)
+  // ⚠️ THE AUDIT CAUGHT THIS REJECTING A REAL BOOK. The model put the author
+  // inside the title — "Scarcity by Sendhil Mullainathan and Eldar Shafir" —
+  // and a strict match threw away a correct recommendation. A guard that drops
+  // the truth over formatting teaches you to loosen it, which is how it stops
+  // catching the thing it is for. Same lesson as the curly apostrophe.
+  const title = norm(read?.title).replace(/\s+by\s+.+$/, '').trim()
   if (!title) return false
   return shelf.some(b => {
     if (norm(b.title) !== title) return false
@@ -1058,7 +1162,13 @@ export function deriveStats(answers = {}) {
       })
   }
 
-  return stats.length === 2 ? stats : null
+  // ⚠️ ONE TRUE STAT BEATS TWO WHERE ONE IS MADE UP. The audit found a person
+  // who gave almost nothing ending up with NO stats at all: we could derive
+  // only their must-pay, so we returned nothing, and the figures guard then
+  // correctly dropped the model's two because neither traced to anything.
+  // Requiring a pair was a design preference; having a number on the page that
+  // is theirs is the product.
+  return stats.length ? stats : null
 }
 
 /**

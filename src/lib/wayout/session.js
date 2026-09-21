@@ -2,7 +2,7 @@ import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { readingForPrompt } from '../../content/wayoutReading'
-import { enforceMapContract, enforcePlaybookContract, mapProblems, mapStyleNotes } from './mapContract'
+import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
 
@@ -591,7 +591,19 @@ export async function askAboutMove({ answers, map, move, play, thread = [], ques
 
   const text = String(raw ?? '').trim()
   if (!text) throw new Error('That did not come back. Ask again.')
-  return text
+
+  // 🔴 THE CONVERSATION WAS COMPLETELY UNGUARDED. An answer went from the model
+  // to the screen unread — no figure check, no named-quantity check, nothing —
+  // on the newest surface in the product and the one where somebody is most
+  // likely to ask about money. Every other output has been checked since the
+  // day the map invented $120,000; this one never was.
+  //
+  // ⚠️ Sentence-level, same as everywhere else. A reply that loses its worst
+  // sentence is still an answer; a reply that quietly states a number they
+  // never gave is the thing that ends trust in all of it.
+  const clean = scrubFigures(text, answers)
+  if (clean !== text) console.warn('[wayout] a sentence was dropped from an answer — figure not theirs')
+  return clean
 }
 
 /** Keep the conversation. */
