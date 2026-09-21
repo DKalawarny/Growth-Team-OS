@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { loadDraft, saveDraft } from '../../lib/wayout/draft'
-import { DIAGNOSTIC_OPENING, DIAGNOSTIC_NOTE, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
+import { DIAGNOSTIC_OPENING, DIAGNOSTIC_NOTE, DIAGNOSTIC_REGION, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
@@ -32,11 +32,13 @@ export default function Diagnostic() {
   const [done, setDone]       = useState(false)
   // The one place to write on the free side.
   const [note, setNote]       = useState('')
+  // ⚠️ Not one of the six — see DIAGNOSTIC_REGION. It rides on the note screen.
+  const [region, setRegion]   = useState('')
 
   const q = DIAGNOSTIC_QUESTIONS[step]
 
   /** Record and land. Split out so the note step can call it too. */
-  function finish(all, written) {
+  function finish(all, written, where) {
     setDone(true)
     const path = choosePath(all)
     const carried = {}
@@ -54,11 +56,14 @@ export default function Diagnostic() {
     // ⭐ What they wrote here is the best sentence on the free side — carry it
     // into the intake's open box rather than losing it at the paywall.
     if (written?.trim()) carried.story = written.trim()
+    // ⭐ Carried like the rest, so somebody who goes on to the full version is
+    // not asked the same thing twice thirty seconds apart.
+    if (where) carried.region = where
     if (Object.keys(carried).length) {
       const existing = loadDraft()
       saveDraft({ ...carried, ...(existing?.answers ?? {}) }, existing?.step ?? 0)
     }
-    supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null }, path })
+    supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null, region: where || null }, path })
       .then(({ error }) => { if (error) console.warn('[wayout] diagnostic not recorded:', error.message) })
   }
 
@@ -110,9 +115,26 @@ export default function Diagnostic() {
               onChange={e => setNote(e.target.value)}
             />
             <p className="wayout__hint">{DIAGNOSTIC_NOTE.hint}</p>
+
+            <p className="wayout__label" style={{ marginTop: 22 }}>{DIAGNOSTIC_REGION.label}</p>
+            <div className="wayout__chips">
+              {DIAGNOSTIC_REGION.options.map(o => (
+                <button
+                  type="button"
+                  key={o.key}
+                  className={`wayout__chip${region === o.key ? ' wayout__chip--on' : ''}`}
+                  aria-pressed={region === o.key}
+                  onClick={() => setRegion(region === o.key ? '' : o.key)}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <p className="wayout__hint">{DIAGNOSTIC_REGION.hint}</p>
+
             <div className="wayout__nav">
               <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
-              <button className="wayout__btn" onClick={() => finish(answers, note)}>See where you land</button>
+              <button className="wayout__btn" onClick={() => finish(answers, note, region)}>See where you land</button>
             </div>
           </div>
         </div>

@@ -153,6 +153,41 @@ export const DIAGNOSTIC_NOTE = {
   hint: 'Optional. The full version asks properly.',
 }
 
+/**
+ * ⭐⭐ WHERE THEY ARE. Daniel: "maybe we should ask where they live so it can
+ * adjust accordingly, also it's good for knowing who's coming to the page."
+ *
+ * ⚠️ THE COMMENT AT THE TOP OF THIS FILE HAS SAID "six enum answers AND A
+ * REGION" SINCE THE DAY IT WAS WRITTEN. The region was designed in and never
+ * built, which is why nothing in three weeks of diagnostics knows whether the
+ * people arriving are in Saskatchewan or Surrey.
+ *
+ * It earns its place twice over. It changes the ANSWER — what a benefit is
+ * called, which crisis number is real, whether half this shelf's caveats about
+ * American tax apply to them. And it is the only thing on the free side that
+ * tells us who is actually finding this, which is the question every other
+ * number on the page depends on.
+ *
+ * ⚠️ IT IS NOT A SEVENTH QUESTION. It sits on the note screen, which was never
+ * counted, so the promise of six taps on the first breath stays true. One tap,
+ * no typing, and skippable like the note beside it.
+ *
+ * ⚠️ COUNTRY, NOT TOWN. The free side does not need a town and should not ask
+ * for one — this is a public page with no account behind it, and the narrower
+ * the question the more it feels like being tracked rather than helped. The
+ * intake asks properly, once somebody has chosen to be here.
+ */
+export const DIAGNOSTIC_REGION = {
+  label: 'Where are you?',
+  hint: 'It changes what is actually possible — and what half of the advice out there is even written for.',
+  options: [
+    { key: 'ca',    label: 'Canada' },
+    { key: 'us',    label: 'United States' },
+    { key: 'uk',    label: 'UK or Ireland' },
+    { key: 'other', label: 'Somewhere else' },
+  ],
+}
+
 export const PATHS = {
   'side-income': {
     name: 'The side-income ladder',
