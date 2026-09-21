@@ -137,8 +137,23 @@ function Asking({ move, questions, busy, onSubmit }) {
   )
 }
 
-function AskBox({ thread, onAsk }) {
+function AskBox({ thread, onAsk, seed }) {
   const [q, setQ] = useState('')
+
+  // ⚠️ ADJUSTED DURING RENDER, NOT IN AN EFFECT. React's own pattern for "reset
+  // some state when a prop changes": keep the last value and compare. An effect
+  // here would run after paint and cascade a second render, which is what the
+  // linter objects to and it is right — this way the box is correct on the
+  // first paint and never flickers the old text.
+  //
+  // ⚠️ It only fires when the SEED changes, so somebody mid-sentence does not
+  // lose what they were typing because a parent re-rendered. Clicking a second
+  // "change this" while typing is a deliberate act and is allowed to win.
+  const [lastSeed, setLastSeed] = useState(seed)
+  if (seed !== lastSeed) {
+    setLastSeed(seed)
+    if (seed) setQ(seed)
+  }
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const spent = thread.filter(m => m.role === 'user').length >= WAYOUT_MAX_ASKS
@@ -174,6 +189,7 @@ function AskBox({ thread, onAsk }) {
       ) : (
         <>
           <textarea
+            id="wayout-ask"
             className="wayout__textarea"
             value={q}
             onChange={e => setQ(e.target.value)}
@@ -211,6 +227,8 @@ function PlayMove({ order }) {
   const [ask, setAsk]         = useState(null)
   const [session, setSession] = useState(null)
   const [thread, setThread]   = useState([])
+  // ⭐ What a "change this" link put in the box, waiting to be finished.
+  const [seed, setSeed]       = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
   // Same guard as the plan page: in dev the effect runs twice, and without this
@@ -468,10 +486,20 @@ function PlayMove({ order }) {
           </p>
         </div>
       )}
-      <Playbook play={play} index={order} />
+      {/* ⚠️ Everything below now renders INSIDE the playbook's own shell. As
+          siblings they fell outside the card — invisible button, unstyled
+          block. See the note on Playbook. */}
+      <Playbook play={play} index={order} onSection={label => {
+        // ⚠️ A space on the end so the cursor lands after the colon, and a
+        // unique suffix is not needed — clicking the SAME section twice should
+        // not wipe what they have started typing about it.
+        setSeed(`About "${label}": `)
+        requestAnimationFrame(() => document.getElementById('wayout-ask')?.focus())
+      }}>
 
       {/* ⭐⭐ THE THING THAT STOPS THIS BEING A GATED ANSWER PLATFORM. */}
       <AskBox
+        seed={seed}
         thread={thread}
         onAsk={async question => {
           const mine = { role: 'user', content: question, at: new Date().toISOString() }
@@ -538,6 +566,7 @@ function PlayMove({ order }) {
           )}
         </p>
       </div>
+      </Playbook>
     </>
   )
 }

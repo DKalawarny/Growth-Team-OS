@@ -886,6 +886,19 @@ div:first-child > .wayout__group { margin-top: 14px; }
   margin: 0 0 16px; font-size: 17px; line-height: 1.5; color: var(--ink);
 }
 
+/* A section heading you can talk back to. The link is quiet and sits on the
+   baseline of the heading — present where the thought occurs, and never
+   competing with the section it belongs to. */
+.wayout__sectionh { display: flex; align-items: baseline; gap: 12px; }
+.wayout__change {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: 12px; font-weight: 600;
+  letter-spacing: .04em; text-transform: none;
+  color: var(--green); opacity: .55;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.wayout__change:hover { opacity: 1; }
+
 /* Asking about the move. Deliberately a conversation, not a chat product —
    no bubbles, no avatars, no typing indicator pretending to be a person. Two
    voices set apart by weight and indent, the way a letter and its reply are. */
