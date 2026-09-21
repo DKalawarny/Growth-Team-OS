@@ -80,6 +80,16 @@ export function enforceMapContract(map, answers) {
     delete out.highlight
   }
 
+  // ⚠️ A HIGHLIGHT THAT COVERS MOST OF THE HEADLINE IS NOT A HIGHLIGHT. The
+  // prompt asks for two to four words; it produced eight, which at headline
+  // size overflowed its column and ran over the next one. The CSS now wraps
+  // instead of overflowing, so this is no longer a layout failure — but a mark
+  // under half a sentence emphasises nothing, which is its own failure.
+  if (out.highlight && out.headline && out.highlight.length > out.headline.length * 0.5) {
+    console.warn('[wayout] highlight covers most of the headline — dropping the mark')
+    delete out.highlight
+  }
+
   // Exactly three moves, in order. A map with four is not a worse map, it is a
   // different product — the ordering is the thing being sold.
   if (Array.isArray(out.moves)) {

@@ -265,10 +265,20 @@
   background-position: 0 88%;
   color: inherit;
   padding: 0 4px;
-  /* ⚠️ This is what keeps the phrase off a line break. A highlight broken
-     across two lines reads as a rendering fault, and a comment saying so does
-     not prevent it. */
-  white-space: nowrap;
+  /* 🔴 THIS WAS `white-space: nowrap`, TO KEEP A HIGHLIGHT OFF A LINE BREAK —
+     right for the two-to-four words the prompt asks for, and a guarantee of
+     overflow the moment it gets eight. Daniel's headline marked "apps making
+     money, one property covering the bills", which cannot fit a 527px column
+     at 40px, so it ran straight over the moves in the next column.
+     ⚠️ It also explains the earlier "fitment is way off": before the grid
+     tracks were pinned with minmax(0,…), that same un-wrappable phrase pushed
+     the left track wide and squeezed the right one to a strip. One cause, two
+     completely different-looking symptoms.
+     ⭐ `clone` is what makes wrapping look deliberate: each line gets its own
+     full stroke rather than one stroke sliced in half. */
+  white-space: normal;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* ⭐ Used EXACTLY ONCE in the whole product (S0 fine print). A second one and

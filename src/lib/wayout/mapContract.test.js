@@ -720,3 +720,23 @@ describe('the shelf check survives typography', () => {
     expect(readingIsReal({ title: 'So Good They Can’t Ignore Me' }, shelf)).toBe(false)
   })
 })
+
+describe('the highlight is a highlight, not most of the sentence', () => {
+  it('keeps a short one', () => {
+    const out = enforceMapContract({ ...baseMap, headline: 'Out of the warehouse in twelve months.', highlight: 'twelve months' }, answers)
+    expect(out.highlight).toBe('twelve months')
+  })
+
+  it('drops one covering half the headline', () => {
+    // 🔴 Daniel's: "apps making money, one property covering the bills" marked
+    // inside a 68-character headline. At headline size it could not fit its
+    // column, and with `white-space: nowrap` on the mark it ran straight over
+    // the moves in the next column.
+    const out = enforceMapContract({
+      ...baseMap,
+      headline: 'Family on the road, apps making money, one property covering the bills',
+      highlight: 'apps making money, one property covering the bills',
+    }, answers)
+    expect(out.highlight).toBeUndefined()
+  })
+})
