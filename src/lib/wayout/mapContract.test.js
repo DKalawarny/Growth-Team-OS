@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { deriveStats, readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -738,5 +738,45 @@ describe('the highlight is a highlight, not most of the sentence', () => {
       highlight: 'apps making money, one property covering the bills',
     }, answers)
     expect(out.highlight).toBeUndefined()
+  })
+})
+
+describe('the two headline figures are ours, not the model’s', () => {
+  // 🔴 Daniel asked three times why the dollar amount kept changing. It was not
+  // drift: the prompt let the model CHOOSE which two figures to show, so it
+  // chose again every run — and on one run it reported a $1,500 gap when
+  // $5,000 minus $4,000 is $1,000.
+  const his = { mustPay: 5000, takeHome: 500, householdTakeHome: 3500 }
+
+  it('is the same every time, because it is subtraction', () => {
+    const a = deriveStats(his)
+    const b = deriveStats({ ...his })
+    expect(a).toEqual(b)
+    expect(a[0].value).toBe(5000)
+    expect(a[1].value).toBe(1000)
+    expect(a[1].label).toBe('The gap to close')
+  })
+
+  it('overrides whatever the model picked', () => {
+    const out = enforceMapContract({ ...baseMap, stats: [
+      { label: 'Freed by cutting', value: 5000, prefix: '$' },
+      { label: 'Gap', value: 1500, prefix: '$' },
+    ] }, his)
+    expect(out.stats[1].value).toBe(1000)
+  })
+
+  it('says spare, not a negative gap, for somebody already clearing their floor', () => {
+    const s = deriveStats({ mustPay: 3000, takeHome: 4200 })
+    expect(s[1].label).toMatch(/Spare/)
+    expect(s[1].value).toBe(1200)
+  })
+
+  it('does not invent a gap when they never gave an income', () => {
+    // ⚠️ A confident "$0 coming in" would be worse than a chosen stat, so with
+    // no income we derive nothing and leave the model's choice to the figures
+    // guard — which in this fixture correctly drops stats it cannot trace.
+    expect(deriveStats({ mustPay: 5000 })).toBeNull()
+    const out = enforceMapContract({ ...baseMap }, { mustPay: 5000 })
+    expect((out.stats ?? []).some(s => /gap to close/i.test(s.label))).toBe(false)
   })
 })

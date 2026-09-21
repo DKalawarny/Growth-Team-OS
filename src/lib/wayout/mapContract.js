@@ -108,6 +108,12 @@ export function enforceMapContract(map, answers) {
       }))
   }
 
+  // ⭐⭐ OURS WHERE WE CAN DERIVE THEM. See deriveStats — the two biggest
+  // numbers on the page are subtraction on figures they typed, and putting a
+  // language model in that loop is what made them move.
+  const derived = deriveStats(answers)
+  if (derived) out.stats = derived
+
   // ⭐ A stat is the biggest type on the page, and its value is a clean number
   // rather than prose — so an unfounded one can be dropped the way the seen
   // card is, instead of failing the whole plan. If that leaves fewer than two,
@@ -920,4 +926,72 @@ export function readingIsReal(read, shelf) {
     const claimed = norm(read?.author)
     return !claimed || norm(b.author) === claimed
   })
+}
+
+/**
+ * ⭐⭐ THE TWO HEADLINE FIGURES ARE OURS, NOT THE MODEL'S.
+ *
+ * 🔴 Daniel, three times: "why does the dollar amount always change?" Across
+ * four regenerations the first stat stayed at his must-pay and the second was a
+ * different number every time — the sale price, a gap, household income — and
+ * on one run the gap was $1,500 when $5,000 minus $4,000 is $1,000.
+ *
+ * Two separate faults, and neither is fixable by asking nicely:
+ *   - The prompt said "pick the two figures that decide this plan", so the
+ *     CHOICE was re-made on every run. Nothing was drifting; it was choosing.
+ *   - And a subtraction went through a language model, which is the one kind of
+ *     work it has no business doing when both operands are sitting in a form.
+ *
+ * ⚠️ So they are computed here, from their own answers, every time. Same
+ * answers, same numbers, forever — which is what "this is what your answers
+ * produce" has to mean if it means anything.
+ *
+ * ⚠️ WE ONLY REPLACE WHAT WE CAN ACTUALLY DERIVE. A person who skipped the
+ * income questions gets the model's stats, because a confident $0 would be
+ * worse than a chosen one.
+ */
+export function deriveStats(answers = {}) {
+  const num = v => (Number.isFinite(Number(v)) && String(v ?? '').trim() !== '' ? Number(v) : null)
+  const mustPay = num(answers.mustPay)
+  if (mustPay === null) return null
+
+  const income = [answers.takeHome, answers.householdTakeHome]
+    .map(num)
+    .filter(v => v !== null)
+    .reduce((a, b) => a + b, 0)
+
+  const stats = [{
+    label: 'What has to go out every month',
+    value: mustPay,
+    prefix: '$',
+    suffix: '/mo',
+    caption: 'The number everything has to beat',
+  }]
+
+  // ⚠️ Only when they actually told us what comes in. `reduce` on an empty
+  // list gives 0, and "your income is $0" is a lie with a stat card round it.
+  const gaveIncome = [answers.takeHome, answers.householdTakeHome].some(v => num(v) !== null)
+  if (gaveIncome) {
+    const gap = mustPay - income
+    stats.push(gap > 0
+      ? {
+        label: 'The gap to close',
+        value: gap,
+        prefix: '$',
+        suffix: '/mo',
+        caption: `$${income.toLocaleString()} coming in against $${mustPay.toLocaleString()} going out`,
+      }
+      : {
+        // ⭐ Not everybody is short. Somebody already clearing their floor is
+        // being told something useful and surprising, and calling it a gap of
+        // zero would hide it.
+        label: 'Spare each month, right now',
+        value: Math.abs(gap),
+        prefix: '$',
+        suffix: '/mo',
+        caption: `$${income.toLocaleString()} coming in against $${mustPay.toLocaleString()} going out`,
+      })
+  }
+
+  return stats.length === 2 ? stats : null
 }
