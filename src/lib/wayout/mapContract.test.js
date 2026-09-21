@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -678,5 +678,45 @@ describe('a mood is never a reason to wait', () => {
   it('flags a gate that waits on a feeling', () => {
     const notes = mapStyleNotes({ moves: [{ title: 'Start the round', gate: 'You feel ready to take it on' }] })
     expect(notes.some(n => /waits on a feeling/.test(n))).toBe(true)
+  })
+})
+
+describe('the book has to be on the shelf', () => {
+  const shelf = [{ title: 'Your Money or Your Life', author: 'Vicki Robin and Joe Dominguez' }]
+
+  it('keeps one that is really there', () => {
+    expect(readingIsReal({ title: 'Your Money or Your Life' }, shelf)).toBe(true)
+  })
+
+  it('drops one that is not', () => {
+    // 🔴 Models are unusually good at plausible bibliographies. A title that
+    // sounds right and does not exist sends somebody looking for a book they
+    // cannot find, and they correctly stop believing the rest of the page.
+    expect(readingIsReal({ title: 'The Quiet Exit', author: 'James Aldridge' }, shelf)).toBe(false)
+  })
+
+  it('drops a real title joined to the wrong author', () => {
+    // Two real things welded into a false one — exactly what a title-only
+    // check waves through.
+    expect(readingIsReal({ title: 'Your Money or Your Life', author: 'Morgan Housel' }, shelf)).toBe(false)
+  })
+
+  it('removes it from the map rather than rendering it', () => {
+    const out = enforceMapContract({ ...baseMap, read: { title: 'A Book I Made Up' } }, answers)
+    expect(out.read).toBeUndefined()
+  })
+})
+
+describe('the shelf check survives typography', () => {
+  const shelf = [{ title: 'So Good They Can’t Ignore You', author: 'Cal Newport' }]
+
+  it('accepts a straight apostrophe where the shelf has a curly one', () => {
+    // 🔴 Caught by running it, not by reading it: the model returned exactly
+    // the right book and the first version of this guard called it invented.
+    expect(readingIsReal({ title: "So Good They Can't Ignore You" }, shelf)).toBe(true)
+  })
+
+  it('still rejects a book that is genuinely not there', () => {
+    expect(readingIsReal({ title: 'So Good They Can’t Ignore Me' }, shelf)).toBe(false)
   })
 })

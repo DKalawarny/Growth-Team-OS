@@ -1,6 +1,7 @@
 import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
+import { readingForPrompt } from '../../content/wayoutReading'
 import { enforceMapContract, enforcePlaybookContract, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
@@ -347,7 +348,12 @@ export async function generateMap(answers, onProgress = () => {}) {
       const raw = await callClaude({
         signal: controller.signal,
         promptKey: 'WAYOUT_MAP_PROMPT',
-        stableContext: `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`,
+        // ⚠️ Both libraries ride in the CACHED prefix — byte-identical on
+        // every call in this product's life, so they are paid for once rather
+        // than per person.
+        stableContext:
+          `\n\nMOVES LIBRARY\n\n${movesLibraryForPrompt()}\n`
+          + `\n\nTHE SHELF — the only books you may name\n\n${readingForPrompt()}\n`,
         messages: [{ role: 'user', content }],
         maxTokens: 3000,
         json: true,

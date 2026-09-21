@@ -4,9 +4,12 @@
  * ⚠️ SPLIT OUT OF session.js SO IT CAN BE TESTED. This is the logic that
  * decides whether the seen card is allowed to render, which is the one thing in
  * this product that cannot be wrong — and it was sitting in a module that
- * imports the Supabase client, so it could not be loaded in a unit test at all.
+ * import { WAYOUT_READING } from '../../content/wayoutReading'
+imports the Supabase client, so it could not be loaded in a unit test at all.
  * Pure in, pure out, no I/O.
  */
+
+import { WAYOUT_READING } from '../../content/wayoutReading'
 
 /**
  * ⭐⭐ THE SEEN CARD IS THE ONE THING IN THIS PRODUCT THAT CANNOT BE WRONG.
@@ -125,6 +128,13 @@ export function enforceMapContract(map, answers) {
       .map(q => String(q ?? '').trim())
       .filter(q => q.endsWith('?'))
       .slice(0, 3)
+  }
+
+  // ⚠️ A book we cannot vouch for is dropped silently. There is no version of
+  // "we recommended something that may not exist" worth rendering.
+  if (out.read && !readingIsReal(out.read, WAYOUT_READING)) {
+    console.warn('[wayout] reading dropped — not on the shelf:', out.read?.title)
+    delete out.read
   }
 
   if (Array.isArray(out.cut)) {
@@ -860,4 +870,44 @@ export function enforcePlaybookContract(play, answers = {}) {
     || 'This is a plan, not financial, legal or tax advice. Check the numbers before you act.'
 
   return out
+}
+
+/**
+ * ⭐⭐ THE BOOK MUST BE ON THE SHELF. CHECKED, NOT ASKED FOR.
+ *
+ * 🔴 The same failure as inventing an organisation, and models are unusually
+ * good at it: a plausible title, a real-sounding author, and nothing behind it.
+ * Somebody goes looking, finds nothing, and correctly stops believing the rest
+ * of the page — and a fabricated recommendation is worse than a fabricated
+ * figure, because they will spend money on it before they find out.
+ *
+ * ⚠️ Title AND author both have to match. "The Psychology of Money by James
+ * Clear" is two real things joined into a false one, and it is exactly the kind
+ * of near-miss that a title-only check waves through.
+ */
+export function readingIsReal(read, shelf) {
+  // 🔴 TYPOGRAPHY NEARLY THREW AWAY A CORRECT ANSWER. The shelf holds "So Good
+  // They Can’t Ignore You" with a curly apostrophe; the model returned the
+  // same title with a straight one and the check called it a fabrication.
+  //
+  // ⚠️ Exactly the failure the seen card already guards against, in a file that
+  // already has the fix twenty lines away — and I wrote this one without it.
+  // A guard that rejects the truth over punctuation is worse than no guard: it
+  // trains you to loosen it, and then it stops catching the real thing.
+  const norm = v => String(v ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/[–—]/g, '-')
+    .replace(/\s+/g, ' ')
+
+  const title = norm(read?.title)
+  if (!title) return false
+  return shelf.some(b => {
+    if (norm(b.title) !== title) return false
+    // The author is optional in the shape; when it is given it has to be right.
+    const claimed = norm(read?.author)
+    return !claimed || norm(b.author) === claimed
+  })
 }

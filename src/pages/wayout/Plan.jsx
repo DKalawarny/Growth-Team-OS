@@ -559,6 +559,20 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, prog
           Declared here, an assumption stops being a lie and becomes the most
           useful thing on the page: the one question whose answer changes the
           plan, asked of the only person who knows it. */}
+      {/* ⭐ One book, beside the plan rather than instead of it. It is the
+          door next to the door — for the part of this that is about how they
+          SEE the situation rather than what they do on Saturday. The contract
+          has already dropped it if it is not on our shelf. */}
+      {map.read?.title && (
+        <div className="wayout__read wayout__r" style={at(3.8)}>
+          <h3 className="wayout__label">One thing worth reading</h3>
+          <p className="wayout__readtitle">
+            <b>{map.read.title}</b>{map.read.author ? ` — ${map.read.author}` : ''}
+          </p>
+          {map.read.why && <p className="wayout__hint">{map.read.why}</p>}
+        </div>
+      )}
+
       {Array.isArray(map.assumptions) && map.assumptions.length > 0 && (
         <div className="wayout__given wayout__r" style={at(3.85)}>
           <h3 className="wayout__label">What this took as given</h3>

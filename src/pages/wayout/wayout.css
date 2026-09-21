@@ -857,6 +857,12 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__ledger li.is-done { color: var(--ink); }
 .wayout__ledger li.is-done span { color: var(--green); }
 
+/* One book. Quiet on purpose — it sits beside the plan and must never compete
+   with the move they are supposed to start on Saturday. */
+.wayout__read { margin-top: 30px; }
+.wayout__readtitle { margin: 0; font-size: 16.5px; line-height: 1.45; }
+.wayout__read .wayout__hint { margin-top: 6px; }
+
 /* One question before the week gets written. Spaced like a question being
    asked, not like a field in a form. */
 .wayout__askq { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
