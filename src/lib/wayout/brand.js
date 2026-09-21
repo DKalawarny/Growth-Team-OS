@@ -50,8 +50,31 @@ export const WAYOUT_NAME_TITLE = 'The way out'
  */
 export const WAYOUT_MAP_LABEL = 'your plan'
 
-/** One line, for <title> and link previews. */
-export const WAYOUT_TAGLINE = 'A plan built from what you already have'
+/**
+ * One line, for <title>, link previews and the landing page.
+ *
+ * ⭐⭐ DANIEL'S, 21 SEP: "you have the info, let's sort out the plan."
+ *
+ * The thought is the whole product — somebody stuck is not short of
+ * INFORMATION, they are short of an ORDER — and it is in plain spoken English,
+ * which matters more than it sounds. Nine headline attempts died on the other
+ * product in this repo for being written in advertising register; the one that
+ * finally stuck was a sentence he had actually said out loud. Both halves of
+ * this are his.
+ *
+ * ⚠️ TWO WORDS CHANGED, AND BOTH FOR THE SAME REASON.
+ *
+ * "You have the info" → "You know your situation". Told they already have what
+ * they need, somebody stuck can hear "you have had everything all along and
+ * just have not tried" — which is the accusation they have been making against
+ * themselves at two in the morning. Same claim; assigning it to them makes it
+ * a slight, and naming what they lived makes it true.
+ *
+ * "the plan" → "the order". A plan is a thing anybody can hand you. The order
+ * is the thing nobody does, it is literally what this product delivers — three
+ * moves, this order — and it is the only part a person cannot work out alone.
+ */
+export const WAYOUT_TAGLINE = 'You know your situation. Let’s sort out the order.'
 
 /**
  * The internal slug. Routes, table names, prompt keys, Stripe metadata.

@@ -56,9 +56,12 @@ export default function Landing() {
             Three<br />moves.<br /><span>In order.</span>
           </h1>
 
+          {/* ⭐ The tagline carries the proposition now, so the lead does the
+              job under it rather than repeating it: what it costs them, and
+              what they get that nobody else gives. */}
           <p className="wayout__herolead">
-            Six honest questions, and the one thing nobody tells you: which of
-            them is first, and what to ignore.
+            {WAYOUT_TAGLINE} Six honest questions, then which of your moves is
+            first — and what to ignore.
           </p>
 
           <div className="wayout__herocta">
