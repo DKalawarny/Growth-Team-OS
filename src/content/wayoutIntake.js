@@ -409,6 +409,30 @@ export const WAYOUT_SCREENS = [
         required: false,
       },
       {
+        // ⭐⭐ THE ONE LINE INSIDE MUST-PAY THAT ANY PLAN WILL WANT TO MOVE.
+        //
+        // Daniel: "what do you think about adding what you'll need once these
+        // bills are gone?" The answer needs the split, and `mustPay` is a
+        // single total — so the product has had to write "we cannot know what
+        // is left of your $5,000 once the house goes, go and work it out",
+        // which is honest and is a worse answer than knowing.
+        //
+        // ⚠️ HOUSING, NOT THE HOUSE. It is the biggest line in almost
+        // everybody's must-pay and it is the one a plan most often changes:
+        // selling, downsizing, moving somewhere cheaper, renting a room,
+        // owning outright. Asking it once here means every one of those moves
+        // can be sized in arithmetic instead of in a promise to find out.
+        //
+        // ⚠️ Optional, and a total. Nobody is being asked to itemise — a rough
+        // number is enough to turn "you will need less" into a figure, and
+        // asking for a breakdown here is how somebody abandons a form.
+        key: 'housingCost',
+        kind: 'number',
+        label: 'Of that, roughly how much is housing?',
+        hint: 'Rent or mortgage plus what comes with it — property tax, house insurance, heat and hydro. It is the line most plans end up moving, and knowing it is the difference between "you will need less" and a number.',
+        required: false,
+      },
+      {
         // 🔴🔴 THIS FIELD DID NOT EXIST, AND DEBT IS OFTEN THE WHOLE PROBLEM.
         // `mustPay` swallows the minimum PAYMENTS inside its total, so the plan
         // could see that money left every month and never that clearing a

@@ -2805,7 +2805,17 @@ to clear, what the business has to make, when they can stop — is measured
 against the new one. Carrying the old figure forward makes the whole plan aim
 at a target that stopped existing at move one.
 
-🔴 AND YOU DO NOT KNOW WHAT THE NEW NUMBER IS. They gave you a TOTAL. You
+⭐⭐ IF "housingCost" IS IN THEIR ANSWERS, YOU DO KNOW THE NEW NUMBER. It is
+must-pay minus housing, it is arithmetic on two figures they typed, and it is
+the single most useful sentence you can give somebody whose plan moves where
+they live: "without the house, what has to go out drops from $5,000 to $1,900 —
+that is what the property actually has to cover, not $5,000."
+
+⚠️ Use it everywhere downstream. What the rental must clear, what the business
+must make, when they can stop — all of it is measured against the number after
+the move, never the one before it.
+
+🔴 AND IF "housingCost" IS MISSING, YOU DO NOT KNOW. They gave you a TOTAL. You
 cannot split it, and both ways of guessing are wrong and have both already
 happened here: "your must-pay drops to zero once the mortgage is gone" (it does
 not — they still eat, drive and insure themselves) and "you need $5,000 a month"

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { deriveStats, readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { floorWithoutHousing, deriveStats, readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -778,5 +778,23 @@ describe('the two headline figures are ours, not the model’s', () => {
     expect(deriveStats({ mustPay: 5000 })).toBeNull()
     const out = enforceMapContract({ ...baseMap }, { mustPay: 5000 })
     expect((out.stats ?? []).some(s => /gap to close/i.test(s.label))).toBe(false)
+  })
+})
+
+describe('the floor after housing goes', () => {
+  it('is subtraction when they gave the housing line', () => {
+    expect(floorWithoutHousing({ mustPay: 5000, housingCost: 3100 }))
+      .toEqual({ without: 1900, housing: 3100, mustPay: 5000 })
+  })
+
+  it('says nothing when they did not', () => {
+    // ⚠️ The honest gap. Without the split there is no number, and inventing
+    // one here would be the $5,000-mortgage error with a new coat on.
+    expect(floorWithoutHousing({ mustPay: 5000 })).toBeNull()
+  })
+
+  it('says nothing when housing is larger than must-pay', () => {
+    // Somebody misread the question. A negative floor is not a finding.
+    expect(floorWithoutHousing({ mustPay: 2000, housingCost: 2600 })).toBeNull()
   })
 })

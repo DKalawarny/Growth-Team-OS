@@ -995,3 +995,29 @@ export function deriveStats(answers = {}) {
 
   return stats.length === 2 ? stats : null
 }
+
+/**
+ * ⭐⭐ WHAT THE FLOOR BECOMES IF HOUSING GOES — ARITHMETIC, NOT A PROMISE.
+ *
+ * Daniel: "what do you think about adding what you'll need once these bills are
+ * gone?" It is the number his own plan's first gate is about, and until now the
+ * honest answer was "we cannot know, go and work it out" — true, and worse than
+ * knowing.
+ *
+ * ⚠️ IT IS NOT PAYWALLED, AND THAT IS NOT GENEROSITY. We could not sell it if
+ * we wanted to: without the housing figure there is nothing to sell, and with
+ * it there is nothing left to do but subtract. Charging for a subtraction on
+ * two numbers somebody typed is the bait-and-switch this product ruled out on
+ * its first screen. What the paid half is for is what to DO once the number
+ * exists — which is the whole of move one.
+ */
+export function floorWithoutHousing(answers = {}) {
+  const num = v => (Number.isFinite(Number(v)) && String(v ?? '').trim() !== '' ? Number(v) : null)
+  const mustPay = num(answers.mustPay)
+  const housing = num(answers.housingCost)
+  if (mustPay === null || housing === null || housing <= 0) return null
+  // ⚠️ A housing cost larger than must-pay is somebody misreading the question,
+  // not somebody with a negative floor. Say nothing rather than something silly.
+  if (housing >= mustPay) return null
+  return { without: mustPay - housing, housing, mustPay }
+}
