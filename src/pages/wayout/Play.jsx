@@ -43,6 +43,153 @@ import {
  * A key means the state CANNOT leak between moves, because there is none to
  * leak: React unmounts and builds a fresh one.
  */
+/**
+ * ⭐⭐ ASKING. Daniel: "there is no area here to get more details or ask
+ * questions — this seems like just a gated answer platform."
+ *
+ * The moment anybody starts a move they have a question, and it is always the
+ * one no prompt could have anticipated: what do I say if he asks why, what if
+ * the agent will not give me a number, is it worth it if only two say yes.
+ * Answering those is what the paid half is for — a play-by-play that cannot be
+ * asked about is a document, and one that can is worth keeping.
+ *
+ * ⚠️ IT SITS AFTER THE PLAY, NOT BESIDE IT. A chat box at the top invites
+ * somebody to ask instead of read, and the answer to most first questions is
+ * three paragraphs above.
+ */
+/**
+ * ⭐⭐ WHAT MAKES THE PAID HALF WORTH PAYING FOR.
+ *
+ * Daniel: "this is where we need to start asking more detail. This is value
+ * added to make this as accurate as possible, not just unlocking the answers."
+ * A paid thing that only unlocks is a paywall; a paid thing that ASKS is a
+ * different product, and the person gets something on the way in.
+ *
+ * ⚠️ EVERY QUESTION IS SKIPPABLE. They are here for the week's instructions,
+ * not to fill in a form, and a question they do not want to answer is itself
+ * an answer — the play gets written either way.
+ */
+function Asking({ move, questions, busy, onSubmit }) {
+  const [answers, setAnswers] = useState({})
+
+  if (busy) {
+    return (
+      <WayoutShell title="This week">
+        <p className="wayout__q">Writing it now.</p>
+        <p className="wayout__lead">With what you just told me. Up to a minute.</p>
+        <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
+      </WayoutShell>
+    )
+  }
+
+  return (
+    <WayoutShell title="Before I write this">
+      <p className="wayout__q">
+        {questions.length > 1 ? `${questions.length} things before I write it.` : 'One thing before I write it.'}
+      </p>
+      <p className="wayout__lead">
+        {move?.title
+          ? `You are starting: ${move.title}. What you say here changes the week I write, not just the wording of it.`
+          : 'What you say here changes the week I write, not just the wording of it.'}
+      </p>
+
+      {questions.map((q, i) => (
+        <div key={i} className="wayout__askq">
+          <p className="wayout__label">{q.q}</p>
+          {q.why && <p className="wayout__hint">{q.why}</p>}
+
+          {q.options?.length > 0 && (
+            <div className="wayout__chips">
+              {q.options.map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  className={`wayout__chip${answers[i] === opt ? ' wayout__chip--on' : ''}`}
+                  aria-pressed={answers[i] === opt}
+                  onClick={() => setAnswers(a => ({ ...a, [i]: opt }))}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ⚠️ The box is there even when there are chips. The chips are the
+              fast answer; the box is where the true one goes when it does not
+              fit in four words, and this product is built on people being able
+              to say the thing that was not on the list. */}
+          <textarea
+            className="wayout__textarea"
+            value={answers[`${i}:note`] ?? ''}
+            onChange={e => setAnswers(a => ({ ...a, [`${i}:note`]: e.target.value }))}
+            placeholder={q.options?.length ? 'Anything that does not fit the buttons.' : 'A sentence is plenty.'}
+          />
+        </div>
+      ))}
+
+      <button className="wayout__btn wayout__btn--sun" onClick={() => onSubmit(answers)}>
+        Write it
+      </button>
+      <p className="wayout__hint">
+        Skip anything you would rather not answer — it gets written either way.
+      </p>
+    </WayoutShell>
+  )
+}
+
+function AskBox({ thread, onAsk }) {
+  const [q, setQ] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+  const spent = thread.filter(m => m.role === 'user').length >= WAYOUT_MAX_ASKS
+
+  async function send() {
+    const question = q.trim()
+    if (!question || busy) return
+    setBusy(true); setErr(''); setQ('')
+    try { await onAsk(question) } catch (e) { setErr(e.message) } finally { setBusy(false) }
+  }
+
+  return (
+    <div className="wayout__ask">
+      <h3 className="wayout__label">Ask about this one</h3>
+
+      {thread.map((m, i) => (
+        <p key={i} className={m.role === 'user' ? 'wayout__askmine' : 'wayout__askreply'}>
+          {m.content}
+        </p>
+      ))}
+
+      {busy && <p className="wayout__askreply wayout__askwait">Thinking.</p>}
+
+      {spent ? (
+        // ⚠️ Not a paywall and not a telling-off. Twelve questions deep on one
+        // move is somebody using this instead of doing the thing, and saying so
+        // plainly is more useful than another answer would be.
+        <p className="wayout__hint">
+          That is a dozen questions on this one move. The next real answer is
+          probably on the other side of trying it — come back when it has met
+          the world and tell me what happened.
+        </p>
+      ) : (
+        <>
+          <textarea
+            className="wayout__textarea"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="What do I say if he asks why? What if they won't give me a number?"
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send() }}
+          />
+          <button className="wayout__btn" onClick={send} disabled={busy || !q.trim()}>
+            {busy ? 'Thinking…' : 'Ask'}
+          </button>
+          {err && <p className="wayout__hint">{err}</p>}
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function Play() {
   const { move: moveParam } = useParams()
   // ⚠️ A URL segment is a string from anywhere — a typo, a stale link, or a
