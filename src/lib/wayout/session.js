@@ -163,6 +163,23 @@ export async function adoptDraftInto(session) {
  */
 export const WAYOUT_MAX_REBUILDS = 1
 
+/**
+ * ⭐⭐ THEY WANT THE ONE WE CROSSED OFF.
+ *
+ * ⚠️ This is a real change of input, not a re-roll, so it is NOT capped like a
+ * rebuild. The cap exists to stop somebody fishing for a different answer to
+ * the same question; this is a different question.
+ */
+export async function insistOn(sessionId, label, current = []) {
+  const next = [...new Set([...(current ?? []), String(label).trim()])].filter(Boolean).slice(0, 3)
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ insisted: next })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+  return next
+}
+
 /** Count a regeneration. Returns what the count now is. */
 export async function countRebuild(sessionId, current = 0) {
   const next = (current ?? 0) + 1

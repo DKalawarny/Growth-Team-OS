@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, countRebuild, wantPlaybook, loadProgress, markMoveDone, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import { loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress, markMoveDone, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -121,7 +121,11 @@ export default function Plan() {
       // comes back from it has passed mapProblems, including the check that
       // every figure in it is one this person actually gave us. It throws
       // rather than returning a plan with somebody else's numbers in it.
-      const generated = await generateMap(s.answers, setPass)
+      // ⚠️ `insisted` lives on the SESSION, not in answers, and generateMap
+      // takes answers — so without this the person's choice was recorded in
+      // the database, echoed back in the UI, and never once shown to the model
+      // that writes the plan. The feature would have looked like it worked.
+      const generated = await generateMap({ ...s.answers, insisted: s.insisted ?? [] }, setPass)
       const { error: wErr } = await supabase
         .from('wayout_sessions')
         .update({ map: generated })
@@ -195,6 +199,24 @@ export default function Plan() {
    * the number that decides whether this is the right business — it is worth
    * more now that clicking leads somewhere than it was when it led to a list.
    */
+  /**
+   * ⭐ They read why we crossed something off, and want it anyway.
+   *
+   * ⚠️ Rebuilt immediately, and NOT counted against the rebuild cap — the cap
+   * stops somebody fishing for a different answer to the same question, and
+   * this is a different question. They changed the input.
+   */
+  async function insist(label) {
+    if (!session || building) return
+    try {
+      const next = await insistOn(session.id, label, session.insisted)
+      const updated = { ...session, insisted: next }
+      setSession(updated)
+      setMap(null)
+      await build(updated)
+    } catch (err) { setError(err.message) }
+  }
+
   async function openPlaybook(order = 1) {
     // ⚠️ Coerced as well as defaulted. The default above is right and was still
     // not enough — see the note on the button. Anything that is not a real move
@@ -309,6 +331,7 @@ export default function Plan() {
       onOpenPlaybook={openPlaybook}
       onRegenerate={import.meta.env.DEV ? regenerateNow : null}
       onMove={setMoveDone}
+      onInsist={insist}
       progress={progress}
       rebuilding={building}
       spent={spent}
@@ -369,7 +392,7 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, progress, rebuilding = false, spent = false }) {
+export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, progress, rebuilding = false, spent = false }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
   // enforced nothing at all. A gate nothing enforces is a suggestion, and a
@@ -452,6 +475,19 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, prog
 
       <div className="wayout__col">
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
+      {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
+          it shows that this is a suggested plan, up to you to do as you wish,
+          not legal advice."
+          ⚠️ The disclaimer at the foot is the legal sentence and it stays. This
+          is the HONEST one, and it belongs beside the moves rather than under
+          them — fine print at the bottom is what somebody scrolls past, and a
+          thing you only say where it will not be read is a thing you have not
+          said. It is also simply true: the order is our best reading of their
+          answers, and every part of it can be changed by them. */}
+      <p className="wayout__suggested wayout__r" style={at(2.45)}>
+        Our best read of what you told us — a suggested order, not instructions.
+        Anything here is yours to change.
+      </p>
 
       <div className="wayout__moves">
         {map.moves?.map((m, i) => (
@@ -531,7 +567,30 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, prog
               >
                 <s>{c.label}</s>
                 <em>{openCut === i ? 'Hide' : 'Why'}</em>
-                {openCut === i && <span className="wayout__cutwhy">{c.why}</span>}
+                {openCut === i && (
+                  <>
+                    <span className="wayout__cutwhy">{c.why}</span>
+                    {/* ⭐⭐ THE OPTION IS SELECTABLE, NOT JUST READABLE. Daniel
+                        wanted the person choosing rather than being instructed.
+                        A menu of three equal options would have been the pile
+                        of ideas this product exists to replace — so the plan
+                        still commits to an order, and the things it ruled out
+                        can be ruled back in by the only person entitled to. */}
+                    {onInsist && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        className="wayout__insist"
+                        onClick={e => { e.stopPropagation(); onInsist(c.label) }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onInsist(c.label) }
+                        }}
+                      >
+                        I want this one anyway — put it in the plan
+                      </span>
+                    )}
+                  </>
+                )}
               </button>
             ))}
           </div>

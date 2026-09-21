@@ -910,6 +910,24 @@ div:first-child > .wayout__group { margin-top: 14px; }
   margin: 0 0 16px; font-size: 17px; line-height: 1.5; color: var(--ink);
 }
 
+/* "A suggested order, not instructions." Sits under the moves heading, in the
+   soft ink — present and not shouting, because it is a frame for what follows
+   rather than a warning about it. */
+.wayout__suggested {
+  margin: -4px 0 18px;
+  font-size: 14.5px; line-height: 1.5; color: var(--soft);
+}
+
+/* Taking a crossed-off option back. Deliberately plain — it is a choice being
+   offered, not a call to action, and it must never look like the plan would
+   rather they took it. */
+.wayout__insist {
+  display: inline-block; margin-top: 10px;
+  font-size: 14px; font-weight: 600; color: var(--green);
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.wayout__insist:hover { color: var(--ink); }
+
 /* A section heading you can talk back to. The link is quiet and sits on the
    baseline of the heading — present where the thought occurs, and never
    competing with the section it belongs to. */
