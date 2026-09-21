@@ -238,7 +238,24 @@ export default function Enter() {
                   checked={agreed}
                   onChange={e => setAgreed(e.target.checked)}
                 />
-                <span>I’m over 18 and I agree to the terms.</span>
+                {/* 🔴🔴 THIS SAID "I agree to the terms" AND LINKED TO
+                    NOTHING. Somebody ticked a box consenting to a document
+                    they were never shown and had no way to find — which is
+                    worse than no checkbox, because it looks like consent was
+                    obtained. Daniel raised liability from the product side;
+                    this was the hole on the legal side, three words away.
+
+                    ⚠️ /terms IS ELIV8 OS's, WRITTEN FOR BUSINESS OWNERS about
+                    an AI business advisor. It is the same operator so it is
+                    not wrong to point at it, and it is not written for a
+                    person being handed a plan about their house and their
+                    marriage. That document is a lawyer's job and it is on the
+                    list before the first real user — this link is the stopgap
+                    that at least makes the consent real. */}
+                <span>
+                  I’m over 18 and I agree to the{' '}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer">terms</a>.
+                </span>
               </label>
             )}
 
