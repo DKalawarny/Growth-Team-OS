@@ -6,6 +6,7 @@ import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import {
   loadOrCreateSession, generatePlaybook, generateMoveQuestions, loadPlaybook, savePlaybook,
   playbookIsStale, loadProgress, markMoveDone, moveIsOpen,
+  askAboutMove, saveThread, WAYOUT_MAX_ASKS,
 } from '../../lib/wayout/session'
 
 /**
@@ -62,6 +63,7 @@ function PlayMove({ order }) {
   // ⭐ The questions asked before the play is written. See Asking below.
   const [ask, setAsk]         = useState(null)
   const [session, setSession] = useState(null)
+  const [thread, setThread]   = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
   // Same guard as the plan page: in dev the effect runs twice, and without this
@@ -106,6 +108,8 @@ function PlayMove({ order }) {
 
         if (stored?.play) {
           setStale(playbookIsStale(stored, current))
+          setThread(Array.isArray(stored.thread) ? stored.thread : [])
+          setSession(s)
           setPlay(stored.play)
           return
         }
@@ -164,6 +168,7 @@ function PlayMove({ order }) {
         await savePlaybook({ sessionId: s.id, moveOrder: order, move: current, play: written, asked })
       }
       setAsk(null)
+      setThread([])
       setPlay(written)
     } catch (err) {
       setError(err.message)
@@ -317,6 +322,22 @@ function PlayMove({ order }) {
         </div>
       )}
       <Playbook play={play} index={order} />
+
+      {/* ⭐⭐ THE THING THAT STOPS THIS BEING A GATED ANSWER PLATFORM. */}
+      <AskBox
+        thread={thread}
+        onAsk={async question => {
+          const mine = { role: 'user', content: question, at: new Date().toISOString() }
+          const next = [...thread, mine]
+          setThread(next)
+          const reply = await askAboutMove({
+            answers: session.answers, map: session.map, move, play, thread, question,
+          })
+          const full = [...next, { role: 'assistant', content: reply, at: new Date().toISOString() }]
+          setThread(full)
+          saveThread(session.id, order, full).catch(err => console.warn('[wayout] thread not saved:', err))
+        }}
+      />
 
       {/* ⭐⭐ THE ONE ACTION THAT MOVES THE PRODUCT FORWARD. Ticking this is
           what opens the next move — it is not a progress bar, it is the gate

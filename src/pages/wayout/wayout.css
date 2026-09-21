@@ -886,6 +886,26 @@ div:first-child > .wayout__group { margin-top: 14px; }
   margin: 0 0 16px; font-size: 17px; line-height: 1.5; color: var(--ink);
 }
 
+/* Asking about the move. Deliberately a conversation, not a chat product —
+   no bubbles, no avatars, no typing indicator pretending to be a person. Two
+   voices set apart by weight and indent, the way a letter and its reply are. */
+.wayout__ask {
+  max-width: 46rem; margin: 34px auto 0;
+  padding-top: 26px; border-top: 1px solid var(--line);
+}
+.wayout__askmine {
+  margin: 18px 0 0; font-size: 16.5px; line-height: 1.5;
+  color: var(--ink); font-weight: 600;
+}
+.wayout__askreply {
+  margin: 10px 0 0; padding-left: 16px;
+  border-left: 3px solid var(--sun);
+  font-size: 16.5px; line-height: 1.6; color: var(--soft);
+  white-space: pre-wrap;
+}
+.wayout__askwait { color: var(--line); }
+.wayout__ask .wayout__textarea { margin-top: 20px; min-height: 76px; }
+
 /* Marking a move done. It sits after the whole play-by-play because that is
    when it becomes true — putting it at the top would make it a checkbox on a
    page they have not read. */

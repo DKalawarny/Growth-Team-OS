@@ -526,6 +526,57 @@ export async function generatePlaybook({ answers, map, move, asked = null }) {
   return enforcePlaybookContract(parseModelJson(raw, 'The play-by-play'), answers)
 }
 
+/**
+ * Answer a question about the move somebody is on.
+ *
+ * ⚠️ THE THREAD IS CAPPED, AND THE CAP IS NOT ONLY ABOUT COST. Twenty questions
+ * deep on one move is somebody using this instead of doing the thing — and
+ * every turn also re-sends the whole context, so a long thread gets slower and
+ * worse at the same time as it gets more expensive.
+ */
+export const WAYOUT_MAX_ASKS = 12
+
+export async function askAboutMove({ answers, map, move, play, thread = [], question }) {
+  const asked = String(question ?? '').trim()
+  if (!asked) throw new Error('Ask it and I will answer.')
+
+  const raw = await callClaude({
+    promptKey: 'WAYOUT_ASK_PROMPT',
+    messages: [{
+      role: 'user',
+      content: JSON.stringify({
+        answers,
+        the_plan: { headline: map?.headline, moves: map?.moves },
+        the_move: move,
+        the_play: play,
+        // ⚠️ Only the last few turns. The play-by-play is the context that
+        // matters; the back-and-forth is there so they are not repeating
+        // themselves, not so every word is remembered forever.
+        so_far: thread.slice(-6).map(m => ({ role: m.role, content: m.content })),
+        their_question: asked,
+      }, null, 2),
+    }],
+    maxTokens: 500,
+    model: SONNET,
+    toolId: TOOL_ID,
+    kind: 'ask',
+  })
+
+  const text = String(raw ?? '').trim()
+  if (!text) throw new Error('That did not come back. Ask again.')
+  return text
+}
+
+/** Keep the conversation. */
+export async function saveThread(sessionId, moveOrder, thread) {
+  const { error } = await supabase
+    .from('wayout_playbooks')
+    .update({ thread })
+    .eq('session_id', sessionId)
+    .eq('move_order', moveOrder)
+  if (error) throw new Error(error.message)
+}
+
 // ── Storing a play-by-play ──────────────────────────────────────────────────
 
 /**
@@ -541,7 +592,7 @@ export async function generatePlaybook({ answers, map, move, asked = null }) {
 export async function loadPlaybook(sessionId, moveOrder) {
   const { data, error } = await supabase
     .from('wayout_playbooks')
-    .select('id, move_order, move, play, asked')
+    .select('id, move_order, move, play, asked, thread')
     .eq('session_id', sessionId)
     .eq('move_order', moveOrder)
     .maybeSingle()
