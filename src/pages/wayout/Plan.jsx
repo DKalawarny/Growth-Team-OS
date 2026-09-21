@@ -6,6 +6,7 @@ import { loadOrCreateSession, generateMap, countRebuild, wantPlaybook, loadProgr
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
+import { bookOnShelf } from '../../content/wayoutReading'
 
 /**
  * The way out — S7, the reveal.
@@ -570,6 +571,14 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, prog
             <b>{map.read.title}</b>{map.read.author ? ` — ${map.read.author}` : ''}
           </p>
           {map.read.why && <p className="wayout__hint">{map.read.why}</p>}
+          {/* ⭐⭐ THE CAVEAT IS OURS, RENDERED FROM OUR OWN FILE, ALWAYS. A
+              caveat the model composes is one that can be enthusiastic itself
+              — and these are books somebody may act on with money. Naming a
+              book without saying what to hold lightly is how a shelf becomes
+              an endorsement. */}
+          {bookOnShelf(map.read.title)?.hold && (
+            <p className="wayout__hold">{bookOnShelf(map.read.title).hold}</p>
+          )}
         </div>
       )}
 

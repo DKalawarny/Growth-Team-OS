@@ -863,6 +863,14 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__readtitle { margin: 0; font-size: 16.5px; line-height: 1.45; }
 .wayout__read .wayout__hint { margin-top: 6px; }
 
+/* What to hold lightly about the book. Set apart from our recommendation
+   because it is a different KIND of statement — not smaller, just other. */
+.wayout__hold {
+  margin: 10px 0 0; padding-left: 14px;
+  border-left: 2px solid var(--line);
+  font-size: 14.5px; line-height: 1.5; color: var(--soft);
+}
+
 /* One question before the week gets written. Spaced like a question being
    asked, not like a field in a form. */
 .wayout__askq { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
