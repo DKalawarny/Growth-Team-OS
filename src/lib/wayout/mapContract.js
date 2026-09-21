@@ -502,6 +502,67 @@ function firstSentence(text) {
   return out.replace(/[,;:\s]+$/, '').trim()
 }
 
+/**
+ * ⭐⭐ A FIGURE STATED AS A NAMED QUANTITY MUST BE THAT QUANTITY.
+ *
+ * 🔴 "You have roughly $120,000 in savings" — from a person who has nothing of
+ * the sort. Daniel: "where the heck did it come up with 120k in savings?"
+ *
+ * ⚠️ AND THE FIGURES GUARD PASSED IT, CORRECTLY BY ITS OWN RULES. $120,000 is
+ * reachable from his real savings — the allowed set includes small whole
+ * multiples so that "six months of must-pay banked" can be said, and six times
+ * twenty thousand is a hundred and twenty. The number was derivable. The CLAIM
+ * was invented.
+ *
+ * This is the third time the same shape has appeared: "$5,000 — mortgage gone"
+ * when $5,000 was the whole must-pay, "Freed by cutting $5,000" when nothing
+ * was cut, and now savings that are not savings. A number being arithmetically
+ * reachable says nothing about whether it is the thing it is being called.
+ *
+ * ⚠️ So when a figure is stated AS the value of something they told us — their
+ * savings, their must-pay, what comes in, what housing costs — it has to equal
+ * that. Not derive from it. Equal it.
+ */
+const NAMED_QUANTITIES = [
+  { key: 'savings', re: /\bsavings?\b|\bput (?:by|away)\b|\bcushion\b/i },
+  { key: 'mustPay', re: /\bmust[- ]pay\b|\bhas to go out\b|\bgoes out every month\b/i },
+  { key: 'housingCost', re: /\bhousing costs?\b|\bmortgage payment\b/i },
+  { key: 'takeHome', re: /\byou (?:take|bring) home\b|\byour take[- ]home\b/i },
+  { key: 'householdTakeHome', re: /\bhousehold (?:income|brings? in)\b/i },
+]
+
+/** "$120,000 in savings", "your $5,000 must-pay", "savings of $20,000". */
+function statedAs(sentence, re) {
+  const near = new RegExp(
+    `(?:\\$\\s?[\\d,]+(?:\\.\\d+)?k?)(?:[^.]{0,24})(?:${re.source})`
+    + `|(?:${re.source})(?:[^.]{0,24})(?:\\$\\s?[\\d,]+(?:\\.\\d+)?k?)`,
+    'i',
+  )
+  return near.test(sentence)
+}
+
+function misnamedQuantity(text, answers) {
+  const found = []
+  String(text ?? '').split(/(?<=[.!?])\s+/).forEach(sentence => {
+    NAMED_QUANTITIES.forEach(({ key, re }) => {
+      const actual = Number(answers?.[key])
+      if (!Number.isFinite(actual) || String(answers?.[key] ?? '').trim() === '') return
+      if (!statedAs(sentence, re)) return
+      const figures = figuresIn(sentence)
+      if (!figures.length) return
+      // ⚠️ One of the figures in the sentence has to BE it. A sentence may
+      // legitimately carry others — "your $5,000 must-pay against $4,000 in" —
+      // so this asks whether the true value appears at all, not whether every
+      // number matches.
+      const matches = figures.some(f => Math.abs(f - actual) <= Math.max(1, actual * 0.02))
+      if (!matches) {
+        found.push(`${key} is stated as ${figures.map(f => `$${f.toLocaleString()}`).join('/')} — they said $${actual.toLocaleString()}`)
+      }
+    })
+  })
+  return found
+}
+
 /** Everything they TYPED, as opposed to tapped or entered in a fixed field. */
 function freeText(value, into = []) {
   if (typeof value === 'string') { into.push(value); return into }
@@ -554,6 +615,10 @@ export function inventedFigures(map, answers = {}) {
     // rejected — the $5,000 is correctly their must-pay and the word "selling"
     // is two sentences away. A figure only makes a claim about a sale when it
     // is IN the sentence about the sale.
+    // ⚠️ A figure can be theirs and still be a lie about what it is. See
+    // misnamedQuantity — this is the check the $120,000-in-savings got past.
+    misnamedQuantity(text, answers).forEach(p => found.push(`${where}: ${p}`))
+
     String(text ?? '')
       .split(/(?<=[.!?])\s+/)
       .forEach(sentence => {

@@ -798,3 +798,35 @@ describe('the floor after housing goes', () => {
     expect(floorWithoutHousing({ mustPay: 2000, housingCost: 2600 })).toBeNull()
   })
 })
+
+describe('a figure stated as a named quantity must BE that quantity', () => {
+  // 🔴 Daniel, 21 Sep: "where the heck did it come up with 120k in savings?"
+  // ⚠️ And the figures guard passed it correctly by its own rules — $120,000 is
+  // $20,000 × 6, and small whole multiples are allowed so "six months banked"
+  // can be said. The number was derivable. The CLAIM was invented.
+  const his = { savings: 20000, mustPay: 5000, householdTakeHome: 4000 }
+
+  it('catches savings that are not their savings', () => {
+    const map = { moves: [{ title: 'x', detail: 'You have roughly $120,000 in savings and a sale coming.' }] }
+    const problems = inventedFigures(map, his)
+    expect(problems.some(p => /savings is stated as/.test(p))).toBe(true)
+  })
+
+  it('accepts the real figure', () => {
+    const map = { moves: [{ title: 'x', detail: 'You have $20,000 in savings.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('allows other numbers in the same sentence as long as the true one is there', () => {
+    const map = { moves: [{ title: 'x', detail: 'Your $5,000 must-pay against $4,000 coming in.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('says nothing about a quantity they never gave', () => {
+    // ⚠️ $10,000 is 5,000 doubled, so the traceability check passes it and this
+    // test is only about the NAME. A figure that is neither theirs nor
+    // derivable is still caught by the other guard, as it should be.
+    const map = { moves: [{ title: 'x', detail: 'You have $10,000 in savings.' }] }
+    expect(inventedFigures(map, { mustPay: 5000 })).toEqual([])
+  })
+})

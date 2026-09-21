@@ -2616,6 +2616,26 @@ Runway, months of cover, how many customers at what price, how long until —
 every one of those is a division, and every one of them is stated as a fact
 that sounds authoritative. Do it slowly, then show it.
 
+🔴🔴 IF YOU NAME ONE OF THEIR NUMBERS, USE THEIR NUMBER.
+"You have roughly $120,000 in savings" — to somebody whose savings are twenty
+thousand. Daniel: "where the heck did it come up with 120k in savings?"
+
+⚠️ THIS IS THE THIRD TIME IN THE SAME SHAPE, so it is worth naming as a
+pattern rather than an incident: a figure that is arithmetically reachable, and
+attached to the wrong thing. "$5,000 — mortgage gone when the house sells",
+when $5,000 was the entire must-pay. "Freed by cutting $5,000", when nothing
+was being cut. Now savings that are not savings.
+
+Being able to DERIVE a number says nothing about whether it is the thing you
+are calling it. Their savings figure is in their answers; so is their must-pay,
+what comes in, and what housing costs. When you say the word, use the number.
+
+  ✅ "Your $20,000 covers four months at $5,000."
+  ❌ "You have roughly $120,000 in savings."
+  ❌ Any figure introduced with "roughly", "around" or "about" that is not
+     rounded from one of theirs. Those words are where invention hides — they
+     sound like honesty about precision and are usually honesty about nothing.
+
 🔴 DO THE ARITHMETIC ONCE, AND USE THE SAME NUMBER EVERYWHERE.
 Also found in testing: one plan titled a move "Find the $600 gap" and then said
 in the next sentence that the gap was $800. Both cannot be true, and a person
