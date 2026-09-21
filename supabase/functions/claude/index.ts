@@ -474,12 +474,30 @@ Deno.serve(async (req) => {
     // pays to write the cache again.
     const tools = Array.isArray(body.tools) && body.tools.length ? body.tools : null
 
+    // ⭐⭐ TEMPERATURE, WHICH NOTHING HAS EVER SET. Every call this product has
+    // ever made ran at the API default of 1.0 — maximum variability — and
+    // Daniel found it the way anybody would: "why's this number keep changing
+    // every time I regenerate? I haven't changed any of the write-up."
+    //
+    // 🔴 THAT IS A TRUST PROBLEM, NOT A TASTE ONE. This whole product rests on
+    // "this is what your answers produce". If the same answers produce a
+    // different plan each time, then no particular plan meant very much — and
+    // a person who notices is right to stop trusting all of them.
+    //
+    // ⚠️ Clamped to the API's range and defaulted to 1 so nothing that does not
+    // ask for it changes behaviour. Callers who want a stable answer ask for
+    // one; a conversation can still want some air.
+    const temperature = typeof body.temperature === 'number'
+      ? Math.min(1, Math.max(0, body.temperature))
+      : undefined
+
     const anthropicReq = {
       model,
       max_tokens: maxTok,
       system,
       messages:   body.messages ?? [],
       stream:     !!body.stream,
+      ...(temperature !== undefined ? { temperature } : {}),
       ...(tools ? { tools } : {}),
       // `tool_choice: {type:'none'}` is how a caller ends a tool loop. Dropping
       // `tools` instead would fail: a conversation whose history already holds

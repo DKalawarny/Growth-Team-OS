@@ -225,6 +225,7 @@ export async function reflect(screenAnswers) {
       messages: [{ role: 'user', content: JSON.stringify(screenAnswers) }],
       maxTokens: 150,
       model: HAIKU,
+      temperature: 0,
       toolId: TOOL_ID,
       kind: 'reflection',
     })
@@ -358,6 +359,10 @@ export async function generateMap(answers, onProgress = () => {}) {
         maxTokens: 3000,
         json: true,
         model: SONNET,
+        // ⭐⭐ STABLE. The same answers should produce the same plan — that is
+        // what "this is what your answers produce" means, and it is the whole
+        // basis for believing any single plan.
+        temperature: 0,
         toolId: TOOL_ID,
         kind: 'map',
       })
@@ -462,6 +467,7 @@ export async function generateMoveQuestions({ answers, map, move }) {
       maxTokens: 700,
       json: true,
       model: HAIKU,
+      temperature: 0,
       toolId: TOOL_ID,
       kind: 'move-questions',
     })
@@ -507,6 +513,7 @@ export async function generatePlaybook({ answers, map, move, asked = null }) {
     maxTokens: 4000,
     json: true,
     model: SONNET,
+    temperature: 0,
     toolId: TOOL_ID,
     kind: 'playbook',
   })
@@ -558,6 +565,9 @@ export async function askAboutMove({ answers, map, move, play, thread = [], ques
     }],
     maxTokens: 500,
     model: SONNET,
+    // ⚠️ Not zero. A reply to a question is allowed some air — and unlike the
+    // plan, nobody re-asks the same question expecting the same words back.
+    temperature: 0.4,
     toolId: TOOL_ID,
     kind: 'ask',
   })

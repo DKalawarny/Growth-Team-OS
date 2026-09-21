@@ -178,6 +178,10 @@ export async function callClaude({
   // get the same 'untagged' default they already had).
   toolId,
   kind,
+  // ⭐ Low for anything that should be the same tomorrow as it was today. See
+  // the note in the edge function: every call in this product ran at the API
+  // default of 1.0 until somebody noticed their plan changing under them.
+  temperature,
   // ⚠️ NO TIMEOUT MEANS NO FAILURE, ONLY A SPINNER. Daniel sat on "About twenty
   // seconds" indefinitely and there was nothing in the product that could ever
   // have ended it — a fetch with no signal waits as long as the browser will,
@@ -205,6 +209,7 @@ export async function callClaude({
       maxTokens,
       model,
       json,
+      ...(temperature !== undefined ? { temperature } : {}),
       stream: false,
       ...(toolId ? { toolId } : {}),
       ...(kind   ? { kind }   : {}),
