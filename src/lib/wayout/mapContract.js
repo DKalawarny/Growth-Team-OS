@@ -551,6 +551,61 @@ function firstSentence(text) {
  * savings, their must-pay, what comes in, what housing costs — it has to equal
  * that. Not derive from it. Equal it.
  */
+/**
+ * ⭐⭐ A FIGURE THAT IS EXACTLY ONE OF THEIR NUMBERS IS NEVER AN INVENTION.
+ *
+ * 🔴 THE AUDIT CAUGHT BOTH OF MY GUARDS FLAGGING CORRECT SENTENCES, which is
+ * the failure that matters most: a guard that cries wolf gets loosened, and a
+ * loosened guard stops catching the real thing.
+ *
+ *   "At $9,000 a month your savings last…"  → flagged as savings being stated
+ *   as $9,000. It is their MUST-PAY. The sentence is right.
+ *
+ *   "The $4,000 housing cost…" in a move about selling → flagged as a figure
+ *   put on something they never priced. It is their HOUSING COST, which they
+ *   typed, being discussed in a sentence that happens to mention a sale.
+ *
+ * ⚠️ Both checks work on proximity — a number near a word — because there is
+ * no parser here and there should not be. The fix is not to parse; it is to
+ * notice that a figure matching one of their own stated quantities EXACTLY is
+ * by definition not made up, whatever word it is standing next to.
+ */
+function isOneOfTheirs(figure, answers) {
+  return NAMED_QUANTITIES.some(({ key }) => {
+    const v = Number(answers?.[key])
+    return Number.isFinite(v) && String(answers?.[key] ?? '').trim() !== ''
+      && Math.abs(v - figure) <= Math.max(1, v * 0.02)
+  })
+}
+
+/**
+ * ⭐⭐ A FIGURE THIS PRODUCT COMPUTES AND PRINTS ON THE PAGE ITSELF. Separate
+ * from `isOneOfTheirs` ON PURPOSE, and the separation is the whole lesson.
+ *
+ * 🔴 The audit found a real generation where must-pay was $9,000 and housing
+ * $4,000, and the move said owning outright "drops what has to go out from
+ * $9,000 to $5,000". The speculative rule fired — the sentence is about selling
+ * a house, $5,000 is not a number anyone typed — and called correct subtraction
+ * an invented price.
+ *
+ * 🔴 My first fix folded this into `isOneOfTheirs`, and a test caught it within
+ * the minute: it also stopped "your $400 must-pay" being flagged, because $400
+ * was their SPARE. That is the original bug — a derived figure wearing the
+ * wrong label — un-fixed by the fix for something else.
+ *
+ * ⚠️ So the two questions stay apart, because they are different questions:
+ *     where did this number come from?  → derived is fine (this function)
+ *     is it being called the right thing? → derived is the whole risk (not this)
+ * Only the provenance check may use this. The naming check must never.
+ */
+function isShownOnTheirPage(figure, answers) {
+  const near = v => Number.isFinite(v) && Math.abs(v - figure) <= Math.max(1, v * 0.02)
+  if (isOneOfTheirs(figure, answers)) return true
+  const floor = floorWithoutHousing(answers)
+  if (floor && near(floor.without)) return true
+  return deriveStats(answers).some(s => near(Number(s?.value)))
+}
+
 const NAMED_QUANTITIES = [
   { key: 'savings', re: /\bsavings?\b|\bput (?:by|away)\b|\bcushion\b/i },
   { key: 'mustPay', re: /\bmust[- ]pay\b|\bhas to go out\b|\bgoes out every month\b/i },
@@ -559,14 +614,39 @@ const NAMED_QUANTITIES = [
   { key: 'householdTakeHome', re: /\bhousehold (?:income|brings? in)\b/i },
 ]
 
-/** "$120,000 in savings", "your $5,000 must-pay", "savings of $20,000". */
+/**
+ * ⭐⭐ ONLY THE FORMS THAT GENUINELY ASSERT A VALUE. A WHITELIST, NOT A
+ * BLACKLIST, AND THE DIRECTION IS THE WHOLE LESSON.
+ *
+ * 🔴 This started as "a figure near the word", then grew a list of words that
+ * mean comparison rather than identity — after, against, left, more than. The
+ * audit kept finding new ones: "$400 left after must-pay", "park it in
+ * savings", "the monthly number". Every round of blacklisting made the guard
+ * looser, and a guard that keeps being loosened to stop it crying wolf ends up
+ * catching nothing.
+ *
+ * ⚠️ So it is inverted. English has a handful of ways to say "this number IS
+ * that thing", and they are countable:
+ *     you have $X in savings   ·   your $5,000 must-pay
+ *     savings of $20,000       ·   savings is/are $20,000
+ * Everything else — putting money INTO savings, having something LEFT AFTER
+ * must-pay, a figure merely sharing a sentence — is not a claim about the
+ * value and is none of this check's business.
+ *
+ * ⚠️ It will miss some real ones. That is the correct trade: an invented figure
+ * that slips past here is still caught by traceability if it is not their
+ * number at all, and the cost of a false positive is a guard nobody trusts.
+ */
 function statedAs(sentence, re) {
-  const near = new RegExp(
-    `(?:\\$\\s?[\\d,]+(?:\\.\\d+)?k?)(?:[^.]{0,24})(?:${re.source})`
-    + `|(?:${re.source})(?:[^.]{0,24})(?:\\$\\s?[\\d,]+(?:\\.\\d+)?k?)`,
-    'i',
-  )
-  return near.test(sentence)
+  const money = '\\$\\s?[\\d,]+(?:\\.\\d+)?k?'
+  const q = re.source
+  const forms = [
+    `\\b(?:have|has|had|with|got)\\s+(?:roughly\\s+|about\\s+|around\\s+|some\\s+)?${money}\\s+(?:in|of)\\s+(?:${q})`,
+    `\\byour\\s+${money}\\s+(?:a month\\s+)?(?:${q})`,
+    `(?:${q})\\s+(?:of|is|are|sits at|comes to|totals?)\\s+(?:roughly\\s+|about\\s+|around\\s+)?${money}`,
+    `(?:${q})\\s*[:—-]\\s*${money}`,
+  ]
+  return forms.some(f => new RegExp(f, 'i').test(sentence))
 }
 
 function misnamedQuantity(text, answers) {
@@ -583,8 +663,18 @@ function misnamedQuantity(text, answers) {
       // so this asks whether the true value appears at all, not whether every
       // number matches.
       const matches = figures.some(f => Math.abs(f - actual) <= Math.max(1, actual * 0.02))
-      if (!matches) {
-        found.push(`${key} is stated as ${figures.map(f => `$${f.toLocaleString()}`).join('/')} — they said $${actual.toLocaleString()}`)
+      // ⚠️ And not if every figure in the sentence is one of their OTHER
+      // numbers — "at $9,000 a month your savings last four years" is their
+      // must-pay beside the word savings, which is correct English and correct
+      // arithmetic. See isOneOfTheirs.
+      const allTheirs = figures.every(f => isOneOfTheirs(f, answers))
+      if (!matches && !allTheirs) {
+        // ⚠️ THE SENTENCE COMES WITH THE COMPLAINT. A guard that reports "x is
+        // stated as y" without showing where cannot be told apart from a false
+        // positive — and this one produced several, which cost a round trip to
+        // discover. Evidence in the message is the difference between a
+        // finding and an accusation.
+        found.push(`${key} stated as ${figures.map(f => `$${f.toLocaleString()}`).join('/')}, they said $${actual.toLocaleString()} — "${sentence.trim().slice(0, 90)}"`)
       }
     })
   })
@@ -599,7 +689,21 @@ function freeText(value, into = []) {
   return into
 }
 
-function speculativeProblem(text, figures, answers) {
+/**
+ * ⚠️ `theirNumbersAreFine` IS TRUE IN PROSE AND FALSE ON A STAT, and the test
+ * that forced the distinction is the first bug Daniel ever reported.
+ *
+ * In a SENTENCE, one of their own figures can legitimately stand near a word
+ * about selling: "sell and own outright — the $4,000 housing cost goes" is
+ * their housing cost, correctly used, in a sentence about a sale.
+ *
+ * On a STAT it cannot. A stat is a bare label and a number asserting "this
+ * figure IS this thing", with no sentence around it to carry the meaning —
+ * which is exactly how "$5,000 — mortgage gone when the house sells" happened
+ * when $5,000 was his whole must-pay. Exempting their own numbers there would
+ * re-open the bug that started all of this.
+ */
+function speculativeProblem(text, figures, answers, theirNumbersAreFine = true) {
   if (!SPECULATIVE.some(re => re.test(String(text ?? '')))) return null
   if (!figures.length) return null
 
@@ -619,10 +723,16 @@ function speculativeProblem(text, figures, answers) {
   theirNumbers(freeText(answers ?? {}), typed)
 
   const unfounded = [...new Set(
-    figures.filter(f => !typed.some(n => Math.abs(n - f) <= Math.max(1, f * 0.02))),
+    figures.filter(f => !typed.some(n => Math.abs(n - f) <= Math.max(1, f * 0.02)))
+      // ⚠️ A figure they typed into a FIELD is theirs too. The speculative rule
+      // exists to stop a sale being given a price out of nowhere; their own
+      // housing cost appearing in a sentence about selling is not that.
+      .filter(f => !(theirNumbersAreFine && isShownOnTheirPage(f, answers))),
   )]
   if (!unfounded.length) return null
-  return `${unfounded.map(f => `$${f.toLocaleString()}`).join(', ')} put on something they never priced`
+  // ⚠️ Evidence, for the same reason as misnamedQuantity: a complaint without
+  // the sentence cannot be told apart from a false positive.
+  return `${unfounded.map(f => `$${f.toLocaleString()}`).join(', ')} put on something they never priced — "${String(text).trim().slice(0, 90)}"`
 }
 
 /**
@@ -678,7 +788,9 @@ export function statIsFounded(stat, answers = {}) {
   if (!Number.isFinite(value) || value === 0) return true
   const label = [stat?.label, stat?.caption].filter(Boolean).join(' ')
   if (!traceable(value, allowedFigures(answers))) return false
-  return !speculativeProblem(label, [value], answers)
+  // ⚠️ `false` — see the note on speculativeProblem. A stat has no sentence to
+  // give a number its meaning, so "one of their figures" is not a defence.
+  return !speculativeProblem(label, [value], answers, false)
 }
 
 // ── Style ───────────────────────────────────────────────────────────────────
@@ -717,10 +829,33 @@ export function statIsFounded(stat, answers = {}) {
  * already committed, a real dependency. Those are facts about the world. A
  * mood is a fact about nobody — we have never met this person.
  */
+/**
+ * ⭐⭐ A NAMED SCARCE THING. The feeling rule below only fires when NONE of these
+ * is present, and that gate is what makes it a rule about reasoning rather than
+ * about vocabulary.
+ *
+ * 🔴 Both false positives the audit found were the same shape. "Use the
+ * proceeds to start something" was cut because "you have under five hours a
+ * week and you said it cannot fail" — a named constraint — and got flagged
+ * because a later, unrelated clause used the word "pressure". "Pressure
+ * washing" was flagged because of its own name.
+ *
+ * ⚠️ Matching a word is not reading an argument. If the paragraph names
+ * something scarce, the mood word is colour and this rule has no business
+ * firing; if it names nothing scarce, a mood word IS the argument.
+ */
+const NAMES_A_CONSTRAINT = [
+  /\$\s?[\d,]+/,
+  /\b(?:\d+|one|two|three|four|five|six|ten|fifteen|twenty)\s*(?:to\s*\w+\s*)?(?:hours?|days?|weeks?|months?|years?)\b/i,
+  /\b(?:under|over|less than|fewer than|only)\s+(?:\d+|one|two|three|four|five|ten|fifteen)\b/i,
+  /\b(?:equipment|tools?|a truck|a vehicle|a licen[cs]e|certifi|insurance|a deposit|capital|cash|savings|runway|premises|space|a trailer|a permit|someone else|a partner|a co-?signer|credit|qualif)/i,
+  /\bdoes not (?:own|have)\b|\byou may not own\b|\byou do not have\b|\bwould need to (?:buy|rent|borrow|hire)\b/i,
+]
+
 const FEELING_AS_REASON = [
   /\bcalm(er|ly)?\b/i,
   /\bstress(ed|ful)?\b/i,
-  /\bpressure\b/i,
+  /\bpressure\b(?!\s*(?:wash|clean))/i,
   /\boverwhelm(ed|ing)?\b/i,
   /\bburn(ed|t)? ?out\b/i,
   /\bready\b/i,
@@ -740,6 +875,29 @@ const INSTRUCTION_SHAPED = [
 
 /** Roughly two plain sentences. Generous — this only has to catch a runaway. */
 const DETAIL_MAX = 380
+
+/**
+ * ⭐⭐ A MOVE THAT LAYS OUT A CHOICE GETS MORE ROOM. Daniel's call, and it was a
+ * liability one: "give more than one option and maybe have the person select
+ * it... we dont want someone coming back and saying i lost evreything becasue i
+ * went with what this app said."
+ *
+ * 🔴 The audit flagged a 420-character move for being over the cap. Reading it,
+ * it was not padding — it was the question, two real options, whose call it is,
+ * and who can price them. That is the shape we now ASK for. The cap was written
+ * before that decision and had quietly turned into a rule against following it.
+ *
+ * ⚠️ The extra room is for the second option, not for prose. 480 fits a choice
+ * stated plainly; anything past it is still the "how" creeping back in.
+ */
+const DETAIL_MAX_WITH_CHOICE = 480
+const OFFERS_A_CHOICE = [
+  /\bwhether that means\b/i,
+  /\beither\b[^.]{0,80}\bor\b/i,
+  /\b(?:two|three) (?:ways|routes|options|paths)\b/i,
+  /\byours to (?:make|decide|choose)\b|\byour call\b|\bthe call is yours\b/i,
+  /\bor,? instead,?\b/i,
+]
 
 /**
  * ⭐⭐ TAKE THE TWO SENTENCES. DO NOT ASK FOR THEM.
@@ -849,7 +1007,8 @@ export function mapStyleNotes(map) {
 
   ;(map?.moves ?? []).forEach((m, i) => {
     const detail = String(m?.detail ?? '')
-    if (detail.length > DETAIL_MAX) {
+    const cap = OFFERS_A_CHOICE.some(re => re.test(detail)) ? DETAIL_MAX_WITH_CHOICE : DETAIL_MAX
+    if (detail.length > cap) {
       notes.push(
         `move ${i + 1} detail is ${detail.length} characters — the spec is one or two plain `
         + 'sentences. Say what the move IS and stop; the extra sentences are always the how.',
@@ -880,9 +1039,20 @@ export function mapStyleNotes(map) {
     // ⚠️ And a gate that repeats the move teaches nothing. It is about what the
     // NEXT move needs, not what this one did.
     const title = String(m?.title ?? '').toLowerCase()
-    const words = gate.toLowerCase().match(/[a-z]{5,}/g) ?? []
+    // ⚠️ FOUR LETTERS, NOT FIVE. At five, "The credit card debt is cleared from
+    // the proceeds" — a gate that parrots its title almost word for word —
+    // keeps only three words and slips under the floor below. The short words
+    // are most of the sentence; dropping them leaves nothing to measure.
+    const words = gate.toLowerCase().match(/[a-z]{4,}/g) ?? []
     const echoed = words.filter(w => title.includes(w))
-    if (words.length && echoed.length / words.length > 0.6) {
+    // 🔴 A RATIO OVER ONE WORD IS NOT A RATIO. This fired on "The card debt is
+    // gone and you know what is left of the proceeds" — a good gate naming two
+    // facts — because the only word in it long enough to count was "proceeds",
+    // which the title also used. 1/1 is 100% and means nothing.
+    //
+    // ⚠️ Four is the point where the proportion starts describing the sentence
+    // rather than an accident of which words happen to be five letters long.
+    if (words.length >= 4 && echoed.length / words.length > 0.6) {
       notes.push(`move ${i + 1} gate just restates the move. Say what move ${i + 2} needs to be true.`)
     }
   })
@@ -892,7 +1062,8 @@ export function mapStyleNotes(map) {
   // sequencing — and sequencing is exactly where "wait until you feel better"
   // gets in and looks like wisdom.
   ;(map?.cut ?? []).forEach(c => {
-    if (FEELING_AS_REASON.some(re => re.test(String(c?.why ?? '')))) {
+    const why = String(c?.why ?? '')
+    if (FEELING_AS_REASON.some(re => re.test(why)) && !NAMES_A_CONSTRAINT.some(re => re.test(why))) {
       notes.push(
         `"${c?.label}" is crossed off over a feeling, not a constraint. Name the scarce `
         + 'thing it would take — money, hours, a dependency — or do not cross it off. '

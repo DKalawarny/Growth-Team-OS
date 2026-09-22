@@ -17,6 +17,14 @@
  *
  *   node scripts/wayout-audit.mjs            # every persona, one run each
  *   node scripts/wayout-audit.mjs --runs 3   # three runs each, for stability
+ *   node scripts/wayout-audit.mjs --replay   # re-check the kept output, FREE
+ *
+ * ⭐⭐ EVERY GENERATION IS KEPT, AND --replay RE-RUNS THE GUARDS OVER IT WITH NO
+ * MODEL CALLS. This is not a convenience. Tuning a guard against live output
+ * means each attempt costs money AND changes the output underneath you, so you
+ * cannot tell whether a fix worked or the model simply wrote something else.
+ * Against the kept output the guards are deterministic: the sentence that was
+ * wrongly flagged stays on disk until the guard stops flagging it.
  *
  * ⚠️ It costs real money — roughly 6¢ a generation — and it needs
  * VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local. It signs up a
@@ -27,6 +35,7 @@ import fs from 'fs'
 import path from 'path'
 import {
   enforceMapContract, mapProblems, mapStyleNotes, inventedFigures, fieldNamesLeaked,
+  readingIsReal,
 } from '../src/lib/wayout/mapContract.js'
 import { movesLibraryForPrompt } from '../src/content/wayoutMoves.js'
 import { readingForPrompt, WAYOUT_READING } from '../src/content/wayoutReading.js'
@@ -38,6 +47,8 @@ const env = Object.fromEntries(
 )
 const URL = env.VITE_SUPABASE_URL
 const KEY = env.VITE_SUPABASE_ANON_KEY
+const REPLAY = process.argv.includes('--replay')
+const CACHE = path.resolve('.wayout-audit-cache')
 const RUNS = Number((process.argv.find(a => a.startsWith('--runs='))
   ?? `--runs=${process.argv[process.argv.indexOf('--runs') + 1] || 1}`).split('=')[1]) || 1
 
@@ -143,7 +154,13 @@ function audit(map, answers) {
   })
 
   // Shipped 19 Sep: a book that is not on the shelf.
-  if (map.read?.title && !WAYOUT_READING.some(b => b.title.replace(/[’']/g, "'") === String(map.read.title).replace(/[’']/g, "'"))) {
+  //
+  // 🔴 THIS USED TO BE ITS OWN COPY OF THE CHECK AND IT DRIFTED WITHIN A DAY.
+  // `readingIsReal` learned to tolerate the model putting the author inside the
+  // title; this duplicate did not, and reported a perfectly good Cal Newport
+  // recommendation as a fabrication — twice. An auditor with its own private
+  // idea of the rule audits itself, not the product. Call the real one.
+  if (map.read?.title && !readingIsReal(map.read, WAYOUT_READING)) {
     push('SHELF', `recommended "${map.read.title}", which is not on the shelf`)
   }
 
@@ -166,13 +183,31 @@ function audit(map, answers) {
   return bad
 }
 
-const jwt = await token()
+/**
+ * ⚠️ The RAW model output is what gets kept, not the enforced map — so a replay
+ * exercises `enforceMapContract` too. Enforcement is where most of the repair
+ * happens, and a cache of already-repaired output would hide every bug in it.
+ */
+const kept = (who, run) => path.join(CACHE, `${who}-${run}.json`)
+
+const jwt = REPLAY ? null : await token()
+if (!REPLAY) fs.mkdirSync(CACHE, { recursive: true })
 let failures = 0
+let checked = 0
 for (const [who, { why, answers }] of Object.entries(PEOPLE)) {
   for (let run = 1; run <= RUNS; run += 1) {
     process.stdout.write(`\n${who}${RUNS > 1 ? ` (run ${run})` : ''} — ${why}\n`)
     try {
-      const map = enforceMapContract(await generate(jwt, answers), answers)
+      let raw
+      if (REPLAY) {
+        if (!fs.existsSync(kept(who, run))) { process.stdout.write('  – nothing kept for this run\n'); continue }
+        raw = JSON.parse(fs.readFileSync(kept(who, run), 'utf8'))
+      } else {
+        raw = await generate(jwt, answers)
+        fs.writeFileSync(kept(who, run), JSON.stringify(raw, null, 2))
+      }
+      checked += 1
+      const map = enforceMapContract(raw, answers)
       const bad = audit(map, answers)
       if (!bad.length) process.stdout.write('  ✓ clean\n')
       else { failures += bad.length; bad.forEach(b => process.stdout.write(`  ✗ ${b}\n`)) }
@@ -182,5 +217,14 @@ for (const [who, { why, answers }] of Object.entries(PEOPLE)) {
     }
   }
 }
-process.stdout.write(`\n${failures ? `${failures} problem(s)` : 'all clean'}\n`)
+/**
+ * 🔴 A REPLAY OVER AN EMPTY CACHE ONCE PRINTED "all clean" AND EXITED 0. That is
+ * the exact shape of every bug this harness was built to catch — a check that
+ * passes because it checked nothing. Nothing checked is a failure.
+ */
+if (!checked) {
+  process.stdout.write('\nnothing was checked — this is a failure, not a pass\n')
+  process.exit(1)
+}
+process.stdout.write(`\n${checked} generation(s) checked — ${failures ? `${failures} problem(s)` : 'all clean'}\n`)
 process.exit(failures ? 1 : 0)

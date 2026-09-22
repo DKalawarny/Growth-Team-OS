@@ -3156,6 +3156,14 @@ they can never know whether move 2 has started, which is the only thing a gate
 is for. A count is usually the best one there is: three people have paid you,
 two months in a row.
 
+⚠️ KEEP A GATE UNDER TWENTY WORDS. Not a style preference — a length limit is
+the only version of "one thing" you can actually hold yourself to while
+writing. The audit caught this one at twenty-seven: "a real number for what the
+current place clears and what a smaller one costs to carry, and you have
+decided whether the move is worth it." That is three gates. If it will not fit
+in twenty words, you are listing everything move two would LIKE to have instead
+of the one fact it cannot start without. Pick that fact.
+
 🔴 A GATE IS A FACT THAT BECOMES TRUE. IT IS NOT AN ERRAND.
 Daniel on his own gate — "a written net-proceeds figure from a lawyer or
 accountant, not an estimate" — said it did not make sense, and he was right

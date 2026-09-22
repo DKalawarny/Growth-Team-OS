@@ -817,7 +817,9 @@ describe('a figure stated as a named quantity must BE that quantity', () => {
   it('catches savings that are not their savings', () => {
     const map = { moves: [{ title: 'x', detail: 'You have roughly $120,000 in savings and a sale coming.' }] }
     const problems = inventedFigures(map, his)
-    expect(problems.some(p => /savings is stated as/.test(p))).toBe(true)
+    // ⚠️ The message now carries the offending sentence as evidence, so the
+    // assertion matches the claim rather than the exact wording of it.
+    expect(problems.some(p => /savings stated as/.test(p))).toBe(true)
   })
 
   it('accepts the real figure', () => {
@@ -836,5 +838,133 @@ describe('a figure stated as a named quantity must BE that quantity', () => {
     // derivable is still caught by the other guard, as it should be.
     const map = { moves: [{ title: 'x', detail: 'You have $10,000 in savings.' }] }
     expect(inventedFigures(map, { mustPay: 5000 })).toEqual([])
+  })
+})
+
+describe('a figure that is exactly one of their numbers is never an invention', () => {
+  // 🔴 Both caught by the audit, both my guards flagging correct sentences.
+  // A guard that cries wolf gets loosened, and a loosened guard stops catching
+  // the real thing — so these matter more than a missed fabrication.
+  const rich = { mustPay: 9000, savings: 900000, housingCost: 4000, takeHome: 28000 }
+
+  it('their must-pay standing next to the word savings is not a misnamed figure', () => {
+    const map = { moves: [{ title: 'x', detail: 'At $9,000 a month your savings last a long time.' }] }
+    expect(inventedFigures(map, rich)).toEqual([])
+  })
+
+  it('their housing cost in a sentence about selling is not a priced sale', () => {
+    const map = { moves: [{ title: 'x', detail: 'Sell and own somewhere outright — the $4,000 housing cost goes.' }] }
+    expect(inventedFigures(map, rich)).toEqual([])
+  })
+
+  it('and a figure that is none of theirs is still caught', () => {
+    const map = { moves: [{ title: 'x', detail: 'Selling should clear about $1,250,000.' }] }
+    expect(inventedFigures(map, rich).length).toBeGreaterThan(0)
+  })
+})
+
+describe('a remainder is not an identity', () => {
+  const his = { mustPay: 3900, takeHome: 4300, savings: 800 }
+
+  it('does not flag "$400 left after must-pay"', () => {
+    // 🔴 Caught by the audit. $4,300 − $3,900 = $400, so the sentence is right
+    // and the guard called it a mislabelled must-pay. The word is "after".
+    const map = { moves: [{ title: 'x', detail: 'You have $400 left after must-pay.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+
+  it('still flags "your $400 must-pay"', () => {
+    const map = { moves: [{ title: 'x', detail: 'Your $400 must-pay is the problem.' }] }
+    expect(inventedFigures(map, his).some(p => /mustPay stated as/.test(p))).toBe(true)
+  })
+
+  it('does not flag a comparison either', () => {
+    const map = { moves: [{ title: 'x', detail: 'That is $400 more than your must-pay.' }] }
+    expect(inventedFigures(map, his)).toEqual([])
+  })
+})
+
+describe('only the forms that actually assert a value', () => {
+  const his = { mustPay: 3900, savings: 800, takeHome: 4300 }
+  const flagged = detail => inventedFigures({ moves: [{ title: 'x', detail }] }, his)
+    .some(p => /stated as/.test(p))
+
+  it('flags the four ways English says a number IS a thing', () => {
+    expect(flagged('You have roughly $120,000 in savings.')).toBe(true)
+    expect(flagged('Your $9,000 must-pay is the problem.')).toBe(true)
+    expect(flagged('Savings of $120,000 changes this.')).toBe(true)
+    expect(flagged('Your savings are $120,000 today.')).toBe(true)
+  })
+
+  it('leaves alone every form the audit caught it getting wrong', () => {
+    // Each of these was a real false positive on a real generation.
+    expect(flagged('You have $400 left after must-pay.')).toBe(false)
+    expect(flagged('Park the $600,000 in savings where it does not disappear.')).toBe(false)
+    expect(flagged('That is $400 more than your must-pay.')).toBe(false)
+    expect(flagged('At $9,000 a month your savings last a long time.')).toBe(false)
+  })
+})
+
+describe('figures the product itself prints are theirs too', () => {
+  // The real generation that exposed this: must-pay 9000, housing 4000.
+  const owner = { mustPay: 9000, housingCost: 4000, takeHome: 9000, savings: 100000 }
+
+  it('allows the post-housing floor in a sentence about selling', () => {
+    const detail = 'Owning somewhere outright removes that line — what has to go out drops from $9,000 to $5,000.'
+    expect(inventedFigures({ moves: [{ title: 'Sell the house', detail }] }, owner)).toEqual([])
+  })
+
+  it('still refuses a price nobody gave the house', () => {
+    const detail = 'Sell the house. It should clear about $780,000 and that funds the rest.'
+    expect(inventedFigures({ moves: [{ title: 'Sell the house', detail }] }, owner).length).toBe(1)
+  })
+})
+
+describe('a mood word is only the reason when nothing scarce is named', () => {
+  const note = why => mapStyleNotes({ cut: [{ label: 'X', why }] })
+    .filter(n => /crossed off over a feeling/.test(n))
+
+  it('still catches a cut made purely on state of mind', () => {
+    expect(note('Worth doing later, once you are less stressed and have some headspace.')).toHaveLength(1)
+    expect(note('Not yet — one thing at a time until you feel ready.')).toHaveLength(1)
+  })
+
+  it('leaves alone a cut that names the scarce thing', () => {
+    // Both of these are real generations the guard wrongly flagged.
+    expect(note('You have under five hours a week and you said it cannot fail. A business needs '
+      + 'more of both. The proceeds are more valuable as a floor that removes the pressure.')).toEqual([])
+    expect(note('A real earner through the warm months, but it requires equipment you may not own.')).toEqual([])
+  })
+})
+
+describe('a move that lays out a choice gets room for the second option', () => {
+  const long = n => `${'word '.repeat(Math.ceil(n / 5))}`.slice(0, n)
+  const note = detail => mapStyleNotes({ moves: [{ title: 'x', detail }] })
+    .filter(n => /characters/.test(n))
+
+  it('still cuts off a move that just rambles', () => {
+    expect(note(long(420))).toHaveLength(1)
+    expect(note(`${long(500)} whether that means this or that`)).toHaveLength(1)
+  })
+
+  it('lets a real choice run to 480', () => {
+    expect(note(`${long(380)} Whether that means owning outright or taking income, it is yours to decide.`))
+      .toEqual([])
+  })
+})
+
+describe('the gate-echo check needs enough words to be a proportion', () => {
+  const note = (title, gate) => mapStyleNotes({ moves: [{ title, detail: 'x.', gate }] })
+    .filter(n => /restates the move/.test(n))
+
+  it('still catches a gate that genuinely parrots the title', () => {
+    expect(note('Clear the credit card debt from the proceeds',
+      'The credit card debt is cleared from the proceeds')).toHaveLength(1)
+  })
+
+  it('does not fire on a short gate that shares one word', () => {
+    // Real generation: a good gate naming two facts, flagged on a 1-of-1 ratio.
+    expect(note('Clear the card debt from the proceeds the day the sale closes',
+      'The card debt is gone and you know what is left of the proceeds.')).toEqual([])
   })
 })
