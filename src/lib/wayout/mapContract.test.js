@@ -968,3 +968,36 @@ describe('the gate-echo check needs enough words to be a proportion', () => {
       'The card debt is gone and you know what is left of the proceeds.')).toEqual([])
   })
 })
+
+describe('a stat labelled for one quantity, showing another', () => {
+  // Daniel's screenshot: must-pay $5,000 printed under "mortgage gone",
+  // when their mortgage was $3,100.
+  const ray = { mustPay: 5000, housingCost: 3100, savings: 20000 }
+
+  it('refuses the must-pay wearing the mortgage label', () => {
+    expect(statIsFounded({ label: 'Freed when the mortgage is gone', value: 5000 }, ray)).toBe(false)
+    expect(statIsFounded({ label: 'Your housing costs', value: 5000 }, ray)).toBe(false)
+  })
+
+  it('and it reaches the page in the thin-answers path, not just the derived one', () => {
+    // 🔴 The half-fix: with income known the product computes the stats itself,
+    // so the bug could not occur. Without it, the model's stat survived.
+    const map = { headline: 'x', stats: [{ label: 'Freed when the mortgage is gone', value: 5000 }],
+      moves: [{ order: 1, title: 'a', detail: 'b.', gate: 'c' }] }
+    expect(enforceMapContract(map, ray).stats.map(s => s.label))
+      .not.toContain('Freed when the mortgage is gone')
+  })
+
+  it('leaves honest stats alone', () => {
+    expect(statIsFounded({ label: 'What has to go out every month', value: 5000 }, ray)).toBe(true)
+    expect(statIsFounded({ label: 'Your housing costs', value: 3100 }, ray)).toBe(true)
+    // ⚠️ A count of months is not a sum of money and matches no other named
+    // quantity, so the misnaming rule must not fire on it. It is still dropped
+    // — by TRACEABILITY, because 4 is not reachable from their dollar figures.
+    // That is a separate, older, deliberately conservative rule; asserting it
+    // here would hide which check did the work.
+    expect(statIsFounded({ label: 'How long your savings cover', value: 4 }, ray)).toBe(false)
+    expect(statIsFounded({ label: 'How long your savings cover', value: 4 }, { ...ray, savings: 4 }))
+      .toBe(true)
+  })
+})

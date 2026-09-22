@@ -609,7 +609,7 @@ function isShownOnTheirPage(figure, answers) {
 const NAMED_QUANTITIES = [
   { key: 'savings', re: /\bsavings?\b|\bput (?:by|away)\b|\bcushion\b/i },
   { key: 'mustPay', re: /\bmust[- ]pay\b|\bhas to go out\b|\bgoes out every month\b/i },
-  { key: 'housingCost', re: /\bhousing costs?\b|\bmortgage payment\b/i },
+  { key: 'housingCost', re: /\bhousing costs?\b|\bhousing line\b|\bmortgage\b/i },
   { key: 'takeHome', re: /\byou (?:take|bring) home\b|\byour take[- ]home\b/i },
   { key: 'householdTakeHome', re: /\bhousehold (?:income|brings? in)\b/i },
 ]
@@ -783,11 +783,50 @@ export function inventedFigures(map, answers = {}) {
  * The same test for a stat, where the figure is a clean number rather than
  * prose — so a bad one can simply be dropped instead of failing the whole map.
  */
+/**
+ * ⭐⭐ A STAT WHOSE LABEL NAMES ONE QUANTITY AND WHOSE VALUE IS A DIFFERENT ONE
+ * OF THEIRS. This is the exact signature of the bug Daniel saw: their $5,000
+ * must-pay printed under "Freed when the mortgage is gone", when their mortgage
+ * was $3,100.
+ *
+ * 🔴 I TOLD HIM THIS WAS FIXED AND IT WAS ONLY HALF FIXED. When must-pay and
+ * income are both known the product computes the stats itself and throws the
+ * model's away, so the bug cannot occur — that is why it stopped appearing. But
+ * when income is missing the derived pair cannot be built, the code falls back
+ * to the model's own stats, and nothing in that path was checking the LABEL
+ * against the VALUE. He asked the right question.
+ *
+ * ⚠️ Why "a different one of THEIRS" and not "does not match": a stat's label is
+ * not a sentence, so the prose check cannot read it, and a bare mismatch would
+ * flag every honest derived stat — "how long your savings cover" is a count of
+ * months, not a sum of money, and matches nothing. Landing exactly on another
+ * named quantity is what makes it a relabelling rather than a calculation.
+ */
+function statMisnamed(stat, answers = {}) {
+  const value = Number(stat?.value)
+  if (!Number.isFinite(value) || value <= 0) return null
+  const label = [stat?.label, stat?.caption].filter(Boolean).join(' ')
+
+  const has = key => Number.isFinite(Number(answers?.[key])) && String(answers?.[key] ?? '').trim() !== ''
+  const near = key => Math.abs(Number(answers[key]) - value) <= Math.max(1, Number(answers[key]) * 0.02)
+
+  const named = NAMED_QUANTITIES.filter(({ re }) => re.test(label)).map(({ key }) => key).filter(has)
+  if (named.length !== 1) return null
+  if (named.some(near)) return null
+
+  const isInstead = NAMED_QUANTITIES.map(({ key }) => key)
+    .filter(k => k !== named[0] && has(k) && near(k))
+  if (!isInstead.length) return null
+  return `"${stat.label}" shows $${value.toLocaleString()}, which is their `
+    + `${isInstead[0]} — their ${named[0]} is $${Number(answers[named[0]]).toLocaleString()}`
+}
+
 export function statIsFounded(stat, answers = {}) {
   const value = Number(stat?.value)
   if (!Number.isFinite(value) || value === 0) return true
   const label = [stat?.label, stat?.caption].filter(Boolean).join(' ')
   if (!traceable(value, allowedFigures(answers))) return false
+  if (statMisnamed(stat, answers)) return false
   // ⚠️ `false` — see the note on speculativeProblem. A stat has no sentence to
   // give a number its meaning, so "one of their figures" is not a defence.
   return !speculativeProblem(label, [value], answers, false)
