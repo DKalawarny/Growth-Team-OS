@@ -170,6 +170,28 @@ export const WAYOUT_MAX_REBUILDS = 1
  * rebuild. The cap exists to stop somebody fishing for a different answer to
  * the same question; this is a different question.
  */
+/**
+ * Their own words against one move.
+ *
+ * ⚠️ `order` is 1-BASED, like move_order everywhere else in this product. The
+ * one place it is 0-based is the render index in Plan.jsx, and that conversion
+ * has already cost a day once.
+ */
+export async function saveMoveNote(sessionId, order, text, current = {}) {
+  const n = Number(order)
+  if (!Number.isInteger(n) || n < 1 || n > 3) throw new Error('not a move')
+  const next = { ...(current ?? {}) }
+  const body = String(text ?? '').trim().slice(0, 600)
+  if (body) next[n] = body; else delete next[n]
+
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ move_notes: next })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+  return next
+}
+
 export async function insistOn(sessionId, label, current = []) {
   const next = [...new Set([...(current ?? []), String(label).trim()])].filter(Boolean).slice(0, 3)
   const { error } = await supabase
@@ -307,7 +329,18 @@ export function crisisFrom(raw) {
   return { crisis: true, message: text }
 }
 
-export async function generateMap(answers, onProgress = () => {}) {
+export async function generateMap(answers, onProgress = () => {}, moveNotes = null) {
+  // ⭐⭐ THEIR NOTES ON MOVES RIDE IN AS FREE TEXT, AND THAT IS DELIBERATE.
+  // A figure someone types into "what did we get wrong about move 2" is a
+  // figure THEY gave us, so it must count as theirs for the invention guards.
+  // Putting it in the answers payload makes `freeText(answers)` find it, which
+  // means provenance works with no new rule — the alternative was a second
+  // channel the guards did not know about, which is how the playbook ended up
+  // with no figure checks at all.
+  const withNotes = moveNotes && Object.keys(moveNotes).length
+    ? { ...answers, theirNotesOnMoves: moveNotes }
+    : answers
+  answers = withNotes
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
   //
   // 🔴 Daniel's first real map invented "$120,000 cash in hand at sale" from a

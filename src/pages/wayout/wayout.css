@@ -1166,3 +1166,211 @@ h1.wayout__heroline {
   color: var(--soft);
 }
 .wayout__herocut s { text-decoration-color: #B9B29E; }
+
+/* ═══ THE PINNED ROUTE ══════════════════════════════════════════════════
+   ⭐⭐ Daniel picked this out of four shapes: "i like the fun pin board but the
+   checking off of steps and the progress marker". So the notes are pinned and
+   tilted and keep the board's character, and a string runs through them left to
+   right so the ORDER still reads as given rather than arranged — which is the
+   whole product. A board alone says "rearrange these"; the string says "this
+   first, then this".
+
+   🔴 THE PIN WAS ONCE THE ONLY WAY TO TICK A MOVE AND NOBODY COULD FIND IT.
+   Daniel: "cant get to the next section only worked once". The logic was fine —
+   a 28px dot that looks like a pushpin simply does not read as a control. The
+   pin is the MARKER. The tick is a labelled button. Do not merge them again.
+
+   ⭐⭐ A LOCKED MOVE IS FULLY READABLE, AT FULL OPACITY. The map is the free
+   product: all three moves, their detail, both gates. Dimming the text argued
+   against the business model and looked like a rendering fault. Only the ACTION
+   locks, because "Show me how" is the paywall. */
+.wayout__string { position: relative; margin-top: 26px; }
+
+/* ⚠️ FIXED HEIGHT, AND THE viewBox HEIGHT MATCHES IT. Stretched with
+   preserveAspectRatio=none over an auto-height parent, the y coordinates meant
+   a different number of pixels on every reflow and the sag never met the pins. */
+.wayout__twine {
+  position: absolute; top: 0; left: 0; width: 100%; height: 74px;
+  overflow: visible; pointer-events: none; z-index: 0;
+}
+.wayout__twine path { fill: none; stroke-linecap: round; }
+.wayout__twine .slack { stroke: #CBC3AA; stroke-width: 3.5; stroke-dasharray: 6 8; }
+.wayout__twine .taut { stroke: var(--green); stroke-width: 4.5; transition: stroke-dasharray .6s cubic-bezier(.4,0,.2,1); }
+
+/* ⭐ FIVE COLUMNS — note, gate, note, gate, note — so a gate has a column of its
+   own instead of being absolutely positioned at a guessed percentage. The gaps
+   are PERCENTAGES so the pin centres stay at a fixed percent at every width,
+   which is the only reason the string meets the pins. On a phone the same five
+   become one column in the same order: one layout, not two. */
+.wayout__notes {
+  position: relative; z-index: 1;
+  display: grid;
+  /* ⚠️ minmax(0, …) not bare fr. An `fr` track is minmax(auto, 1fr) and refuses
+     to shrink below its content, so a long unbroken word in a move title pushed
+     2px of overflow into the row. Third time this rule has been needed in this
+     file. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, .62fr) minmax(0, 1fr) minmax(0, .62fr) minmax(0, 1fr);
+  align-items: start; gap: 0 2%; padding-top: 62px;
+}
+
+.wayout__note {
+  position: relative; min-width: 0; padding: 21px 20px 19px;
+  background: #FFF8E1;
+  box-shadow: 0 7px 18px rgba(35, 48, 31, .15), 0 1px 2px rgba(35, 48, 31, .2);
+  transition: transform .3s cubic-bezier(.34, 1.3, .64, 1), box-shadow .3s;
+}
+.wayout__note--1 { transform: rotate(-1.5deg); }
+.wayout__note--2 { transform: rotate(1.1deg); background: #F1F7EE; }
+.wayout__note--3 { transform: rotate(-.7deg); background: #FDF1E5; }
+.wayout__note--locked { box-shadow: 0 4px 12px rgba(35, 48, 31, .11); }
+/* ⚠️ A finished note keeps its OWN paper. Daniel: "not a fan of the mint
+   green". It gets STAMPED, not repainted — which is also what paper does. */
+.wayout__note--done { transform: rotate(0deg); }
+
+.wayout__pin {
+  position: absolute; top: -16px; left: 50%; margin-left: -16px;
+  width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0;
+  background: #C4BCA4; cursor: pointer; z-index: 3;
+  box-shadow: 0 3px 6px rgba(0,0,0,.34), inset 0 -3px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .25s, box-shadow .25s, transform .25s;
+}
+.wayout__pin svg { width: 14px; height: 14px; opacity: 0; transition: opacity .2s; }
+.wayout__note--now .wayout__pin {
+  background: var(--sun);
+  box-shadow: 0 3px 7px rgba(0,0,0,.3), inset 0 -3px 4px rgba(0,0,0,.14), 0 0 0 9px rgba(255, 180, 58, .24);
+}
+.wayout__note--done .wayout__pin { background: var(--green); transform: scale(1.07); }
+.wayout__note--done .wayout__pin svg { opacity: 1; }
+.wayout__note--locked .wayout__pin { background: #CFC8B2; }
+
+.wayout__here {
+  position: absolute; top: -12px; left: calc(50% + 20px); z-index: 3;
+  background: var(--ink); color: var(--paper); font-size: 9px; font-weight: 800;
+  letter-spacing: .11em; text-transform: uppercase; padding: 4px 8px;
+  border-radius: 3px; white-space: nowrap; pointer-events: none;
+}
+
+.wayout__note > b {
+  display: block; font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--soft); font-weight: 800; margin-bottom: 7px;
+}
+.wayout__note h4 { margin: 0 0 8px; font-size: 15.5px; font-weight: 700; line-height: 1.28; letter-spacing: -.01em; }
+.wayout__note > p { margin: 0; font-size: 13px; line-height: 1.47; color: #47533F; }
+
+/* ⚠️ NOT absolutely positioned over the note. It was, and it landed squarely on
+   top of "+ Add or change something here" the moment a move was ticked —
+   covering the one control that screen exists to offer. */
+.wayout__stamp {
+  display: block; width: fit-content; margin: 13px 0 0 auto; pointer-events: none;
+  border: 3px solid var(--green); color: var(--green); border-radius: 5px;
+  font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  padding: 3px 9px; transform: rotate(-11deg); opacity: .85;
+}
+
+.wayout__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; align-items: center; }
+.wayout__acts .wayout__go {
+  border: 0; background: var(--ink); color: var(--paper); font: inherit;
+  font-size: 12px; font-weight: 700; padding: 9px 15px; border-radius: 999px; cursor: pointer;
+}
+.wayout__acts .wayout__go[disabled] {
+  background: transparent; color: var(--soft); border: 2px dashed #C4BCA4;
+  padding: 7px 13px; cursor: not-allowed;
+}
+.wayout__mark {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 2px solid #C9C2AC; background: transparent; font: inherit;
+  font-size: 11.5px; font-weight: 700; color: var(--soft);
+  padding: 7px 13px 7px 9px; border-radius: 999px; cursor: pointer; transition: all .18s;
+}
+.wayout__mark:hover { border-color: var(--green); color: var(--green); }
+.wayout__mark i { flex: none; width: 17px; height: 17px; border-radius: 5px; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; }
+.wayout__mark i svg { width: 11px; height: 11px; opacity: 0; }
+.wayout__note--done .wayout__mark { border-color: var(--green); background: var(--green); color: #fff; }
+.wayout__note--done .wayout__mark i { border-color: #fff; background: #fff; }
+.wayout__note--done .wayout__mark i svg { opacity: 1; }
+.wayout__note--done .wayout__mark i svg path { stroke: var(--green); }
+
+/* the gate, in its own column, hanging from the sag in the string */
+.wayout__gatetag {
+  margin-top: 26px; min-width: 0; position: relative;
+  background: var(--paper); border: 2px dashed var(--line2, #4A6B63); border-radius: 10px;
+  padding: 9px 11px; transition: all .3s;
+}
+.wayout__gatetag::before {
+  content: ''; position: absolute; top: -13px; left: 50%; margin-left: -3px;
+  width: 6px; height: 14px; background: #B3AC96; border-radius: 2px;
+}
+.wayout__gatetag b {
+  display: block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  color: #4A6B63; font-weight: 800; margin-bottom: 3px;
+}
+.wayout__gatetag span { display: block; font-size: 11.5px; line-height: 1.38; color: var(--soft); }
+.wayout__gatetag--passed { border-style: solid; border-color: var(--green); }
+.wayout__gatetag--passed b { color: var(--green); }
+
+/* ═══ THEIR OWN NOTE — a second kind of paper ═══════════════════════════
+   ⭐⭐ What THEY wrote must never be mistakable for what WE wrote. Ours is
+   coloured and pinned; theirs is white, lined, clipped on at an angle and
+   labelled. That separation is the same principle as the disclaimer: months
+   later they need to see at a glance which words were theirs. */
+.wayout__addstrip {
+  display: block; width: 100%; margin-top: 13px; padding: 9px 12px;
+  border: 2px dashed #C4BCA4; border-radius: 9px; background: transparent;
+  font: inherit; font-size: 11.5px; font-weight: 700; color: var(--soft);
+  cursor: pointer; text-align: left; transition: all .18s;
+}
+.wayout__addstrip:hover { border-color: var(--green); color: var(--green); border-style: solid; }
+
+.wayout__addbox { margin-top: 13px; }
+.wayout__addbox textarea {
+  width: 100%; box-sizing: border-box; min-height: 74px; resize: vertical;
+  border: 2px solid var(--ink); border-radius: 9px; background: #FFFEFA;
+  font: inherit; font-size: 13px; line-height: 1.45; color: var(--ink); padding: 10px 11px;
+}
+.wayout__addbox textarea:focus { outline: none; border-color: var(--green); }
+.wayout__addrow { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+.wayout__addrow button { border: 0; font: inherit; font-size: 11.5px; font-weight: 700; padding: 8px 13px; border-radius: 999px; cursor: pointer; }
+.wayout__addrow .keep { background: var(--ink); color: var(--paper); }
+.wayout__addrow .redo { background: transparent; color: var(--green); border: 2px solid var(--green); padding: 6px 11px; }
+.wayout__addrow .drop { background: transparent; color: var(--soft); }
+.wayout__addhint { font-size: 11px; color: var(--soft); margin: 7px 0 0; line-height: 1.4; }
+
+.wayout__yours {
+  position: relative; margin-top: 15px; padding: 13px 13px 12px;
+  background: #FFFFFF;
+  background-image: repeating-linear-gradient(#FFFFFF 0 21px, #E8EEF2 21px 22px);
+  box-shadow: 0 3px 9px rgba(35, 48, 31, .16);
+  transform: rotate(-.9deg);
+}
+.wayout__yours::before {
+  content: ''; position: absolute; top: -9px; left: 13px; width: 13px; height: 26px;
+  border: 2.5px solid #9AA4AC; border-radius: 7px; border-bottom-color: transparent;
+  transform: rotate(14deg);
+}
+.wayout__yours b {
+  display: block; font-size: 9px; letter-spacing: .13em; text-transform: uppercase;
+  color: #7E8A93; font-weight: 800; margin: 0 0 4px 22px;
+}
+.wayout__yours p { margin: 0; font-size: 12.5px; line-height: 22px; color: #2B3A44; }
+.wayout__yours button {
+  border: 0; background: transparent; font: inherit; font-size: 10.5px; font-weight: 700;
+  color: #7E8A93; cursor: pointer; padding: 5px 0 0; text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+  .wayout__notes { grid-template-columns: 1fr; gap: 46px 0; padding-top: 26px; }
+  .wayout__twine { display: none; }
+  .wayout__gatetag { margin-top: 0; }
+  .wayout__gatetag::before { display: none; }
+  .wayout__note--1, .wayout__note--2, .wayout__note--3 { transform: rotate(0deg); }
+}
+
+/* ⚠️ The headline leads the full width now that the moves do, but a headline is
+   still read at a measure — 968px of one line is a banner, not a sentence. */
+.wayout__top { max-width: 26ch; }
+.wayout__top h2 { text-wrap: balance; }
+
+/* The setup — their quote and the two numbers — reads at a measure, not across
+   the whole plan width. The moves below it are the thing that uses the width. */
+.wayout__setup { max-width: 720px; margin-bottom: 4px; }

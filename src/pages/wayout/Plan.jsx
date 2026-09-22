@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
-import { loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress, markMoveDone, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems } from '../../lib/wayout/session'
+import {
+  loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
+  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
+} from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -125,7 +128,9 @@ export default function Plan() {
       // takes answers — so without this the person's choice was recorded in
       // the database, echoed back in the UI, and never once shown to the model
       // that writes the plan. The feature would have looked like it worked.
-      const generated = await generateMap({ ...s.answers, insisted: s.insisted ?? [] }, setPass)
+      const generated = await generateMap(
+        { ...s.answers, insisted: s.insisted ?? [] }, setPass, s.move_notes,
+      )
       const { error: wErr } = await supabase
         .from('wayout_sessions')
         .update({ map: generated })
@@ -206,6 +211,23 @@ export default function Plan() {
    * stops somebody fishing for a different answer to the same question, and
    * this is a different question. They changed the input.
    */
+  /**
+   * ⭐⭐ Their note against one move. Saved either way; only `redo` rebuilds.
+   *
+   * ⚠️ The note is saved BEFORE the rebuild, not after, because `build()` sends
+   * the session's notes to the model — saving afterwards would rebuild without
+   * the very thing they asked for and look like it had been ignored.
+   */
+  async function noteOnMove(order, text, redo) {
+    if (!session || building) return
+    try {
+      const next = await saveMoveNote(session.id, order, text, session.move_notes)
+      const updated = { ...session, move_notes: next }
+      setSession(updated)
+      if (redo) { setMap(null); await build(updated) }
+    } catch (err) { setError(err.message) }
+  }
+
   async function insist(label) {
     if (!session || building) return
     try {
@@ -332,6 +354,8 @@ export default function Plan() {
       onRegenerate={import.meta.env.DEV ? regenerateNow : null}
       onMove={setMoveDone}
       onInsist={insist}
+      onNote={noteOnMove}
+      moveNotes={session?.move_notes ?? {}}
       progress={progress}
       rebuilding={building}
       spent={spent}
@@ -392,7 +416,10 @@ function startCheckout() {
  * there is no session behind it and nothing to rebuild, so offering a button
  * that cannot work would be worse than not offering one.
  */
-export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, progress, rebuilding = false, spent = false }) {
+export function Map({
+  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  moveNotes = {}, progress, rebuilding = false, spent = false,
+}) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
   // enforced nothing at all. A gate nothing enforces is a suggestion, and a
@@ -401,6 +428,25 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onIn
   // back to ticking locally so the design can still be checked.
   const done = progress?.done ?? null
   const [openCut, setOpenCut] = useState(null)
+
+  // ⭐⭐ Their own words on one move. `openNote` is which box is open, `draft` is
+  // what is in it. One draft, not one per move — only one box is ever open, and
+  // a map of drafts would be state nobody clears.
+  const [openNote, setOpenNote] = useState(null)
+  const [draft, setDraft] = useState('')
+
+  /**
+   * ⚠️ TWO OUTCOMES, ONE BOX, AND THE DIFFERENCE IS THE POINT.
+   * `redo` false — the note sits beside ours and the plan is untouched.
+   * `redo` true  — it goes into the next generation and the plan changes.
+   * Both save. Without a save on the redo path the note would vanish the moment
+   * the rebuild replaced the map, and they would watch their own words go.
+   */
+  async function saveNote(order, redo) {
+    const text = draft.trim()
+    setOpenNote(null)
+    await onNote?.(order, text, redo)
+  }
 
   // Stagger, in seconds, matching the design reference. With reduced motion
   // every delay collapses to zero and the animation is off in CSS — the build
@@ -436,14 +482,31 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onIn
           is what they DO about it. On a phone `display: contents` collapses
           this back to the single column it was, so there is still only one
           design and nothing reflows into a second one nobody drew. */}
-      <div className="wayout__spread">
-      <div className="wayout__col">
-      <p className="wayout__who wayout__r" style={at(0.1)}>{WAYOUT_MAP_LABEL}</p>
+      {/* ⭐⭐ THE MOVES ARE NOT IN A COLUMN. They sit above the two-column spread
+          and use the full width of the page.
 
-      <h2 className="wayout__r" style={at(0.3)}>
-        <Marked text={map.headline} highlight={map.highlight} />
-      </h2>
+          🔴 Built inside the right-hand column first, and a headless check
+          measured the result: the route had 377px of a 1080px page, five grid
+          columns in it, and 12px of overflow. The shape NEEDS width — three
+          pinned notes and two gate tags across a narrow strip is not the design
+          Daniel picked, it is a squashed version of it. The supporting detail
+          still splits 7:5 underneath; the plan itself does not. */}
+      {/* ⭐ The headline is the first thing on the page and it leads the whole
+          width, because the moves below it do too. It was inside the left
+          column when the moves moved out, which put "Three moves. This order."
+          above the title of the plan those moves belong to. */}
+      <div className="wayout__top">
+        <p className="wayout__who wayout__r" style={at(0.1)}>{WAYOUT_MAP_LABEL}</p>
+        <h2 className="wayout__r" style={at(0.3)}>
+          <Marked text={map.headline} highlight={map.highlight} />
+        </h2>
+      </div>
 
+      {/* ⭐ The quote and the two numbers are the SETUP — what they said and
+          where they stand. They belong before the plan that answers them, not
+          in a column beside it. They were below the moves for one build and it
+          read backwards: the answer, then the question. */}
+      <div className="wayout__setup">
       {/* ⭐ Rendered only when the contract check passed — session.js drops the
           card if the quote is not verbatim in what the person actually typed.
           A fabricated one takes every other claim on the page down with it. */}
@@ -473,7 +536,6 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onIn
 
       </div>
 
-      <div className="wayout__col">
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
           it shows that this is a suggested plan, up to you to do as you wish,
@@ -489,70 +551,142 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onIn
         Anything here is yours to change.
       </p>
 
-      <div className="wayout__moves">
-        {map.moves?.map((m, i) => (
-          <div key={i}>
-            <button
-              type="button"
-              className={`wayout__move wayout__r${i === 0 ? ' wayout__move--now' : ''}${ticked.has(i + 1) ? ' wayout__move--done' : ''}`}
-              style={at(2.6 + i * 0.3)}
-              onClick={() => toggle(i)}
-              aria-pressed={ticked.has(i + 1)}
-            >
-              <span className="wayout__chk">
-                <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 8.5l3 3 7-7" />
-                </svg>
-              </span>
-              {/* ⭐⭐ THE DETAIL IS ONLY ON MOVE ONE, AND THAT IS A TRUTH
-                  BEFORE IT IS A PRICE. Daniel: "just give step one, the rest of
-                  it is inside?"
+      {/* ⭐⭐ THE PINNED ROUTE. Daniel picked it out of four shapes: "i like the
+          fun pin board but the checking off of steps and the progress marker".
+          Notes keep the board's character; the string keeps the ORDER, which is
+          the product. See wayout.css for why the string is a fixed-height svg
+          and why the grid gaps are percentages. */}
+      <div className="wayout__string wayout__r" style={at(2.6)}>
+        <svg className="wayout__twine" viewBox="0 0 900 74" preserveAspectRatio="none" aria-hidden="true">
+          <path className="slack" pathLength="100" d="M98 48 Q 274 72 450 48 Q 626 72 802 48" />
+          <path
+            className="taut"
+            pathLength="100"
+            d="M98 48 Q 274 72 450 48 Q 626 72 802 48"
+            strokeDasharray={`${ticked.size === 0 ? 0 : ticked.size === 1 ? 50 : 100} 100`}
+          />
+        </svg>
 
-                  ⚠️ What is NOT hidden is the shape: all three titles, the
-                  order, both gates, and everything crossed off. That matters —
-                  the order IS the product, a single move is what any chatbot
-                  gives, and hiding two of three would be the ambush he ruled
-                  out on the first screen.
+        <div className="wayout__notes">
+          {map.moves?.map((m, i) => {
+            const order = i + 1
+            const isDone = ticked.has(order)
+            // ⚠️ Unlocked means the move BEFORE it is ticked. Move one always.
+            const isOpen = order === 1 || ticked.has(order - 1)
+            const state = isDone ? 'done' : (isOpen ? 'now' : 'locked')
+            const theirs = moveNotes?.[order]
 
-                  ⭐ What is held back is detail nobody can act on yet, and that
-                  is honest rather than commercial: move two is CONDITIONAL on
-                  move one's gate, so its detail is written about a situation
-                  that does not exist. It is also where the model invents most —
-                  every worst assumption so far lived in moves two and three,
-                  describing a rental it had never been told was let. Writing
-                  less about a future we do not have is a better plan, and it
-                  happens to leave the paid half something to be. */}
-              <span>
-                <p>{m.title}</p>
-                <small><b>{m.when}</b> {m.detail}{m.season ? ` ${m.season}` : ''}</small>
-              </span>
-            </button>
-
-            {/* ⭐ The gate, on the spine, between this move and the next — the
-                sentence that makes this a plan instead of three ideas. Not
-                rendered after the last move: there is nothing it unlocks. */}
-            {m.gate && i < map.moves.length - 1 && (
-              <div className="wayout__gate wayout__r" style={at(2.75 + i * 0.3)}>
-                <span>Move {i + 2} starts when <b>{m.gate}</b></span>
-                {/* ⭐ The gate is now a door. Once the move above it is ticked,
-                    the next play-by-play is reachable from the sentence that
-                    said it would be — rather than from a link that was always
-                    there and quietly made the gate decorative. */}
-                {onOpenPlaybook && ticked.has(i + 1) && (
+            return (
+              <Fragment key={order}>
+                <div className={`wayout__note wayout__note--${order} wayout__note--${state}`}>
+                  {/* The pin is the MARKER and a second way to tick. It is never
+                      the only way — see the note in wayout.css. */}
                   <button
                     type="button"
-                    className="wayout__again"
-                    onClick={() => onOpenPlaybook(i + 2)}
+                    className="wayout__pin"
+                    onClick={() => toggle(i)}
+                    aria-pressed={isDone}
+                    aria-label={`Mark move ${order} done`}
                   >
-                    Open move {i + 2}
+                    <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 8.5l3 3 7-7" />
+                    </svg>
                   </button>
+                  {state === 'now' && <span className="wayout__here">You are here</span>}
+
+                  <b>Move {order} · {m.when}</b>
+                  <h4>{m.title}</h4>
+                  <p>{m.detail}{m.season ? ` ${m.season}` : ''}</p>
+
+                  <div className="wayout__acts">
+                    {/* ⭐ "Show me how" is the paywall. When payments go live it
+                        carries the price — see the button lower down. A locked
+                        move says what WOULD open it rather than just "locked":
+                        the move is not hidden, the walkthrough is not open. */}
+                    <button
+                      type="button"
+                      className="wayout__go"
+                      disabled={!isOpen}
+                      onClick={() => isOpen && onOpenPlaybook?.(order)}
+                    >
+                      {isOpen
+                        ? (WAYOUT_PAYMENTS_LIVE && order === 1 ? `Show me how — ${WAYOUT_PRICE_LABEL}` : 'Show me how')
+                        : `Opens after gate ${order - 1}`}
+                    </button>
+                    {isOpen && (
+                      <button type="button" className="wayout__mark" onClick={() => toggle(i)} aria-pressed={isDone}>
+                        <i>
+                          <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 8.5l3 3 7-7" />
+                          </svg>
+                        </i>
+                        {isDone ? 'Done' : 'Mark done'}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* ⭐⭐ THEIR OWN WORDS, ON THIS MOVE. Two outcomes from one box:
+                      pin it on (the plan is unchanged, their note sits beside
+                      ours) or redo (it goes into the next generation). */}
+                  {theirs && openNote !== order && (
+                    <div className="wayout__yours">
+                      <b>Your note</b>
+                      <p>{theirs}</p>
+                      <button type="button" onClick={() => { setDraft(theirs); setOpenNote(order) }}>Change it</button>
+                    </div>
+                  )}
+                  {openNote === order ? (
+                    <div className="wayout__addbox">
+                      <textarea
+                        value={draft}
+                        onChange={e => setDraft(e.target.value)}
+                        maxLength={600}
+                        placeholder="What did we get wrong, or what should be in here?"
+                      />
+                      <div className="wayout__addrow">
+                        <button type="button" className="keep" onClick={() => saveNote(order, false)}>Pin it on</button>
+                        <button type="button" className="redo" onClick={() => saveNote(order, true)}>Redo this move with it</button>
+                        <button type="button" className="drop" onClick={() => setOpenNote(null)}>Cancel</button>
+                      </div>
+                      <p className="wayout__addhint">
+                        <b>Pin it on</b> keeps your note beside ours. <b>Redo</b> rewrites this
+                        move around what you said — and everything after it, because the order
+                        depends on it.
+                      </p>
+                    </div>
+                  ) : !theirs && (
+                    <button
+                      type="button"
+                      className="wayout__addstrip"
+                      onClick={() => { setDraft(''); setOpenNote(order) }}
+                    >
+                      + Add or change something here
+                    </button>
+                  )}
+
+                  {isDone && <span className="wayout__stamp">Done</span>}
+                </div>
+
+                {/* The gate gets its own grid column — see wayout.css. Not after
+                    the last move: there is nothing it unlocks. */}
+                {m.gate && i < map.moves.length - 1 && (
+                  <div className={`wayout__gatetag${isDone ? ' wayout__gatetag--passed' : ''}`}>
+                    <b>{isDone ? `\u2713 Gate ${order} passed` : `Gate ${order}`}</b>
+                    <span>{m.gate}</span>
+                  </div>
                 )}
-              </div>
-            )}
-          </div>
-        ))}
+              </Fragment>
+            )
+          })}
+        </div>
       </div>
 
+
+      {/* ⚠️ Two REAL columns. When the setup moved above the moves this left an
+          empty first column and a page-wide hole beside "Crossed off". What was
+          ruled out goes left; what happens next goes right. */}
+      <div className="wayout__spread">
+      <div className="wayout__col">
       {Array.isArray(map.cut) && map.cut.length > 0 && (
         <>
           <h3 className="wayout__label wayout__r" style={at(3.4)}>Crossed off, on purpose</h3>
@@ -597,6 +731,9 @@ export function Map({ map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onIn
         </>
       )}
 
+      </div>
+
+      <div className="wayout__col">
       {Array.isArray(map.seasonPlan) && map.seasonPlan.length > 0 && (
         <>
           <h3 className="wayout__label wayout__r" style={at(3.7)}>Through the off-season</h3>
