@@ -23,12 +23,40 @@
  * rather than rendering a button that goes nowhere.
  */
 
-/** One-time, in cents, to avoid float arithmetic on money. */
-export const WAYOUT_PRICE_CENTS = 3900
+/**
+ * ⭐⭐ THE MODEL, SETTLED 21 SEP: THE MAP IS FREE, THE WALKTHROUGH IS $29/MONTH.
+ *
+ * It was $39 once for the map, and two files each claimed to be the paid half —
+ * Plan.jsx said "$39, once. Not a subscription." while Play.jsx said "THIS IS
+ * THE PAID HALF". Both cannot be true.
+ *
+ * ⭐ Why the map is free: their problem is money, so the hardest $39 in
+ * consumer software is the one asked of somebody who is stuck. The map is also
+ * the only thing anyone would ever show a friend — putting it behind a paywall
+ * costs the distribution as well as the conversion. Daniel: "getting someone to
+ * try it out for free for feedback and REVIEW IS MORE IMPORTANT."
+ *
+ * ⚠️ WHY $29 AND NOT LESS, WHICH IS THE COUNTER-INTUITIVE PART. This product
+ * FINISHES — three moves, two gates, out. Software priced cheap makes it back
+ * on duration; a thing people complete cannot. Lifetime is four to six months,
+ * so the monthly figure does all the work. "A small amount per week" optimises
+ * for signup, and signup is not where this loses people.
+ *
+ * ⚠️ MONTHLY ONLY. NO ANNUAL PLAN. On something finished in six months, annual
+ * is taking money for months they will not use — a refund magnet, and a direct
+ * contradiction of a product whose whole posture is that you cannot be
+ * ambushed. The short lifetime costs less than it looks, because it is short
+ * either way.
+ */
+export const WAYOUT_PRICE_CENTS = 2900
 export const WAYOUT_CURRENCY    = 'CAD'
+export const WAYOUT_PRICE_PERIOD = 'month'
 
 /** The human-readable figure. The only string anyone should print. */
-export const WAYOUT_PRICE_LABEL = '$39'
+export const WAYOUT_PRICE_LABEL = '$29'
+
+/** With the period attached — for anywhere a bare figure would read as one-off. */
+export const WAYOUT_PRICE_FULL = '$29 a month'
 
 /**
  * ⚠️ Gate, not a preference. While this is false no checkout is started and no
@@ -54,7 +82,7 @@ export function priceLine() {
   // ⭐ The assessment is free and always will be. What is paid for is the
   // play-by-play — how to actually do the move you are standing on.
   return WAYOUT_PAYMENTS_LIVE
-    ? `Your plan is free. ${WAYOUT_PRICE_LABEL} later, only if you want the step-by-step for actually doing it.`
+    ? `Your plan is free. ${WAYOUT_PRICE_FULL} later, only if you want the step-by-step for actually doing it — and only for as long as you are doing it.`
     : 'Your plan is free. Nothing to pay, at the end or anywhere else.'
 }
 
@@ -72,6 +100,20 @@ export function guaranteeLine() {
   // ⚠️ Nothing about money back while nothing is being taken — "refund" copy on
   // a free product reads as a script somebody forgot to switch off.
   return WAYOUT_PAYMENTS_LIVE
-    ? 'If the plan doesn’t fit your life, say so and you get your money back. No form to fill in.'
+    ? 'Cancel in one click, any month. If it doesn’t fit your life, say so and you get that month back — no form to fill in.'
     : ''
+}
+
+/**
+ * ⭐⭐ WHAT THE SUBSCRIPTION IS, IN ONE SENTENCE — and the wording is load-bearing.
+ *
+ * 🔴 IT MUST NEVER IMPLY A HUMAN IS ON THE OTHER END. This product's whole
+ * reason for working without one is capability, not accountability. Somebody
+ * who expects a coach and meets software has been misled, and that is the one
+ * thing this product cannot survive. Daniel settled the phrasing: "it walks the
+ * move with you", NOT "a coach walks you through".
+ */
+export function walksWithYouLine() {
+  return 'It walks the move with you — the step-by-step, your questions answered '
+    + 'as they come up, and it keeps up as things change.'
 }

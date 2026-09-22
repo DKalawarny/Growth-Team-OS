@@ -1374,3 +1374,35 @@ h1.wayout__heroline {
 /* The setup — their quote and the two numbers — reads at a measure, not across
    the whole plan width. The moves below it are the thing that uses the width. */
 .wayout__setup { max-width: 720px; margin-bottom: 4px; }
+
+/* ── The worth ask — where a tip button would have gone ──────────────────
+   ⚠️ Quiet on purpose. It sits below the subscription CTA and must never
+   compete with it: no accent colour, no big button, nothing that pulls the eye
+   away from the thing that actually pays for this. */
+.wayout__worth {
+  margin-top: 26px; padding: 20px 22px;
+  border: 2px dashed var(--line); border-radius: 16px; background: transparent;
+}
+.wayout__worth > b { display: block; font-size: 14.5px; font-weight: 800; margin-bottom: 4px; }
+.wayout__worth > p { margin: 0 0 14px; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.wayout__worthrow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.wayout__worthbtn {
+  border: 2px solid #DCD6C6; background: #fff; font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--soft); padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: all .15s;
+}
+.wayout__worthbtn:hover { border-color: var(--soft); }
+.wayout__worthbtn--on { border-color: var(--green); background: #E8F3EC; color: var(--green); }
+.wayout__worthnote {
+  width: 100%; box-sizing: border-box; min-height: 74px; resize: vertical;
+  border: 2px solid #DCD6C6; border-radius: 10px; background: #fff;
+  font: inherit; font-size: 13.5px; line-height: 1.45; color: var(--ink); padding: 10px 12px;
+}
+.wayout__worthnote:focus { outline: none; border-color: var(--green); }
+.wayout__worthquote {
+  display: flex; align-items: center; gap: 9px; margin: 11px 0 14px;
+  font-size: 13px; color: var(--soft); cursor: pointer;
+}
+.wayout__worthquote input { width: 17px; height: 17px; accent-color: var(--green); }
+.wayout__worth .wayout__btn:disabled { opacity: .45; cursor: not-allowed; }
+.wayout__worth--done { border-style: solid; border-color: var(--green); background: #F4FAF6; }
+.wayout__worth--done > p { margin: 0; }

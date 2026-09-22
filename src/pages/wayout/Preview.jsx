@@ -73,5 +73,8 @@ const SAMPLE = {
 }
 
 export default function Preview() {
-  return <Map map={SAMPLE} />
+  // ⚠️ onWorth is passed so the ask RENDERS here — this page exists to check the
+  // design, and a component that only appears behind a real session is a
+  // component nobody looks at until a user finds it. It saves nothing.
+  return <Map map={SAMPLE} onWorth={async () => {}} />
 }

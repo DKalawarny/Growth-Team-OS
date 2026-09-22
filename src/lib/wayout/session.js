@@ -192,6 +192,32 @@ export async function saveMoveNote(sessionId, order, text, current = {}) {
   return next
 }
 
+/**
+ * ⭐⭐ WHAT THEY'D HAVE PAID, AND WHETHER WE MAY QUOTE THEM.
+ *
+ * ⚠️ Deliberately NOT a tip button. A tip jar would sit beside the subscription
+ * ask at the highest-intent moment in the product and let somebody discharge
+ * the gratitude for $5 instead of subscribing. This asks the question the tip
+ * button was really for, without competing with the CTA and without taking
+ * money before the entity question is settled.
+ *
+ * ⚠️ `cents` may be null — plenty of people will answer the review question and
+ * skip the money one, and forcing a number would cost us the review, which is
+ * the more valuable half at this stage.
+ */
+export async function saveWorth(sessionId, userId, { cents = null, note = '', canQuote = false } = {}) {
+  const { error } = await supabase
+    .from('wayout_worth')
+    .upsert({
+      session_id: sessionId,
+      user_id: userId,
+      would_pay_cents: Number.isFinite(Number(cents)) && Number(cents) >= 0 ? Math.round(Number(cents)) : null,
+      note: String(note ?? '').trim().slice(0, 1000) || null,
+      can_quote: !!canQuote,
+    }, { onConflict: 'session_id' })
+  if (error) throw new Error(error.message)
+}
+
 export async function insistOn(sessionId, label, current = []) {
   const next = [...new Set([...(current ?? []), String(label).trim()])].filter(Boolean).slice(0, 3)
   const { error } = await supabase

@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { loadDraft, saveDraft } from '../../lib/wayout/draft'
 import { DIAGNOSTIC_OPENING, DIAGNOSTIC_NOTE, DIAGNOSTIC_REGION, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
-import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
+import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
 /**
  * The way out — the free diagnostic. The marketing front door.
@@ -262,7 +262,8 @@ function Result({ answers, note }) {
       <p className="wayout__hint">Those change the order of the steps more than anything you just tapped.</p>
 
       <Link to={`${WAYOUT_BASE}?start=1`} className="wayout__btn" style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
-        {WAYOUT_PAYMENTS_LIVE ? `Build my full map — ${WAYOUT_PRICE_LABEL}` : 'Answer the six questions'}
+        {/* ⚠️ The map is free. This button never carries a price in either state. */}
+        Answer the six questions
       </Link>
       <p className="wayout__hint">
         This was the three-minute version. The full one asks what you own, what

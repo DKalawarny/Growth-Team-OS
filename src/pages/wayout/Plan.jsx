@@ -4,10 +4,10 @@ import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
   loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
+  markMoveDone, saveMoveNote, saveWorth, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
-import { WAYOUT_PRICE_LABEL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
+import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
 
@@ -228,6 +228,12 @@ export default function Plan() {
     } catch (err) { setError(err.message) }
   }
 
+  /** ⚠️ Fire and forget by design — a failed survey must never block the plan. */
+  async function saveWorthNow(payload) {
+    if (!session) return
+    try { await saveWorth(session.id, session.user_id, payload) } catch { /* not their problem */ }
+  }
+
   async function insist(label) {
     if (!session || building) return
     try {
@@ -355,6 +361,7 @@ export default function Plan() {
       onMove={setMoveDone}
       onInsist={insist}
       onNote={noteOnMove}
+      onWorth={saveWorthNow}
       moveNotes={session?.move_notes ?? {}}
       progress={progress}
       rebuilding={building}
@@ -382,31 +389,95 @@ function Paywall() {
         and why.
       </p>
 
-      {WAYOUT_PAYMENTS_LIVE ? (
-        <button className="wayout__btn wayout__btn--sun" onClick={startCheckout}>
-          Build my plan — {WAYOUT_PRICE_LABEL}
-        </button>
-      ) : (
-        <>
-          <div className="wayout__reflect">
-            This isn’t taking payments yet. Nothing has been charged and your
-            answers are kept — the plan opens here when it’s ready.
-          </div>
-          <p className="wayout__hint">
-            Price when it opens: {WAYOUT_PRICE_LABEL}, once. Not a subscription.
-          </p>
-        </>
-      )}
+      {/* ⭐⭐ NO PAYMENT HERE, EVER. The map is free under the settled model, so
+          this screen has no checkout on it in either state. It used to read
+          "Price when it opens: $39, once. Not a subscription." — which was the
+          old one-time model and is now wrong twice over. */}
+      <p className="wayout__hint">
+        {priceShort()} {WAYOUT_PAYMENTS_LIVE
+          ? `The step-by-step for doing the moves is ${WAYOUT_PRICE_FULL}, and only if you want it.`
+          : 'Nothing is being charged for anything yet.'}
+      </p>
     </WayoutShell>
   )
 }
 
-function startCheckout() {
-  // 🔴 NOT BUILT. Wiring this needs a live Stripe price object and a `wayout`
-  // branch in the stripe-webhook function that sets status='paid' — the only
-  // thing migration 046 accepts as proof of payment. See lib/wayout/pricing.js.
-  throw new Error('wayout: checkout is not wired yet')
+/**
+ * ⭐⭐ THE TIP BUTTON, DONE PROPERLY — it asks instead of collecting.
+ *
+ * 🔴 A tip jar here would have competed with the subscription ask at the single
+ * highest-intent moment in the product, and let somebody discharge the
+ * gratitude for $5 instead of subscribing. It also reads as hobby project right
+ * before a recurring-payment ask, and at a 1-3% response rate it would teach us
+ * nothing. What Daniel wanted from it was proof the map is worth something —
+ * so we ask that, and we ask for the review, which is worth more today than the
+ * money. His words: "REVIEW IS MORE IMPORTANT and easier to get the ball
+ * rolling."
+ *
+ * ⚠️ The money question is SKIPPABLE. Forcing a number would cost us the
+ * review, and the review is the more valuable half.
+ */
+function WorthAsk({ onSave }) {
+  const [sent, setSent] = useState(false)
+  const [cents, setCents] = useState(null)
+  const [note, setNote] = useState('')
+  const [canQuote, setCanQuote] = useState(false)
+
+  if (sent) {
+    return (
+      <div className="wayout__worth wayout__worth--done">
+        <b>Thank you — that genuinely helps.</b>
+        <p>It is read by a person, and it changes what gets built next.</p>
+      </div>
+    )
+  }
+
+  const OPTIONS = [0, 900, 1900, 2900, 4900]
+  return (
+    <div className="wayout__worth">
+      <b>One question, while it is in front of you</b>
+      <p>This was free and stays free. If it had not been — what would it have been worth?</p>
+      <div className="wayout__worthrow">
+        {OPTIONS.map(c => (
+          <button
+            key={c}
+            type="button"
+            className={`wayout__worthbtn${cents === c ? ' wayout__worthbtn--on' : ''}`}
+            onClick={() => setCents(cents === c ? null : c)}
+          >
+            {c === 0 ? 'Nothing' : `$${c / 100}`}
+          </button>
+        ))}
+      </div>
+      <textarea
+        className="wayout__worthnote"
+        value={note}
+        maxLength={1000}
+        onChange={e => setNote(e.target.value)}
+        placeholder="And anything you would tell someone else about it — good or bad."
+      />
+      <label className="wayout__worthquote">
+        <input type="checkbox" checked={canQuote} onChange={e => setCanQuote(e.target.checked)} />
+        <span>You can quote me on that. First name only.</span>
+      </label>
+      <button
+        type="button"
+        className="wayout__btn"
+        onClick={async () => { await onSave({ cents, note, canQuote }); setSent(true) }}
+        disabled={cents === null && !note.trim()}
+      >
+        Send it
+      </button>
+    </div>
+  )
 }
+
+/* 🔴 CHECKOUT USED TO LIVE HERE AND IT NO LONGER BELONGS ON THIS PAGE. The map
+   is free, so nothing on the way IN is ever paid for. When the subscription is
+   wired it goes on the play-by-play, which is the thing being sold — and it
+   needs a live Stripe RECURRING price plus a `wayout` branch in stripe-webhook
+   setting status='paid', the only thing migration 046 accepts as proof of
+   payment. See lib/wayout/pricing.js. */
 
 // ── The map ─────────────────────────────────────────────────────────────────
 
@@ -417,7 +488,7 @@ function startCheckout() {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote, onWorth,
   moveNotes = {}, progress, rebuilding = false, spent = false,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
@@ -610,7 +681,7 @@ export function Map({
                       onClick={() => isOpen && onOpenPlaybook?.(order)}
                     >
                       {isOpen
-                        ? (WAYOUT_PAYMENTS_LIVE && order === 1 ? `Show me how — ${WAYOUT_PRICE_LABEL}` : 'Show me how')
+                        ? (WAYOUT_PAYMENTS_LIVE && order === 1 ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how')
                         : `Opens after gate ${order - 1}`}
                     </button>
                     {isOpen && (
@@ -857,6 +928,8 @@ export function Map({
         <PlaybookCta onOpen={onOpenPlaybook} />
       </div>
 
+      {onWorth && <WorthAsk onSave={onWorth} />}
+
       {/* ⭐⭐ THE THING THEY REMEMBER AFTERWARDS. It is usually the important
           one — the illness, the debt they did not want to type, the person who
           has already offered them work. The intake asks thirty questions and
@@ -930,7 +1003,7 @@ function PlaybookCta({ onOpen }) {
           ⚠️ A default parameter is not a guard when the caller is a DOM
           handler — the event is always an argument. */}
       <button className="wayout__btn wayout__btn--sun" onClick={() => onOpen()}>
-        {WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_LABEL}` : 'Show me how'}
+        {WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how'}
       </button>
       <p className="wayout__offerfine">
         {WAYOUT_PAYMENTS_LIVE ? guaranteeLine() : 'Free while this is being built. Nothing to pay.'}
