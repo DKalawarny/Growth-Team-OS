@@ -566,6 +566,15 @@ export function Map({
           width, because the moves below it do too. It was inside the left
           column when the moves moved out, which put "Three moves. This order."
           above the title of the plan those moves belong to. */}
+      {/* ⭐⭐ THE HEADLINE AND THE NUMBERS SHARE A ROW.
+          🔴 Daniel: "lets get rid of that blank space move things around". The
+          headline sat in a 26ch column with ~700px of empty page beside it, and
+          a long one — "The house sale funds the BnB. The BnB funds the road…" —
+          wrapped to five lines of display type against all that white. Narrow
+          measure is right for a headline and wrong for a page: the fix is to
+          put something IN the space, not to stretch the sentence across it.
+          The numbers are what belongs there — they are the claim's evidence. */}
+      <div className="wayout__head">
       <div className="wayout__top">
         <p className="wayout__who wayout__r" style={at(0.1)}>{WAYOUT_MAP_LABEL}</p>
         <h2 className="wayout__r" style={at(0.3)}>
@@ -605,6 +614,7 @@ export function Map({
         </div>
       )}
 
+      </div>
       </div>
 
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>

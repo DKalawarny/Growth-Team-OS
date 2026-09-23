@@ -1498,3 +1498,33 @@ h1.wayout__heroline {
   padding: 22px 24px 24px;
 }
 .wayout__worth--done { background: #F4FAF6; background-image: none; }
+
+/* ── The headline and the numbers share a row ───────────────────────────
+   🔴 Daniel: "lets get rid of that blank space move things around". The
+   headline sat alone in a 26ch column with roughly 700px of empty page beside
+   it, and a long one wrapped to five lines of display type against all that
+   white.
+
+   ⚠️ The fix is NOT to widen the headline. A display sentence read across 900px
+   is a banner, and the narrow measure was correct — what was wrong was leaving
+   the rest of the row empty. So the evidence for the claim moves up beside it. */
+/* ⚠️ 1040px, NOT 900 — it MUST match the breakpoint where .wayout__frame--wide
+   widens the page. At 900 this split a 430px card into two 163px columns and
+   put a display headline in one of them. A layout breakpoint that does not
+   match the container it lives in is measuring the wrong thing. */
+@media (min-width: 1040px) {
+  .wayout__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 18px 52px;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+  /* It has a column of its own now, so the old hard cap would fight the grid. */
+  .wayout__head .wayout__top { max-width: none; }
+  .wayout__head .wayout__setup { max-width: none; margin-top: 6px; }
+  /* Two narrow cards side by side in half a page is cramped — stacked, each
+     number gets the full column and reads as a statement rather than a tile. */
+  .wayout__head .wayout__stats { flex-direction: column; }
+  .wayout__head .wayout__stat { flex: 1 1 auto; width: 100%; }
+}
