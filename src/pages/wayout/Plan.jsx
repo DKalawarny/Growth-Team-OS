@@ -4,7 +4,7 @@ import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
   loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  markMoveDone, saveMoveNote, saveWorth, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
+  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
@@ -228,12 +228,6 @@ export default function Plan() {
     } catch (err) { setError(err.message) }
   }
 
-  /** ⚠️ Fire and forget by design — a failed survey must never block the plan. */
-  async function saveWorthNow(payload) {
-    if (!session) return
-    try { await saveWorth(session.id, session.user_id, payload) } catch { /* not their problem */ }
-  }
-
   async function insist(label) {
     if (!session || building) return
     try {
@@ -361,7 +355,6 @@ export default function Plan() {
       onMove={setMoveDone}
       onInsist={insist}
       onNote={noteOnMove}
-      onWorth={saveWorthNow}
       moveNotes={session?.move_notes ?? {}}
       progress={progress}
       rebuilding={building}
@@ -488,7 +481,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote, onWorth,
+  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
@@ -946,7 +939,17 @@ export function Map({
         <PlaybookCta onOpen={onOpenPlaybook} />
       </div>
 
-      {onWorth && <WorthAsk onSave={onWorth} />}
+      {/* ⭐⭐ THE WORTH ASK IS OFF. Daniel: "dont get why you would ask this. im
+          going to trial this with a handfull of people then just put it to
+          market." He is right, and it was my reasoning that was wrong: I
+          designed it as the honest alternative to a tip button, for LEARNING a
+          price. At a handful of trial users he knows personally there is
+          nothing to learn from it — he will ask them directly — and it sits
+          between the CTA and the end of the page as clutter.
+
+          ⚠️ Kept, not deleted: the component, `wayout_worth` and `saveWorth`
+          all still work. It earns its place when strangers arrive who cannot be
+          asked in person, and that is one line from here. */}
 
       {/* ⭐⭐ THE THING THEY REMEMBER AFTERWARDS. It is usually the important
           one — the illness, the debt they did not want to type, the person who

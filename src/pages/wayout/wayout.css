@@ -110,8 +110,19 @@
        screen looks unfinished however good the contents are. Wider, and the
        columns are deliberately UNEQUAL: even halves read as a grid, 7:5 reads
        as a composition. */
-    max-width: 1080px;
-    padding: 60px 56px 48px;
+    /* ⭐⭐ IT FILLS THE SCREEN NOW, WITH A THIN GUTTER. Daniel: "we need this
+       bigger to fill out the screen maybe keep a super thin boarder on the
+       sides". At 1080px on a 1700px display the sheet was a column with 300px
+       of ground either side — and it made every note on the board narrow, which
+       is the other half of "its hard to read": a long move detail in a 230px
+       column at 13px is a wall of five-word lines.
+
+       ⚠️ Capped at 1600 so a 27-inch display does not stretch a sticky note to
+       540px. Below that it fills to within 20px of the edge, which is the thin
+       border he asked for. */
+    max-width: min(1600px, calc(100vw - 40px));
+    margin: 28px auto;
+    padding: 56px 54px 46px;
   }
 
   /* The intake's left panel. Quieter than the question beside it on purpose —
@@ -1255,8 +1266,12 @@ h1.wayout__heroline {
   display: block; font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
   color: var(--soft); font-weight: 800; margin-bottom: 7px;
 }
-.wayout__note h4 { margin: 0 0 8px; font-size: 15.5px; font-weight: 700; line-height: 1.28; letter-spacing: -.01em; }
-.wayout__note > p { margin: 0; font-size: 13px; line-height: 1.47; color: #47533F; }
+.wayout__note h4 { margin: 0 0 10px; font-size: 16.5px; font-weight: 700; line-height: 1.28; letter-spacing: -.01em; }
+/* ⚠️ 14.5px and 1.6, not 13/1.47. "its hard to read" — and it was: a move
+   detail can run 450 characters, and at 13px in a narrow column that is forty
+   lines of five words. The extra width above does most of the work; this does
+   the rest. */
+.wayout__note > p { margin: 0; font-size: 14.5px; line-height: 1.6; color: #414D3C; }
 
 /* ⚠️ NOT absolutely positioned over the note. It was, and it landed squarely on
    top of "+ Add or change something here" the moment a move was ticked —
@@ -1305,7 +1320,7 @@ h1.wayout__heroline {
   display: block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
   color: #4A6B63; font-weight: 800; margin-bottom: 3px;
 }
-.wayout__gatetag span { display: block; font-size: 11.5px; line-height: 1.38; color: var(--soft); }
+.wayout__gatetag span { display: block; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
 .wayout__gatetag--passed { border-style: solid; border-color: var(--green); }
 .wayout__gatetag--passed b { color: var(--green); }
 
@@ -1358,8 +1373,24 @@ h1.wayout__heroline {
   color: #7E8A93; cursor: pointer; padding: 5px 0 0; text-decoration: underline;
 }
 
-@media (max-width: 800px) {
+/* 🔴 1040px, MATCHING THE FRAME — NOT 800. Between 800 and 1040 the frame is
+   still the 430px card while this was already laying out five columns inside
+   it: a move note rendered 98px wide. Second time this exact mistake has been
+   made in this file. THE BREAKPOINT MUST MATCH THE CONTAINER, and the container
+   here is .wayout__frame--wide, which widens at 1040. */
+/* 🔴 1360, MEASURED — not a guessed breakpoint. A note's width is
+   (sheet − 108px padding) × 21.7%, so five columns only give a READABLE note
+   once the sheet is past ~1310px:
+       sheet 1600 → 323px ✓   1400 → 280px ✓   1160 → 228px ✗
+   Below that one wide column beats five narrow ones every time — which is the
+   whole of "its hard to read". */
+@media (max-width: 1360px) {
   .wayout__notes { grid-template-columns: 1fr; gap: 46px 0; padding-top: 26px; }
+  /* ⚠️ A stacked note must still be READ. Without this it took the whole sheet
+     — 1211px of single-line measure at 1360px wide, which is worse than the
+     narrow columns it was meant to rescue. Fixing line length by removing a
+     constraint is how you swap one unreadable width for another. */
+  .wayout__note, .wayout__gatetag { max-width: 620px; }
   .wayout__twine { display: none; }
   .wayout__gatetag { margin-top: 0; }
   .wayout__gatetag::before { display: none; }
@@ -1521,7 +1552,13 @@ h1.wayout__heroline {
     margin-bottom: 8px;
   }
   /* It has a column of its own now, so the old hard cap would fight the grid. */
-  .wayout__head .wayout__top { max-width: none; }
+  /* ⚠️ The COLUMN grows with the page; the SENTENCE does not. A display
+     headline set across 750px is a banner, which is the mistake the narrow
+     measure existed to avoid in the first place. */
+  /* ⚠️ 560px, measured — `30ch` came out at 308px, NARROWER than the 469px
+     the column gave it before the cap existed, so it added lines instead of
+     removing them. A cap that makes the thing worse is not a cap. */
+  .wayout__head .wayout__top { max-width: 560px; }
   .wayout__head .wayout__setup { max-width: none; margin-top: 6px; }
   /* Two narrow cards side by side in half a page is cramped — stacked, each
      number gets the full column and reads as a statement rather than a tile. */
