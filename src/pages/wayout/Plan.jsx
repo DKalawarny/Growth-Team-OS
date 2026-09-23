@@ -224,7 +224,29 @@ export default function Plan() {
       const next = await saveMoveNote(session.id, order, text, session.move_notes)
       const updated = { ...session, move_notes: next }
       setSession(updated)
-      if (redo) { setMap(null); await build(updated) }
+      if (!redo) return
+
+      // 🔴🔴 THE CAP IS CHECKED HERE, WHERE THE SPENDING HAPPENS. This function
+      // called build() directly and checked nothing, which made "Redo this move
+      // with it" an UNLIMITED free rebuild — a second spending site that walked
+      // straight past the one-rebuild limit enforced on the rebuild link.
+      //
+      // ⚠️ The comment on that other site already said why: "a limit enforced in
+      // the UI is a suggestion". I added the exact thing it warns about.
+      //
+      // ⚠️ Daniel spotted it from the product side: "doing this basically gave
+      // them a step... I think this section I just changed should be under
+      // paid." He is right on both counts — a regenerated plan IS the paid
+      // work, and his own earlier note says it: "you could almost just keep
+      // changing things until you get the answer you are looking for."
+      //
+      // ⭐ The note is still SAVED when the redo is refused. They wrote it, it
+      // is theirs, and it sits on the move — only the rewrite is withheld.
+      if (!import.meta.env.DEV && (updated.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) return
+      countRebuild(updated.id, updated.rebuilds)
+        .then(n => setSession(c => ({ ...c, rebuilds: n })))
+      setMap(null)
+      await build(updated)
     } catch (err) { setError(err.message) }
   }
 
@@ -719,13 +741,30 @@ export function Map({
                       />
                       <div className="wayout__addrow">
                         <button type="button" className="keep" onClick={() => saveNote(order, false)}>Pin it on</button>
-                        <button type="button" className="redo" onClick={() => saveNote(order, true)}>Redo this move with it</button>
+                        {/* ⚠️ A button that silently does nothing is worse than one that
+                            says why. When the rebuild is spent, the redo is not
+                            rendered at all — and the hint below says what it costs. */}
+                        {!spent && (
+                          <button type="button" className="redo" onClick={() => saveNote(order, true)}>
+                            Redo this move with it
+                          </button>
+                        )}
                         <button type="button" className="drop" onClick={() => setOpenNote(null)}>Cancel</button>
                       </div>
                       <p className="wayout__addhint">
-                        <b>Pin it on</b> keeps your note beside ours. <b>Redo</b> rewrites this
-                        move around what you said — and everything after it, because the order
-                        depends on it.
+                        {spent ? (
+                          <>
+                            <b>Pin it on</b> keeps your note beside ours. You have used the one
+                            free rewrite — reworking the plan around what you have learned is
+                            part of the walkthrough.
+                          </>
+                        ) : (
+                          <>
+                            <b>Pin it on</b> keeps your note beside ours. <b>Redo</b> rewrites this
+                            move around what you said — and everything after it, because the order
+                            depends on it. You get one, so use it when you know something new.
+                          </>
+                        )}
                       </p>
                     </div>
                   ) : !theirs && (
