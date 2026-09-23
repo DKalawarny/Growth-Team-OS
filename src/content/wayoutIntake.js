@@ -658,6 +658,28 @@ export const WAYOUT_SCREENS = [
     reflectAfter: false,
     fields: [
       {
+        // ⭐⭐ THE HIGHEST-YIELD QUESTION ON THE FORM, AND IT IS NOW ASKED FIRST
+        // ON THIS SCREEN. Daniel: "one question on intake should be what do you
+        // want out of life, what's it look like, let's help you plan it out —
+        // something like that will give lots of insight."
+        //
+        // 🔴 IT USED TO COME AFTER `goalType`, WHICH IS A LIST OF CATEGORIES:
+        // More time · More money · Something simpler. Asking somebody to tick
+        // those and THEN describe their life gets the categories back in
+        // sentence form. An open question asked second is not an open question.
+        //
+        // ⚠️ "A Tuesday" stays. It is the part that works — it stops the answer
+        // being "happy and free" and makes it "school run, then the shop, home
+        // by four". A plan can be built out of the second one.
+        key: 'tuesday',
+        kind: 'text',
+        label: 'What do you actually want out of this? Picture a Tuesday three years from now — where are you, doing what, with who?',
+        hint: 'This is the one that shapes everything else, so take a minute. Ordinary detail beats big words — what time you get up, who is in the house, what you do that morning.',
+        placeholder: 'Up at 7 without an alarm. Kids to school. Two hours on the books, then the shop. Home for dinner, every day.',
+        required: true,
+        emptyMessage: 'A few lines is enough.',
+      },
+      {
         // 🔴 Same correction as the diagnostic: people want several of these at
         // once, and a plan built on one of them because the form only allowed
         // one is built on a misreading.
@@ -698,13 +720,6 @@ export const WAYOUT_SCREENS = [
           { key: 'simpler', label: 'Less — a simpler life' },
           { key: 'place', label: 'To be somewhere else' },
         ],
-      },
-      {
-        key: 'tuesday',
-        kind: 'text',
-        label: 'Three years out — where, doing what, with whom. What does a Tuesday look like?',
-        required: true,
-        emptyMessage: 'A few lines is enough.',
       },
       {
         // ⭐⭐ THE QUESTION NOBODY HAS EVER ASKED THEM. For the person stepping

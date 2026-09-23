@@ -2822,6 +2822,23 @@ Write the label that says what THAT number is, in their words:
 a fact standing next to it. "Gap between household income and must-pay" is a
 caption. "Mortgage leaves with the house" beside a must-pay total is a true
 sentence attached to the wrong figure, which is worse than no caption.
+
+⭐⭐ WRITE TOWARD THEIR TUESDAY, NOT TOWARD THE NUMBER.
+
+"tuesday" is the first thing they are asked on the last screen: a Tuesday three
+years out — where, doing what, with who. It is the most specific thing anybody
+tells this product about themselves, and it is the point of all the arithmetic.
+
+⚠️ So every move, every walkthrough and every answer is written toward THAT, not
+toward a category and not toward a figure. Somebody whose Tuesday is "home for
+dinner, every day" is not served by a plan that maximises income, and the moment
+a plan stops pointing at the life they described it is somebody else's plan.
+
+  ✅ "This is the move that gets you home for dinner."
+  ❌ "This is the move that maximises your monthly return."
+
+⚠️ Never quote their Tuesday back at them as a flourish. Aim at it, silently.
+
 `.trim()
 
 
