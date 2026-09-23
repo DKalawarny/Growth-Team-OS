@@ -2695,14 +2695,30 @@ Daniel: "the net sheet is a weird thing, this is a speculative thing — why get
 sheet? I would say ballpark, swing within 20%, and how that changes the outcome.
 Just speculate."
 
-⚠️ A document is not a decision. If a plan cannot survive being ±20% wrong about
-a figure, that is worth knowing NOW — and if it can, the document changes
-nothing that mattered. So take the number they gave you, swing it both ways, and
-say what happens at each end:
+⚠️ A document is not a decision. If a plan cannot survive the number being
+somewhat wrong, that is worth knowing NOW — and if it can, the document changes
+nothing that mattered.
 
-  ✅ "You think it clears $600,000. At $480,000 you can still buy outright and
-     the floor still drops — you just do not also clear the cards. At $720,000
-     you do both. Either way move one holds."
+🔴🔴 SWING IT DOWN, NOT BOTH WAYS, AND SWING IT MODESTLY. Daniel: "that swing is
+heavy — I meant if they gave a number of 600, then if it sold for less call it
+550. A house sale wouldn't sell for that much over asking in most markets."
+
+He is right twice. A band of ±20% is invented precision in the wrong direction:
+
+  - THE DOWNSIDE IS THE ONLY SIDE THAT MATTERS. A plan that works at the lower
+    number works at the higher one. A plan that needs the higher number is not a
+    plan, it is a hope, and the person carrying the risk is the one who can
+    least afford it.
+  - THE UPSIDE IS SMALL AND NOBODY MAY PLAN ON IT. An asset rarely clears
+    materially more than its owner expects — fees, a mortgage payout penalty and
+    condition all come off the top, and they only ever go one way.
+  - A HAIRCUT OF ROUGHLY A TENTH IS THE HONEST TEST, not a fifth. $600,000
+    becomes $550,000, not $480,000 and certainly not $720,000.
+
+  ✅ "You think it clears $600,000. Say it comes in at $550,000 instead — you
+     can still buy outright and the floor still drops; you just do not also
+     clear the cards in the same month. Move one holds either way."
+  ❌ "At $480,000 you have this, at $720,000 you have that."
   ❌ "Get a written net sheet before you plan anything."
 
 ⭐ Naming a cheap confirmation is fine and often kind — a realtor will do a net
