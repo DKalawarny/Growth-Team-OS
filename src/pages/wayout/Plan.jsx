@@ -756,10 +756,20 @@ export function Map({
       {/* ⚠️ Two REAL columns. When the setup moved above the moves this left an
           empty first column and a page-wide hole beside "Crossed off". What was
           ruled out goes left; what happens next goes right. */}
-      <div className="wayout__spread">
-      <div className="wayout__col">
+      {/* ⭐⭐ THE REST OF THE PAGE IS THE BOARD TOO.
+          🔴 Daniel: "still has half the old half the new". He was right, and a
+          full-page screenshot showed why: the pinned notes stopped dead and
+          everything under them was flat rows and plain boxes — two design
+          languages on one page.
+          🔴 WORSE, EVERYTHING FROM "Through the off-season" DOWN TO THE
+          DISCLAIMER WAS INSIDE COLUMN TWO, which is 5/12 of the width. That is
+          what left ~900px of empty page beside a short "Crossed off" list, and
+          why the one dark CTA — the thing being sold — was rendered in a narrow
+          strip. The sections are now equal cards that FILL, and everything that
+          is not a section runs full width below them. */}
+      <div className="wayout__board">
       {Array.isArray(map.cut) && map.cut.length > 0 && (
-        <>
+        <section className="wayout__card">
           <h3 className="wayout__label wayout__r" style={at(3.4)}>Crossed off, on purpose</h3>
           <div className="wayout__cut wayout__r" style={at(3.5)}>
             {map.cut.map((c, i) => (
@@ -799,21 +809,18 @@ export function Map({
               </button>
             ))}
           </div>
-        </>
+        </section>
       )}
 
-      </div>
-
-      <div className="wayout__col">
       {Array.isArray(map.seasonPlan) && map.seasonPlan.length > 0 && (
-        <>
+        <section className="wayout__card">
           <h3 className="wayout__label wayout__r" style={at(3.7)}>Through the off-season</h3>
           {map.seasonPlan.map((s, i) => (
             <p className="wayout__hint wayout__r" key={i} style={at(3.75)}>
               <b>{s.months}</b> — {s.work}
             </p>
           ))}
-        </>
+        </section>
       )}
 
       {/* ⭐⭐ WHAT IT TOOK AS GIVEN, SAID OUT LOUD, IMMEDIATELY BEFORE THEY ACT.
@@ -832,7 +839,7 @@ export function Map({
           SEE the situation rather than what they do on Saturday. The contract
           has already dropped it if it is not on our shelf. */}
       {map.read?.title && (
-        <div className="wayout__read wayout__r" style={at(3.8)}>
+        <section className="wayout__card wayout__read wayout__r" style={at(3.8)}>
           <h3 className="wayout__label">One thing worth reading</h3>
           <p className="wayout__readtitle">
             <b>{map.read.title}</b>{map.read.author ? ` — ${map.read.author}` : ''}
@@ -846,11 +853,11 @@ export function Map({
           {bookOnShelf(map.read.title)?.hold && (
             <p className="wayout__hold">{bookOnShelf(map.read.title).hold}</p>
           )}
-        </div>
+        </section>
       )}
 
       {Array.isArray(map.assumptions) && map.assumptions.length > 0 && (
-        <div className="wayout__given wayout__r" style={at(3.85)}>
+        <section className="wayout__card wayout__given wayout__r" style={at(3.85)}>
           <h3 className="wayout__label">What this took as given</h3>
           <ul>
             {map.assumptions.map((a, i) => <li key={i}>{a}</li>)}
@@ -865,8 +872,9 @@ export function Map({
               One of these is wrong — change my answers
             </button>
           )}
-        </div>
+        </section>
       )}
+      </div>
 
       {/* ⭐⭐ THE OFFER, AFTER THEY ALREADY HAVE THE ANSWER. Nobody can fear an
           ambush in a flow where the assessment is theirs before anything is
@@ -968,8 +976,6 @@ export function Map({
       )}
 
       <p className="wayout__disclaimer wayout__r" style={at(4.1)}>{map.disclaimer}</p>
-      </div>
-      </div>
     </WayoutShell>
   )
 }
