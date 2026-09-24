@@ -220,6 +220,10 @@ function PlayMove({ order }) {
   const [play, setPlay]       = useState(null)
   const [move, setMove]       = useState(null)
   const [stale, setStale]     = useState(false)
+  // ⚠️ The title their plan carries NOW. The notice used to say only that the
+  // plan had changed, which leaves them to work out whether the change matters.
+  // Naming the current move lets them judge it in a glance.
+  const [moveNow, setMoveNow] = useState(null)
   const [sessionId, setSessionId] = useState(null)
   const [isDone, setIsDone]   = useState(false)
   const [locked, setLocked]   = useState(false)
@@ -272,7 +276,9 @@ function PlayMove({ order }) {
         if (cancelled) return
 
         if (stored?.play) {
-          setStale(playbookIsStale(stored, current))
+          const isStale = playbookIsStale(stored, current)
+          setStale(isStale)
+          setMoveNow(isStale ? (current?.title ?? null) : null)
           setThread(Array.isArray(stored.thread) ? stored.thread : [])
           setSession(s)
           setPlay(stored.play)
@@ -467,11 +473,11 @@ function PlayMove({ order }) {
         <div className="wayout__stale">
           <p>
             Your plan changed after this was written, so this is the play for the
-            move you had before.{' '}
+            move you had before{moveNow ? <> — not <b>{moveNow}</b></> : null}.{' '}
             <button
               type="button"
               className="wayout__again"
-              onClick={async () => { setPlay(null); setStale(false); busy.current = false
+              onClick={async () => { setPlay(null); setStale(false); setMoveNow(null); busy.current = false
                 try {
                   const s = await loadOrCreateSession()
                   const current = s.map.moves[order - 1]
@@ -489,6 +495,14 @@ function PlayMove({ order }) {
       {/* ⚠️ Everything below now renders INSIDE the playbook's own shell. As
           siblings they fell outside the card — invisible button, unstyled
           block. See the note on Playbook. */}
+      {/* ⚠️ MARKED, NOT JUST ANNOUNCED. The notice above sat over a play that
+          rendered at full strength — same weight, same authority — so somebody
+          could read the whole thing and act on it without registering that it
+          describes a move their plan no longer contains. Daniel: "shouldn't it
+          auto update?" Auto-regenerating would spend a generation every time
+          the page is opened and rewrite instructions somebody may be halfway
+          through following. Making the state visible costs neither. */}
+      <div className={stale ? 'wayout__superseded' : undefined}>
       <Playbook play={play} index={order} onSection={label => {
         // ⚠️ A space on the end so the cursor lands after the colon, and a
         // unique suffix is not needed — clicking the SAME section twice should
@@ -567,6 +581,7 @@ function PlayMove({ order }) {
         </p>
       </div>
       </Playbook>
+      </div>
     </>
   )
 }

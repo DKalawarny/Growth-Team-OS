@@ -1565,3 +1565,22 @@ h1.wayout__heroline {
   .wayout__head .wayout__stats { flex-direction: column; }
   .wayout__head .wayout__stat { flex: 1 1 auto; width: 100%; }
 }
+
+/* ── A superseded play ──────────────────────────────────────────────────
+   ⚠️ The stale notice sat above a play that rendered at FULL strength, so it
+   read as current and somebody could act on instructions for a move their plan
+   no longer contains. Daniel: "shouldn't it auto update?"
+
+   ⭐ It deliberately does not — regenerating on open spends a model call every
+   time the page is looked at, and rewrites instructions somebody may be halfway
+   through following. What it should do instead is LOOK superseded, which costs
+   nothing and is the honest state. Readable, not hidden: the week they already
+   spent on this is theirs. */
+.wayout__superseded { position: relative; opacity: .62; filter: saturate(.55); }
+.wayout__superseded::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -45deg, transparent 0 22px, rgba(107, 117, 97, .045) 22px 44px);
+  pointer-events: none;
+}
