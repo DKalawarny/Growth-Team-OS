@@ -927,24 +927,59 @@ that actually break Netlify.
 model call on the one page built to be hit by strangers and bots is a bill with
 no floor. Rules live in `src/content/wayoutDiagnostic.js`.
 
+### ⭐⭐ THE BUSINESS MODEL — settled 21–23 Sep
+
+**The map is FREE. The walkthrough is $29 a month, monthly only.**
+It was $39 once for the map, and two files each claimed to be the paid half.
+
+⚠️ **$29 and not less, which is the counter-intuitive part.** This product
+FINISHES — three moves, two gates, out. Software priced cheap makes it back on
+duration; a thing people complete cannot, so the monthly figure does all the
+work. ⚠️ **No annual plan**: on something finished in six months that is taking
+money for months they will not use.
+
+⭐⭐ **The check-in is a PRICING fix, not a feature** (`wayout-checkin`, cron
+daily 17:00 UTC). The gates are weeks apart, so if the subscription's job were
+UNLOCKING the next move a subscriber would pay and have nothing to open for
+eight weeks. Its job is keeping up with them BETWEEN gates.
+🔴 **`WAYOUT_EMAIL_FROM` IS NOT SET, SO NO CHECK-IN SENDS.** It refuses to fall
+back to Eliv8's sender by design. See [`docs/wayout-before-launch.md`](docs/wayout-before-launch.md)
+— including the resend.dev stopgap that works with no domain.
+🔴 **Never imply a HUMAN is on the other end.** "It walks the move with you",
+never "a coach walks you through". Capability, not accountability, is the whole
+reason it works without one.
+
+### 🔴 THE RECURRING FAILURE IN THIS PRODUCT — read before editing a prompt
+
+**A rule gets written where the bug was SEEN, and nothing carries it sideways.**
+Measured 23 Sep: `WAYOUT_MAP_PROMPT` carried **47** rules of its own and
+`WAYOUT_PLAYBOOK_PROMPT` — the PAID half — carried **11**. That is why the
+play-by-play kept sending somebody to fetch a net sheet weeks after Daniel ruled
+it out: "a gate is a fact, not an errand" lived in the map only.
+
+Five instances so far (never invent a number · the crisis clause · the
+anti-vagueness rule · the floor re-size · the destination glossary). Shared
+blocks now: **`WAYOUT_SAFETY` · `WAYOUT_MONEY` · `WAYOUT_METHOD` · `WAYOUT_VOICE`**.
+⭐ **`src/lib/wayout/promptCoverage.test.js` fails if a shared block stops
+reaching a prompt**, is defined after its first use (`const` is not hoisted — the
+module throws on import and every generation 500s), or hides a backtick.
+
 🔴 **NOT DONE — in the order it matters:**
-1. **Payments.** `WAYOUT_PAYMENTS_LIVE = false` in
-   [`src/lib/wayout/pricing.js`](src/lib/wayout/pricing.js). Needs a live Stripe
-   one-time price at $39 CAD, its id in `STRIPE_PRICE_ID_WAYOUT`, and a `wayout`
-   branch in `stripe-webhook` setting `status='paid'` — the only thing migration
-   046 accepts as proof. Until then the paywall screen says plainly that it
-   cannot take money yet rather than rendering a button that goes nowhere.
-   ⚠️ Stripe on this account is still in TEST mode.
-2. **Nothing is deployed.** `supabase db push` for 046, and
-   `supabase functions deploy claude` for the two new prompts AND the
-   `TOOL_CAP_EXEMPT` line. **A git push does not ship either.**
-3. **Never run in a browser.** The build passes and the contract logic is tested,
-   but no screen has been clicked and no reflection or map has come back from a
-   real model. That is the 22 Aug lesson standing unresolved.
-4. **`noindex` on every way-out page** while the name is unsettled, and they are
+1. **Payments.** `WAYOUT_PAYMENTS_LIVE = false`. Needs a live Stripe
+   **RECURRING** price at $29, its id in `STRIPE_PRICE_ID_WAYOUT`, a `wayout`
+   branch in `stripe-webhook` setting `status='paid'`, and **migration 055
+   reverted in the same commit** — a paywall appearing while the button still
+   says free is worse than either state alone. ⚠️ Stripe is still in TEST mode.
+2. **The name, then the domain.** Four things chain off it — the sending domain
+   (so check-ins can send at all), terms written for THIS product, its own
+   Supabase project, and which entity takes the money.
+3. **`noindex` on every way-out page** while the name is unsettled, and they are
    deliberately absent from the sitemap. Remove the tag and add the routes to
    `scripts/sitemap.mjs` **in the same commit**, or they are orphaned the way the
    answer pages were.
+4. **The second plan on completion** — the one piece of the pricing conversation
+   not built. When somebody finishes, say they have finished, then offer a
+   genuinely different question: what to do with the room they just made.
 
 ✅ **Fixed 16 Sep:** `anthropic.test.js` had asserted `SOLOMON_TOOLS` is
 `['search_library', 'run_tool']` since before `search_the_record` was added, so
