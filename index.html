@@ -85,6 +85,33 @@
         "description": "An AI business advisor that reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering — not only what it earns."
       }
     </script>
+
+    <!-- ── Analytics, for Unstuck Map only ────────────────────────────────
+         🔴 HOST-GATED, AND IT HAS TO BE. getunstuckmap.com and eliv8os.com are
+         the SAME index.html on the SAME Netlify site. A plain script tag would
+         report both products as one site — every Eliv8 pageview counted as an
+         Unstuck Map visit and vice versa, which is worse than no analytics
+         because it looks like data.
+
+         ⭐ Plausible is cookieless and stores no personal data, so it needs no
+         consent banner — which matters for a product whose users are typing
+         their debts into it.
+
+         ⚠️ Eliv8 OS deliberately gets NOTHING here. It has never had analytics
+         and adding it is a separate decision, not a side effect of this one.
+
+         ⚠️ AND IT NEEDS SAYING SOMEWHERE A USER CAN READ IT. Unstuck Map has no
+         privacy page yet — that is part of the outstanding terms work, and this
+         is now one more thing those terms have to name. -->
+    <script>
+      if (location.hostname === 'getunstuckmap.com' || location.hostname === 'www.getunstuckmap.com') {
+        var pa = document.createElement('script')
+        pa.defer = true
+        pa.setAttribute('data-domain', 'getunstuckmap.com')
+        pa.src = 'https://plausible.io/js/script.js'
+        document.head.appendChild(pa)
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
