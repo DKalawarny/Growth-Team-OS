@@ -24,13 +24,26 @@ import './wayout.css'
  * and add the routes to scripts/sitemap.mjs in the same commit, or they will
  * be orphaned the way the answer pages were.
  */
-export default function WayoutShell({ children, count, title, noindex = true, wide = false }) {
+export default function WayoutShell({
+  children, count, title, noindex = true, wide = false, canonicalPath = '',
+}) {
   return (
     <div className="wayout">
       <Helmet>
         <title>{title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
         {noindex && <meta name="robots" content="noindex, nofollow" />}
+        {/* 🔴 THE INHERITED CANONICAL POINTED AT THE ELIV8 HOMEPAGE. index.html
+            carries `<link rel="canonical" href="https://eliv8os.com/">`, so
+            every Unstuck Map page was telling search engines it was a duplicate
+            of a B2B contractor advisor's front page. Nothing was indexed yet —
+            noindex was still on — so it cost nothing, but it would have sent
+            every scrap of authority to the wrong product the moment it came
+            off.
+            ⚠️ And the SAME page serves from both eliv8os.com/wayout/* and
+            getunstuckmap.com/wayout/*, which is the duplicate-content shape
+            that cost leadeos.com. The canonical names ONE of them. */}
+        <link rel="canonical" href={`${WAYOUT_SITE_URL}${canonicalPath}`} />
         {/* ⭐⭐ THE LINK PREVIEW MUST NOT SAY ELIV8 OS. index.html carries a full
             set of Open Graph tags for the other product, and Helmet only
             manages what it DECLARES — so without these, texting somebody

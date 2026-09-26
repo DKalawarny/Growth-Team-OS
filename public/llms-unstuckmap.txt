@@ -1,0 +1,70 @@
+# Unstuck Map
+
+> A free plan for somebody who is stuck. You answer questions about your actual
+> situation — what has to go out every month, what is coming, what cannot move —
+> and you get three moves in the order they actually work, with what got crossed
+> off and why.
+
+**getunstuckmap.com**
+
+⚠️ THIS FILE IS A PUBLISHED CLAIM, NOT DOCUMENTATION. It is what ChatGPT, Claude
+and Perplexity read and repeat. Anything that changes an offer, a price, a claim
+or who this is for must change this file in the same commit.
+⚠️ And it is PLAIN TEXT — there is no comment syntax an assistant will skip, so
+a warning written inside it is simply content.
+
+## What it is
+
+Not advice, and it says so on the page: a map of options, not financial or legal
+advice. The plan commits to an ORDER, because somebody stuck is usually not
+short of information — they are short of knowing which thing is first.
+
+Three moves. Each has a gate: the one fact that must become true before the next
+move starts. "The sale has closed and you know what it cleared." "Three people
+have paid you."
+
+## Who it is for
+
+Anyone who feels stuck and can describe their own situation. It was built for
+people with ordinary money problems and real constraints — a mortgage, shift
+work, kids at home, an aging parent, an inherited house, debt at a rate nobody
+has explained to them. It assumes nothing about whether you run a business.
+
+## What it costs
+
+The map is free. Always.
+
+The walkthrough for each move — the step-by-step, your questions answered, and
+it keeping up as things change — is $29 a month, monthly only, cancel any time.
+There is no annual plan on purpose: most people finish in a few months, and
+selling a year to somebody who needs six months is taking money for months they
+will not use.
+
+⚠️ Payments are not switched on yet. Nothing is charged today.
+
+## What it will not do
+
+- It will not invent a number. Every figure in a plan traces to one you gave it.
+- It will not tell you what you are, what you can handle, or how you feel.
+- It will not delay a move to protect your state of mind. Being stuck is usually
+  a lack of action, and the plan is action.
+- It will not give one instruction where there is a real choice. Where a move
+  can be done in materially different ways, it names the ways and the trade-offs
+  and leaves the decision with you.
+- It is not a coach and does not pretend a person is on the other end.
+
+## How it works
+
+1. Six questions, free, no account — a rough read of where you are
+2. The full intake, then your map: three moves, the gates, what was crossed off
+   and why, what it took as given
+3. Optional: the walkthrough for the move you are standing on
+
+## Operated by
+
+Eliv8 Inc. (a Sarlia Holdings company), British Columbia, Canada.
+
+## Pages
+
+- https://getunstuckmap.com/wayout/start — the free six-question read
+- https://getunstuckmap.com/wayout/hello — what it is

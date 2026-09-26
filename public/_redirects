@@ -67,6 +67,20 @@ https://getunstuckmap.com/         https://getunstuckmap.com/wayout/start  301!
 http://www.getunstuckmap.com/*     https://getunstuckmap.com/:splat      301!
 https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
 
+# ── Unstuck Map's own robots / sitemap / llms.txt ─────────────────────────
+#
+# 🔴 ONE NETLIFY SITE, TWO DOMAINS, ONE /robots.txt PATH. Without these, a
+# crawler on getunstuckmap.com reads Eliv8 OS's robots and sitemap — and would
+# index a B2B contractor advisor under a personal money tool's domain. These are
+# REWRITES (200), not redirects: the file has to be served AT /robots.txt, not
+# at some other URL a crawler will not ask for.
+https://getunstuckmap.com/robots.txt    /robots-unstuckmap.txt     200!
+https://getunstuckmap.com/sitemap.xml   /sitemap-unstuckmap.xml    200!
+https://getunstuckmap.com/llms.txt      /llms-unstuckmap.txt       200!
+http://getunstuckmap.com/robots.txt     /robots-unstuckmap.txt     200!
+http://getunstuckmap.com/sitemap.xml    /sitemap-unstuckmap.xml    200!
+http://getunstuckmap.com/llms.txt       /llms-unstuckmap.txt       200!
+
 # ⚠️ Kill the retired prompt chunks.
 #
 # src/lib/prompts.js used to be bundled and served, so Solomon's full system

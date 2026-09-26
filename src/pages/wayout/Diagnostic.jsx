@@ -98,8 +98,15 @@ export default function Diagnostic() {
 
   // ── The note ────────────────────────────────────────────────────────────
   if (step === DIAGNOSTIC_QUESTIONS.length) {
+    // ⭐⭐ INDEXABLE AS OF 26 SEP. It was noindex while the name was unsettled —
+    // correct then, because indexing a product about to be renamed spends
+    // authority on a URL you are going to abandon. The name is settled and the
+    // domain is its own, so the reason is gone.
+    // ⚠️ Listed in sitemap-unstuckmap.xml in the SAME commit. A page in a
+    // sitemap that says noindex is a contradiction, and doing one without the
+    // other is how the answer pages were orphaned.
     return (
-      <WayoutShell wide noindex>
+      <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
         <div className="wayout__spread">
           <div className="wayout__col">
             <p className="wayout__q">{DIAGNOSTIC_NOTE.question}</p>
@@ -143,8 +150,15 @@ export default function Diagnostic() {
   }
 
   if (step === -1) {
+    // ⭐⭐ INDEXABLE AS OF 26 SEP. It was noindex while the name was unsettled —
+    // correct then, because indexing a product about to be renamed spends
+    // authority on a URL you are going to abandon. The name is settled and the
+    // domain is its own, so the reason is gone.
+    // ⚠️ Listed in sitemap-unstuckmap.xml in the SAME commit. A page in a
+    // sitemap that says noindex is a contradiction, and doing one without the
+    // other is how the answer pages were orphaned.
     return (
-      <WayoutShell wide noindex>
+      <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
         <div className="wayout__spread">
         <div className="wayout__col">
           <h1><Marked text={DIAGNOSTIC_OPENING.headline} highlight={DIAGNOSTIC_OPENING.highlight} /></h1>

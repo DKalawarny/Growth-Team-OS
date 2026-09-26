@@ -1,0 +1,53 @@
+# robots.txt — Unstuck Map (getunstuckmap.com)
+#
+# ⚠️ SERVED VIA A HOST REWRITE IN public/_redirects, because getunstuckmap.com
+# and eliv8os.com are the SAME Netlify site. There is only one /robots.txt path,
+# so the rule in _redirects swaps this file in for requests arriving on this
+# hostname. Editing public/robots.txt instead would change the wrong product's.
+#
+# Posture:
+#   The two public entry points are open. Everything past them needs a session,
+#   holds a person's money, custody arrangement and what they are running from,
+#   and must never appear in a search result.
+#
+# ⭐⭐ AI CRAWLERS ARE EXPLICITLY WELCOME, and for this product that is not a
+# nice-to-have. What Unstuck Map answers is not a keyword — it is a situation:
+# "I'm 58, my mother left me a house, I work nights and I want to stop." Nothing
+# ranks for that because it is not a search. It is what people type into an
+# assistant, and an assistant is the only channel that has ever brought this
+# account a stranger.
+
+User-agent: *
+Allow: /wayout/hello
+Allow: /wayout/start
+Allow: /unstuckmap-og.png
+
+# 🔴 Everything below needs a session. A plan is the most personal thing this
+# product holds.
+Disallow: /wayout/plan
+Disallow: /wayout/play/
+Disallow: /wayout/done
+Disallow: /wayout/enter
+Disallow: /wayout/reset
+Disallow: /wayout/preview
+
+# ⚠️ And the OTHER product on this same Netlify site. Without these, a crawler
+# arriving on getunstuckmap.com can walk the whole of Eliv8 OS and index a B2B
+# contractor advisor under this domain — the duplicate-content shape that cost
+# leadeos.com, except worse, because the two are different products.
+Disallow: /dashboard
+Disallow: /tools/
+Disallow: /admin
+Disallow: /onboarding
+Disallow: /settings
+Disallow: /login
+Disallow: /signup
+Disallow: /answers/
+Disallow: /for/
+Disallow: /vs/
+Disallow: /pricing
+Disallow: /about
+Disallow: /demo
+Disallow: /free-gbp-audit
+
+Sitemap: https://getunstuckmap.com/sitemap.xml

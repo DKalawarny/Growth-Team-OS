@@ -36,7 +36,11 @@ export default function Landing() {
       <Helmet>
         <title>{`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
-        <meta name="robots" content="noindex, nofollow" />
+        {/* ⭐⭐ Indexable as of 26 Sep — see the note in Diagnostic.jsx. This is
+            the page that should rank: it says what the product is. */}
+        {/* Same inherited-canonical problem as WayoutShell — this page does not
+            use it, so it needs its own or it claims to be the Eliv8 homepage. */}
+        <link rel="canonical" href={`${WAYOUT_SITE_URL}/wayout/hello`} />
         {/* ⚠️ Same reason as WayoutShell — index.html's Open Graph tags are
             Eliv8 OS's, and Helmet only manages what it declares. This page does
             not use WayoutShell, so it needs its own set or it inherits them. */}
