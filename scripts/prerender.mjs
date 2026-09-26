@@ -45,6 +45,7 @@ const HOST       = `http://127.0.0.1:${PORT}`
 //   - react-helmet-async always rewrites it via document.title = …
 //   - no schema-shape coupling per route
 import { ANSWERS } from '../src/content/answers.js'
+import { SITUATIONS } from '../src/content/unstuckSituations.js'
 
 const ROUTES = [
   // ⚠️ These needles must track the real <title> of each page. Change a title
@@ -82,6 +83,11 @@ const ROUTES = [
   // a session, which is the same reason /dashboard is not in this list.
   { path: '/wayout/start',  titleContains: 'Unstuck Map' },
   { path: '/wayout/hello',  titleContains: 'Unstuck Map' },
+  { path: '/wayout/stuck',  titleContains: 'Being stuck, in specific situations' },
+  // ⚠️ Generated from the same array the pages render from, exactly as the
+  // answer pages are. A situation page added to the content file and forgotten
+  // here would ship invisible to the one channel it was written for.
+  ...SITUATIONS.map(x => ({ path: `/wayout/stuck/${x.slug}`, titleContains: x.question.slice(0, 28) })),
 
   // Trade-specific pages
   { path: '/for/plumbers',      titleContains: 'Eliv8 OS for plumbers' },

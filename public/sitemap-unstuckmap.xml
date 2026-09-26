@@ -23,4 +23,24 @@
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck/inherited-house-credit-card-debt</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck/stop-working-nights-sell-the-house</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck/pay-off-the-truck-or-invest</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

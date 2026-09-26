@@ -61,6 +61,10 @@ const AnswerPage     = lazy(() => import('./pages/marketing/Answers').then(m => 
 // same Supabase project, same Solomon proxy. It carries its own visual system
 // and its own fonts, all of which load only on these routes — see WayoutShell.
 const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
+// ⭐⭐ The only INDEXABLE pages in this product. Everything else is noindex and
+// behind a session — see the note in Situations.jsx.
+const WayoutStuck      = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationIndex })))
+const WayoutStuckPage  = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationPage })))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
 const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
@@ -289,6 +293,11 @@ export default function App() {
             arrives cold sees the product before being asked a question. */}
         <Route path="/wayout/hello" element={<LazyRoute><WayoutLanding /></LazyRoute>} />
         <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
+        {/* ⚠️ Public and indexable, deliberately — these are the door. They sit
+            OUTSIDE RequireSession because somebody arriving from an assistant
+            has no account and must not be asked for one to read an answer. */}
+        <Route path="/wayout/stuck"       element={<LazyRoute><WayoutStuck /></LazyRoute>} />
+        <Route path="/wayout/stuck/:slug" element={<LazyRoute><WayoutStuckPage /></LazyRoute>} />
         {/* Its own front door. Public, and deliberately NOT wrapped in
             RedirectIfAuthed — an Eliv8 owner who lands here should be able to
             carry on into the way out rather than being bounced to a dashboard

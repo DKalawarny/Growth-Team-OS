@@ -20,6 +20,7 @@
 User-agent: *
 Allow: /wayout/hello
 Allow: /wayout/start
+Allow: /wayout/stuck
 Allow: /unstuckmap-og.png
 
 # 🔴 Everything below needs a session. A plan is the most personal thing this
