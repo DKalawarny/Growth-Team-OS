@@ -1,18 +1,35 @@
-# the way out — what the name is holding up
+# Unstuck Map — what is left before a stranger uses it
 
-**The name is not a branding task. It is the first domino.** Four things are
-waiting on it, and they are waiting in a chain rather than in parallel.
+✅ **THE NAME IS SETTLED (25 Sep): Unstuck Map, at getunstuckmap.com, bought.**
+It was one line in `src/lib/wayout/brand.js`, which is why landing on a name was
+an edit and not a migration.
 
-> `src/lib/wayout/brand.js` is the only place the user-facing name is written,
-> and the rename is a one-line change by design. Everything below is what
-> happens *after* that line changes — the parts that need a real domain, not
-> just a real word.
+⚠️ **"Get" is the DOMAIN, not the name.** On the page it is Unstuck Map — the
+same shape as Origin at useorigin.com.
+
+⚠️ Structure: a trade name under **Eliv8 Inc. once that is incorporated**, with
+Sarlia above it. 🔴 **A TRADE NAME IS A NAME, NOT A SHIELD** — the liability
+protection is the corporation, not the registration. Eliv8 is not incorporated
+yet, so something has to operate this during the trial and Sarlia is the only
+entity that exists.
 
 ---
 
-## The chain
+## What the name unblocked, and what it did not
 
-**name → domain → verified sending domain → `WAYOUT_EMAIL_FROM` → check-ins work at all**
+| | |
+|---|---|
+| Sending domain → check-ins | **Unblocked, pending DNS** — see below |
+| Situation pages | **Unblocked** — they have a home to be published at |
+| Terms | **Still needed.** Naming the product does not write them |
+| Which entity operates it | **Still open** — Eliv8 Inc. does not exist yet |
+| Insurance posture | **Still open** — the question below |
+
+---
+
+## The chain that is left
+
+**domain (done) → DNS at GoDaddy → Resend verification → `WAYOUT_EMAIL_FROM` → check-ins send**
 
 `wayout-checkin` runs daily on cron and **refuses to send** without
 `WAYOUT_EMAIL_FROM`. That refusal is deliberate: the fallback would be
@@ -22,8 +39,27 @@ never agreed to. Today the job runs, finds who is due, and reports the
 misconfiguration instead of mailing anyone.
 
 ```
-supabase secrets set WAYOUT_EMAIL_FROM="the way out <hello@thedomain.com>"
+supabase secrets set WAYOUT_EMAIL_FROM="Unstuck Map <hello@getunstuckmap.com>"
 ```
+
+⚠️ **ORDER MATTERS AND IT IS NOT OPTIONAL.** Resend refuses to send from an
+unverified domain, so setting this before verification breaks every check-in
+with nothing in any UI saying why. That exact mistake cost time on eliv8os.com
+in August. Verify first, then set it.
+
+### The DNS records Resend will ask for, at GoDaddy
+
+Three, and they go on `getunstuckmap.com`:
+`TXT resend._domainkey` (DKIM) · `TXT send` (SPF) · `MX send` (priority 10).
+
+⭐ Choose **Manual setup**, not "Auto configure" — auto-configure wants standing
+write access to the whole DNS zone via OAuth, which is a far bigger grant than
+three records need.
+🔴 **Resend TRUNCATES the DKIM value in its UI with a real `[…]` DOM node**, so
+both a screenshot and a copy-paste of the visible text give a corrupted string.
+The full value is in the copy button's `aria-label`. Guessing the middle of a
+DKIM key produces a record that looks right and never verifies.
+⚠️ Pending for ~25 minutes is normal at GoDaddy. It is not a fault.
 
 ### The stopgap, and it is a real one
 

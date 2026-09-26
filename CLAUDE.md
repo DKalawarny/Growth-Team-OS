@@ -835,7 +835,16 @@ A "get unstuck" life-plan product living inside this repo and this Supabase
 project. **Not a second app**: same auth, same `claude` proxy, same database.
 Daniel's spec and design reference are in [`design/way-out/`](design/way-out/).
 
-🔴 **THE NAME IS NOT SETTLED AND THE CODE IS BUILT SO IT DOES NOT HAVE TO BE.**
+✅ **THE NAME IS SETTLED (25 Sep): Unstuck Map, at getunstuckmap.com.** A trade
+name under Eliv8 Inc. once that is incorporated, Sarlia above it. ⚠️ "Get" is
+the DOMAIN, not the name. 🔴 A trade name is a NAME, NOT A SHIELD — the
+protection is the corporation, and Eliv8 is not incorporated yet.
+⭐⭐ What unlocked it after five batches of my suggestions went nowhere was
+Daniel's reframe: **"this is less of a business name and more of an app name."**
+A business name must be ownable and defensible; a PRODUCT name only has to be
+clear. He had been solving a harder problem than he had.
+
+🔴 **THE ORIGINAL NOTE, KEPT BECAUSE THE REASONING STILL GOVERNS:**
 The internal slug is **`wayout`** — routes, filenames, the table, the prompt
 keys, the `toolId`. That never changes. **Every user-facing instance of the name
 is in [`src/lib/wayout/brand.js`](src/lib/wayout/brand.js) and nowhere else**, so
@@ -970,9 +979,9 @@ module throws on import and every generation 500s), or hides a backtick.
    branch in `stripe-webhook` setting `status='paid'`, and **migration 055
    reverted in the same commit** — a paywall appearing while the button still
    says free is worse than either state alone. ⚠️ Stripe is still in TEST mode.
-2. **The name, then the domain.** Four things chain off it — the sending domain
-   (so check-ins can send at all), terms written for THIS product, its own
-   Supabase project, and which entity takes the money.
+2. ✅ **Name done.** Remaining from that chain: DNS at GoDaddy → Resend
+   verification → `WAYOUT_EMAIL_FROM` (check-ins cannot send until then), terms
+   for THIS product, its own Supabase project, and which entity operates it.
 3. **`noindex` on every way-out page** while the name is unsettled, and they are
    deliberately absent from the sitemap. Remove the tag and add the routes to
    `scripts/sitemap.mjs` **in the same commit**, or they are orphaned the way the
