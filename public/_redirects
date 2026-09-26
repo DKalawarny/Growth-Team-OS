@@ -56,8 +56,14 @@ https://www.leadeos.com/*  https://eliv8os.com/:splat   301!
 # hostname must be added in Netlify BEFORE these rules mean anything.
 #
 # ⚠️ The `!` is load-bearing — without it Netlify serves index.html instead.
-http://getunstuckmap.com/          https://getunstuckmap.com/wayout      301!
-https://getunstuckmap.com/         https://getunstuckmap.com/wayout      301!
+# ⚠️ Straight to /wayout/start, not /wayout. Two reasons and both matter:
+# /wayout is the intake and talks to Supabase to find a session, so it cannot be
+# prerendered — a crawler would get the SPA shell with Eliv8's meta. /wayout/start
+# is the public rule-based diagnostic, needs no session, IS prerendered, and is
+# where a first-time visitor lands anyway. One hop fewer for a person, real HTML
+# for a link preview.
+http://getunstuckmap.com/          https://getunstuckmap.com/wayout/start  301!
+https://getunstuckmap.com/         https://getunstuckmap.com/wayout/start  301!
 http://www.getunstuckmap.com/*     https://getunstuckmap.com/:splat      301!
 https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
 

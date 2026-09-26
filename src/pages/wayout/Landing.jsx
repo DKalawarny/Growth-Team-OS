@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE } from '../../lib/wayout/brand'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
 import { priceLine } from '../../lib/wayout/pricing'
 import './wayout.css'
 
@@ -37,6 +37,21 @@ export default function Landing() {
         <title>{`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
         <meta name="robots" content="noindex, nofollow" />
+        {/* ⚠️ Same reason as WayoutShell — index.html's Open Graph tags are
+            Eliv8 OS's, and Helmet only manages what it declares. This page does
+            not use WayoutShell, so it needs its own set or it inherits them. */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={WAYOUT_NAME_TITLE} />
+        <meta property="og:url" content={WAYOUT_SITE_URL} />
+        <meta property="og:title" content={`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta property="og:description" content={WAYOUT_TAGLINE} />
+        <meta property="og:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta name="twitter:description" content={WAYOUT_TAGLINE} />
+        <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"

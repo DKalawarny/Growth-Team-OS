@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE } from '../../lib/wayout/brand'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
 import './wayout.css'
 
 /**
@@ -31,6 +31,29 @@ export default function WayoutShell({ children, count, title, noindex = true, wi
         <title>{title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
         {noindex && <meta name="robots" content="noindex, nofollow" />}
+        {/* ⭐⭐ THE LINK PREVIEW MUST NOT SAY ELIV8 OS. index.html carries a full
+            set of Open Graph tags for the other product, and Helmet only
+            manages what it DECLARES — so without these, texting somebody
+            getunstuckmap.com previews as "Eliv8 OS — an advisor for owners who
+            care how it's run", with Eliv8's description and Eliv8's image.
+            That is the exact confusion a separate name exists to prevent, and
+            it lands before anybody has clicked anything.
+            ⚠️ og:url is the OWN domain, not the path this happens to be served
+            from today. A preview that links back to eliv8os.com undoes the
+            rest of it. */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={WAYOUT_NAME_TITLE} />
+        <meta property="og:url" content={WAYOUT_SITE_URL} />
+        <meta property="og:title" content={title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta property="og:description" content={WAYOUT_TAGLINE} />
+        <meta property="og:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={WAYOUT_SITE_URL} />
+        <meta name="twitter:title" content={title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta name="twitter:description" content={WAYOUT_TAGLINE} />
+        <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"

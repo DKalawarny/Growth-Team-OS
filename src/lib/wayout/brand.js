@@ -109,5 +109,14 @@ export const WAYOUT_TAGLINE = 'You know your situation. Let’s sort out the ord
  */
 export const WAYOUT_SLUG = 'wayout'
 
+/**
+ * ⭐⭐ ITS OWN DOMAIN, bought 25 Sep. Used for og:url and og:image so a link
+ * preview points at Unstuck Map rather than at the domain it happens to share
+ * a Netlify site with today.
+ *
+ * ⚠️ NO TRAILING SLASH — it is concatenated with paths.
+ */
+export const WAYOUT_SITE_URL = 'https://getunstuckmap.com'
+
 /** Base path for every route in this product. */
 export const WAYOUT_BASE = '/wayout'

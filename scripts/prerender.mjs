@@ -72,6 +72,17 @@ const ROUTES = [
   { path: '/vs/housecall-pro',  titleContains: 'Eliv8 OS vs Housecall Pro' },
   { path: '/vs/buildertrend',   titleContains: 'Eliv8 OS vs Buildertrend' },
 
+  // ⭐⭐ Unstuck Map's two PUBLIC routes. Not for search — both are noindex and
+  // stay that way — but for LINK PREVIEWS, which is a different job entirely.
+  // index.html carries Eliv8 OS's Open Graph tags, and Helmet only rewrites
+  // them after React mounts, so anything that does not run JavaScript sees the
+  // wrong product: iMessage, Slack, WhatsApp, and the AI assistants that are
+  // the only channel that has ever brought either product a stranger.
+  // ⚠️ ONLY these two. /wayout and everything past it talk to Supabase to find
+  // a session, which is the same reason /dashboard is not in this list.
+  { path: '/wayout/start',  titleContains: 'Unstuck Map' },
+  { path: '/wayout/hello',  titleContains: 'Unstuck Map' },
+
   // Trade-specific pages
   { path: '/for/plumbers',      titleContains: 'Eliv8 OS for plumbers' },
   { path: '/for/electricians',  titleContains: 'Eliv8 OS for electricians' },
