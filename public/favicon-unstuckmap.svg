@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Unstuck Map.
+
+       🔴 IT WAS WEARING ELIV8'S FAVICON. getunstuckmap.com and eliv8os.com are
+       the same Netlify site, so /favicon.svg served the other product's mark —
+       a B2B contractor advisor's logo in the browser tab of a personal money
+       tool, on every page, for every visitor. The most visible branding leak
+       left after the name change, and the easiest to miss because nobody looks
+       at their own favicon.
+
+       The mark is the product's own: the pin from the board, in the one accent
+       colour the product allows itself (the sun token, #FFB43A), on the
+       product's paper (#FFFDF8). A pushpin rather than a map because the board IS the design —
+       three notes pinned along a string — and because a pin at 16px still
+       reads as a pin, where a folded map reads as a smudge.
+
+       ⚠️ DRAWN, NOT TYPESET. An SVG favicon renders sandboxed and cannot fetch
+       a webfont, so a letter here would silently fall back to Arial. Same
+       reason Eliv8's 8 is two stroked rings rather than a glyph.
+
+       ⚠️ Served per-hostname by a rewrite in public/_redirects, the same way
+       robots.txt and sitemap.xml are. There is only one /favicon.svg path. -->
+
+  <rect width="48" height="48" rx="10" fill="#FFFDF8"/>
+
+  <!-- The pin's shadow on the paper, offset the way the board's notes are lit. -->
+  <ellipse cx="25.6" cy="34.4" rx="7.2" ry="2.1" fill="#23301F" opacity="0.13"/>
+
+  <!-- The shaft, angled as a pushed pin sits rather than straight on. -->
+  <path d="M24.4 21.6 L27.8 33.2" stroke="#B3AC96" stroke-width="3.1" stroke-linecap="round"/>
+
+  <!-- The head. One accent colour, with the same inner shading the board's
+       pins carry so it reads as a dome rather than a flat dot. -->
+  <circle cx="22.6" cy="18.4" r="9.4" fill="#FFB43A"/>
+  <circle cx="22.6" cy="18.4" r="9.4" fill="none" stroke="#23301F" stroke-width="1.5" opacity="0.18"/>
+  <ellipse cx="19.4" cy="15.1" rx="3.4" ry="2.6" fill="#FFFFFF" opacity="0.55" transform="rotate(-28 19.4 15.1)"/>
+</svg>

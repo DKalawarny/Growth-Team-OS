@@ -77,9 +77,15 @@ https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
 https://getunstuckmap.com/robots.txt    /robots-unstuckmap.txt     200!
 https://getunstuckmap.com/sitemap.xml   /sitemap-unstuckmap.xml    200!
 https://getunstuckmap.com/llms.txt      /llms-unstuckmap.txt       200!
+# 🔴 AND THE FAVICON. It was serving Eliv8's — a B2B contractor advisor's mark
+# in the browser tab of a personal money tool, on every page. The most visible
+# branding leak left after the name change, and the easiest to miss because
+# nobody looks at their own favicon.
+https://getunstuckmap.com/favicon.svg   /favicon-unstuckmap.svg    200!
 http://getunstuckmap.com/robots.txt     /robots-unstuckmap.txt     200!
 http://getunstuckmap.com/sitemap.xml    /sitemap-unstuckmap.xml    200!
 http://getunstuckmap.com/llms.txt       /llms-unstuckmap.txt       200!
+http://getunstuckmap.com/favicon.svg    /favicon-unstuckmap.svg    200!
 
 # ⚠️ Kill the retired prompt chunks.
 #
