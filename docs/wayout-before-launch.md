@@ -7,11 +7,34 @@ an edit and not a migration.
 ⚠️ **"Get" is the DOMAIN, not the name.** On the page it is Unstuck Map — the
 same shape as Origin at useorigin.com.
 
-⚠️ Structure: a trade name under **Eliv8 Inc. once that is incorporated**, with
-Sarlia above it. 🔴 **A TRADE NAME IS A NAME, NOT A SHIELD** — the liability
-protection is the corporation, not the registration. Eliv8 is not incorporated
-yet, so something has to operate this during the trial and Sarlia is the only
-entity that exists.
+## The structure, settled 25 Sep
+
+**Sarlia Holdings → Eliv8 Inc. → trading as Unstuck Map.** Its own name, its own
+face, its own terms — but NOT its own corporation. Daniel: "it still needs its
+own entity, it just won't be incorporated on its own, it will be attached to
+Eliv8."
+
+🔴 **A TRADE NAME RING-FENCES NOTHING.** The liability protection is the
+corporation, not the registration. If Unstuck Map causes a problem, **Eliv8 Inc.
+is the defendant**, and everything Eliv8 Inc. holds — including the B2B
+business — is exposed to it.
+
+⚠️ AND THE RISK PROFILES RUN THE WRONG WAY ROUND. Eliv8 OS advises business
+owners: commercially sophisticated, they sign something, they are used to
+professional advice being advice. Unstuck Map tells a stressed consumer what to
+do with a house sale — more users, less sophistication, higher stakes, and a far
+worse story if it goes wrong. This puts the RISKIER product inside the entity
+holding the safer one.
+
+⭐ Not an argument against — a separate corporation costs money and admin. But it
+belongs in the same conversation as the insurance question below, because they
+are really one question: *what happens to Eliv8 if this product is blamed for
+something?*
+
+🔴 **AND ELIV8 INC. DOES NOT EXIST YET.** There is nothing to attach a trade name
+to today. Through the trial, **Sarlia is the only entity between Daniel and a
+user** — so either Sarlia operates it in the interim, or Eliv8 is incorporated
+before a stranger sees it. The one thing to avoid by default is neither.
 
 ---
 
