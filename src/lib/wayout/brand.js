@@ -3,9 +3,13 @@
  *
  * ⭐ THIS FILE IS THE ONLY PLACE THE USER-FACING NAME IS WRITTEN.
  *
- * 🔴 "the way out" IS A PLACEHOLDER — Daniel's call, 12 Sep. Not a shortlist
- * entry, not a leading candidate: a working label so the build can carry on
- * while the real name is decided separately.
+ * ✅ SETTLED 25 SEP: Unstuck Map. What follows is kept because the REASONING
+ * still governs — the name lives here and nowhere else, and that is why
+ * landing on one was a single edit rather than a migration.
+ *
+ * 🔴 "the way out" WAS A PLACEHOLDER — Daniel's call, 12 Sep. Not a shortlist
+ * entry, not a leading candidate: a working label so the build could carry on
+ * while the real name was decided separately.
  *
  * ⚠️ THE RISK A PLACEHOLDER CARRIES IS THAT IT QUIETLY BECOMES THE NAME. It
  * happened on the other product — a headline sat in the code marked PLACEHOLDER
@@ -37,11 +41,34 @@
  * carries its own name and says nothing about Eliv8 OS to the visitor.
  */
 
-/** What the product is called, lowercase as designed. Used in the brand mark. */
-export const WAYOUT_NAME = 'the way out'
+/**
+ * ⭐⭐ THE NAME, SETTLED 25 SEP — Unstuck Map, at getunstuckmap.com.
+ *
+ * ⚠️ "the way out" was the placeholder for two weeks and the note below warned
+ * it would quietly become the name. It did not, and the search is why: every
+ * form of it is registered — thewayout.com, wayout.com, mywayout.com,
+ * yourwayout.com. It was never available to become anything.
+ *
+ * ⭐ Daniel's reframe is what unlocked it: "this is less of a business name and
+ * more of an app name — you use it for what it is." A business name has to be
+ * ownable and defensible; a PRODUCT name only has to be clear. Mint, Google
+ * Docs, QuickBooks Payroll are all plainly descriptive and all fine. He had
+ * been solving a harder problem than he had.
+ *
+ * ⚠️ "Get" belongs to the DOMAIN, not the name — the same pattern as Origin at
+ * useorigin.com and Monarch at monarchmoney.com. In prose and on the page it is
+ * Unstuck Map. If that is wrong, this is the only line to change.
+ *
+ * ⚠️ Structure: a trade name under Eliv8 Inc. once that is incorporated, with
+ * Sarlia above it. ⚠️ A trade name is a NAME, NOT A SHIELD — the liability
+ * protection is the corporation, and "unstuck" is descriptive and therefore
+ * weak to protect, in a crowded field (unstuck.com, unstuck.ca, getunstuck.ca
+ * and unstuckmap.com are all registered to somebody else).
+ */
+export const WAYOUT_NAME = 'Unstuck Map'
 
 /** Sentence-case, for the start of a sentence or a page title. */
-export const WAYOUT_NAME_TITLE = 'The way out'
+export const WAYOUT_NAME_TITLE = 'Unstuck Map'
 
 /**
  * The possessive/product form used on the reveal screen's brand mark, where
