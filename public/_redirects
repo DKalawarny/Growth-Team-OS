@@ -42,6 +42,25 @@ https://leadeos.com/*      https://eliv8os.com/:splat   301!
 http://www.leadeos.com/*   https://eliv8os.com/:splat   301!
 https://www.leadeos.com/*  https://eliv8os.com/:splat   301!
 
+# ── Unstuck Map — its own domain, same site ────────────────────────────────
+#
+# ⭐ getunstuckmap.com is a Netlify ALIAS of this site, so it serves the same
+# build. The product lives under /wayout, so the bare domain has to land there
+# or a visitor gets the Eliv8 OS homepage — a B2B contractor advisor — after
+# typing the name of a personal money tool.
+#
+# ⚠️ A NETLIFY ALIAS SERVES THE SAME CONTENT WITH NO REDIRECT, and only the
+# www of the PRIMARY domain is redirected automatically. That is what dropped
+# www.leadeos.com off the certificate in August and gave every visitor a
+# full-page security warning. So www is handled explicitly here, and the
+# hostname must be added in Netlify BEFORE these rules mean anything.
+#
+# ⚠️ The `!` is load-bearing — without it Netlify serves index.html instead.
+http://getunstuckmap.com/          https://getunstuckmap.com/wayout      301!
+https://getunstuckmap.com/         https://getunstuckmap.com/wayout      301!
+http://www.getunstuckmap.com/*     https://getunstuckmap.com/:splat      301!
+https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
+
 # ⚠️ Kill the retired prompt chunks.
 #
 # src/lib/prompts.js used to be bundled and served, so Solomon's full system
