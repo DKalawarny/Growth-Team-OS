@@ -33,3 +33,4 @@ design/*.html
 .cache/
 .wayout-audit-cache/
 .wayout-crisis-cache/
+.solomon-faith-cache/
