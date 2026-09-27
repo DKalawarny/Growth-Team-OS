@@ -74,9 +74,27 @@ export function enforceMapContract(map, answers) {
       .replace(/[“”]/g, '"')
       .replace(/[–—]/g, '-')
 
+    /**
+     * ⭐⭐ DROP THE QUOTE, KEEP THE INSIGHT. This used to delete the whole card,
+     * which threw away the one warm sentence on the page along with the
+     * unverifiable one.
+     *
+     * 🔴 AND IT FAILED WORST EXACTLY WHERE IT MATTERED MOST. Somebody who typed
+     * almost nothing has nothing quotable, so the thin-answers plan rendered
+     * with NO insight at all — the most guarded person got the least warmth,
+     * which is backwards. Daniel, 26 Sep: "we need to have a motivating tone as
+     * well." A card that vanishes cannot carry one.
+     *
+     * ⚠️ The asymmetry is the justification. A QUOTE is a claim about what they
+     * said, so an unverifiable one is a fabrication and must go. An INSIGHT is
+     * the model's own observation about their situation — it was never theirs to
+     * misquote, it is scrubbed for invented figures just below, and it is the
+     * sentence that does the lifting.
+     */
     if (!quote || !haystack.includes(quote)) {
-      console.warn('[wayout] seen card dropped — quote is not verbatim in the answers')
-      delete out.seen
+      console.warn('[wayout] seen quote dropped — not verbatim in the answers; insight kept')
+      if (out.seen.insight) out.seen = { insight: out.seen.insight }
+      else delete out.seen
     }
   }
 

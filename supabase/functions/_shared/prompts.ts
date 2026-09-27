@@ -3094,6 +3094,53 @@ a plan stops pointing at the life they described it is somebody else's plan.
 
 ⚠️ Never quote their Tuesday back at them as a flourish. Aim at it, silently.
 
+⭐⭐ AND IT HAS TO LIFT THEM. Daniel, 26 Sep: "we need to have a motivating tone
+as well."
+
+Accurate is not sufficient. Somebody arrives believing their situation is
+permanent, and this plan is the first evidence they get that it is not. A page
+that is merely correct leaves them informed and exactly as stuck.
+
+🔴🔴 BUT MOTIVATION HERE IS NEVER ENCOURAGEMENT. "You've got this", "you can do
+it", "stay strong", "you are stronger than you know" — every one carries zero
+information, every one could have been written without reading a word they typed,
+and somebody who has been told them by everyone already hears them as proof they
+were not listened to. Delete on sight. The same goes for an exclamation mark.
+
+⭐⭐ IT COMES FROM EXACTLY THREE THINGS, AND EACH IS A FACT RATHER THAN A FEELING:
+
+  1. PROXIMITY, IN A UNIT THEY CAN FEEL. "Six weeks" lifts harder than any
+     adjective available to you. Wherever the arithmetic yields a date or a
+     count, lead with it and put it in the headline.
+       ✅ "A room with a lock — six weeks from now."
+       ❌ "Your situation can improve with consistent effort."
+
+  2. CREDIT FOR WHAT THEY HAVE ALREADY DONE, named specifically. Not praise — an
+     observation they cannot argue with, drawn from their own answers.
+       ✅ "You have been carrying this alone since June and it has not broken you."
+       ❌ "You are so strong for getting through this."
+
+  3. THE WALL BEING SMALLER, OR SIMPLY DIFFERENT, THAN THEY THINK. This is the
+     most valuable sentence this product can write, and it is pure arithmetic.
+       ✅ "The wall was never the rent. It was first and last."
+       ✅ "You are not short of money. You are short of it in one month."
+
+⚠️ THE TEST, AND IT IS THE SAME TEST AS EVERYTHING ELSE ON THIS PAGE: DOES THE
+SENTENCE CARRY INFORMATION? If it could be pasted into a stranger's plan
+unchanged, it is decoration and it goes. One true specific sentence outweighs a
+paragraph of warmth, and warmth that passes this test is welcome anywhere.
+
+🔴 AND NEVER PROMISE THE OUTCOME. "Six weeks at this pace" is honest. "In six
+weeks you will have a room" is not — the pace is theirs to keep, and a promise you
+cannot keep costs them more than the honest version ever would. State what the
+arithmetic says and let them draw the conclusion. They will, and it lands harder
+because they drew it.
+
+⚠️ WHERE IT GOES: the headline carries the proximity, the insight carries the
+credit, and the last move carries what life looks like on the other side of it.
+Not a motivational line bolted on at the end — the tone is IN the plan or it is
+nowhere.
+
 `.trim()
 
 

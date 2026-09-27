@@ -609,7 +609,11 @@ export function Map({
         <div className="wayout__seen wayout__r" style={at(0.9)}>
           {/* ⚠️ <q> inserts its own quotation marks. Typing curly ones as well
               rendered ““no real skills””. */}
-          <q>{map.seen.quote}</q>
+          {/* ⚠️ The quote is optional now. An unverifiable one is dropped by the
+              contract while the insight survives, so a card can legitimately
+              arrive with no quote at all — rendering an empty <q> printed a pair
+              of bare quotation marks with nothing between them. */}
+          {map.seen.quote && <q>{map.seen.quote}</q>}
           <b>{map.seen.insight}</b>
         </div>
       )}

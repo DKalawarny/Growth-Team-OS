@@ -44,6 +44,30 @@ const baseMap = {
 }
 
 describe('the seen card', () => {
+  /**
+   * ⭐⭐ THE MOTIVATION SURVIVES A BAD QUOTE. Daniel, 26 Sep: "we need to have a
+   * motivating tone as well." The insight is where that lives — the reframe, the
+   * credit for what they have already done — and dropping the whole card for an
+   * unverifiable quote silenced it. Worst on the thinnest answers, where there is
+   * nothing to quote and the person is most likely to be guarded.
+   */
+  it('keeps the insight when the quote has to be dropped', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      seen: { quote: 'words they never typed anywhere', insight: 'You are not short of effort. You are short of a return on it.' },
+    }, answers)
+    expect(out.seen?.quote).toBeUndefined()
+    expect(out.seen?.insight).toBe('You are not short of effort. You are short of a return on it.')
+  })
+
+  it('drops the card entirely when there is no insight to keep either', () => {
+    const out = enforceMapContract({
+      ...baseMap,
+      seen: { quote: 'words they never typed anywhere' },
+    }, answers)
+    expect(out.seen).toBeUndefined()
+  })
+
   it('keeps a quote the person actually typed', () => {
     const out = enforceMapContract({
       ...baseMap,
@@ -60,7 +84,14 @@ describe('the seen card', () => {
       ...baseMap,
       seen: { quote: 'I have never been good with money', insight: 'But you have been.' },
     }, answers)
-    expect(out.seen).toBeUndefined()
+    /**
+     * ⚠️ CHANGED 26 Sep: the QUOTE goes, the INSIGHT stays. Deleting the whole
+     * card threw away the one warm sentence on the page along with the
+     * unverifiable one — and it failed worst on somebody who typed almost
+     * nothing, who has nothing quotable and so got no insight at all. A quote is
+     * a claim about what they said; an insight is the model's own observation.
+     */
+    expect(out.seen?.quote).toBeUndefined()
   })
 
   it('drops a quote that only PARAPHRASES what they typed', () => {
@@ -68,7 +99,14 @@ describe('the seen card', () => {
       ...baseMap,
       seen: { quote: 'hauled for a few of the neighbours', insight: '...' },
     }, answers)
-    expect(out.seen).toBeUndefined()
+    /**
+     * ⚠️ CHANGED 26 Sep: the QUOTE goes, the INSIGHT stays. Deleting the whole
+     * card threw away the one warm sentence on the page along with the
+     * unverifiable one — and it failed worst on somebody who typed almost
+     * nothing, who has nothing quotable and so got no insight at all. A quote is
+     * a claim about what they said; an insight is the model's own observation.
+     */
+    expect(out.seen?.quote).toBeUndefined()
   })
 
   it('survives the typography a model normalises', () => {
@@ -87,7 +125,14 @@ describe('the seen card', () => {
       ...baseMap,
       seen: { quote: 'Shared custody', insight: '...' },
     }, answers)
-    expect(out.seen).toBeUndefined()
+    /**
+     * ⚠️ CHANGED 26 Sep: the QUOTE goes, the INSIGHT stays. Deleting the whole
+     * card threw away the one warm sentence on the page along with the
+     * unverifiable one — and it failed worst on somebody who typed almost
+     * nothing, who has nothing quotable and so got no insight at all. A quote is
+     * a claim about what they said; an insight is the model's own observation.
+     */
+    expect(out.seen?.quote).toBeUndefined()
   })
 })
 
