@@ -203,3 +203,65 @@ describe('choosePath divides people', () => {
     expect(choosePath({ money: 'negative', asset: ['space'] })).toBe('cut-delegate')
   })
 })
+
+/**
+ * ⭐⭐ ONLY ASK WHAT APPLIES. Daniel, before testing further: "audit the questions,
+ * make sure they have value, no redundancy, and if there are smarter questions to
+ * ask — some maybe that answer more than one thing to speed up the onboarding."
+ *
+ * ⚠️ THE AUDIT FOUND NO DEAD QUESTIONS — all 37 fields are consumed by the
+ * prompts, the contract guards, the move gating or the session. What it found
+ * instead was that NOT ONE FIELD WAS CONDITIONAL: a single person was asked what
+ * their partner wants, and somebody who ticked "doesn't apply" on faith was asked
+ * which practice and what it holds in their week.
+ *
+ * 🔴 THE LABELS WERE DOING THE JOB CONDITIONS SHOULD. "IF there's someone else in
+ * this" is a hedge written around a missing feature, and on the screen whose only
+ * job is being listened to, a question that ignores the answer above it is the
+ * worst possible proof that nothing is.
+ */
+describe('intake asks only what applies', () => {
+  const visible = (screen, answers) =>
+    screen.fields.filter(f => !f.showIf || f.showIf(answers))
+  const count = answers =>
+    WAYOUT_SCREENS.reduce((n, sc) => n + visible(sc, answers).length, 0)
+
+  const NOTHING_APPLIES = {
+    relationship: 'single', faith: 'na', health: ['na'],
+    immovables: [{ key: 'nothing' }], discretionary: [],
+  }
+  const EVERYTHING_APPLIES = {
+    relationship: 'aligned', faith: 'yes', health: ['limits'],
+    immovables: [{ key: 'kids-home' }], discretionary: ['takeaway'],
+  }
+
+  it('asks fewer questions when less applies', () => {
+    expect(count(NOTHING_APPLIES)).toBeLessThan(count(EVERYTHING_APPLIES))
+  })
+
+  it('never asks a single person what their partner wants', () => {
+    const s2 = WAYOUT_SCREENS.find(sc => sc.fields.some(f => f.key === 'partnerWants'))
+    expect(visible(s2, NOTHING_APPLIES).map(f => f.key)).not.toContain('partnerWants')
+    expect(visible(s2, EVERYTHING_APPLIES).map(f => f.key)).toContain('partnerWants')
+  })
+
+  it('never asks about a practice somebody said does not apply', () => {
+    const s1 = WAYOUT_SCREENS.find(sc => sc.fields.some(f => f.key === 'faithNote'))
+    expect(visible(s1, NOTHING_APPLIES).map(f => f.key)).not.toContain('faithNote')
+    expect(visible(s1, EVERYTHING_APPLIES).map(f => f.key)).toContain('faithNote')
+  })
+
+  /**
+   * 🔴 THE TRAP THIS EXISTS FOR. A hidden field that is also required blocks the
+   * form with an error rendered nowhere: the button does nothing, no message
+   * appears, and the person has no way to find out why. Nothing today is both,
+   * and this is here so nothing becomes both by accident.
+   */
+  it('never hides a required field', () => {
+    const bad = []
+    WAYOUT_SCREENS.forEach(sc => sc.fields.forEach(f => {
+      if (f.showIf && f.required) bad.push(`${sc.id}.${f.key}`)
+    }))
+    expect(bad).toEqual([])
+  })
+})

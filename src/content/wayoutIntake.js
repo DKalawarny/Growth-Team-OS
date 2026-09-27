@@ -90,6 +90,12 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'immovablesNote',
+        /**
+         * ⭐⭐ CONDITIONAL. This asks which of the chips above are truly fixed —
+         * meaningless to somebody who ticked "Nothing, really", and asking it
+         * anyway is how a form teaches people it is not reading their answers.
+         */
+        showIf: a => (a.immovables ?? []).some(x => (x.key ?? x) !== 'nothing'),
         kind: 'text',
         label: 'Which of these is truly fixed, and which have you just never questioned?',
         placeholder: '',
@@ -134,6 +140,10 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'faithNote',
+        // ⚠️ Only when they said yes. Asking "which, and anything in your week it
+        // holds" of somebody who just answered "doesn't apply" is the form not
+        // listening, on the screen where being listened to matters most.
+        showIf: a => a.faith === 'yes' || (a.faith ?? []).includes?.('yes'),
         kind: 'shorttext',
         placeholder: 'Which, and anything in your week it holds',
         required: false,
@@ -158,6 +168,11 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'healthNote',
+        showIf: a => {
+          const v = a.health
+          const picked = Array.isArray(v) ? v : v ? [v] : []
+          return picked.some(x => (x.key ?? x) !== 'na')
+        },
         kind: 'shorttext',
         placeholder: 'Only as much as you want to say',
         required: false,
@@ -251,6 +266,10 @@ export const WAYOUT_SCREENS = [
         // stepping down, the whole plan routes through their partner, and
         // knowing only that she exists is not enough to plan around her.
         key: 'partnerWants',
+        // ⚠️ The label currently hedges — "IF there's someone else in this" — which
+        // is the workaround for not having conditions. It is a question now, not
+        // a hedge.
+        showIf: a => a.relationship && a.relationship !== 'single',
         kind: 'text',
         label: 'If there’s someone else in this, what do they want?',
         placeholder: 'Not what they’d object to — what they’d actually like.',
@@ -509,6 +528,9 @@ export const WAYOUT_SCREENS = [
         // goal is not asked until screen six. People were being tested against
         // something they had not been told yet.
         key: 'fiveYearTest',
+        // ⚠️ "Which of those would you actually miss?" refers to the chips above.
+        // With nothing picked there is no "those".
+        showIf: a => (a.discretionary ?? []).length > 0,
         kind: 'text',
         // ⭐ The five-to-ten-year test, asked as one question rather than as a
         // grid per item. A grid turns this into data entry and people abandon

@@ -215,7 +215,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
     // was silent: a TypeError in a click handler just does nothing visible.
     if (screen) {
       const missing = {}
-      for (const f of screen.fields) {
+      for (const f of visibleFields(screen, answers)) {
         if (!isAnswered(f, answers[f.key])) missing[f.key] = f.emptyMessage ?? 'Add an answer.'
       }
       if (Object.keys(missing).length) { setErrors(missing); return }
@@ -395,7 +395,16 @@ export default function Intake({ preview = false, previewReflections = null }) {
           )}
 
           <div className="wayout__fields wayout__rise wayout__r3">
-            {screen.fields.map(f => (
+            {/* ⭐⭐ ONLY WHAT APPLIES. Daniel: "make sure the questions have value,
+                no redundancy… smarter questions that answer more than one thing to
+                speed up the onboarding." The audit found no dead questions — every
+                one of the 37 is consumed somewhere — but NO field was conditional,
+                so a single person was still asked what their partner wants and
+                somebody who ticked "doesn't apply" on faith was still asked which
+                practice and what it holds in their week.
+                🔴 On the screen whose whole job is being listened to, that is the
+                worst possible place for the form to prove it is not. */}
+            {visibleFields(screen, answers).map(f => (
               <div key={f.key}>
                 {f.label && <label className="wayout__label">{f.label}</label>}
                 <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} />
@@ -442,9 +451,23 @@ export default function Intake({ preview = false, previewReflections = null }) {
  * with anything on it. Someone who skipped an optional free text on screen two
  * and filled in screen three should not be sent back to two.
  */
+/**
+ * 🔴 THE FIELDS ACTUALLY ON SCREEN, WHICH IS NOT THE SAME AS THE FIELDS DEFINED.
+ *
+ * Every place that walks a screen's fields must walk THIS, not `screen.fields`.
+ * A hidden field that is also required would block the form with an error
+ * rendered nowhere — the button does nothing, no message appears, and there is
+ * no way for the person to find out why. None of today's five conditionals are
+ * required, so this is a guard against the next one rather than a live bug.
+ */
+function visibleFields(screen, answers) {
+  return (screen?.fields ?? []).filter(f => !f.showIf || f.showIf(answers))
+}
+
 function firstUnansweredStep(answers) {
   for (let i = 0; i < WAYOUT_SCREENS.length; i++) {
-    const unanswered = WAYOUT_SCREENS[i].fields.some(f => !isAnswered(f, answers[f.key]))
+    const unanswered = visibleFields(WAYOUT_SCREENS[i], answers)
+      .some(f => !isAnswered(f, answers[f.key]))
     if (unanswered) return i + 1
   }
   return WAYOUT_TOTAL_SCREENS
