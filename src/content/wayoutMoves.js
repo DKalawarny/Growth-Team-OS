@@ -453,6 +453,124 @@ export const WAYOUT_MOVES = [
   // else added together, and dealing with expensive debt is often worth more
   // per month than any move in the earning half of this file.
   {
+    // ⭐⭐ THE HOUSING-RECOVERY SET. Daniel, 26 Sep, on a plan for a man working
+    // full time and living in his car: "the find a room to rent is best or
+    // monthly rental hotels. a family member someone you can rent with but an
+    // rv etc."
+    //
+    // 🔴 EVERY HOUSING MOVE IN THIS LIBRARY ASSUMED THEY ALREADY HAD HOUSING —
+    // rent out your spare room, downsize, move somewhere cheaper. There was
+    // nothing for somebody who has none, which is precisely the person with the
+    // least slack and the fewest options.
+    //
+    // ⚠️ THE DEPOSIT IS THE WALL, NOT THE RENT. Somebody paying nightly rates
+    // is usually paying MORE per month than the flat they cannot get into. That
+    // is why these are ordered by how small a lump they need, not by how nice
+    // they are.
+    key: 'rent-a-room',
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    title: 'A room in somebody else’s place, not a flat of your own',
+    needs: [],
+    timeToCash: 'weeks',
+    upfront: 'a smaller deposit than a tenancy, sometimes none',
+    effort: 'low',
+    familyCost: 'Hard with anyone else to house. On your own it is the fastest door.',
+    growsInto: 'Gets the weekly cost down, which is what makes saving work again.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'monthly-motel',
+    direction: 'spend-less',
+    reaches: 'buys-time',
+    title: 'A motel or rooming house at the weekly or monthly rate',
+    needs: [],
+    timeToCash: 'days',
+    upfront: 'a week up front, no credit check, no references',
+    effort: 'low',
+    familyCost: 'Cramped and it is a roof. Often the only thing available same-week.',
+    growsInto: 'A bridge, not a destination — the monthly rate is well below the nightly one.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'room-with-someone-known',
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    title: 'A room with family or a friend, on stated terms',
+    needs: [],
+    timeToCash: 'days',
+    upfront: 'usually nothing',
+    effort: 'low',
+    // ⚠️ The terms are the move, not the room. Unstated arrangements between
+    // people who love each other are how both the money and the relationship
+    // go — say what is paid, and when it ends, before the first night.
+    familyCost: 'The cost is the relationship, and it is paid by being explicit rather than grateful.',
+    growsInto: 'The cheapest runway there is, if it is agreed out loud and has an end date.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'co-rent-with-someone',
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    title: 'Split a place with somebody in the same position',
+    needs: [],
+    timeToCash: 'weeks',
+    upfront: 'half a deposit instead of a whole one',
+    effort: 'medium',
+    familyCost: 'You are choosing a housemate under pressure, which is how bad ones get chosen.',
+    growsInto: 'Halves the wall. Two incomes also pass a landlord check that one does not.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
+    key: 'rv-or-trailer',
+    direction: 'spend-less',
+    reaches: 'changes-the-baseline',
+    title: 'An RV or trailer on a rented pad',
+    needs: [],
+    timeToCash: 'weeks',
+    upfront: 'the unit, and a pad deposit',
+    effort: 'medium',
+    // ⚠️ A pad with power, water and an address is a different thing from
+    // parking somewhere. The address is what unlocks the bank account, the
+    // benefits and the job applications.
+    familyCost: 'Small, legal and yours. Winter is the question, and it is a real one.',
+    growsInto: 'Owning the roof outright removes the biggest line permanently.',
+    seasons: 'all',
+    climateTags: ['mild'],
+  },
+  {
+    // ⭐⭐ Daniel: "ask if they belong to a church that could help."
+    //
+    // ⚠️ AND IT IS DELIBERATELY NOT ABOUT CHURCH. A congregation is one instance
+    // of a thing this product should already have noticed: somebody who belongs
+    // to something has a resource that does not appear on any balance sheet. A
+    // union local, a legion, a mosque, a temple, a trade association, an alumni
+    // network and a volunteer fire hall all work the same way — they help their
+    // own quietly, and most people never ask.
+    //
+    // 🔴 THE LINE, AND IT IS THE SAME ONE DANIEL HAS DRAWN THREE TIMES ON THE
+    // OTHER PRODUCT: this is only ever available when THEY named it. The plan
+    // never suggests joining, finding or returning to one. A product telling
+    // somebody in trouble to go to church is preaching with extra steps, and
+    // that is true however kindly it is meant.
+    key: 'community-you-already-have',
+    direction: 'earn',
+    reaches: 'buys-time',
+    title: 'Ask the community you already belong to',
+    needs: ['named-community'],
+    timeToCash: 'days',
+    upfront: 'nothing but asking',
+    effort: 'low',
+    familyCost: 'The cost is pride, and it is usually smaller than it feels.',
+    growsInto: 'Often a deposit, a room, a van, or somebody who knows a landlord.',
+    seasons: 'all',
+    climateTags: [],
+  },
+  {
     key: 'cheaper-housing',
     title: 'The same town, a cheaper place to live',
     needs: [],
