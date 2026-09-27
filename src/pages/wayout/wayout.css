@@ -1066,9 +1066,91 @@ div:first-child > .wayout__group { margin-top: 14px; }
   --hero-soft: var(--soft);
   --hero-accent: var(--green);
   position: relative;
-  overflow: hidden;
+  /* ⚠️ WAS `overflow: hidden`, WHICH CLIPPED EVERYTHING BELOW THE FOLD. It is
+     there to stop the drifting aura causing a horizontal scrollbar — `clip` on
+     the x axis alone does that job and still lets the page grow downward. With
+     `hidden` the page could only ever be one screen tall, which is most of why
+     it read as having nothing on it. */
+  overflow-x: clip;
   background: var(--ground);
 }
+
+/* ── Below the fold ──────────────────────────────────────────────────────── */
+
+.wayout__pitch {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+  box-sizing: border-box;
+}
+
+.wayout__pitch section { padding-block: 64px; }
+.wayout__pitch section + section { border-top: 1px solid var(--line); }
+
+.wayout__pitchh {
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+  text-wrap: balance;
+  color: var(--ink);
+}
+.wayout__pitchlead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--soft);
+  max-width: 58ch;
+  margin: 0 0 28px;
+}
+
+/* Three-up. Collapses rather than squeezing — a 3-col grid at phone width is
+   how the notes on the plan board ended up 98px wide. */
+.wayout__three {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+  gap: 22px;
+}
+.wayout__three > div {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 22px 24px;
+}
+.wayout__three h3 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.wayout__three p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
+
+/* The honest-price block. One accent, the product's own. */
+.wayout__deal {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 34px 30px;
+  display: grid;
+  gap: 26px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.wayout__deal h3 { font-size: 19px; margin: 0 0 8px; color: var(--ink); }
+.wayout__deal p  { font-size: 15px; line-height: 1.6; color: var(--soft); margin: 0; }
+.wayout__deal b  { color: var(--ink); }
+.wayout__dealtag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.wayout__dealtag--paid { color: var(--soft); }
+
+.wayout__close { text-align: center; padding-block: 72px 8px; }
+.wayout__close .wayout__pitchlead { margin-inline: auto; }
 
 .wayout__aura,
 .wayout__grain { position: absolute; inset: 0; pointer-events: none; }
@@ -1170,13 +1252,31 @@ h1.wayout__heroline {
 .wayout__heroplan .wayout__stat b { font-size: 23px; }
 .wayout__heroplan .wayout__move { padding: 8px 0; cursor: default; }
 .wayout__heroplan .wayout__move p { font-size: 14.5px; }
+/* 🔴 THIS WAS ILLEGIBLE, AND IT IS THE DIFFERENTIATOR. Struck-through phrases
+   ran straight into ordinary prose on one cramped line at the card's bottom
+   edge, so "crossed off, with the reason" — the one thing this product does that
+   the advice everybody has already heard does not — read as a rendering fault.
+   Now it is its own block with a label, the way the real plan renders its cut
+   list, and the struck items sit on their own lines. */
 .wayout__herocut {
-  margin: 16px 0 0;
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
   font-size: 12.5px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--soft);
 }
-.wayout__herocut s { text-decoration-color: #B9B29E; }
+.wayout__herocut b {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9A9482;
+  margin-bottom: 6px;
+}
+.wayout__herocut span { display: block; color: #8E8878; }
+.wayout__herocut s { text-decoration-color: #C6BFA9; }
 
 /* ═══ THE PINNED ROUTE ══════════════════════════════════════════════════
    ⭐⭐ Daniel picked this out of four shapes: "i like the fun pin board but the

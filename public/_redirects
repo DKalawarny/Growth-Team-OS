@@ -56,14 +56,21 @@ https://www.leadeos.com/*  https://eliv8os.com/:splat   301!
 # hostname must be added in Netlify BEFORE these rules mean anything.
 #
 # ⚠️ The `!` is load-bearing — without it Netlify serves index.html instead.
-# ⚠️ Straight to /wayout/start, not /wayout. Two reasons and both matter:
-# /wayout is the intake and talks to Supabase to find a session, so it cannot be
-# prerendered — a crawler would get the SPA shell with Eliv8's meta. /wayout/start
-# is the public rule-based diagnostic, needs no session, IS prerendered, and is
-# where a first-time visitor lands anyway. One hop fewer for a person, real HTML
-# for a link preview.
-http://getunstuckmap.com/          https://getunstuckmap.com/wayout/start  301!
-https://getunstuckmap.com/         https://getunstuckmap.com/wayout/start  301!
+# 🔴🔴 CHANGED 26 Sep, AND IT HAD BEEN THE WORST BUG ON THE SITE. This pointed at
+# /wayout/start — the six-question DIAGNOSTIC — so everybody who typed the domain
+# landed on a form. Daniel, seeing it: "there is nothing interesting or intriguing."
+# He was right, and the reason is that THE LANDING PAGE EXISTED THE WHOLE TIME and
+# nothing reached it: /wayout/hello carries the proposition, a real sample plan with
+# real arithmetic, and the crossed-off list. The product's single most persuasive
+# object was one route away and no link pointed at it.
+#
+# ⚠️ The original reasoning still holds and now applies HERE: /wayout is the intake
+# and talks to Supabase, so it cannot be prerendered and a crawler would get the SPA
+# shell with Eliv8's meta. /wayout/hello needs no session and IS prerendered
+# (scripts/prerender.mjs) — so it is real HTML for a link preview, same as /start
+# was, and it actually sells.
+http://getunstuckmap.com/          https://getunstuckmap.com/wayout/hello  301!
+https://getunstuckmap.com/         https://getunstuckmap.com/wayout/hello  301!
 http://www.getunstuckmap.com/*     https://getunstuckmap.com/:splat      301!
 https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
 
