@@ -349,10 +349,46 @@ const MAP_TIMEOUT_MS = 90_000
 export function crisisFrom(raw) {
   const text = String(raw ?? '').trim()
   if (!text) return null
-  if (text.startsWith('{') || text.startsWith('[')) return null
-  if (/"headline"|"moves"|"stats"/.test(text)) return null
-  if (text.length < 150) return null
-  return { crisis: true, message: text }
+
+  /**
+   * 🔴🔴 THIS USED TO BAIL IF "headline" APPEARED ANYWHERE IN THE REPLY, WHICH
+   * THREW A REAL CRISIS MESSAGE AWAY.
+   *
+   * Found 26 Sep by running crisis-shaped answers through the live function and
+   * KEEPING the replies. Given a woman widowed three weeks earlier, the model
+   * did what it was told — said plainly that this was not a planning moment —
+   * and then appended the JSON map anyway. The word "headline" appears in that
+   * JSON, so this returned null, the crisis message was discarded, and the app
+   * rendered a plan. The exact failure the crisis path exists to prevent,
+   * living in the CLIENT where no amount of prompt testing would ever find it.
+   *
+   * ⚠️ THE TEST IS POSITIONAL, NOT KEYWORD-BASED. What matters is whether the
+   * reply LEADS with prose. A crisis message followed by JSON is still a crisis
+   * message, and the JSON is the part to discard — not the reverse.
+   */
+  const fence = text.indexOf('```')
+  const brace = text.search(/\{\s*"/)
+  const cut = [fence, brace].filter(i => i > -1).sort((a, b) => a - b)[0]
+  const lead = (cut === undefined ? text : text.slice(0, cut)).trim()
+  if (!lead) return null
+
+  /**
+   * ⚠️ TWO BARS, AND THE DIFFERENCE IS DELIBERATE.
+   *
+   * A reply that is ALL prose has broken format entirely, which only happens
+   * when the model decided something mattered more than the schema — 150 chars
+   * keeps that bar where it was.
+   *
+   * A reply that leads with prose and THEN produces JSON is a different signal:
+   * the model kept its contract and still insisted on saying something first.
+   * The real one measured 82 characters ("Joan lost her husband three weeks
+   * ago. This is a crisis window, not a plan window."), so the bar has to be
+   * below that — and above a formatting preamble like "Here is the plan:",
+   * which is 17. Fifty separates them with room on both sides.
+   */
+  const min = cut === undefined ? 150 : 50
+  if (lead.length < min) return null
+  return { crisis: true, message: lead }
 }
 
 export async function generateMap(answers, onProgress = () => {}, moveNotes = null) {
