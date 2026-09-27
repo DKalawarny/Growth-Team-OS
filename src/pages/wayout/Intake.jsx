@@ -363,69 +363,73 @@ export default function Intake({ preview = false, previewReflections = null }) {
   const reflection = prev ? reflections[prev.id] : null
 
   return (
-    <WayoutShell wide count={`${step} of ${WAYOUT_TOTAL_SCREENS}`}>
-      <div className="wayout__spread">
+    <WayoutShell wide>
+      {/* ⭐⭐ THE SAME OBJECT AS THE SIX TAPS BEFORE IT. Daniel walked the live
+          journey and the complaint was that it stopped feeling like one thing:
+          "it needs to be more streamline." The handoff was fixed first — no
+          second introduction — but the DESIGN still changed underneath you at
+          the same moment, because the diagnostic had been rebuilt and this had
+          not. Kicker, progress bar, big question, rising entrance: identical.
 
-      {/* ⭐ The left panel exists because a single question floating in the
-          middle of a wide screen reads as an unfinished page. It is not filler:
-          it answers the two things someone silently wants to know fifteen
-          minutes into a form — how much further, and was any of that heard.
-          On a phone `display: contents` collapses it and the reflection sits
-          back above the question where it always was. */}
-      <div className="wayout__col wayout__aside">
-        <p className="wayout__step">Question {step} of {WAYOUT_TOTAL_SCREENS}</p>
-        <div className="wayout__pips" aria-hidden="true">
-          {WAYOUT_SCREENS.map((sc, i) => (
-            <span
-              key={sc.id}
-              className={`wayout__pip${i + 1 < step ? ' wayout__pip--done' : ''}${i + 1 === step ? ' wayout__pip--now' : ''}`}
-            />
-          ))}
+          ⚠️ THE OLD LEFT PANEL IS NOT SIMPLY DELETED, IT IS REDISTRIBUTED. Every
+          piece of it was there for a reason and each reason still holds — the
+          section and its WHY (a question with no stated reason reads as data
+          collection, and people answer that carefully rather than honestly), how
+          much further, what was heard, and the price. They now sit where the
+          equivalent sits on a tap screen, so nothing was lost and the dead
+          column on the left went with it. */}
+      <div className="wayout__ask2">
+        <div className="wayout__prog">
+          <b style={{ width: `${((step - 1) / WAYOUT_TOTAL_SCREENS) * 100}%` }} />
         </div>
-        {/* ⭐⭐ WHAT THIS SECTION IS, AND WHY IT IS BEING ASKED. Daniel: "the way
-            these are worded are very open, doesn't say why it's being asked."
-            A question with no stated reason reads as data collection — and
-            people answer data collection carefully rather than honestly, which
-            is the opposite of what this form needs. */}
-        {screen?.section && (
-          <div className="wayout__section">
-            <h2 className="wayout__sectiontitle">{screen.section}</h2>
-            <p className="wayout__sectionwhy">{screen.why}</p>
+
+        <div className="wayout__askstage" key={step}>
+          {screen?.section && (
+            <p className="wayout__kicker wayout__rise">{screen.section}</p>
+          )}
+          <h1 className="wayout__bigq wayout__rise wayout__r1">{screen.question}</h1>
+          {screen?.why && (
+            <p className="wayout__lead wayout__rise wayout__r2" style={{ maxWidth: '58ch' }}>
+              {screen.why}
+            </p>
+          )}
+
+          <div className="wayout__fields wayout__rise wayout__r3">
+            {screen.fields.map(f => (
+              <div key={f.key}>
+                {f.label && <label className="wayout__label">{f.label}</label>}
+                <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} />
+                {f.hint && <p className="wayout__hint">{f.hint}</p>}
+                {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+              </div>
+            ))}
           </div>
-        )}
 
-        {/* ⚠️ Only what is BEHIND them. Listing the questions still to come
-            would show the destination question early, and the whole reason the
-            order runs constraints-first is that seeing the dream first teaches
-            people to answer the constraints in a way that protects it. */}
-        {reflection && <div className="wayout__reflect">{reflection}</div>}
-        {/* ⭐ Stays on screen for all six questions. Someone who reads the
-            price at minute one cannot be ambushed at minute fifteen. */}
-        <p className="wayout__fine wayout__asidefine">{priceShort()}</p>
-      </div>
+          {screen.hint && <p className="wayout__hint wayout__rise wayout__r4">{screen.hint}</p>}
+          {errors._save && <p className="wayout__error">{errors._save}</p>}
 
-      <div className="wayout__col">
-      <p className="wayout__q">{screen.question}</p>
-
-      {screen.fields.map(f => (
-        <div key={f.key}>
-          {f.label && <label className="wayout__label">{f.label}</label>}
-          <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} />
-          {f.hint && <p className="wayout__hint">{f.hint}</p>}
-          {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+          <button className="wayout__btn wayout__rise wayout__r4" onClick={next} disabled={saving}>
+            {step === WAYOUT_TOTAL_SCREENS ? 'Almost done' : 'Next'}
+          </button>
         </div>
-      ))}
 
-      {screen.hint && <p className="wayout__hint">{screen.hint}</p>}
-      {errors._save && <p className="wayout__error">{errors._save}</p>}
+        {/* ⚠️ Only what is BEHIND them. Listing the questions still to come would
+            show the destination question early, and the whole reason the order
+            runs constraints-first is that seeing the dream first teaches people
+            to answer the constraints in a way that protects it. */}
+        <div className="wayout__sofar">
+          <em>Question {step} of {WAYOUT_TOTAL_SCREENS}</em>
+          {reflection
+            ? <span className="wayout__tok">{reflection}</span>
+            : <span className="wayout__soempty">{priceShort()}</span>}
+        </div>
 
-      <div className="wayout__nav">
-        <button className="wayout__back" onClick={back} aria-label="Back">←</button>
-        <button className="wayout__btn" onClick={next} disabled={saving}>
-          {step === WAYOUT_TOTAL_SCREENS ? 'Almost done' : 'Next'}
-        </button>
-      </div>
-      </div>
+        <div className="wayout__nav">
+          <button className="wayout__back" onClick={back} aria-label="Back">←</button>
+          {/* ⭐ Stays on screen throughout. Somebody who reads the price at
+              minute one cannot be ambushed at minute fifteen. */}
+          {reflection && <span className="wayout__fine">{priceShort()}</span>}
+        </div>
       </div>
     </WayoutShell>
   )

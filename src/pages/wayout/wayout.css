@@ -1991,3 +1991,17 @@ h1.wayout__heroline {
 /* ⚠️ Equal heights per row so the pins sit on one line. The rag that reads as
    charm is the TILT, not four different card depths in a row. */
 .wayout__board--situations .wayout__situationcard { align-self: stretch; }
+
+/* ⚠️ The intake asks SEVERAL fields per screen where a tap screen asks one, so
+   they need rhythm between them — without this they run together into a wall. */
+/* ⚠️ CHIPS TAKE THE WIDTH, TEXT DOES NOT. Capping the whole group at 680px left
+   half a 1440px screen empty while the chip rows wrapped early — but a text
+   input running 1200px wide is unreadable, so the measure belongs on the text
+   fields themselves rather than on everything above them. */
+.wayout__fields { display: grid; gap: 26px; }
+.wayout__fields > div > .wayout__label { display: block; margin-bottom: 8px; }
+.wayout__fields .wayout__input,
+.wayout__fields .wayout__textarea { max-width: 680px; }
+/* The intake's chip groups are long — they wrap across the full measure the way
+   the six tap screens do, rather than stacking in a narrow column. */
+.wayout__fields .wayout__chips { max-width: 1100px; }
