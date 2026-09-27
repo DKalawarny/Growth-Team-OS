@@ -127,7 +127,7 @@ export const DIAGNOSTIC_OPENING = {
   // are not, which is the sentence a person braced for a bait-and-switch is
   // scanning for. Say the entire arrangement in one breath, before a single
   // tap, and there is nothing left to dread.
-  fine: 'No account, no card. The questions are free and so is the plan. The only paid part is the step-by-step for actually doing a move — the words to use, what it costs, and what to do when it goes sideways.',
+  fine: 'No account, no card. The questions are free and so is the plan. The only paid part is a step-by-step guide for actually doing one of the moves.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [

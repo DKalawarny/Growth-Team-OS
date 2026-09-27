@@ -114,21 +114,31 @@ export function guaranteeLine() {
  * move with you", NOT "a coach walks you through".
  */
 export function walksWithYouLine() {
-  // 🔴 "IT WALKS THE MOVE WITH YOU" DOES NOT SOUND LIKE HELP, IT SOUNDS LIKE A
-  // TAGLINE. Daniel, 27 Sep, on the fine print: "this leaves out the sell —
-  // walked through doesn't sound like help to me." He is right: a person
-  // deciding whether to pay cannot picture "walked with", and nobody has ever
-  // wanted to be accompanied. They want to know what to SAY on Tuesday.
-  //
-  // ⭐⭐ SO NAME THE ARTEFACTS. The exact words, the number it has to clear, and
-  // what to do when the answer is no — all three are things the play-by-play
-  // genuinely produces, and all three are things somebody can picture needing.
-  //
-  // ⚠️ AND STILL NOTHING THAT IMPLIES A HUMAN. "Someone to ask" would sell far
-  // harder and would be a lie; the whole reason this works without a coach is
-  // that it is capability, not accountability. Every verb here belongs to the
-  // product, not to a person.
-  return 'The exact words to use, the number the move has to clear, and what to '
-    + 'do when the answer is no — for the one move you are standing on, not all '
-    + 'three at once.'
+  /**
+   * 🔴🔴 IT IS A GUIDE. A DOCUMENT. NOT A RELATIONSHIP — and that is a legal
+   * distinction before it is a copy one.
+   *
+   * Daniel, 27 Sep, rejecting "knowing what to actually say on Tuesday": "i'm
+   * really not a fan of this kind of talk. i mean like a step by step guide that
+   * we build, something along those lines, that also takes away liability."
+   *
+   * ⭐⭐ HE IS RIGHT ON BOTH HALVES AND THE SECOND ONE MATTERS MORE. "It walks
+   * the move with you", "having it walked with you", "your questions answered as
+   * they come up" all describe an ONGOING ADVISORY SERVICE. A step-by-step guide
+   * built from the answers somebody gave is a PRODUCT. For a consumer money tool
+   * that is a materially better thing to be selling, and it is what this
+   * actually is.
+   *
+   * ⚠️ WHAT COPY CANNOT DO. Naming it accurately narrows exposure; it does not
+   * remove it. The protection is the terms and the corporation — and per
+   * docs/wayout-before-launch.md the terms are still unwritten and Eliv8 Inc.
+   * does not exist, so today Sarlia is the only entity between Daniel and a user.
+   * Do not let this comment read as though the question is settled.
+   *
+   * ⚠️ AND STILL NOTHING IMPLYING A HUMAN. The old line failed that test by a
+   * different route — "walks with you" is a companion. This has no companion and
+   * no adviser in it, only a document and its contents.
+   */
+  return 'A step-by-step guide for the move you are on: what to do, in what '
+    + 'order, what it should cost, and what to do if it does not go to plan.'
 }

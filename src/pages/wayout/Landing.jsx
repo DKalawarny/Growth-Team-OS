@@ -237,6 +237,17 @@ export default function Landing() {
           <h2 className="wayout__pitchh">
             {WAYOUT_PAYMENTS_LIVE ? 'The plan is free. Keep it either way.' : 'All of it is free right now.'}
           </h2>
+          {/* ⚠️ WHAT IS BEING SOLD IS A DOCUMENT, AND THE PAGE SHOULD SAY SO
+              WHERE THE OFFER IS. Daniel asked for wording that "also takes away
+              liability" — naming the thing accurately is the part copy can do.
+              🔴 It is not the protection. The terms are unwritten and Eliv8 Inc.
+              does not exist yet, so Sarlia is currently the only entity between
+              him and a user. See docs/wayout-before-launch.md. */}
+          <p className="wayout__pitchlead">
+            Both are general information about how these decisions work — not
+            financial, legal or tax advice, and not a substitute for someone who
+            knows your full situation.
+          </p>
           <div className="wayout__deal">
             <div>
               <span className="wayout__dealtag">Free — no account</span>
@@ -251,7 +262,7 @@ export default function Landing() {
               <span className={`wayout__dealtag${WAYOUT_PAYMENTS_LIVE ? ' wayout__dealtag--paid' : ''}`}>
                 {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL} — only if you want it` : 'Also free while we are new'}
               </span>
-              <h3>Knowing what to actually say on Tuesday</h3>
+              <h3>The step-by-step guide</h3>
               <p>
                 {walksWithYouLine()}{' '}
                 {WAYOUT_PAYMENTS_LIVE
