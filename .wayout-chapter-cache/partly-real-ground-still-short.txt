@@ -1,0 +1,76 @@
+{
+  "headline": "Home for dinner, Saturdays back — the last stretch",
+  "highlight": "last stretch",
+  "seen": {
+    "quote": "Down to 48 hours but still working most Saturdays.",
+    "insight": "You moved the number — more money in, fewer hours out — and the destination is still the same. The gap between where you are and where you said you wanted to be is smaller than it has ever been, and it is now a scheduling problem more than a money problem."
+  },
+  "stats": [
+    {
+      "label": "What comes in now",
+      "value": 5200,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "up from $4,200 — room plus raise"
+    },
+    {
+      "label": "Slack after what has to go out",
+      "value": 1300,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "$5,200 minus $3,900"
+    }
+  ],
+  "moves": [
+    {
+      "order": 1,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Find out exactly what is filling those Saturday hours",
+      "when": "This week, before the next Saturday you work",
+      "detail": "You are at 48 hours and Saturdays are still going. Something specific is pulling you in — overtime that gets assigned to you, a shift nobody else covers, a task that bleeds into the weekend. Name it, because you cannot negotiate around something you have not identified.",
+      "gate": "You know the one thing that is keeping Saturdays on the schedule."
+    },
+    {
+      "order": 2,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Have the Saturday conversation with your employer",
+      "when": "Within two weeks of move one",
+      "detail": "You already got the raise, which means they know what you are worth and they said yes once. This is a different ask — not more money, a different shape to the week. You have the room to make it: $1,300 of slack, a tenant covering part of the load, and 48 hours already down from 55.",
+      "gate": "You have asked, and you have a clear answer — yes, no, or a counter."
+    },
+    {
+      "order": 3,
+      "libraryKey": "job-switch",
+      "outdoor": false,
+      "title": "The same work, for someone who pays more and does not need your Saturdays",
+      "when": "If move two comes back no, start looking within the month",
+      "detail": "This was on the last plan and it did not happen. If your employer will not give you the week shape you asked for, the move is to find one who will. Sudbury has mining, construction and trades employers who compete for experienced people. The raise proved your rate is negotiable — the question now is whether the schedule is too, and with this employer or another one.",
+      "gate": "You are working a schedule that gets you home for dinner and off on Saturdays, whether here or somewhere else."
+    }
+  ],
+  "stuck": [
+    "What do I say when my boss asks why I won't work Saturdays anymore?",
+    "What if saying no to Saturdays means they find a reason to cut my hours back?",
+    "How do I find out which Sudbury employers actually have better schedules without tipping off my current one?"
+  ],
+  "assumptions": [
+    "I have assumed the $700 room rental is still running and still in the $5,200 figure."
+  ],
+  "cut": [
+    {
+      "label": "Pick up more hours to bank savings faster",
+      "why": "You have $1,300 of slack and $1,400 saved. The money is not the problem anymore. More hours is the opposite of what you asked for, and you have already proven you can earn more without adding time."
+    },
+    {
+      "label": "A second income stream on weekends",
+      "why": "Your Tuesday is Saturdays back. A side income that runs on Saturdays is trading the thing you are trying to buy. The slack you have now is enough to protect a bad month — you do not need another earner, you need the schedule."
+    },
+    {
+      "label": "Wait it out and see if Saturdays thin on their own",
+      "why": "They have not thinned in the time since the last plan. Something structural is keeping them there, and it will not move unless you move it."
+    }
+  ],
+  "disclaimer": "This is a map of options, not financial or legal advice. Check the numbers before you act."
+}

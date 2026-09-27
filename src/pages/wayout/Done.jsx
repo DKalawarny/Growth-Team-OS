@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
-import { loadOrCreateSession, loadProgress, recordOutcome } from '../../lib/wayout/session'
+import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } from '../../lib/wayout/session'
 
 /**
  * The way out — after the third move.
@@ -27,6 +27,42 @@ const OPTIONS = [
   { key: 'changed', label: 'I want something different now',  hint: 'That happens, and it is not a failure.' },
 ]
 
+/**
+ * ⭐⭐ WHAT COMES NEXT, AND IT IS FOUR DIFFERENT THINGS. Daniel: "once they hit
+ * their plan there could be an advanced section... what to do next to make this
+ * live longer."
+ *
+ * 🔴 ONE "START ANOTHER PLAN" BUTTON WOULD HAVE BEEN THE WRONG PRODUCT. Somebody
+ * who just said "I did the work and it did not land" being offered the same
+ * cheerful restart as somebody who arrived is the clearest possible proof nobody
+ * read the answer. The destination only changes for two of these four.
+ *
+ * ⚠️ NOTHING HERE CONGRATULATES. Same rule as the rest of the page — the register
+ * is "here is what is available", never "well done".
+ */
+const NEXT = {
+  landed: {
+    cta: 'Set the next one',
+    line: 'That was the destination. The next plan starts from a different question — '
+      + 'where now — and only you can answer it.',
+  },
+  partly: {
+    cta: 'Re-plan the rest from here',
+    line: 'Same destination. You are closer to it than you were, so the route from '
+      + 'here is not the route you were given at the start.',
+  },
+  no: {
+    cta: 'A different route to the same place',
+    line: 'The destination stands. That route did not work, and the next plan will '
+      + 'not contain it.',
+  },
+  changed: {
+    cta: 'Start the new one',
+    line: 'New destination. Everything already known about you carries over — your '
+      + 'town, your hours, what you will not do.',
+  },
+}
+
 export default function Done() {
   const navigate = useNavigate()
   const [session, setSession] = useState(null)
@@ -35,6 +71,7 @@ export default function Done() {
   const [note, setNote]       = useState('')
   const [saved, setSaved]     = useState(false)
   const [error, setError]     = useState('')
+  const [starting, setStarting] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -92,6 +129,30 @@ export default function Done() {
     )
   }
 
+  /**
+   * ⚠️ THE OUTCOME IS SAVED FIRST AND SEPARATELY. If starting the next chapter
+   * failed after a combined write, the thing we would lose is the answer to "did
+   * this work" — the only evidence this product ever collects about itself, and
+   * the one thing nobody else asks them. It is already saved by the time this
+   * button exists.
+   */
+  async function startNext() {
+    if (!session || !picked || starting) return
+    setStarting(true)
+    setError('')
+    try {
+      await startNextChapter(session, picked)
+      // ⚠️ The intake resumes at the first UNANSWERED screen, so this lands them
+      // on whatever the new chapter cleared — the money, and the destination too
+      // if they arrived or changed their mind. Everything else is prefilled and
+      // they walk through it. See firstUnansweredStep.
+      navigate(`${WAYOUT_BASE}/start`)
+    } catch (err) {
+      setError(err.message)
+      setStarting(false)
+    }
+  }
+
   return (
     <WayoutShell title="What happened">
       <p className="wayout__q">
@@ -147,6 +208,31 @@ export default function Done() {
       )}
 
       {error && <p className="wayout__hint">{error}</p>}
+
+      {/* ⭐⭐ ONLY ONCE THEY HAVE ANSWERED. Offering the next plan before they have
+          said how this one went would make the question look like a formality on
+          the way to selling them something, which is exactly what it is not. */}
+      {saved && NEXT[picked] && (
+        <div className="wayout__offer wayout__r" style={{ marginTop: 34 }}>
+          <span className="wayout__offerkick">
+            {picked === 'landed' ? 'What now' : 'From here'}
+          </span>
+          <h3>{NEXT[picked].cta}</h3>
+          <p className="wayout__offerlead">{NEXT[picked].line}</p>
+          <button
+            className="wayout__btn wayout__btn--sun"
+            onClick={startNext}
+            disabled={starting}
+          >
+            {starting ? 'Setting it up…' : NEXT[picked].cta}
+          </button>
+          <p className="wayout__offerfine">
+            {picked === 'landed' || picked === 'changed'
+              ? 'A few questions — your numbers and where you are headed. The rest is already filled in.'
+              : 'Just your numbers, so the next plan starts from where you actually are.'}
+          </p>
+        </div>
+      )}
 
       <p className="wayout__rebuild">
         <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/plan`)}>

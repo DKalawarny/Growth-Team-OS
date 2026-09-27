@@ -19,73 +19,93 @@ import path from 'path'
  *
  * ⚠️ This does NOT try to police what belongs in one prompt — plenty rightly
  * does. It asserts only that the blocks we have deliberately made SHARED are
- * actually spliced into every prompt that writes to a person. That is the part
+ * actually reaching every prompt that writes to a person. That is the part
  * that has silently regressed, over and over.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 🔴🔴 REWRITTEN 26 Sep, BECAUSE THE TEST HAD THE SAME DISEASE IT WAS WRITTEN
+ * TO CURE. Its list of prompts to check was HAND-MAINTAINED, and
+ * WAYOUT_REFLECTION_PROMPT — the check-in email, the one surface that reaches
+ * somebody unprompted a week later — was never added to it. So the check-in
+ * carried no VOICE block at all and nobody found out, which is precisely the
+ * failure mode of writing a rule where the bug was seen.
+ *
+ * ⭐⭐ THE PROMPTS ARE NOW DISCOVERED, NOT LISTED. A new wayout prompt is
+ * covered the moment it is exported, without anybody remembering to come here.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 const SRC = fs.readFileSync(
   path.resolve('supabase/functions/_shared/prompts.ts'), 'utf8',
 )
 
-const SHARED = ['WAYOUT_SAFETY', 'WAYOUT_MONEY', 'WAYOUT_METHOD']
-const CONSUMERS = [
-  'WAYOUT_MAP_PROMPT',
-  'WAYOUT_PLAYBOOK_PROMPT',
-  'WAYOUT_ASK_PROMPT',
-  'WAYOUT_MOVE_QUESTIONS_PROMPT',
-]
+const SHARED = ['WAYOUT_SAFETY', 'WAYOUT_MONEY', 'WAYOUT_METHOD', 'WAYOUT_VOICE']
 
-function blockFor(name) {
+/** Every `export const WAYOUT_*` and the source between it and the next one. */
+function blocks() {
   const starts = [...SRC.matchAll(/export const (WAYOUT_[A-Z_]+)/g)]
     .map(m => ({ i: m.index, n: m[1] }))
-  const at = starts.findIndex(s => s.n === name)
-  if (at < 0) throw new Error(`${name} does not exist`)
-  const end = at + 1 < starts.length ? starts[at + 1].i : SRC.length
-  return SRC.slice(starts[at].i, end)
+  return Object.fromEntries(starts.map((s, k) => [
+    s.n, SRC.slice(s.i, k + 1 < starts.length ? starts[k + 1].i : SRC.length),
+  ]))
+}
+
+const BLOCKS = blocks()
+const CONSUMERS = Object.keys(BLOCKS).filter(n => n.endsWith('_PROMPT'))
+
+/**
+ * Does `name` reach `shared`, directly or through a prompt it is composed from?
+ *
+ * ⭐⭐ COMPOSITION COUNTS, AND IT IS THE BETTER ANSWER. WAYOUT_NEXT_MAP_PROMPT
+ * splices the whole of WAYOUT_MAP_PROMPT and then adds what is different about a
+ * second plan — so it inherits all 47 map rules automatically and CANNOT drift
+ * from them. Requiring it to splice the shared blocks itself would push it toward
+ * being a second copy of the map prompt, which is the exact failure above.
+ */
+function reaches(name, shared, seen = new Set()) {
+  if (seen.has(name)) return false           // a cycle is not a path
+  seen.add(name)
+  const body = BLOCKS[name]
+  if (!body) throw new Error(`${name} does not exist`)
+  if (body.includes(`\${${shared}}`)) return true
+  return CONSUMERS.some(other => other !== name
+    && body.includes(`\${${other}}`)
+    && reaches(other, shared, seen))
 }
 
 describe('shared prompt blocks reach every wayout prompt', () => {
+  it('found the prompts to check at all', () => {
+    // ⚠️ A discovery bug would make every assertion below pass vacuously, which
+    // is worse than a failing test. Names it found, so a rename is visible.
+    expect(CONSUMERS.length).toBeGreaterThanOrEqual(6)
+    expect(CONSUMERS).toContain('WAYOUT_REFLECTION_PROMPT')
+    expect(CONSUMERS).toContain('WAYOUT_NEXT_MAP_PROMPT')
+  })
+
   CONSUMERS.forEach(consumer => {
     SHARED.forEach(shared => {
-      it(`${consumer} splices ${shared}`, () => {
-        expect(blockFor(consumer)).toContain(`\${${shared}}`)
+      it(`${consumer} reaches ${shared}`, () => {
+        expect(reaches(consumer, shared)).toBe(true)
       })
     })
   })
 
   /**
-   * 🔴 `const` is not hoisted. A shared block defined BELOW the first prompt
-   * that splices it sits in the temporal dead zone and the whole module throws
-   * on import — every wayout generation 500s. This has nearly shipped twice in
-   * one day, both times caught by checking position rather than by reading.
+   * 🔴 `const` IS NOT HOISTED. A shared block referenced above its own definition
+   * throws at import time and 500s EVERY generation in the whole function — not
+   * just the one prompt. This has nearly shipped twice, and on 26 Sep it caught a
+   * real one: WAYOUT_VOICE sat below WAYOUT_REFLECTION_PROMPT, so the check-in
+   * could not have spliced it even though it should.
    */
-  it('defines every shared block before its first use', () => {
-    SHARED.forEach(name => {
-      const defined = SRC.indexOf(`export const ${name} =`)
-      const used = SRC.indexOf(`\${${name}}`)
-      expect(defined).toBeGreaterThan(-1)
-      expect(used, `${name} is never used`).toBeGreaterThan(-1)
-      expect(used, `${name} is used before it is defined`).toBeGreaterThan(defined)
+  it('defines every shared block above every prompt that splices it', () => {
+    const at = n => SRC.indexOf(`export const ${n}`)
+    const broken = []
+    CONSUMERS.forEach(consumer => {
+      SHARED.forEach(shared => {
+        if (BLOCKS[consumer].includes(`\${${shared}}`) && at(shared) > at(consumer)) {
+          broken.push(`${consumer} splices ${shared}, which is defined below it`)
+        }
+      })
     })
-  })
-
-  /**
-   * ⚠️ A stray backtick or `${` inside a shared block's prose ends the template
-   * literal early. It has broken this file before — a code sample pasted into
-   * a comment took the build down with "Missing opening {".
-   */
-  it('has no delimiter hiding in a shared block', () => {
-    SHARED.forEach(name => {
-      // ⚠️ The literal ends at `.trim(), NOT at the last backtick in the block —
-      // the block runs to the next export and the JS COMMENTS in between may
-      // legitimately contain backticks. The first version of this test read one
-      // of those and reported a stray delimiter that was not there.
-      const b = blockFor(name)
-      const open = b.indexOf('`')
-      const close = b.indexOf('`.trim()', open)
-      expect(close, `${name} has no closing delimiter`).toBeGreaterThan(open)
-      const body = b.slice(open + 1, close)
-      expect(body.includes('`'), `${name} contains a backtick`).toBe(false)
-      expect(body.includes('${'), `${name} contains an interpolation`).toBe(false)
-    })
+    expect(broken).toEqual([])
   })
 })

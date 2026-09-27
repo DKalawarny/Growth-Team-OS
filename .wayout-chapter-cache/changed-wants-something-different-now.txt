@@ -1,0 +1,83 @@
+```json
+{
+  "headline": "Twenty minutes from Dad, working something steady — this year",
+  "highlight": "Twenty minutes from Dad",
+  "seen": {
+    "quote": "Dad got ill in February and none of this matters the way it did.",
+    "insight": "You got the raise — $200 more a month is real — and then the thing that actually mattered changed underneath you. The plan was never wrong; the destination moved."
+  },
+  "stats": [
+    {
+      "label": "What has to go out every month",
+      "value": 3900,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "against $4,400 coming in"
+    },
+    {
+      "label": "Gap left after must-pay",
+      "value": 500,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "the number this plan has to protect"
+    }
+  ],
+  "moves": [
+    {
+      "order": 1,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Find out what the same job pays within twenty minutes of your father",
+      "when": "This week — one search, one conversation",
+      "detail": "You are employed, you have a raise on your record, and Sudbury has employers. What the same work pays at a different address is a number you do not have yet, and it is the number this whole plan turns on.",
+      "gate": "You have a real offer, or a real number to compare against what you earn now"
+    },
+    {
+      "order": 2,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Move to whatever gets you closest to him without breaking the $500",
+      "when": "Once you have the number from move one",
+      "detail": "Closer does not have to mean a pay cut. If the offer holds your income, the move is straightforward. If it costs you something, the $500 gap is what tells you how much you can absorb — and that is a real decision, not a guess.",
+      "gate": "You are within twenty minutes of your father and what goes out still fits what comes in"
+    },
+    {
+      "order": 3,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Get the hours down to something you can carry alongside being there for him",
+      "when": "Once you are settled in the new role or location",
+      "detail": "Fifty-five hours was the old problem and it is still the problem. A different employer or a renegotiated arrangement is the move — not a second job, not a side income. You said steady, and steady means the hours fit the life.",
+      "gate": "You are working something you could still be doing in two years without it costing you the thing you moved for"
+    }
+  ],
+  "stuck": [
+    "How do I find out what comparable employers near Dad actually pay without tipping off my current one?",
+    "What do I say when they ask why I am looking — do I mention my father?",
+    "If the closest job pays less, how do I work out whether the gap is one I can actually close or just one I can tolerate for a while?"
+  ],
+  "read": {
+    "title": "Die With Zero",
+    "why": "You just watched a number on a spreadsheet become irrelevant in February. This one is about what the time is actually worth, and when."
+  },
+  "assumptions": [
+    "I have assumed the raise you got last round is reflected in the $4,400 — if that figure is before the raise landed, the gap is slightly different.",
+    "I have assumed your current job is not already within twenty minutes of your father — if it is, move one is about the hours, not the location."
+  ],
+  "cut": [
+    {
+      "label": "Renting out the spare room",
+      "why": "It was on the last plan and you did not touch it, which is information. If a move toward your father means a different place, the room may not exist in the same form — and $500 of slack is tight but not so tight that a tenant is the first thing to solve."
+    },
+    {
+      "label": "Staying put and reducing hours at the current job",
+      "why": "If your current employer is not near your father, fewer hours there still leaves you in the wrong place. The location is the constraint that has to move first."
+    },
+    {
+      "label": "A side income to cover a pay cut",
+      "why": "You said steady. A side income is the opposite of steady — it is more hours on top of the ones you are already done with. If the new job pays less, the honest answer is whether the cut is survivable, not whether you can earn it back on evenings."
+    }
+  ],
+  "disclaimer": "This is a map of options, not financial or legal advice. Check the numbers before you act."
+}
+```

@@ -1,0 +1,80 @@
+{
+  "headline": "Running your own two-man crew, still home for dinner — let's build the bridge.",
+  "highlight": "build the bridge",
+  "seen": {
+    "quote": "I want to work for myself but I am not risking the evenings I just got back.",
+    "insight": "That is not a contradiction — it is the constraint that makes this plan honest. You are not choosing between the job and the dream; you are choosing the order. The evenings stay, and the business grows inside what is left."
+  },
+  "stats": [
+    {
+      "label": "What stays in after must-pay",
+      "value": 1700,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "5,600 minus 3,900 — your runway to build with"
+    },
+    {
+      "label": "Months of cover if income stops",
+      "value": 1,
+      "prefix": "",
+      "suffix": " month",
+      "caption": "4,200 savings against 3,900 must-pay"
+    }
+  ],
+  "moves": [
+    {
+      "order": 1,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Take one paid job on your own ticket before the year is out",
+      "when": "This month — one conversation, one job",
+      "detail": "You already know the work and you already know the people who need it done. One job quoted and invoiced in your own name tells you what the paperwork feels like, what you would charge, and whether the evenings hold. It is not a business yet — it is evidence.",
+      "gate": "One job invoiced and paid in your name"
+    },
+    {
+      "order": 2,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Build the cushion that makes leaving survivable",
+      "when": "Starting the month after move one closes",
+      "detail": "One month of cover is the number that makes every decision after this anxious. Six months of must-pay banked is the number that makes them calm. At $1,700 left over each month, that is roughly fourteen months of steady saving — or faster if the side jobs stack. The cushion is not a delay; it is what lets you leave without betting the evenings on it.",
+      "gate": "Six months of must-pay — around $23,400 — sitting in a separate account"
+    },
+    {
+      "order": 3,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Give notice when the crew can carry the must-pay",
+      "when": "When move two's gate is met and the work is there",
+      "detail": "Two people working means the jobs you can take are bigger and the income is not all on you. The question this move answers is not whether you want to go — you already know that — it is whether the work coming in covers $3,900 a month before you do. When it does, for two months in a row, the employed job has become the risk and the crew has become the floor."
+    }
+  ],
+  "stuck": [
+    "Do I need to register a business before I invoice that first job, or can I sort that after?",
+    "What do I say when someone asks for a quote and I have never quoted on my own before?",
+    "If the first side job runs long, how do I protect the evening without losing the customer?"
+  ],
+  "read": {
+    "title": "The E-Myth Revisited",
+    "why": "You are about to find out whether you want to do the work or run the business that does it — and most people who are good at the work find out the hard way that those are different jobs. This one names that gap before it costs you."
+  },
+  "assumptions": [
+    "I have assumed the work you would take on your own ticket is the same trade you are already employed in.",
+    "I have assumed the spare room tenant from the previous plan is still in place and that income is already in your numbers."
+  ],
+  "cut": [
+    {
+      "label": "Quit now and figure it out",
+      "why": "One month of savings against $3,900 going out is not a cushion — it is a deadline. The evenings you just got back are the first thing that goes when the money gets tight, and you said plainly you are not risking them."
+    },
+    {
+      "label": "Start with a registered company, a website, and a proper setup",
+      "why": "None of that tells you whether the work comes in or what you would charge for it. One paid job does. The setup is real work and it belongs after the evidence, not before it."
+    },
+    {
+      "label": "Grow the savings more slowly and take longer",
+      "why": "You could. But $1,700 a month of slack is the thing that makes a faster timeline possible, and you have already done the hard part — the hours are back. Using that slack to build the bridge is the move the first plan earned you."
+    }
+  ],
+  "disclaimer": "This is a map of options, not financial or legal advice. Check the numbers before you act."
+}

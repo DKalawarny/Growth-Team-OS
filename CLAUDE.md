@@ -973,6 +973,15 @@ blocks now: **`WAYOUT_SAFETY` · `WAYOUT_MONEY` · `WAYOUT_METHOD` · `WAYOUT_VO
 reaching a prompt**, is defined after its first use (`const` is not hoisted — the
 module throws on import and every generation 500s), or hides a backtick.
 
+🔴🔴 **AND ON 26 Sep THAT TEST HAD THE SAME DISEASE IT WAS WRITTEN TO CURE.** Its
+list of prompts was HAND-MAINTAINED, and `WAYOUT_REFLECTION_PROMPT` — the check-in
+email, the one surface that reaches somebody unprompted a week later — was never in
+it. So the check-in carried **no `WAYOUT_VOICE` at all** and nobody found out.
+⭐⭐ **The prompts are now DISCOVERED, not listed**, composition counts as reaching
+(so a prompt built from another inherits rather than copies), and the TDZ check
+caught a real one on the way: `WAYOUT_VOICE` sat BELOW `WAYOUT_REFLECTION_PROMPT`,
+so the check-in could not have spliced it. Both proven to fail before being kept.
+
 🔴 **NOT DONE — in the order it matters:**
 1. **Payments.** `WAYOUT_PAYMENTS_LIVE = false`. Needs a live Stripe
    **RECURRING** price at $29, its id in `STRIPE_PRICE_ID_WAYOUT`, a `wayout`
@@ -986,9 +995,27 @@ module throws on import and every generation 500s), or hides a backtick.
    deliberately absent from the sitemap. Remove the tag and add the routes to
    `scripts/sitemap.mjs` **in the same commit**, or they are orphaned the way the
    answer pages were.
-4. **The second plan on completion** — the one piece of the pricing conversation
-   not built. When somebody finishes, say they have finished, then offer a
-   genuinely different question: what to do with the room they just made.
+4. ✅ **THE SECOND PLAN — BUILT 26 Sep** (migration 066, `WAYOUT_NEXT_MAP_PROMPT`,
+   `startNextChapter`, `scripts/wayout-chapter-audit.mjs`). The page that asked how
+   it went used to offer only "Back to the plan", so a subscription's whole life was
+   one plan long.
+   ⭐⭐ **FOUR OUTCOMES, FOUR DIFFERENT PLANS — not one "start over" button.**
+   Offering somebody who said *"I did the work and it did not land"* the same
+   cheerful restart as somebody who arrived is proof nobody read the answer.
+   🔴 **The destination only clears for two of the four.** "partly" and "no" mean
+   they have NOT arrived, so the Tuesday carries over untouched; only "landed" and
+   "changed" are asked where to next. The money is re-asked every time (three months
+   moved it) and name/town/immovables/work never are.
+   ⭐⭐ **The chapter prompt is COMPOSED from `WAYOUT_MAP_PROMPT`**, so all 47 map
+   rules carry automatically and cannot drift — the fix for the recurring failure
+   above, applied structurally rather than by copying.
+   🔴 **THE DANGEROUS LINE: the previous ANSWERS count as theirs, the previous MAP
+   does not.** Provenance is decided by `freeText(answers)`; merging last round's
+   map in would launder every figure the model ever invented into an established
+   fact, silently, one chapter at a time. The old plan rides in the user turn only.
+   ✅ Verified live on all four outcomes: the refused raise and the impossible spare
+   room do not come back, nothing congratulates, and "landed" gets a first move that
+   PROTECTS what was just built.
 
 ✅ **Fixed 16 Sep:** `anthropic.test.js` had asserted `SOLOMON_TOOLS` is
 `['search_library', 'run_tool']` since before `search_the_record` was added, so

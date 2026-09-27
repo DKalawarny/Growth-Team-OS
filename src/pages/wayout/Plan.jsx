@@ -4,7 +4,7 @@ import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
   loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems,
+  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
@@ -128,8 +128,14 @@ export default function Plan() {
       // takes answers — so without this the person's choice was recorded in
       // the database, echoed back in the UI, and never once shown to the model
       // that writes the plan. The feature would have looked like it worked.
+      // ⭐⭐ A SECOND PLAN READS THE FIRST ONE. historyFor returns null for a
+      // first plan, so this call is unchanged for almost everybody — and for a
+      // chapter it is the whole difference between a plan that remembers and one
+      // that asks the same questions again. ⚠️ Read from the CHAPTER LINK rather
+      // than from router state, so a reload mid-generation still knows.
+      const history = await historyFor(s)
       const generated = await generateMap(
-        { ...s.answers, insisted: s.insisted ?? [] }, setPass, s.move_notes,
+        { ...s.answers, insisted: s.insisted ?? [] }, setPass, s.move_notes, history,
       )
       const { error: wErr } = await supabase
         .from('wayout_sessions')

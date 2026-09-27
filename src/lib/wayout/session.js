@@ -5,6 +5,7 @@ import { readingForPrompt } from '../../content/wayoutReading'
 import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { loadDraft, clearDraft } from './draft'
+import { historyForPrompt, chapterAnswers } from './chapterHistory'
 
 export { enforceMapContract, mapProblems } from './mapContract'
 
@@ -461,7 +462,18 @@ function carriesAMap(tail) {
   return false
 }
 
-export async function generateMap(answers, onProgress = () => {}, moveNotes = null) {
+/**
+ * ⭐⭐ CHAPTER TWO GOES THROUGH HERE, NOT BESIDE IT. `history` switches the prompt
+ * and adds the previous round to the user turn; everything else — three attempts
+ * with the rejection fed back, the crisis escape, the contract — is identical and
+ * must stay identical. A second generateMap would drift from this one inside a
+ * week, which is the exact failure the prompts themselves were just restructured
+ * to avoid.
+ *
+ * @param history null for a first plan, or
+ *   { previousAnswers, previousMap, ticked, outcome, outcomeNote, chapter }
+ */
+export async function generateMap(answers, onProgress = () => {}, moveNotes = null, history = null) {
   // ⭐⭐ THEIR NOTES ON MOVES RIDE IN AS FREE TEXT, AND THAT IS DELIBERATE.
   // A figure someone types into "what did we get wrong about move 2" is a
   // figure THEY gave us, so it must count as theirs for the invention guards.
@@ -473,6 +485,30 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
     ? { ...answers, theirNotesOnMoves: moveNotes }
     : answers
   answers = withNotes
+
+  /**
+   * 🔴🔴 THE PREVIOUS ANSWERS COUNT AS THEIRS. THE PREVIOUS PLAN DOES NOT.
+   *
+   * This is the single most dangerous line in chapter two. Provenance is decided
+   * by freeText(answers) — anything inside this object is treated as a figure the
+   * person gave us. Their old answers and their own notes belong there: they said
+   * them. ⚠️ THE OLD MAP MUST NEVER GO IN, because it contains figures the MODEL
+   * wrote, and the first real map in this product's life invented "$120,000 cash
+   * in hand at sale" out of six words about a house. Merging last round's map into
+   * the guard payload would launder every invention it ever made into an
+   * established fact, and it would do it silently, forever, one chapter at a time.
+   *
+   * ⚠️ So the old plan rides in the USER TURN below as context to read, and is
+   * never merged here. The guards stay exactly as strict as they were on a first
+   * plan.
+   */
+  if (history) {
+    answers = {
+      ...answers,
+      theirPreviousAnswers: history.previousAnswers ?? null,
+      whatTheySaidHappened: history.outcomeNote || null,
+    }
+  }
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
   //
   // 🔴 Daniel's first real map invented "$120,000 cash in hand at sale" from a
@@ -492,9 +528,14 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
   // plan, "That didn't come through" over and over. A guard that can refuse
   // forever is a guard that ships nothing.
   for (let attempt = 1; attempt <= 3; attempt += 1) {
+    // ⚠️ The previous round is prepended to the user turn, never to
+    // stableContext — that prefix is byte-identical for every person in this
+    // product's life, which is what makes the moves library affordable. One
+    // per-person line in it busts the cache for everybody.
+    const past = history ? historyForPrompt(history) : ''
     const content = attempt === 1
-      ? JSON.stringify(answers, null, 2)
-      : `${JSON.stringify(answers, null, 2)}\n\n`
+      ? past + JSON.stringify(answers, null, 2)
+      : `${past}${JSON.stringify(answers, null, 2)}\n\n`
         + `REJECTED, ATTEMPT ${attempt - 1}. They have not seen it. What was wrong:\n`
         + `${problems.map(p => `  - ${p}`).join('\n')}\n\n`
         // ⚠️ SAY WHAT TO DO, NOT ONLY WHAT WAS WRONG. The first version of this
@@ -530,7 +571,9 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
       // the outer braces but does not parse. See parseModelJson.
       const raw = await callClaude({
         signal: controller.signal,
-        promptKey: 'WAYOUT_MAP_PROMPT',
+        // ⭐ The chapter-two prompt IS the map prompt plus what differs, so this
+        // swap changes nothing about the rules that apply.
+        promptKey: history ? 'WAYOUT_NEXT_MAP_PROMPT' : 'WAYOUT_MAP_PROMPT',
         // ⚠️ Both libraries ride in the CACHED prefix — byte-identical on
         // every call in this product's life, so they are paid for once rather
         // than per person.
@@ -900,6 +943,104 @@ export function playbookIsStale(stored, currentMove) {
  * did not land is a fixable problem, and until now there has been no way to
  * see one.
  */
+/**
+ * ⭐⭐ THE SECOND PLAN. Daniel: "once they hit their plan there could be an
+ * advanced section", and "what to do next to make this live longer."
+ *
+ * 🔴 THE PRODUCT FINISHES, WHICH IS ITS VIRTUE AND ITS COMMERCIAL PROBLEM. Three
+ * moves, a gate between each, and then the page that asked what happened offered
+ * exactly one thing: "Back to the plan." Somebody who had just said they got where
+ * they were going hit a dead end — so a subscription's whole life was one plan
+ * long.
+ *
+ * ⭐⭐ AND THE FOUR OUTCOMES ARE FOUR DIFFERENT PLANS, NOT ONE BUTTON. What they
+ * told us decides whether the DESTINATION survives:
+ *
+ *   partly / no   → the destination STANDS. They have not arrived at it; writing
+ *                   them a new ambition would be changing the subject. Their
+ *                   Tuesday carries over untouched.
+ *   landed        → they got there. A new Tuesday is theirs to give, and this
+ *                   product does not get to guess what somebody should want next.
+ *   changed       → they said so themselves.
+ *
+ * ⚠️ WHAT IS RE-ASKED IN EVERY CASE IS THE MONEY. Three months have passed and
+ * the figures moved; a plan built on the old ones is confidently wrong, which is
+ * worse than a plan that asked. The old values are kept as prefill so confirming
+ * is fast — see firstUnansweredStep, which lands them on the first cleared screen
+ * and walks forward through everything already filled in.
+ *
+ * ⚠️ AND WHAT IS NEVER RE-ASKED: their name, age, town, immovables, the kind of
+ * work they do, or what they refuse to do. Those do not change in a quarter, and
+ * asking again says the first conversation was not kept.
+ */
+export async function startNextChapter(session, outcome) {
+  if (!session) throw new Error('wayout: no session to continue')
+  if (!['landed', 'partly', 'no', 'changed'].includes(outcome)) {
+    throw new Error(`wayout: cannot continue from outcome "${outcome}"`)
+  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('wayout: not signed in')
+
+  // ⚠️ ONE CHAPTER PER PLAN. Two taps on a slow connection would otherwise make
+  // two sessions and the newest wins — silently discarding the one they then
+  // filled in. Checked by the link rather than by disabling a button, because a
+  // limit enforced in the UI is a suggestion.
+  const { data: already } = await supabase
+    .from('wayout_sessions')
+    .select('id')
+    .eq('previous_session_id', session.id)
+    .maybeSingle()
+  if (already) return already
+
+  // ⚠️ Pure, and unit-tested in chapterHistory.test.js.
+  const keep = chapterAnswers(session.answers, outcome)
+
+  // 🔴 NOT COPIED FORWARD, EVER: anything the model wrote or the last round
+  // accumulated. The map, their notes on those moves, the outcome and the
+  // check-in state all belong to the plan they were about. A new session
+  // inheriting the old map would render last quarter's plan as this quarter's.
+  const { data: created, error } = await supabase
+    .from('wayout_sessions')
+    .insert({
+      user_id: user.id,
+      answers: keep,
+      previous_session_id: session.id,
+      chapter: (session.chapter ?? 1) + 1,
+      continues_from_outcome: outcome,
+    })
+    .select()
+    .single()
+  if (error) throw new Error(`Could not start the next one: ${error.message}`)
+  return created
+}
+
+/**
+ * The previous round, assembled for generateMap's `history` argument.
+ *
+ * ⚠️ Reads the PARENT session, so it works on a page reload with nothing but the
+ * current session in hand — the chapter link is the source of truth, not state
+ * carried through the router.
+ */
+export async function historyFor(session) {
+  if (!session?.previous_session_id) return null
+  const { data: prev, error } = await supabase
+    .from('wayout_sessions')
+    .select('answers, map, outcome, outcome_note')
+    .eq('id', session.previous_session_id)
+    .maybeSingle()
+  if (error || !prev) return null
+
+  const progress = await loadProgress(session.previous_session_id)
+  return {
+    chapter: session.chapter ?? 2,
+    previousAnswers: prev.answers ?? null,
+    previousMap: prev.map ?? null,
+    ticked: progress?.done ?? new Set(),
+    outcome: session.continues_from_outcome ?? prev.outcome ?? null,
+    outcomeNote: prev.outcome_note ?? null,
+  }
+}
+
 export async function recordOutcome(sessionId, outcome, note = '') {
   const { error } = await supabase
     .from('wayout_sessions')

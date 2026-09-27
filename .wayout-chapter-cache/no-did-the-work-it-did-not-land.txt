@@ -1,0 +1,75 @@
+{
+  "headline": "Home for dinner, Saturdays back — a different way at it",
+  "highlight": "a different way at it",
+  "seen": {
+    "quote": "I asked for the raise twice and got told no both times. The tenant fell through when my sister moved back in. I am still at 55 hours.",
+    "insight": "You did everything the last plan asked. The raise, twice. The room. None of it landed — not because you did it wrong, but because the plan put all three moves inside a situation that had already decided. The employer has answered. The room is gone. The route changes, not the destination."
+  },
+  "stats": [
+    {
+      "label": "What has to go out every month",
+      "value": 4000,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "against $4,300 coming in"
+    },
+    {
+      "label": "What is left after must-pay",
+      "value": 300,
+      "prefix": "$",
+      "suffix": "/mo",
+      "caption": "the gap this plan has to close"
+    }
+  ],
+  "moves": [
+    {
+      "order": 1,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Find out what the same job pays somewhere else in Sudbury",
+      "when": "This week — one conversation, no application yet",
+      "detail": "Your employer has said no twice. That is information, not a verdict on your rate. What the same role pays at a different shop in Sudbury is a number you do not have yet, and it is the number that decides whether move two is a negotiation or a resignation.",
+      "gate": "You have a real number — what someone else would actually pay you, not a posting, a conversation with a person who hires."
+    },
+    {
+      "order": 2,
+      "libraryKey": "same-work-better-employer",
+      "outdoor": false,
+      "title": "Take the job that pays the number, if the number is there",
+      "when": "Once you have the offer in hand",
+      "detail": "The last plan tried to get more from the same place. This one moves the work. Same hours, same skills, different employer — and if the market says your rate is higher than what you are taking home now, the move is to go and get it rather than ask again.",
+      "gate": "You have accepted an offer and have a start date, or you have confirmed the market does not pay more and move three is the plan."
+    },
+    {
+      "order": 3,
+      "libraryKey": "custom",
+      "outdoor": false,
+      "title": "Cut the hours, not the income — negotiate the shape of the job",
+      "when": "Once you are settled in the new role, or now if the market does not move",
+      "detail": "Fifty-five hours is the other half of what you came here for. A new employer who wants you has more reason to talk about hours than one who has already said no to your rate. Home for dinner and Saturdays back is a negotiation about schedule, and it is easier to have it before you are already in the door than after."
+    }
+  ],
+  "stuck": [
+    "How do I find out what the job actually pays somewhere else without tipping off my current employer?",
+    "What do I say when someone asks why I am looking — do I tell them about the raise being refused?",
+    "What if the number elsewhere is the same or lower — does that mean I am stuck here?"
+  ],
+  "assumptions": [
+    "I have assumed your sister is still in the spare room and that option is off the table for now."
+  ],
+  "cut": [
+    {
+      "label": "Ask for the raise a third time",
+      "why": "They have answered twice. A third ask without something new — a competing offer, a changed role — lands the same way. The market number from move one is what changes the conversation, and by then it is move two, not a third attempt at the same door."
+    },
+    {
+      "label": "Take on extra work or a side income to close the $300 gap",
+      "why": "You are already at 55 hours. Adding income by adding hours is the one move that makes Saturdays and dinner harder, not easier. The gap is $300 — real, but small enough that one employer paying your actual rate closes it without a single extra hour."
+    },
+    {
+      "label": "Wait it out and see if the employer changes their mind",
+      "why": "Your take-home went up $100 and your must-pay went up $100 since the last plan. The direction is wrong and it is slow. Waiting is a decision to stay where the numbers are moving against you."
+    }
+  ],
+  "disclaimer": "This is a map of options, not financial or legal advice. Check the numbers before you act."
+}
