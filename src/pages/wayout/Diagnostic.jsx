@@ -201,7 +201,7 @@ export default function Diagnostic() {
             ))}
           </div>
           <p className="wayout__fine wayout__pathnote">
-            Three minutes says which — and why the other three are not.
+            Three minutes and you’ll know which — and why the other three aren’t.
           </p>
         </div>
       </WayoutShell>

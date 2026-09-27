@@ -161,11 +161,11 @@ export default function Landing() {
             type the specific thing. These are the pages written for exactly that,
             so this section doubles as the internal linking those pages need. */}
         <section>
-          <h2 className="wayout__pitchh">It is never just “stuck”.</h2>
+          <h2 className="wayout__pitchh">It’s never just “stuck”.</h2>
           <p className="wayout__pitchlead">
-            It is a house with debt against it. A job that pays more than the next
-            one would. A year of night shifts you cannot see the end of. Straight
-            answers to the specific ones, free to read:
+            It’s a house with debt against it. A job that pays more than the next one
+            would. A year of night shifts you can’t see the end of. Straight answers
+            to the specific ones, free to read:
           </p>
           <div className="wayout__board">
             {SITUATIONS.slice(0, 6).map(x => (
@@ -191,32 +191,32 @@ export default function Landing() {
         <section>
           <h2 className="wayout__pitchh">Advice is cheap. Order is the hard part.</h2>
           <p className="wayout__pitchlead">
-            You have already been told to budget, hustle and be patient. None of
-            that says which thing to do on Saturday.
+            You’ve already been told to budget, hustle and be patient. None of that
+            tells you what to do on Saturday morning.
           </p>
           <div className="wayout__three">
             <div>
               <h3>Your numbers. Not averages.</h3>
               <p>
-                Every figure in your plan is one you gave us, or one worked out
-                from them. Where something is unknown it says so and tells you who
-                would know — it does not fill the gap with a guess.
+                Every figure in your plan is one you gave us, or worked out from them.
+                Where something isn’t known it says so and tells you who would
+                know — it won’t fill the gap with a guess.
               </p>
             </div>
             <div>
               <h3>It crosses things off.</h3>
               <p>
-                The plan names what you should <b>not</b> do right now, and why.
-                Most advice only ever adds to your list, which is how you ended up
-                with three options and no first step.
+                It names what you should <b>not</b> do right now, and why. Everything
+                else only ever adds to your list — which is how you ended up with
+                three options and no first step.
               </p>
             </div>
             <div>
               <h3>One thing at a time.</h3>
               <p>
-                Each move says what has to be true before the next one starts. So
-                you always know whether you are ready, instead of guessing and
-                stalling on all three at once.
+                Each move says what has to be true before the next one starts, so you
+                always know whether you’re ready — instead of half-doing all
+                three and finishing none.
               </p>
             </div>
           </div>
@@ -242,9 +242,9 @@ export default function Landing() {
               <span className="wayout__dealtag">Free — no account</span>
               <h3>Six questions, then your plan</h3>
               <p>
-                Three moves in the order they work, what each one is worth in your
-                own figures, and what to ignore. Yours to keep, and we do not ask
-                for a card to see it.
+                Three moves in the order they work, what each is worth in your own
+                figures, and what to ignore. Yours to keep, and we don’t ask for a
+                card to see it.
               </p>
             </div>
             <div>
@@ -270,7 +270,7 @@ export default function Landing() {
         <section className="wayout__close">
           <h2 className="wayout__pitchh">You know your situation.</h2>
           <p className="wayout__pitchlead">
-            Three minutes, six questions, and something you can act on this week.
+            Six questions, three minutes, and something you can actually do this week.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>

@@ -65,23 +65,37 @@
  *
  * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
  * the paid opening screen. A second one and neither means anything.
+ *
+ * ⭐⭐ AND IT IS WRITTEN SPOKEN, WITH CONTRACTIONS. Daniel on the first version:
+ * "it sounds kind of AI like — it needs that human touch." He was right and the
+ * tell was mechanical: balanced clauses, "it is not X, it is Y", and not one
+ * contraction anywhere. Nobody talks like that. The four PATHS below already
+ * used them — "you're sitting on the thing most people spend three years trying
+ * to build" — and read twice as human as the screen introducing them.
+ *
+ * 🔴 SPOKEN IS NOT HYPED. The lead names a private moment: turning it over at
+ * night and landing somewhere different each time. Specific, and true of almost
+ * everybody who arrives here. It is never "you've got this", which WAYOUT_VOICE
+ * bans outright for carrying no information — the warmth comes from naming what
+ * actually happens to them, not from adjectives.
+ *
+ * ⚠️ THE REGISTER IS DELIBERATELY WARMER HERE THAN IN THE PLAN. This page talks
+ * to a stranger who owes us nothing; the plan talks to somebody who has just
+ * handed over their money and what they are frightened of, and that conversation
+ * is quieter. The difference is intended — do not "fix" one to match the other.
  */
 export const DIAGNOSTIC_OPENING = {
-  headline: 'There are four ways out. Three of them are wrong for you.',
-  // ⚠️ SHORT ENOUGH TO SIT ON ONE LINE. "Three of them are wrong" broke across
-  // the wrap as "Three" / "of them are wrong" — box-decoration-break keeps both
-  // fragments clean, but a mark in two pieces still reads as busier than the
-  // sentence deserves. This lands whole, at the end, on the punch.
-  highlight: 'wrong for you',
-  lead: 'Being stuck is rarely a shortage of options. It is not knowing which one is worth the next year.',
-  body: 'Six questions, about three minutes. At the end it names the one that fits — and says plainly why the other three do not. Whether getting out means earning more or needing less.',
-  cta: 'Find out which one',
+  headline: 'There are four ways out of this. Three of them will cost you a year.',
+  highlight: 'cost you a year',
+  lead: 'You’re not short on ideas. You’ve turned them over a hundred times and landed somewhere different every night.',
+  body: 'Six questions. Three minutes. At the end you’ll know which one is actually yours — and why the other three aren’t, whether getting out means earning more or needing less.',
+  cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts
   // are not, which is the sentence a person braced for a bait-and-switch is
   // scanning for. Say the entire arrangement in one breath, before a single
   // tap, and there is nothing left to dread.
-  fine: 'No account. Three minutes here, and the full plan afterwards, both free — you only pay if you later want the step-by-step for actually doing it.',
+  fine: 'No account, no card. This part’s free and so is the plan at the end — the only thing you’d ever pay for is having it walked with you afterwards.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [
