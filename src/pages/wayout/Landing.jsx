@@ -159,9 +159,16 @@ export default function Landing() {
             <div className={`wayout__heroplan wayout__heroplan--${i === 0 ? 'front' : 'back'}`} key={pl.who} tabIndex={-1}>
               <div className="wayout__brand"><i />your plan</div>
               <p className="wayout__who">{pl.who}</p>
-              <h2>
+              {/* 🔴 NOT A HEADING. These were <h2>, which made "Four days a week
+                  by March" and "Out of the hole by June" the FIRST TWO SECTION
+                  HEADINGS on the page — an invented person's plan sitting above
+                  every real section in the document outline. aria-hidden keeps
+                  it from a screen reader; it does not keep it out of the outline
+                  a crawler builds. It is a picture of the product, so it is a
+                  div that happens to be big. */}
+              <div className="wayout__heroplanline">
                 {pl.headline} <mark>{pl.mark}</mark>
-              </h2>
+              </div>
 
               <div className="wayout__stats">
                 {pl.stats.map(st => (
@@ -171,7 +178,7 @@ export default function Landing() {
                 ))}
               </div>
 
-              <h3 className="wayout__label">Three moves. This order.</h3>
+              <p className="wayout__label">Three moves. This order.</p>
               {pl.moves.map(([title, when, now]) => (
                 <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
                   <span className="wayout__chk">
@@ -224,7 +231,7 @@ export default function Landing() {
             would. A year of night shifts you can’t see the end of. Straight answers
             to the specific ones, free to read:
           </p>
-          <div className="wayout__board">
+          <div className="wayout__board wayout__board--situations">
             {SITUATIONS.slice(0, 6).map(x => (
               <Link
                 key={x.slug}
@@ -236,7 +243,9 @@ export default function Landing() {
               </Link>
             ))}
           </div>
-          <p className="wayout__fine" style={{ marginTop: 18 }}>
+          {/* ⚠️ .wayout__fine centres by default — correct under a centred CTA,
+              wrong here, where it was the only centred thing in the section. */}
+          <p className="wayout__fine" style={{ marginTop: 18, textAlign: 'left' }}>
             <Link to={`${WAYOUT_BASE}/stuck`}>All {SITUATIONS.length} situations →</Link>
           </p>
         </section>
@@ -294,17 +303,7 @@ export default function Landing() {
           <h2 className="wayout__pitchh">
             {WAYOUT_PAYMENTS_LIVE ? 'The plan is free. Keep it either way.' : 'All of it is free right now.'}
           </h2>
-          {/* ⚠️ WHAT IS BEING SOLD IS A DOCUMENT, AND THE PAGE SHOULD SAY SO
-              WHERE THE OFFER IS. Daniel asked for wording that "also takes away
-              liability" — naming the thing accurately is the part copy can do.
-              🔴 It is not the protection. The terms are unwritten and Eliv8 Inc.
-              does not exist yet, so Sarlia is currently the only entity between
-              him and a user. See docs/wayout-before-launch.md. */}
-          <p className="wayout__pitchlead">
-            Both are general information about how these decisions work — not
-            financial, legal or tax advice, and not a substitute for someone who
-            knows your full situation.
-          </p>
+
           <div className="wayout__deal">
             <div>
               <span className="wayout__dealtag">Free — no account</span>
@@ -316,8 +315,11 @@ export default function Landing() {
               </p>
             </div>
             <div>
+              {/* ⚠️ SAID "FREE" THREE TIMES IN ONE CARD — the section heading, this
+                  label, and again in the body. Once is the offer; three times
+                  reads as protesting. The label now says what the thing IS. */}
               <span className={`wayout__dealtag${WAYOUT_PAYMENTS_LIVE ? ' wayout__dealtag--paid' : ''}`}>
-                {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL} — only if you want it` : 'Also free while we are new'}
+                {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL} — only if you want it` : 'The paid half, later'}
               </span>
               <h3>The step-by-step guide</h3>
               <p>
@@ -327,12 +329,22 @@ export default function Landing() {
                   /* ⚠️ DELIBERATELY NOT A GRANDFATHERING PROMISE. An earlier
                      draft said "not for anyone using it now", which commits
                      Daniel to free-for-life for every early user — his call to
-                     make, not copy's. This says what is true today and that
-                     nobody will be surprised. */
-                  : <>Free while we are this new. <b>You will know well before that changes.</b></>}
+                     make, not copy's. */
+                  : <><b>You will know well before that changes.</b></>}
               </p>
             </div>
           </div>
+          {/* ⚠️ MOVED. This was the section's LEAD, so the block about the offer
+              opened on a legal disclaimer — which reads as though the disclaimer
+              is the point. It is fine print, so it sits where fine print sits.
+              🔴 And naming the thing accurately is all copy can do: the terms are
+              unwritten and Eliv8 Inc. does not exist, so Sarlia is currently the
+              only entity between Daniel and a user. docs/wayout-before-launch.md */}
+          <p className="wayout__disclaimer" style={{ marginTop: 20 }}>
+            Both are general information about how these decisions work — not
+            financial, legal or tax advice, and not a substitute for someone who
+            knows your full situation.
+          </p>
         </section>
 
         <section className="wayout__close">

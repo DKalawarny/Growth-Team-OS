@@ -1971,3 +1971,23 @@ h1.wayout__heroline {
   display: inline-block; width: auto; min-width: 230px; padding-inline: 42px;
 }
 .wayout__open .wayout__fine { margin-top: 14px; max-width: 58ch; }
+
+
+/* ⚠️ The sample plan's headline stopped being an <h2> (it was making an invented
+   person's plan the first section heading on the page) so it needs the size the
+   heading was giving it. */
+.wayout__heroplanline {
+  font-size: 27px; line-height: 1.06; font-weight: 800;
+  letter-spacing: -.02em; color: var(--ink); margin: 0;
+}
+
+/* 🔴 THE SITUATIONS GRID WAS 4 ACROSS AND LEFT A HALF-EMPTY SECOND ROW — four,
+   then two, with the cards at four different heights. On a pin board a little
+   rag is the charm; a row that stops halfway reads as unfinished. Three across
+   fills both rows exactly, since six are shown. */
+.wayout__board--situations { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) { .wayout__board--situations { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .wayout__board--situations { grid-template-columns: 1fr; } }
+/* ⚠️ Equal heights per row so the pins sit on one line. The rag that reads as
+   charm is the TILT, not four different card depths in a row. */
+.wayout__board--situations .wayout__situationcard { align-self: stretch; }
