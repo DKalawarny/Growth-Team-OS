@@ -63,6 +63,8 @@ export default function Diagnostic() {
       const existing = loadDraft()
       saveDraft({ ...carried, ...(existing?.answers ?? {}) }, existing?.step ?? 0)
     }
+    // ⚠️ `all` now carries `climate`; `region` is the COUNTRY and nothing else.
+    // Before the rename this line destroyed the climate answer on every insert.
     supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null, region: where || null }, path })
       .then(({ error }) => { if (error) console.warn('[wayout] diagnostic not recorded:', error.message) })
   }

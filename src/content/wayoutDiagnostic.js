@@ -15,7 +15,8 @@
  *
  * ⚠️ NO FREE TEXT ON THIS SCREEN. Every answer is a tap. That is what makes an
  * anonymous-insert policy safe on `wayout_diagnostics` (migration 046) — the
- * table holds six enum answers and a region, and nothing a person wrote.
+ * table holds six enum answers, a climate, a country, and nothing a person
+ * wrote beyond the optional note.
  */
 
 /**
@@ -129,7 +130,15 @@ export const DIAGNOSTIC_QUESTIONS = [
     ],
   },
   {
-    key: 'region',
+    // 🔴 RENAMED FROM `region` 26 SEP, BECAUSE IT COLLIDED WITH THE COUNTRY.
+    // The country chip on the note screen also wrote `region`, so this answer
+    // was OVERWRITTEN on every submission before it reached the database — and
+    // set to null outright whenever somebody skipped the country. Three weeks
+    // of diagnostics recorded a climate for nobody.
+    // ⚠️ Two different questions cannot share a key. The prompt's glossary
+    // defines `region` as ca/us/uk/other, so the country keeps the name and
+    // this one changes.
+    key: 'climate',
     question: 'Where are you?',
     options: [
       { key: 'cold',  label: 'Real winters' },
