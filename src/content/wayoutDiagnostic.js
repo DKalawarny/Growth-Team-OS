@@ -118,7 +118,23 @@
  */
 export const DIAGNOSTIC_OPENING = {
   headline: 'There are four ways out of this. Three of them will cost you a year.',
-  highlight: 'cost you a year',
+  /**
+   * 🔴🔴 THE MARK GOES ON THE WAY OUT, NOT ON THE COST. Daniel, 27 Sep: "i like
+   * the highlight but do you think it's highlighting the negative part of this
+   * statement, not the positive?" It was, and it is the loudest element on the
+   * page — the one thing a reader takes in before they have read a word of the
+   * sentence around it. "cost you a year" made that a threat.
+   *
+   * ⭐⭐ AND IT CONTRADICTED THE PRODUCT. The whole posture here is that you do
+   * not have to act from fear; somebody arriving at eleven at night is already
+   * frightened and does not need the page adding to it. "four ways out" is the
+   * genuinely hopeful claim on this screen — that ways out exist at all, and
+   * that they can be counted. The cost stays in the sentence, doing its work
+   * quietly, which is where a stake belongs.
+   *
+   * ⚠️ It also lands clean on the first line rather than straddling the wrap.
+   */
+  highlight: 'four ways out',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
   body: 'Six questions. Three minutes. Then you’ll know which one is yours, and exactly why the other three aren’t. Whether getting out means earning more or needing less.',
   cta: 'Show me which one',
