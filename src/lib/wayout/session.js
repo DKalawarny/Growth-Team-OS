@@ -388,7 +388,77 @@ export function crisisFrom(raw) {
    */
   const min = cut === undefined ? 150 : 50
   if (lead.length < min) return null
+
+  /**
+   * 🔴🔴 ONE CARVE-OUT, AND IT IS NARROW ON PURPOSE.
+   *
+   * Found 26 Sep. After the crisis rules were taught where their boundary is, a
+   * man working full time and sleeping in his car correctly got a PLAN — and the
+   * model narrated its own reasoning first: "The rules fire clearly here: Mitch
+   * has income, a gap, and a solvable problem. $2,600 in, $900 out, $1,700 of
+   * slack every month. This is a planning case." 190 characters, over the bar,
+   * so he would have been shown the model's working and never the plan.
+   *
+   * 🔴 THE OBVIOUS FIX WAS WRONG AND WOULD HAVE CAUSED A SAFETY REGRESSION. The
+   * first attempt suppressed any lead followed by a real map — but that is the
+   * SHAPE OF THE ORIGINAL BUG: a genuine crisis message with the JSON appended
+   * anyway, which is exactly what the widow's reply did. Prose-then-map cannot
+   * distinguish them, and getting it wrong that way hides a crisis instead of a
+   * plan. When the two errors are not equal, the test has to fail toward the
+   * expensive one.
+   *
+   * ⭐⭐ SO WHAT IS CHECKED IS THE VERDICT THE LEAD ITSELF DECLARES. "This is a
+   * planning case" is the model reporting that the crisis rules did NOT fire —
+   * the meta-narration tic, where an instruction about behaviour surfaces as
+   * text. Anything that does not say so stays a crisis, including anything
+   * ambiguous. The tic is also fixed in the prompt, which is the real cure; this
+   * is only the floor under it, because a prompt rule holds most of the time and
+   * a man living in his car deserves better odds than most of the time.
+   */
+  // ⚠️ AND ONLY WHEN A MAP ACTUALLY FOLLOWS. The tic always precedes one, so
+  // requiring it costs nothing — and it makes an all-prose crisis reply
+  // impossible to suppress by wording alone, which is the failure that matters.
+  // Without this, "this is not a crisis of money, it is something heavier" would
+  // have been thrown away.
+  if (cut !== undefined && NARRATES_A_PLANNING_VERDICT.test(lead)) return null
+
   return { crisis: true, message: lead }
+}
+
+/**
+ * The model announcing that the crisis rules did not fire. Deliberately only
+ * phrasings that state the VERDICT — never words that merely appear near one,
+ * because every guard in this product that tested for vocabulary instead of
+ * structure has been wrong.
+ */
+const NARRATES_A_PLANNING_VERDICT = new RegExp([
+  'this is (a|clearly a) planning (case|moment|question)',
+  'not a crisis(?! of)\\b',
+  'the (crisis )?rules (fire|apply|are clear|do not fire|don.t fire)',
+  'crisis (rules?|path|check) (does not|do not|doesn.t|don.t) (fire|apply)',
+  'no crisis (signals?|markers?|indicators?)',
+  'safe to (plan|proceed with a plan)',
+].join('|'), 'i')
+
+/**
+ * Does this tail actually contain a map? Parses rather than pattern-matches —
+ * the word "moves" in a sentence is not a map, and this is the check that
+ * decides whether somebody sees their plan.
+ */
+function carriesAMap(tail) {
+  const body = tail.replace(/^```(?:json)?/i, '').replace(/```\s*$/, '').trim()
+  const start = body.search(/\{\s*"/)
+  if (start < 0) return false
+  const candidate = body.slice(start)
+  // ⚠️ Trailing prose after the JSON is common, so retry on shrinking suffixes
+  // at each closing brace rather than giving up on the first parse failure.
+  for (let end = candidate.lastIndexOf('}'); end > 0; end = candidate.lastIndexOf('}', end - 1)) {
+    try {
+      const o = JSON.parse(candidate.slice(0, end + 1))
+      return Array.isArray(o?.moves) && o.moves.length > 0
+    } catch { /* keep shrinking */ }
+  }
+  return false
 }
 
 export async function generateMap(answers, onProgress = () => {}, moveNotes = null) {
