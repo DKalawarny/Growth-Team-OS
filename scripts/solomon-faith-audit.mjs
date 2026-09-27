@@ -31,6 +31,7 @@
  */
 import fs from 'fs'
 import path from 'path'
+import { auditToken } from './lib/testAuth.mjs'
 
 const env = Object.fromEntries(
   fs.readFileSync(path.resolve('.env.local'), 'utf8')
@@ -131,18 +132,13 @@ const claimsProsperity = text => PROSPERITY
  */
 const MECHANICS = /\b(severance|notice period|employment standards|record of employment|ROE|termination pay)\b/i
 
+/**
+ * ⭐ ONE reused account for every audit — see scripts/lib/testAuth.mjs. This used
+ * to sign up a fresh throwaway on each run, which put 18 test accounts into the
+ * production auth table against 7 real ones.
+ */
 async function token() {
-  const email = `sol-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@example.com`
-  const r = await fetch(`${URL}/auth/v1/signup`, {
-    method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: 'Testing-12345!' }),
-  }).then(x => x.json())
-  await fetch(`${URL}/rest/v1/rpc/bootstrap_personal_account`, {
-    method: 'POST',
-    headers: { apikey: KEY, Authorization: `Bearer ${r.access_token}`, 'Content-Type': 'application/json' },
-    body: '{}',
-  })
-  return r.access_token
+  return auditToken(URL, KEY)
 }
 
 // ⭐ --replay re-checks KEPT output instead of generating. Tuning a guard against

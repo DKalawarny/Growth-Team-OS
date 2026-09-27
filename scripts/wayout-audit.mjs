@@ -39,6 +39,7 @@ import {
 } from '../src/lib/wayout/mapContract.js'
 import { movesLibraryForPrompt } from '../src/content/wayoutMoves.js'
 import { readingForPrompt, WAYOUT_READING } from '../src/content/wayoutReading.js'
+import { auditToken } from './lib/testAuth.mjs'
 
 const env = Object.fromEntries(
   fs.readFileSync(path.resolve('.env.local'), 'utf8')
@@ -96,21 +97,13 @@ const PEOPLE = {
   },
 }
 
+/**
+ * ⭐ ONE reused account for every audit — see scripts/lib/testAuth.mjs. This used
+ * to sign up a fresh throwaway on each run, which put 18 test accounts into the
+ * production auth table against 7 real ones.
+ */
 async function token() {
-  const email = `audit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@example.com`
-  const res = await fetch(`${URL}/auth/v1/signup`, {
-    method: 'POST',
-    headers: { apikey: KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: `Audit-${Date.now()}-xQ7` }),
-  })
-  const { access_token: jwt } = await res.json()
-  if (!jwt) throw new Error('could not create an audit account')
-  await fetch(`${URL}/rest/v1/rpc/bootstrap_personal_account`, {
-    method: 'POST',
-    headers: { apikey: KEY, Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
-    body: '{}',
-  })
-  return jwt
+  return auditToken(URL, KEY)
 }
 
 async function generate(jwt, answers) {
