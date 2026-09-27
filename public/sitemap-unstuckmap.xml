@@ -88,4 +88,14 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck/business-makes-money-but-i-never-do</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/wayout/stuck/we-earn-good-money-and-have-nothing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

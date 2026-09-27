@@ -44,9 +44,9 @@ export const SITUATIONS = [
     slug: 'inherited-house-credit-card-debt',
     question: 'What should I do with an inherited house if I still have credit card debt?',
     intro: 'An inherited house and expensive debt at the same time',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Clear the expensive debt first, and do it the day the money lands. Credit card interest is usually the highest guaranteed cost you carry, so paying it off is a guaranteed return nothing reliable beats. What you do with the rest — own somewhere outright, buy something that earns, or hold it — is a real choice, and it is easier once the cards are gone.',
+      'The house feels like the decision. It isn’t. Clearing the cards is the only move here with a guaranteed return — everything else is a bet, and you can’t judge a bet while you’re paying twenty-odd percent to think about it. Do that the day the money lands. Then take as long as you want on the rest.',
     body: [
       { h: 'The order matters more than the amount',
         p: 'Most people in this position already know the options. What they do not know is which one is first, and that is the whole difficulty. Clearing high-rate debt comes first for an unglamorous reason: it is the only move in the list with a guaranteed return. Paying off a balance at 21% is a certain 21%, every year, forever. No property and no investment promises that, and anything claiming to is selling you something.' },
@@ -77,7 +77,7 @@ export const SITUATIONS = [
     slug: 'stop-working-nights-sell-the-house',
     question: 'Can I stop working nights if I sell my house?',
     intro: 'Working nights, and wondering whether selling would end it',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Often yes, and by a bigger margin than people expect — because the number you have to replace is smaller than the one you earn. If selling removes a mortgage, property tax and utilities, those leave your monthly floor with it. Work out what has to go out after the house is gone, not what goes out now.',
     body: [
@@ -110,9 +110,9 @@ export const SITUATIONS = [
     slug: 'pay-off-the-truck-or-invest',
     question: 'Should I pay off my truck or invest the money?',
     intro: 'A lump of money, a loan, and no obvious right answer',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Compare the loan rate to what you could reliably earn, and remember the loan rate is guaranteed while the return is not. Paying off a 4% loan is a certain 4%. Beating it means taking real risk. If clearing the payment also lowers what you need every month, that is worth more than the rate comparison suggests.',
+      'Most people compare the two rates and stop there. The bigger question is what killing the payment does to your floor — because a payment gone is a permanent cut to what you have to earn every month, and that outlives any return. Paying off a 4% loan is a certain 4%. Beating it means taking real risk.',
     body: [
       { h: 'The sentence that decides most of these',
         p: 'Paying down a debt earns you its interest rate, guaranteed, with no risk and no tax complication. Investing might earn more, and might not, and you do not find out for years. So the comparison is not "4% versus 7%" — it is a certain 4% against an uncertain average that includes the years it goes backwards. If you cannot name the rate on the loan, that is the first thing to find out, and it is on the statement.' },
@@ -143,9 +143,9 @@ export const SITUATIONS = [
     slug: 'nothing-left-at-the-end-of-the-month',
     question: 'I have nothing left at the end of the month. Where do I even start?',
     intro: 'Money in, money out, nothing spare',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Start by writing down what actually has to go out each month, separately from what you choose to spend. Almost nobody has that number, and everything else depends on it. Until you know the floor your income has to clear, every plan is a guess — including the ones telling you to cut back.',
+      'You probably don’t have a spending problem. You have a number nobody has ever made you work out: what actually has to go out each month, separate from what you choose to spend. Almost nobody knows theirs. Until you do, every plan is a guess — including the ones telling you to cut back.',
     body: [
       { h: 'The number nobody has',
         p: 'Ask most people what they must pay every month and you get an estimate that is wrong in both directions. Things they forgot are missing, and things they could stop are included. That number — what genuinely has to leave, every month, or something breaks — is the one the rest of the plan is measured against, and working it out takes an evening with a bank statement and costs nothing.' },
@@ -176,7 +176,7 @@ export const SITUATIONS = [
     slug: 'no-retirement-savings-in-my-fifties',
     question: 'I am in my fifties with no retirement savings. Is it too late?',
     intro: 'Starting late, with less time than the advice assumes',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'No, but the lever changes. With fewer years, what you spend matters more than what you earn — a cost removed permanently does more than a return you might get. Lowering what you need each month, and knowing that number exactly, is worth more at this stage than any investment decision.',
     body: [
@@ -209,9 +209,9 @@ export const SITUATIONS = [
     slug: 'sell-the-house-to-pay-off-debt',
     question: 'Should I sell my house to pay off debt?',
     intro: 'Equity on one side, expensive debt on the other',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Sometimes, and it depends on what is left afterwards rather than on whether the debt disappears. Selling clears the debt and also removes your housing arrangement — so the question is what your monthly costs look like on the other side, and whether the equity actually covers both the debt and somewhere to live.',
+      'The debt disappearing isn’t the test. Plenty of people clear it and are worse off by spring. What decides this is what your month looks like on the other side — whether the equity covers the debt and somewhere to live, and what your costs are once the house is gone. Work that out before you ring an agent.',
     body: [
       { h: 'Do the whole sum, not just the debt half',
         p: 'It is easy to see equity that exceeds the debt and conclude the problem is solved. The part that gets missed is that you still have to live somewhere, and rent or a smaller mortgage is a new monthly cost replacing the old one. The honest comparison is what must go out every month before, against what must go out every month after — including wherever you end up.' },
@@ -242,7 +242,7 @@ export const SITUATIONS = [
     slug: 'want-to-leave-my-job-but-cannot-afford-to',
     question: 'I want to leave my job but cannot afford to. What actually has to change?',
     intro: 'Stuck in work you want out of',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Usually one number, not your whole situation. Work out what must go out each month, then what the new thing would have to produce to cover it. The gap is almost always smaller than it feels, because people compare against their current salary rather than against what they actually need.',
     body: [
@@ -275,9 +275,9 @@ export const SITUATIONS = [
     slug: 'lump-sum-what-to-do-first',
     question: 'I am about to get a lump sum. What should I do with it first?',
     intro: 'A one-off amount, and a lot of opinions about it',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Do nothing with it for a few weeks, then clear the most expensive debt. Money that arrives all at once attracts decisions, and the ones made in the first fortnight are usually the ones regretted. Paying off high-rate debt is the only move with a guaranteed return, which makes it the safe first step while you think.',
+      'Do nothing with it for a few weeks. Money that arrives all at once attracts decisions, and the ones made in the first fortnight are the ones people regret. The only move that can’t be wrong is clearing the most expensive debt — it’s a guaranteed return, so it’s the safe thing to do while you think.',
     body: [
       { h: 'The first decision is to not decide yet',
         p: 'A severance payment, an inheritance, a settlement or a sale arrives with pressure attached — from people with opinions, from your own sense that it should be doing something, and sometimes from whatever caused it. Parking it somewhere boring for a few weeks costs you almost nothing in interest and prevents the category of decision that gets regretted. Nothing about this money expires in a fortnight.' },
@@ -308,9 +308,9 @@ export const SITUATIONS = [
     slug: 'is-renting-out-a-room-worth-it',
     question: 'Is renting out a room actually worth it?',
     intro: 'Space you already have, and whether it changes anything',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
-      'Often yes, and it is one of the few options that changes a monthly position without needing capital, a customer or a new skill. The money is usually real. Whether it is worth it depends on what you give up, and that is a genuine cost rather than a detail.',
+      'The money is almost always real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it is what you give up — your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
     body: [
       { h: 'Why it works when other things do not',
         p: 'Most ways of improving a monthly position need something you may not have — money to start, customers to find, time you are not working. A spare room needs none of those. The asset already exists, the cost of using it is close to zero, and the income starts within weeks rather than months. For somebody with no slack, that combination is rare and worth taking seriously even if it is not appealing.' },
@@ -343,7 +343,7 @@ export const SITUATIONS = [
     slug: 'working-but-no-fixed-address',
     question: 'I am working but I have nowhere stable to live. How do I get out of this?',
     intro: 'A job, and no fixed address',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'The wall is almost always the deposit, not the rent. Being without a stable address costs more per week than being housed — nightly rooms, eating without a kitchen, laundromats, storage — so the money that would become a deposit gets eaten by the cost of not having one. Attack the deposit directly, because that is the actual obstacle.',
     body: [
@@ -378,7 +378,7 @@ export const SITUATIONS = [
     slug: 'twenty-six-and-feel-behind',
     question: 'I am in my twenties and feel behind everyone. Am I?',
     intro: 'No crisis, no direction, and everyone else seems further along',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Probably not, and the feeling usually comes from comparing against a highlight reel rather than a number. Work out what you actually need each month and what you have spare. Most people who feel behind at this age have more room than they think, and no destination — which is a different problem and a better one to have.',
     body: [
@@ -411,7 +411,7 @@ export const SITUATIONS = [
     slug: 'just-been-laid-off',
     question: 'I have just been laid off. What should I do first?',
     intro: 'Severance in hand, and no plan yet',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Work out how many months of must-pay you can cover, before deciding anything else. That number is your actual runway, and it turns an open-ended panic into a deadline you can plan against. File for benefits in the same week — they often take time to start, and waiting costs you weeks at the end.',
     body: [
@@ -444,7 +444,7 @@ export const SITUATIONS = [
     slug: 'separated-and-the-money-does-not-work',
     question: 'We have separated and the money does not work any more. Where do I start?',
     intro: 'One household became two, on the same income',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Work out what one household costs you now, on your own, before agreeing anything. Two homes on one income is arithmetic that rarely works unchanged — which is why the housing decision usually comes first and everything else follows it. Get your own number before any conversation about who pays what.',
     body: [
@@ -477,7 +477,7 @@ export const SITUATIONS = [
     slug: 'about-to-lose-my-housing',
     question: 'I think I am about to lose my housing. What can I actually do?',
     intro: 'Behind on rent, or the notice has arrived',
-    updated: '2026-09-26',
+    updated: '2026-09-27',
     answer:
       'Talk to the landlord before the arrears grow, and find out what the actual timeline is where you live — it is usually longer than it feels, and that time is the thing you can use. Emergency rent help exists in most places and is not widely advertised. Dialling 211 in Canada or the US reaches somebody who knows what is available locally.',
     body: [
@@ -503,6 +503,86 @@ export const SITUATIONS = [
         a: 'Rent, in almost every case. The consequences are not comparable — a card is expensive and recoverable, and losing housing is neither.' },
       { q: 'Is it worth talking to the landlord if I cannot pay anything?',
         a: 'Yes. Even a partial arrangement, or notice that you are looking for help, changes how a landlord proceeds. Silence reads as abandonment and speeds things up.' },
+    ],
+  },
+  {
+    /**
+     * ⭐⭐ THE GAP THE AUDIT FOUND, AND IT IS THE ONE CLOSEST TO DANIEL'S OWN
+     * WORLD. Five of the first fourteen pages were about housing; nothing at all
+     * covered the owner whose business is the trap — turning over well, nothing
+     * left, and unable to stop because stopping is worse.
+     *
+     * ⚠️ THE LEAD IS A REVERSAL BECAUSE THE REVERSAL IS TRUE, not because it
+     * reads well: almost nobody in this position has a sales problem, and being
+     * told to sell more is why they are still here.
+     */
+    slug: 'business-makes-money-but-i-never-do',
+    question: 'My business makes money but I never seem to. What is actually wrong?',
+    intro: 'Turning over well, and nothing left at the end of it',
+    updated: '2026-09-27',
+    answer:
+      'Almost nobody in this position has a sales problem. You’re either underpriced, owed money, or paying yourself last — and from the bank balance all three look exactly the same. Which one it is decides what you do next, and you can work it out in an evening with a list of last month’s jobs.',
+    body: [
+      { h: 'Three things it can be, and they look identical from the outside',
+        p: 'Money comes in, money goes out, nothing stays. That single symptom has three completely different causes, and the treatments contradict each other. Underpriced means every new job makes it worse. Owed means the work is done and the money exists but is sitting with somebody else. Paying yourself last means the business is solvent and you are not. Chasing more work fixes none of them, and makes the first two worse — which is exactly why working harder has not moved this.' },
+      { h: 'Underpriced: the test takes ten minutes',
+        p: 'Take last month’s jobs. For each one, write what you charged and roughly what it cost you — materials, subcontractors, and your hours at a rate you would pay somebody else to do it. Not what you wish it cost. What it cost. If a job you were proud of comes out flat or negative once your own time is in there, you are not busy, you are subsidising customers. The uncomfortable part is that the jobs you like are often the worst offenders, because you do not count your own hours on those.' },
+      { h: 'Owed: the money is earned, it just is not here',
+        p: 'Add up what has been invoiced and not paid, and how old each one is. Owners routinely discover a number that is one to three months of their entire problem, sitting in other people’s accounts. This is the best case of the three, because nothing about the business has to change — the money already exists. It is also the one owners avoid hardest, because chasing feels like admitting something. It is not. An invoice is a thing you have already paid for in labour and materials.' },
+      { h: 'Paying yourself last is a decision, not a virtue',
+        p: 'A lot of owners treat their own pay as whatever survives the month. That is not discipline, it is a business whose costs have not all been counted — because your wage is a cost whether or not anybody writes it down. A business that cannot pay you is telling you something about its prices or its overheads, and the longer you absorb it personally the longer it takes to hear. Paying yourself a set amount, even a small one, is how the real number surfaces.' },
+      { h: 'Why "just get more work" makes two of these worse',
+        p: 'More volume at a price that does not clear costs loses money faster. More volume from customers who pay late lends money faster. Only one of the three causes responds to more work, and it is the one fewest owners have. This is the whole reason the year of extra effort did not land — the effort was real and it was aimed at the wrong thing.' },
+      { h: 'What to do first, whichever one it turns out to be',
+        p: 'Do the ten-minute job costing before anything else, because it decides everything after it. If the jobs are profitable and the money is late, the next move is collections, not sales. If the jobs are not profitable, no amount of collecting fixes it and the next conversation is about price. If both are fine and you are still short, the problem is overheads or your own pay, and that is arithmetic you can do on one page.' },
+    ],
+    faqs: [
+      { q: 'Should I just raise my prices?',
+        a: 'Only once you know which jobs are underwater, and by how much. A flat increase across everything moves the good work away along with the bad. The job costing tells you where the hole is, and usually it is one type of work or one customer rather than the whole book.' },
+      { q: 'How do I know if I am actually profitable?',
+        a: 'Profitable means the business covers all its costs including a real wage for you, at a rate you would have to pay somebody else. If your own hours are free in the maths, the business is not profitable — it is being funded by you, and that shows up as your empty account rather than the company’s.' },
+      { q: 'I cannot chase invoices, they are my biggest customer.',
+        a: 'That is a real constraint and worth being honest about, but it is also worth naming what it costs: you are lending them money at your own expense, and the size of that loan is knowable. Knowing the number does not force you to act on it — it just stops it being invisible while you wonder where the money went.' },
+      { q: 'Is a bookkeeper worth it at my size?',
+        a: 'The question is whether not having one is currently costing more than one would. If you cannot answer what last month cleared, it probably is. This is general information rather than advice about your situation, and an accountant who can see your actual numbers is the right person to settle it.' },
+    ],
+  },
+  {
+    /**
+     * ⭐⭐ THE SECOND GAP: the shameful one nobody writes honestly. Two decent
+     * incomes and nothing at the end of the month is extremely common, heavily
+     * searched, and almost always answered with "cut out the coffee" — which is
+     * both wrong and insulting, and is why the people it happens to stop reading.
+     */
+    slug: 'we-earn-good-money-and-have-nothing',
+    question: 'We earn good money and have nothing to show for it. How?',
+    intro: 'Two incomes, and nothing left at the end of the month',
+    updated: '2026-09-27',
+    answer:
+      'This is almost never overspending in the way people mean it. What usually happened is that your fixed costs rose every time your income did — the house, the cars, the insurance, the school — so you’re running a bigger machine on the same margin. The number that tells the truth isn’t what you earn. It’s what you’d still owe if you both stopped tomorrow.',
+    body: [
+      { h: 'It is not the coffee, and being told it is is why you stopped reading',
+        p: 'Small discretionary spending is the most visible part of a budget and almost never the reason a two-income household is flat. The arithmetic does not support it: a few hundred a month of visible spending cannot absorb a raise. What absorbs a raise is a fixed cost that went up at the same time and never came back down — and fixed costs are the ones nobody looks at, because each one was a reasonable decision on the day it was made.' },
+      { h: 'Every raise bought something permanent',
+        p: 'This is the shape almost every version of this takes. Income went up, and within a year so did the house, or the vehicles, or the childcare, or the standard of holiday that now feels normal. None of it was reckless. But a raise spent on a mortgage is spent for twenty-five years, while a raise spent on anything else is spent once — so the margin never widened, it just moved to a bigger scale. You are not worse with money than you were. You are running more of it through a machine with the same clearance.' },
+      { h: 'The number that tells the truth',
+        p: 'Work out what would still have to go out if both of you stopped earning tomorrow: housing, the vehicles, insurance, minimum debt payments, the things with contracts. Not the groceries, not what you choose. That figure is your floor, and it is the only number that says whether this is fixable by earning more or not. Households in this position are routinely shocked by it, and the shock is the useful part — it is the first honest look at the machine.' },
+      { h: 'Why earning more stopped working',
+        p: 'If the floor rises with income, a raise changes the numbers on both sides of the page and the gap stays the same. That is why the last increase did not feel like anything, and why the next one will not either. Nothing is wrong with either of you. The mechanism simply does not produce slack, and it will not, however much the top line moves.' },
+      { h: 'Two cuts beat twenty',
+        p: 'Because the problem is fixed costs, the fix is fixed costs — and there are usually only two or three that matter. Housing and vehicles are almost always the whole conversation. One decision on either does more than a year of small economies, and it does it permanently, which is the part that matters when the problem is a floor rather than a month. It is also the harder conversation, which is why the small ones get suggested instead.' },
+      { h: 'What changes when you know the floor',
+        p: 'Knowing the number does two things at once. It tells you how much either of you could actually afford to lose, which is the question under most of the stress in a household like this. And it converts an argument about character — who is bad with money — into arithmetic that neither of you chose. Couples who do this often stop having the same fight, because it turns out nobody was doing anything wrong.' },
+    ],
+    faqs: [
+      { q: 'Should we make a budget?',
+        a: 'A budget tracks what you choose to spend, and that is usually not where this problem lives. Work out the floor first — what has to go out regardless. If the floor is the problem, a budget will show you a year of trying hard and not moving, which is discouraging and not informative.' },
+      { q: 'Is it wrong to want the nice house?',
+        a: 'No, and nothing here says otherwise. The point is only that a house is a permanent claim on future income, so it deserves to be a decision rather than a consequence of a raise. Plenty of people look at the number and keep the house, which is a fine answer arrived at properly.' },
+      { q: 'We both work — why does it feel worse than when we earned less?',
+        a: 'Usually because the floor is higher and the slack is the same, so there is more at stake and no more room. Two incomes committed to fixed costs also means either job going is now a bigger event than one job going used to be, and people feel that long before they can name it.' },
+      { q: 'Where do we actually start?',
+        a: 'With the floor, on one page, together, before any conversation about whose spending is the problem. It takes an evening and it usually ends the blame part, because the number does not belong to either of you.' },
     ],
   },
 ]
