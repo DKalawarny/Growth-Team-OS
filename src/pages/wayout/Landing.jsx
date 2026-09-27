@@ -31,6 +31,55 @@ import './wayout.css'
  * invented plan here would be the page lying in precisely the way the product
  * refuses to — and it would be the first thing anyone saw.
  */
+/**
+ * ⭐⭐ TWO PEOPLE WHOSE PLANS SHARE NOTHING. That is the point of having two: the
+ * claim on this page is that the plan is built from YOUR answers, and a single
+ * example quietly argues the opposite.
+ *
+ * ⚠️ They are deliberately opposite in SHAPE, not just in detail. Marcus already
+ * has the money and is short of permission; Dee is short of the money and needs
+ * the order. One is told he can afford it today, the other is given a date. If
+ * both cards said the same kind of thing, two would be worse than one.
+ *
+ * 🔴 EVERY FIGURE HERE IS ARITHMETIC ON THE FIGURES IN THE SAME CARD, and no
+ * move claims what anybody will qualify for or what a named body provides. These
+ * are illustrations of a real plan's shape, and the moment one of them says
+ * something the actual product would refuse to say, the front door is lying
+ * about what is behind it.
+ */
+const HERO_PLANS = [
+  {
+    who: 'Marcus, 52. Two kids at home.',
+    headline: 'Four days a week by March.',
+    mark: 'You can already afford it.',
+    stats: [['What your life costs', '$4,100'], ['The day costs', '$1,580']],
+    moves: [
+      ['Work out what your life actually costs', 'One evening.', true],
+      ['Show Jen the number first', 'Next week.', false],
+      ['Ask for the four-day week', 'March.', false],
+    ],
+    cut: [
+      ['A side business', 'not enough hours in your week.'],
+      ['Selling the house', 'it does not clear enough to matter.'],
+    ],
+  },
+  {
+    who: 'Dee, 38. Renting, two kids.',
+    headline: 'Out of the hole by June,',
+    mark: 'without a second job.',
+    stats: [['Left at the end of the month', '$240'], ['What you owe', '$3,100']],
+    moves: [
+      ['Put the two most expensive debts in order', 'This week.', true],
+      ['Rent the garage, not your evenings', 'This month.', false],
+      ['Ask what the night shift actually pays', 'April.', false],
+    ],
+    cut: [
+      ['A second job', 'the hours are not there, and the childcare eats it.'],
+      ['A consolidation loan', 'at your rate it costs more than it saves.'],
+    ],
+  },
+]
+
 export default function Landing() {
   return (
     <div className="wayout wayout--hero">
@@ -90,56 +139,64 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* ⚠️ aria-hidden: it is an illustration of the deliverable, and a screen
-            reader working through a sample plan before reaching the actual
-            proposition would be worse than skipping it. The copy above carries
-            the meaning. */}
-        <div className="wayout__heroplan" aria-hidden="true">
-          <div className="wayout__brand"><i />your plan</div>
-          <p className="wayout__who">Marcus, 52. Two kids at home.</p>
-          <h2>
-            Four days a week by March. <mark>You can already afford it.</mark>
-          </h2>
+        {/* ⚠️ aria-hidden: these are an illustration of the deliverable, and a
+            screen reader working through two sample plans before reaching the
+            actual proposition would be worse than skipping them. The copy above
+            carries the meaning.
 
-          <div className="wayout__stats">
-            <div className="wayout__stat">
-              <span>What your life costs</span><b>$4,100</b>
-            </div>
-            <div className="wayout__stat">
-              <span>The day costs</span><b>$1,580</b>
-            </div>
-          </div>
+            ⭐⭐ TWO, STAGGERED, AND THE BACK ONE COMES FORWARD ON HOVER. Daniel:
+            "we could have two examples maybe one staggered over the other and
+            when the cursor goes over it it brings the back one to the top."
 
-          <h3 className="wayout__label">Three moves. This order.</h3>
-          {[
-            ['Work out what your life actually costs', 'One evening.', true],
-            ['Show Jen the number first', 'Next week.', false],
-            ['Ask for the four-day week', 'March.', false],
-          ].map(([title, when, now]) => (
-            <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
-              <span className="wayout__chk">
-                <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 8.5l3 3 7-7" />
-                </svg>
-              </span>
-              <span>
-                <p>{title}</p>
-                <small><b>{when}</b></small>
-              </span>
+            🔴 THE REASON IS STRONGER THAN THE EFFECT: ONE EXAMPLE MAKES THE
+            PRODUCT LOOK LIKE IT DOES ONE THING. Marcus already has the money and
+            needs permission; Dee is $3,100 in a hole and needs the order. Their
+            headlines, their numbers and all six moves share nothing — which IS
+            the claim this page is making, and a single card quietly argues the
+            opposite. */}
+        <div className="wayout__heroplans" aria-hidden="true">
+          {HERO_PLANS.map((pl, i) => (
+            <div className={`wayout__heroplan wayout__heroplan--${i === 0 ? 'front' : 'back'}`} key={pl.who} tabIndex={-1}>
+              <div className="wayout__brand"><i />your plan</div>
+              <p className="wayout__who">{pl.who}</p>
+              <h2>
+                {pl.headline} <mark>{pl.mark}</mark>
+              </h2>
+
+              <div className="wayout__stats">
+                {pl.stats.map(st => (
+                  <div className="wayout__stat" key={st[0]}>
+                    <span>{st[0]}</span><b>{st[1]}</b>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="wayout__label">Three moves. This order.</h3>
+              {pl.moves.map(([title, when, now]) => (
+                <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
+                  <span className="wayout__chk">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 8.5l3 3 7-7" />
+                    </svg>
+                  </span>
+                  <span>
+                    <p>{title}</p>
+                    <small><b>{when}</b></small>
+                  </span>
+                </div>
+              ))}
+
+              {/* ⭐⭐ THE CUT LIST IS THE DIFFERENTIATOR AND IT BELONGS ON THE
+                  FRONT DOOR. Everything else adds to somebody's list; this is
+                  the one that takes things off it, with the reason. */}
+              <p className="wayout__herocut">
+                <b>Crossed off, with the reason</b>
+                {pl.cut.map(([what, why]) => (
+                  <span key={what}><s>{what}</s> — {why}</span>
+                ))}
+              </p>
             </div>
           ))}
-
-          {/* ⭐⭐ THE CUT LIST IS THE DIFFERENTIATOR AND IT BELONGS ON THE FRONT
-              DOOR. Every other source of advice only ever adds to somebody's
-              list; this is the one that takes things off it, with the reason. */}
-          <p className="wayout__herocut">
-            <b>Crossed off, with the reason</b>
-            {/* ⚠️ The OPTION is struck, the REASON is not — striking both made
-                the reason unreadable, and the reason is the useful half. Same
-                split as the real plan's cut list: `label` then `why`. */}
-            <span><s>A side business</s> — not enough hours in your week.</span>
-            <span><s>Selling the house</s> — it does not clear enough to matter.</span>
-          </p>
         </div>
       </div>
 
