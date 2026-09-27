@@ -1151,6 +1151,16 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 .wayout__close { text-align: center; padding-block: 72px 8px; }
 .wayout__close .wayout__pitchlead { margin-inline: auto; }
+/* ⚠️ .wayout__btn is a block, so in a centred section with no constraint it
+   stretched to the full 1190px container — a green bar the width of the page,
+   where the same button in the hero is a pill. It is the last thing a visitor
+   sees before deciding. */
+.wayout__close .wayout__btn {
+  display: inline-block;
+  width: auto;
+  min-width: 260px;
+  padding-inline: 40px;
+}
 
 .wayout__aura,
 .wayout__grain { position: absolute; inset: 0; pointer-events: none; }
