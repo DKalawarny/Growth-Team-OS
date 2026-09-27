@@ -1949,3 +1949,25 @@ h1.wayout__heroline {
   .wayout__rise, .wayout__tok { animation: none; }
   .wayout__prog b, .wayout__p { transition: none; }
 }
+
+/* ═══ THE OPENING SCREEN ═══════════════════════════════════════════════════
+   ⭐ Same shape as the six question screens that follow it — one measure, left,
+   big type — so pressing the button changes the words and not the layout. */
+.wayout__open { max-width: 46rem; }
+.wayout__open h1 {
+  font-size: clamp(30px, 4.2vw, 54px); line-height: 1.05; letter-spacing: -.03em;
+  font-weight: 800; margin: 0 0 18px; text-wrap: balance;
+}
+/* ⚠️ 34ch left "to you." alone on its own line. A measure that orphans the last
+   two words is too narrow for the sentence, not just unlucky. */
+.wayout__open .wayout__lead { max-width: 52ch; margin-bottom: 26px; }
+.wayout__open .wayout__body { max-width: 56ch; margin-bottom: 30px; }
+/* ⚠️ .wayout__fine is centred by default — correct under a centred CTA, wrong in
+   a left-aligned column, where it was the only centred thing on the screen. */
+.wayout__open .wayout__fine { text-align: left; }
+/* ⚠️ .wayout__btn is a block — third time. Inside a plain column it stretches to
+   the full measure and reads as a banner rather than a control. */
+.wayout__open .wayout__btn {
+  display: inline-block; width: auto; min-width: 230px; padding-inline: 42px;
+}
+.wayout__open .wayout__fine { margin-top: 14px; max-width: 58ch; }

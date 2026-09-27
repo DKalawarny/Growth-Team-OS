@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { loadDraft, saveDraft } from '../../lib/wayout/draft'
-import { DIAGNOSTIC_OPENING, DIAGNOSTIC_NOTE, DIAGNOSTIC_REGION, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
+import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
@@ -12,6 +12,21 @@ import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
  * question, "max it at a certain character amount". Forty keeps it a label.
  */
 const OTHER_MAX = 40
+
+/**
+ * ⭐ Whatever they typed into an Other box, on any of the six.
+ *
+ * ⚠️ IT IS THE ONLY THING ON THE FREE SIDE THEY WROTE RATHER THAN TAPPED, which
+ * is why the result shows it back: quoting somebody their own words is the
+ * cheapest proof available that something was read. It replaced a dedicated note
+ * screen that asked for a sentence the intake now requires anyway.
+ */
+function theirWords(answers) {
+  return DIAGNOSTIC_QUESTIONS
+    .map(q => answers[`${q.key}Other`])
+    .filter(t => t && t.trim())
+    .join(' · ')
+}
 
 /**
  * The way out — the free diagnostic. The marketing front door.
@@ -37,9 +52,7 @@ export default function Diagnostic() {
   const [answers, setAnswers] = useState({})
   const [done, setDone]       = useState(false)
   // The one place to write on the free side.
-  const [note, setNote]       = useState('')
   // ⚠️ Not one of the six — see DIAGNOSTIC_REGION. It rides on the note screen.
-  const [region, setRegion]   = useState('')
 
   /**
    * ⭐ The Other box, and its cap. Forty characters is enough for "a boat I
@@ -69,7 +82,14 @@ export default function Diagnostic() {
   })
 
   /** Record and land. Split out so the note step can call it too. */
-  function finish(all, written, where) {
+  function finish(all) {
+    // ⚠️ The country arrives as a tap now, not from a separate screen.
+    const where = all.region ?? ''
+    // ⭐ Their own words, if there were any — the Other box on any of the six.
+    // It is the only thing here they wrote rather than tapped, which is why the
+    // result screen shows it back.
+    const written = DIAGNOSTIC_QUESTIONS
+      .map(q => all[`${q.key}Other`]).filter(Boolean).join(' · ')
     setDone(true)
     const path = choosePath(all)
     const carried = {}
@@ -124,94 +144,19 @@ export default function Diagnostic() {
       return
     }
 
-    setStep(DIAGNOSTIC_QUESTIONS.length)   // hand off to the note
+    /**
+     * 🔴 STRAIGHT TO THE ANSWER. This used to hand off to a note screen that
+     * carried one optional sentence and the country chip. Daniel: "this page may
+     * be redundant." It was — the country is now the sixth tap, and the sentence
+     * fed `story`, which the intake REQUIRES and prompts properly, so the free
+     * side was collecting a thinner version of the very next question.
+     */
+    finish(next)
   }
 
-  if (done) return <Result answers={answers} note={note} />
+  if (done) return <Result answers={answers} note={theirWords(answers)} />
 
   // ── The note ────────────────────────────────────────────────────────────
-  if (step === DIAGNOSTIC_QUESTIONS.length) {
-    // ⭐⭐ INDEXABLE AS OF 26 SEP. It was noindex while the name was unsettled —
-    // correct then, because indexing a product about to be renamed spends
-    // authority on a URL you are going to abandon. The name is settled and the
-    // domain is its own, so the reason is gone.
-    // ⚠️ Listed in sitemap-unstuckmap.xml in the SAME commit. A page in a
-    // sitemap that says noindex is a contradiction, and doing one without the
-    // other is how the answer pages were orphaned.
-    return (
-      <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
-        {/* ⚠️ THIS SCREEN WAS LEFT BEHIND BY THE SEQUENCE REBUILD, and it showed:
-            the six questions became full-width with a kicker and a rising
-            entrance while this one still sat in two columns with a dead left
-            half. It is the last screen before the answer, which is the worst
-            possible place for the rhythm to break. */}
-        <div className="wayout__ask2">
-          <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
-
-          <div className="wayout__askstage">
-            <p className="wayout__kicker wayout__rise">Before it answers</p>
-            <h1 className="wayout__bigq wayout__rise wayout__r1">{DIAGNOSTIC_NOTE.question}</h1>
-            <p className="wayout__lead wayout__rise wayout__r2" style={{ maxWidth: '52ch' }}>
-              Six taps can’t hold a situation. One line, if there’s one worth saying.
-            </p>
-
-            <textarea
-              id="wayout-note"
-              className="wayout__textarea wayout__rise wayout__r3"
-              style={{ maxWidth: 680 }}
-              placeholder={DIAGNOSTIC_NOTE.placeholder}
-              aria-label={DIAGNOSTIC_NOTE.label}
-              value={note}
-              onChange={e => setNote(e.target.value)}
-            />
-            <p className="wayout__hint wayout__rise wayout__r4">{DIAGNOSTIC_NOTE.hint}</p>
-
-            <p className="wayout__label wayout__rise wayout__r5" style={{ marginTop: 26 }}>
-              {DIAGNOSTIC_REGION.label}
-            </p>
-            <div className="wayout__chips">
-              {DIAGNOSTIC_REGION.options.map((o, i) => (
-                <button
-                  type="button"
-                  key={o.key}
-                  className={`wayout__chip wayout__rise wayout__r${Math.min(i + 5, 7)}${region === o.key ? ' wayout__chip--on' : ''}`}
-                  aria-pressed={region === o.key}
-                  onClick={() => setRegion(region === o.key ? '' : o.key)}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-            <p className="wayout__hint wayout__rise wayout__r7">{DIAGNOSTIC_REGION.hint}</p>
-
-            <button className="wayout__btn wayout__rise wayout__r7" onClick={() => finish(answers, note, region)}>
-              See where you land
-            </button>
-          </div>
-
-          <div className="wayout__sofar">
-            <em>So far</em>
-            {said.length
-              ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
-              : <span className="wayout__soempty">nothing yet</span>}
-          </div>
-
-          <div className="wayout__rail">
-            <p className="wayout__raill">Still on the table</p>
-            <div className="wayout__rails">
-              {Object.entries(PATHS).map(([k, pa]) => (
-                <div className="wayout__p" key={k}><b>{pa.name}</b><s>{pa.lead}</s></div>
-              ))}
-            </div>
-          </div>
-
-          <div className="wayout__nav">
-            <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
-          </div>
-        </div>
-      </WayoutShell>
-    )
-  }
 
   if (step === -1) {
     // ⭐⭐ INDEXABLE AS OF 26 SEP. It was noindex while the name was unsettled —
@@ -223,16 +168,25 @@ export default function Diagnostic() {
     // other is how the answer pages were orphaned.
     return (
       <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
-        <div className="wayout__spread">
-        <div className="wayout__col">
+        {/* 🔴 ONE COLUMN. Daniel: "i don't like how this is laid out, looks messy
+            — not sure if centering the text is better or what?"
+
+            The mess was the two-column split, not the alignment: the right block
+            floated with no relationship to the headline beside it, and the four
+            paths underneath run the full width left-aligned, so the eye crossed
+            the page twice before reaching them.
+
+            ⚠️ AND CENTRING WOULD HAVE FOUGHT THE REST. The stronger reason to go
+            left in one column is that the six QUESTION screens are now exactly
+            this shape — kicker, big type, one measure — so the opening and the
+            first question are the same object, and pressing the button changes
+            the words rather than the layout. */}
+        <div className="wayout__open">
           <h1><Marked text={DIAGNOSTIC_OPENING.headline} highlight={DIAGNOSTIC_OPENING.highlight} /></h1>
           <p className="wayout__lead">{DIAGNOSTIC_OPENING.lead}</p>
-        </div>
-        <div className="wayout__col">
           <p className="wayout__body">{DIAGNOSTIC_OPENING.body}</p>
           <button className="wayout__btn" onClick={() => setStep(0)}>{DIAGNOSTIC_OPENING.cta}</button>
           <p className="wayout__fine">{DIAGNOSTIC_OPENING.fine}</p>
-        </div>
         </div>
 
         {/* ⭐⭐ THE FOUR PATHS, ON SCREEN, BEFORE A SINGLE TAP. The bottom two

@@ -216,6 +216,13 @@ export const WAYOUT_SCREENS = [
       {
         key: 'relationship',
         kind: 'choice',
+        // 🔴 THIS HAD NO LABEL, so its chips rendered directly under the
+        // "What kind of work?" group and read as answers to it — "Employed,
+        // Self-employed, Contract, Casual or shifts, Seasonal, Not working right
+        // now, Single, Partnered…" as one list. Daniel, on the live page:
+        // "mixed question". Every `kind: choice` needs its own heading or it
+        // silently joins the one above it.
+        label: 'And at home?',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [

@@ -255,21 +255,39 @@ export const DIAGNOSTIC_QUESTIONS = [
     ],
   },
   {
-    // 🔴 RENAMED FROM `region` 26 SEP, BECAUSE IT COLLIDED WITH THE COUNTRY.
-    // The country chip on the note screen also wrote `region`, so this answer
-    // was OVERWRITTEN on every submission before it reached the database — and
-    // set to null outright whenever somebody skipped the country. Three weeks
-    // of diagnostics recorded a climate for nobody.
-    // ⚠️ Two different questions cannot share a key. The prompt's glossary
-    // defines `region` as ca/us/uk/other, so the country keeps the name and
-    // this one changes.
-    key: 'climate',
+    /**
+     * ⚠️ HISTORY, KEPT BECAUSE THE TRAP IS STILL LIVE. A `climate` question sat
+     * here. It had been renamed FROM `region` on 26 Sep because it collided with
+     * the country chip on the note screen — both wrote `region`, so the climate
+     * answer was overwritten on every submission and set to null outright
+     * whenever somebody skipped the country. Three weeks of diagnostics recorded
+     * a climate for nobody. 🔴 TWO DIFFERENT QUESTIONS CANNOT SHARE A KEY.
+     *
+     * 🔴 THIS REPLACED A `climate` QUESTION THAT ASKED THE SAME WORDS AND MEANT
+     * SOMETHING ELSE. It read "Where are you?" and offered "Real winters / Mild
+     * year-round / Hot summers / Rural or remote" — the key had been renamed
+     * after the region collision and the QUESTION TEXT never was, so people were
+     * answering "where are you" with a season.
+     *
+     * ⚠️ AND IT FED NOTHING. looksColdClimate() in mapContract reads
+     * `locationText` and `seasonNote` from the INTAKE, never this chip, and
+     * choosePath does not look at it either. It was recorded and never used.
+     *
+     * ⭐⭐ THE COUNTRY IS THE OPPOSITE — it decides which crisis numbers are real.
+     * 988 does not exist outside Canada and the US, 211 is North American, and a
+     * number that rings nothing reaches somebody who has one attempt in them. So
+     * the sixth tap asks the thing that can actually hurt someone if unknown, and
+     * "six questions" stays true.
+     */
+    key: 'region',
+    kicker: 'Last one',
     question: 'Where are you?',
+    hint: 'It changes what is actually possible — and what half of the advice out there is even written for.',
     options: [
-      { key: 'cold',  label: 'Real winters' },
-      { key: 'mild',  label: 'Mild year-round' },
-      { key: 'hot',   label: 'Hot summers, easy winters' },
-      { key: 'rural', label: 'Rural or remote' },
+      { key: 'ca',    label: 'Canada' },
+      { key: 'us',    label: 'United States' },
+      { key: 'uk',    label: 'UK or Ireland' },
+      { key: 'other', label: 'Somewhere else' },
     ],
   },
 ]
@@ -310,6 +328,20 @@ export const DIAGNOSTIC_NOTE = {
  * for one — this is a public page with no account behind it, and the narrower
  * the question the more it feels like being tracked rather than helped. The
  * intake asks properly, once somebody has chosen to be here.
+ */
+/**
+ * ⭐⭐ WHERE THEY ARE IS THE SIXTH TAP, NOT ITS OWN SCREEN. Daniel, on the page
+ * that used to hold it: "this page may be redundant." It was — a whole screen
+ * carrying one optional sentence and one chip row, sitting between the last tap
+ * and the payoff, and breaking the rhythm at the worst possible moment.
+ *
+ * ⚠️ AND THE SENTENCE REALLY WAS ASKED TWICE. That box fed `story`, which the
+ * intake now REQUIRES and prompts properly — so the free side was collecting a
+ * thinner version of something the next screen would demand anyway.
+ *
+ * ⚠️ Options come from DIAGNOSTIC_REGION rather than being retyped: the country
+ * decides which crisis numbers are real, and two lists that can drift is how a
+ * person in Sheffield gets told to call 988.
  */
 export const DIAGNOSTIC_REGION = {
   label: 'Where are you?',
