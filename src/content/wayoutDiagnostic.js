@@ -117,7 +117,7 @@
  * is quieter. The difference is intended — do not "fix" one to match the other.
  */
 export const DIAGNOSTIC_OPENING = {
-  headline: 'There are four ways out of this. Three of them will cost you a year.',
+  headline: 'There are four ways out of this. Only one of them is yours.',
   /**
    * 🔴🔴 THE MARK GOES ON THE WAY OUT, NOT ON THE COST. Daniel, 27 Sep: "i like
    * the highlight but do you think it's highlighting the negative part of this
@@ -133,6 +133,26 @@ export const DIAGNOSTIC_OPENING = {
    * quietly, which is where a stake belongs.
    *
    * ⚠️ It also lands clean on the first line rather than straddling the wrap.
+   *
+   * 🔴🔴 AND THE SECOND SENTENCE WENT THE SAME WAY, ONE ROUND LATER. It read
+   * "Three of them will cost you a year." Daniel: "cost you a year — for the
+   * first intro to this page it wouldn't make sense to someone." He is right on
+   * two counts at once and both are worth keeping:
+   *
+   *   1. IT ASSUMED CONTEXT THEY DO NOT HAVE. Cost you a year of WHAT? The
+   *      sentence only parses once you already know this thing picks one path
+   *      and that the other three are time spent going nowhere — which is the
+   *      thing the page is trying to explain. A headline cannot depend on its
+   *      own conclusion.
+   *   2. IT WAS STILL THE NEGATIVE HALF, one commit after the highlight was
+   *      moved off the cost for exactly that reason. Moving the mark and leaving
+   *      the threat in the sentence is doing half the job.
+   *
+   * ⭐⭐ "Only one of them is yours" is immediately legible with no setup, it is
+   * literally true — the diagnostic names exactly one — and it hands straight to
+   * "Which one is yours?" over the four cards below. The elimination promise
+   * survives in full; it is just told from the side where somebody gains
+   * something rather than the side where they lose a year.
    */
   highlight: 'four ways out',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
@@ -149,6 +169,9 @@ export const DIAGNOSTIC_OPENING = {
 export const DIAGNOSTIC_QUESTIONS = [
   {
     key: 'goalType',
+    // ⭐ The kicker is what stops six screens reading as one form repeated —
+    // each question gets a reason to exist before it is asked.
+    kicker: 'First, the point of all this',
     // 🔴 SINGLE-SELECT WAS WRONG AND IT WAS THE FIRST THING ANYONE SAW. Wanting
     // more time AND more money is the normal case, not an edge case — forcing
     // one gives a wrong answer and tells the person on screen one that this
@@ -165,6 +188,9 @@ export const DIAGNOSTIC_QUESTIONS = [
   },
   {
     key: 'horizon',
+    // ⭐ The kicker is what stops six screens reading as one form repeated —
+    // each question gets a reason to exist before it is asked.
+    kicker: 'The clock',
     question: 'How long are you giving it?',
     options: [
       { key: '6m', label: '6 months' },
@@ -175,6 +201,9 @@ export const DIAGNOSTIC_QUESTIONS = [
   },
   {
     key: 'immovable',
+    // ⭐ The kicker is what stops six screens reading as one form repeated —
+    // each question gets a reason to exist before it is asked.
+    kicker: 'The things that are not up for debate',
     multi: true,
     question: 'What can’t move?',
     hint: 'Pick any that are true — the plan gets built around these.',
@@ -191,6 +220,9 @@ export const DIAGNOSTIC_QUESTIONS = [
     // property to sell has the strongest position of anyone who reaches this
     // screen — and had to answer "not much".
     key: 'asset',
+    // ⭐ The kicker is what stops six screens reading as one form repeated —
+    // each question gets a reason to exist before it is asked.
+    kicker: 'What you are working with',
     multi: true,
     question: 'What have you already got?',
     hint: 'Pick any that apply.',
@@ -210,6 +242,9 @@ export const DIAGNOSTIC_QUESTIONS = [
     // and wants a different life — half of who this is for — had no true
     // answer. The top of the scale matters as much as the bottom.
     key: 'money',
+    // ⭐ The kicker is what stops six screens reading as one form repeated —
+    // each question gets a reason to exist before it is asked.
+    kicker: 'The room you have',
     question: 'After the bills, what’s left in a month?',
     options: [
       { key: 'negative', label: 'Nothing — it doesn’t stretch' },

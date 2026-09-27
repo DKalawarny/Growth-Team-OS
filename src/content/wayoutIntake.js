@@ -625,7 +625,12 @@ export const WAYOUT_SCREENS = [
         kind: 'text',
         label: 'What have you already tried, and what happened?',
         placeholder: 'Even something that only lasted a month.',
-        required: false,
+        // 🔴 REQUIRED as of 27 Sep. Without it the plan hands back what already
+        // failed, which is the single most trust-destroying thing this product
+        // can do — proven when the second-plan work shipped and a refused raise
+        // came straight back in chapter two until the history was fed in.
+        required: true,
+        emptyMessage: 'Even “nothing yet” tells the plan something.',
       },
       {
         // ⭐ A plan whose first move they will never start is worth nothing.
@@ -635,7 +640,11 @@ export const WAYOUT_SCREENS = [
         kind: 'text',
         label: 'What wouldn’t you do, whatever it paid?',
         placeholder: 'Knocking on doors. Managing people. Anything on a phone.',
-        required: false,
+        // 🔴 REQUIRED as of 27 Sep. A plan containing something they would never do is
+        // not a plan, it is a list they will close — and this is the only field
+        // that stops it being written.
+        required: true,
+        emptyMessage: 'One thing. It shapes what gets crossed off.',
       },
       {
         // ⭐ Known timing changes the ORDER, and the order is the product. A
@@ -758,8 +767,22 @@ export const WAYOUT_SCREENS = [
  * ⚠️ NOT NUMBERED, so the promise on the opening screen — "six honest
  * questions" — stays true. It is a door, not a seventh interrogation.
  *
- * ⚠️ NOT REQUIRED. A forced life story gets "n/a", and then we have taught them
- * the box is a formality.
+ * 🔴🔴 NOW REQUIRED, REVERSING THE CALL BELOW — and the old reasoning is kept
+ * because it was not wrong, just answered.
+ *
+ * It used to read: "NOT REQUIRED. A forced life story gets 'n/a', and then we
+ * have taught them the box is a formality." Daniel, 27 Sep: "it can't be
+ * negotiable — this dictates the whole platform." He is right, and the audit
+ * that followed proved it: of eleven prompted free-text questions in this file,
+ * TEN were optional. Somebody could finish the entire intake having typed two
+ * sentences, and every guard downstream treats only their own words as facts
+ * they gave us — chips have never counted. So the thing the plan is built from
+ * was the thing easiest to skip.
+ *
+ * ⚠️ THE FEAR WAS REAL AND THE FIX IS NOT OPTIONALITY, IT IS A FLOOR. Anything
+ * is accepted, including a few words. What is refused is nothing at all. A
+ * one-word answer still tells the plan something; an empty box tells it that
+ * the most important field in the product was a formality.
  */
 export const WAYOUT_OPEN = {
   question: 'Anything else?',
@@ -769,7 +792,8 @@ export const WAYOUT_OPEN = {
     kind: 'text',
     label: 'What else should I know about your situation?',
     placeholder: 'Whatever matters. What went wrong before, what you are carrying, what you have already tried, what you would never do again.',
-    required: false,
+    required: true,
+    emptyMessage: 'A few words is enough — but this one is not a formality.',
   },
   hint: 'Take as long as you want. Nobody reads this but the plan.',
   cta: 'See the plan',

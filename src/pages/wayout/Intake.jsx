@@ -77,7 +77,29 @@ export default function Intake({ preview = false, previewReflections = null }) {
           navigate(`${WAYOUT_BASE}/start`, { replace: true })
           return
         }
-        if (d) { setAnswers(d.answers ?? {}); setStep(d.step ?? 0) }
+        if (d) {
+          setAnswers(d.answers ?? {})
+          /**
+           * 🔴🔴 ARRIVING FROM THE DIAGNOSTIC MUST NOT RE-INTRODUCE THE PRODUCT.
+           * Daniel, walking the live journey: "i think it needs to be more
+           * streamline, it's confusing — the 3 min thing, all the questions
+           * should keep going."
+           *
+           * He is right and it was worse than untidy. Somebody answered six
+           * questions, was told "this was the three-minute version", and landed
+           * on a SECOND opening screen — new headline, new promise, another box
+           * to type in — which reads as arriving at a different product rather
+           * than continuing in this one. Their diagnostic answers were already
+           * carried across, so step 0 was asking for a commitment they had
+           * already made.
+           *
+           * ⚠️ Only when something was actually carried. A cold `?start=1` with
+           * an empty draft still gets the opening screen, because then it really
+           * is the beginning.
+           */
+          const carried = Object.keys(d.answers ?? {}).length > 0
+          setStep(carried ? firstUnansweredStep(d.answers) : (d.step ?? 0))
+        }
         setLoading(false)
         return
       }

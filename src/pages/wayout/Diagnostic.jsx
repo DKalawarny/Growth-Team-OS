@@ -8,6 +8,12 @@ import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
 /**
+ * 🔴 CAPPED, AND THE CAP IS THE POINT. Daniel asked for an Other box on every
+ * question, "max it at a certain character amount". Forty keeps it a label.
+ */
+const OTHER_MAX = 40
+
+/**
  * The way out — the free diagnostic. The marketing front door.
  *
  * Public and unauthenticated: six taps, one result screen, no account. The path
@@ -35,7 +41,32 @@ export default function Diagnostic() {
   // ⚠️ Not one of the six — see DIAGNOSTIC_REGION. It rides on the note screen.
   const [region, setRegion]   = useState('')
 
+  /**
+   * ⭐ The Other box, and its cap. Forty characters is enough for "a boat I
+   * could sell" or "my mother's place" and short enough that it stays a LABEL
+   * rather than becoming a story — the six real questions after this are where
+   * detail belongs, and a paragraph typed here would be read as the whole
+   * situation when it is one corner of it.
+   */
+  const [otherOpen, setOtherOpen] = useState(false)
+  const [otherLen, setOtherLen]   = useState(0)
+
   const q = DIAGNOSTIC_QUESTIONS[step]
+
+  /**
+   * ⭐⭐ WHAT THEY HAVE SAID SO FAR, in their own labels, for the strip under
+   * the question. Only questions already ANSWERED — showing the current one
+   * would make the strip jump as they tap, and the point of it is that it only
+   * ever grows.
+   */
+  const said = DIAGNOSTIC_QUESTIONS.slice(0, Math.max(step, 0)).flatMap(past => {
+    const v = answers[past.key]
+    const labels = (Array.isArray(v) ? v : v ? [v] : [])
+      .map(k => past.options.find(o => o.key === k)?.label)
+      .filter(Boolean)
+    const own = answers[`${past.key}Other`]
+    return own ? [...labels, own] : labels
+  })
 
   /** Record and land. Split out so the note step can call it too. */
   function finish(all, written, where) {
@@ -109,29 +140,41 @@ export default function Diagnostic() {
     // other is how the answer pages were orphaned.
     return (
       <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
-        <div className="wayout__spread">
-          <div className="wayout__col">
-            <p className="wayout__q">{DIAGNOSTIC_NOTE.question}</p>
-            <p className="wayout__lead">Six taps can’t hold a situation. One line, if there’s one worth saying.</p>
-          </div>
-          <div className="wayout__col">
-            <label className="wayout__label" htmlFor="wayout-note">{DIAGNOSTIC_NOTE.label}</label>
+        {/* ⚠️ THIS SCREEN WAS LEFT BEHIND BY THE SEQUENCE REBUILD, and it showed:
+            the six questions became full-width with a kicker and a rising
+            entrance while this one still sat in two columns with a dead left
+            half. It is the last screen before the answer, which is the worst
+            possible place for the rhythm to break. */}
+        <div className="wayout__ask2">
+          <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
+
+          <div className="wayout__askstage">
+            <p className="wayout__kicker wayout__rise">Before it answers</p>
+            <h1 className="wayout__bigq wayout__rise wayout__r1">{DIAGNOSTIC_NOTE.question}</h1>
+            <p className="wayout__lead wayout__rise wayout__r2" style={{ maxWidth: '52ch' }}>
+              Six taps can’t hold a situation. One line, if there’s one worth saying.
+            </p>
+
             <textarea
               id="wayout-note"
-              className="wayout__textarea"
+              className="wayout__textarea wayout__rise wayout__r3"
+              style={{ maxWidth: 680 }}
               placeholder={DIAGNOSTIC_NOTE.placeholder}
+              aria-label={DIAGNOSTIC_NOTE.label}
               value={note}
               onChange={e => setNote(e.target.value)}
             />
-            <p className="wayout__hint">{DIAGNOSTIC_NOTE.hint}</p>
+            <p className="wayout__hint wayout__rise wayout__r4">{DIAGNOSTIC_NOTE.hint}</p>
 
-            <p className="wayout__label" style={{ marginTop: 22 }}>{DIAGNOSTIC_REGION.label}</p>
+            <p className="wayout__label wayout__rise wayout__r5" style={{ marginTop: 26 }}>
+              {DIAGNOSTIC_REGION.label}
+            </p>
             <div className="wayout__chips">
-              {DIAGNOSTIC_REGION.options.map(o => (
+              {DIAGNOSTIC_REGION.options.map((o, i) => (
                 <button
                   type="button"
                   key={o.key}
-                  className={`wayout__chip${region === o.key ? ' wayout__chip--on' : ''}`}
+                  className={`wayout__chip wayout__rise wayout__r${Math.min(i + 5, 7)}${region === o.key ? ' wayout__chip--on' : ''}`}
                   aria-pressed={region === o.key}
                   onClick={() => setRegion(region === o.key ? '' : o.key)}
                 >
@@ -139,12 +182,31 @@ export default function Diagnostic() {
                 </button>
               ))}
             </div>
-            <p className="wayout__hint">{DIAGNOSTIC_REGION.hint}</p>
+            <p className="wayout__hint wayout__rise wayout__r7">{DIAGNOSTIC_REGION.hint}</p>
 
-            <div className="wayout__nav">
-              <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
-              <button className="wayout__btn" onClick={() => finish(answers, note, region)}>See where you land</button>
+            <button className="wayout__btn wayout__rise wayout__r7" onClick={() => finish(answers, note, region)}>
+              See where you land
+            </button>
+          </div>
+
+          <div className="wayout__sofar">
+            <em>So far</em>
+            {said.length
+              ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
+              : <span className="wayout__soempty">nothing yet</span>}
+          </div>
+
+          <div className="wayout__rail">
+            <p className="wayout__raill">Still on the table</p>
+            <div className="wayout__rails">
+              {Object.entries(PATHS).map(([k, pa]) => (
+                <div className="wayout__p" key={k}><b>{pa.name}</b><s>{pa.lead}</s></div>
+              ))}
             </div>
+          </div>
+
+          <div className="wayout__nav">
+            <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
           </div>
         </div>
       </WayoutShell>
@@ -208,39 +270,144 @@ export default function Diagnostic() {
     )
   }
 
+  // ⭐⭐ THE OTHER BOX. Chips are OUR labels. This is the only place in the
+  // diagnostic where somebody uses their own words — and that matters beyond
+  // tone: the invention guards downstream treat a person's own free text as a
+  // fact they gave us, and have never counted a chip, deliberately. So this is
+  // the one control here that can put something into a plan.
+  //
+  // ⚠️ STORED ON A PARALLEL KEY, never mixed into the answer choosePath reads.
+  // Writing "~a boat" into `money` would quietly fail every `a.money === ...`
+  // check and route somebody down the wrong path in silence.
+  const otherKey = `${q.key}Other`
+  const otherText = answers[otherKey] ?? ''
+  const chipsPicked = q.multi
+    ? (answers[q.key] ?? []).length > 0
+    : Boolean(answers[q.key])
+  const answered = chipsPicked || otherText.trim().length > 0
+
+  function commitOther(text) {
+    const v = text.trim().slice(0, OTHER_MAX)
+    const next = { ...answers, [otherKey]: v }
+    if (!v) delete next[otherKey]
+    setAnswers(next)
+    setOtherOpen(false)
+    // ⚠️ A single-answer question still advances on its own, but only once
+    // something is actually there — otherwise opening the box and changing your
+    // mind would skip the question.
+    if (!q.multi && v && step < DIAGNOSTIC_QUESTIONS.length - 1) setStep(step + 1)
+  }
+
   return (
-    <WayoutShell count={`${step + 1} of ${DIAGNOSTIC_QUESTIONS.length}`} noindex>
-      <p className="wayout__q">{q.question}</p>
-      <div className="wayout__chips">
-        {q.options.map(opt => {
-          const on = q.multi
-            ? (answers[q.key] ?? []).includes(opt.key)
-            : answers[q.key] === opt.key
-          return (
+    <WayoutShell noindex wide>
+      {/* ⚠️ `wide` on an intake screen reverses an earlier call in WayoutShell
+          ("the narrow column is the point"). The reason behind that was not
+          wanting two questions side by side, and this does not do that — it is
+          one question, given room. Daniel, seeing the 570px card in a 1400px
+          window: "this is too small by a bit." */}
+      <div className="wayout__ask2">
+
+        {/* ⭐ The bar is the spine. It is the one element that says "you are
+            moving" on every screen, and it animates on every change — which is
+            what "2 of 6" in a corner never did. */}
+        <div className="wayout__prog">
+          <b style={{ width: `${(step / DIAGNOSTIC_QUESTIONS.length) * 100}%` }} />
+        </div>
+
+        <div className="wayout__askstage" key={step}>
+          {q.kicker && <p className="wayout__kicker wayout__rise">{q.kicker}</p>}
+          <h1 className="wayout__bigq wayout__rise wayout__r1">{q.question}</h1>
+
+          <div className="wayout__chips">
+            {q.options.map((opt, i) => {
+              const on = q.multi
+                ? (answers[q.key] ?? []).includes(opt.key)
+                : answers[q.key] === opt.key
+              return (
+                <button
+                  type="button"
+                  key={opt.key}
+                  className={`wayout__chip wayout__rise wayout__r${Math.min(i + 2, 7)}${on ? ' wayout__chip--on' : ''}`}
+                  aria-pressed={on}
+                  onClick={() => pick(opt.key)}
+                >
+                  {opt.label}
+                </button>
+              )
+            })}
+
+            {otherOpen ? (
+              <span className="wayout__otherwrap">
+                <input
+                  className="wayout__otherin"
+                  autoFocus
+                  maxLength={OTHER_MAX}
+                  defaultValue={otherText}
+                  placeholder="in your words"
+                  aria-label="Something else, in your own words"
+                  onChange={e => setOtherLen(e.target.value.length)}
+                  onBlur={e => commitOther(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); commitOther(e.currentTarget.value) }
+                    if (e.key === 'Escape') { setOtherOpen(false) }
+                  }}
+                />
+                <span className={`wayout__count2${OTHER_MAX - otherLen <= 8 ? ' is-near' : ''}`}>
+                  {OTHER_MAX - otherLen}
+                </span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                className={`wayout__chip wayout__rise wayout__r7${otherText ? ' wayout__chip--on' : ''}`}
+                onClick={() => { setOtherLen(otherText.length); setOtherOpen(true) }}
+              >
+                {otherText || 'Other…'}
+              </button>
+            )}
+          </div>
+
+          {q.hint && <p className="wayout__hint wayout__rise wayout__r7">{q.hint}</p>}
+
+          {q.multi && (
             <button
-              type="button"
-              key={opt.key}
-              className={`wayout__chip${on ? ' wayout__chip--on' : ''}`}
-              aria-pressed={on}
-              onClick={() => pick(opt.key)}
+              className="wayout__btn wayout__rise wayout__r7"
+              disabled={!answered}
+              onClick={() => setStep(step + 1)}
             >
-              {opt.label}
+              Next
             </button>
-          )
-        })}
-      </div>
-      {q.hint && <p className="wayout__hint">{q.hint}</p>}
-      {q.multi && (
-        <button
-          className="wayout__btn"
-          disabled={!(answers[q.key] ?? []).length}
-          onClick={() => setStep(step + 1)}
-        >
-          Next
-        </button>
-      )}
-      <div className="wayout__nav">
-        <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
+          )}
+        </div>
+
+        {/* ⭐⭐ WHAT IT KNOWS SO FAR. This is the half that turns six screens into
+            one thing being built about you rather than six forms in a row. */}
+        <div className="wayout__sofar">
+          <em>So far</em>
+          {said.length
+            ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
+            : <span className="wayout__soempty">nothing yet — six taps and it has enough</span>}
+        </div>
+
+        {/* ⚠️ NEUTRAL THE WHOLE WAY THROUGH, and the label says so. The rules are
+            a ladder — first check that fires wins — so nothing is genuinely ruled
+            out until the last answer lands. Dimming one early and bringing it
+            back would be the page lying, which is the one thing it cannot do. */}
+        <div className="wayout__rail">
+          <p className="wayout__raill">Still on the table</p>
+          <div className="wayout__rails">
+            {Object.entries(PATHS).map(([k, p]) => (
+              <div className="wayout__p" key={k}>
+                <b>{p.name}</b>
+                <s>{p.lead}</s>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="wayout__nav">
+          <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>
+        </div>
       </div>
     </WayoutShell>
   )
@@ -252,11 +419,21 @@ function Result({ answers, note }) {
   const others = whyNot(key, answers)
 
   return (
-    <WayoutShell title="The path that fits you">
-      <p className="wayout__who">The path that fits you</p>
-      <h2>{path.name}</h2>
-      <p className="wayout__lead">{path.lead}</p>
-      <p className="wayout__body">{path.body}</p>
+    <WayoutShell title="The path that fits you" wide>
+      <div className="wayout__ask2">
+        <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
+
+        {/* ⚠️ PLAIN, AND IT NAMES THE PATH. An earlier version read "Three of
+            these were never yours. This one is." Daniel: "this isn't the type of
+            talk i like, we talked about" — and he is right twice, because the
+            least clever headline is also the most useful one. The answer to six
+            questions is a NAME, so the headline should be that name. */}
+        <p className="wayout__kicker wayout__rise">Based on your six answers</p>
+        <h1 className="wayout__bigq wayout__rise wayout__r1">
+          <mark>{path.name}</mark> is the one that fits.
+        </h1>
+        <p className="wayout__lead wayout__rise wayout__r2">{path.lead}</p>
+        <p className="wayout__body wayout__rise wayout__r3">{path.body}</p>
 
       {/* ⭐ Their own sentence, back on the screen. It is the only thing here
           they wrote rather than tapped, and showing it is the cheapest proof
@@ -273,29 +450,25 @@ function Result({ answers, note }) {
           horoscope — and "crossed off, on purpose" is the same move the paid
           map makes, so this is an honest sample of the product rather than an
           advert for it. */}
-      <h3 className="wayout__label">Why not the other three</h3>
-      <div className="wayout__cut">
-        {others.map(o => (
-          <div key={o.name} className="wayout__cutrow" style={{ cursor: 'default' }}>
-            <s>{o.name}</s>
-            <span className="wayout__cutwhy">{o.why}</span>
-          </div>
-        ))}
+      {/* ⭐⭐ THE REVEAL THE RAIL HAS BEEN SETTING UP. The same four cards that sat
+          under every question, three now crossed off with the actual reason.
+          Showing them for the first time HERE would make this a result screen;
+          having watched them for six questions makes it a conclusion. */}
+      <div className="wayout__rail" style={{ marginTop: 26 }}>
+        <div className="wayout__rails">
+          {Object.entries(PATHS).map(([k, p], i) => {
+            const out = k !== key
+            const why = others.find(o => o.name === p.name)?.why
+            return (
+              <div className={`wayout__p wayout__rise wayout__r${Math.min(i + 3, 7)} ${out ? 'is-out' : 'is-win'}`} key={k}>
+                <b>{p.name}</b>
+                <s>{out ? why : p.lead}</s>
+                {!out && <span className="wayout__ptag">Yours</span>}
+              </div>
+            )
+          })}
+        </div>
       </div>
-
-      {/* ⭐ Daniel: the result should also ask HOW they'd want to get there.
-          It is the one question the free side can pose without answering —
-          and it is what the six honest questions are for. */}
-      <h3 className="wayout__label">What it doesn’t know yet</h3>
-      <ul className="wayout__list">
-        <li>How you’d actually <b>want</b> to get there — and what you’d refuse to do.</li>
-        <li>What “enough” is for you, as a number or a week.</li>
-        <li>What you’ve already tried, and why it stopped.</li>
-        <li>Who else this has to work for.</li>
-      </ul>
-      <p className="wayout__hint">
-        Those change the order of the steps more than anything you just tapped.
-      </p>
 
       {/* ⭐ Daniel: the result should also ask HOW they'd want to get there.
           These are the questions the free side can pose without answering, and
@@ -311,12 +484,19 @@ function Result({ answers, note }) {
 
       <Link to={`${WAYOUT_BASE}?start=1`} className="wayout__btn" style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
         {/* ⚠️ The map is free. This button never carries a price in either state. */}
-        Answer the six questions
+        Keep going
       </Link>
+      {/* 🔴 NO "VERSION" FRAMING. This used to read "This was the three-minute
+          version", which announced an ENDING and then asked for a fresh start.
+          Daniel: "all the questions should keep going." Nothing here is a
+          different product — it is the same set of questions carrying on, and
+          what has already been answered is not asked again. */}
       <p className="wayout__hint">
-        This was the three-minute version. The full one asks what you own, what
-        you’d trade and what can’t move, then puts the moves in order.
+        The direction is the easy half. What it still needs is what you own, what
+        you’d refuse to do and what you’ve already tried — then the moves go in
+        order. Nothing you just answered gets asked twice.
       </p>
+      </div>
     </WayoutShell>
   )
 }
