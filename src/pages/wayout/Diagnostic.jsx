@@ -172,6 +172,38 @@ export default function Diagnostic() {
           <p className="wayout__fine">{DIAGNOSTIC_OPENING.fine}</p>
         </div>
         </div>
+
+        {/* ⭐⭐ THE FOUR PATHS, ON SCREEN, BEFORE A SINGLE TAP. The bottom two
+            thirds of this page were empty, and the four routes this thing
+            actually chooses between — the substance of the entire product —
+            were invisible until you had answered six questions.
+
+            🔴 SHOWING THEM IS THE OPPOSITE OF A SPOILER. Nobody is stuck for
+            want of hearing "side income" as a phrase; they are stuck because
+            all four sound plausible at 11pm and there is no way to tell which
+            one is theirs. Naming them makes the promise concrete and makes the
+            question personal at the same time: which one am I?
+
+            ⚠️ Verbatim from PATHS, never a second set of words about them. The
+            result screen shows these same names, and a marketing paraphrase
+            here would quietly become a fifth path nobody built. */}
+        <div className="wayout__paths">
+          {/* ⚠️ The heading does the PERSONAL work; the headline above already
+              said "four ways out", so repeating it here spent a line saying
+              nothing. This asks the question the cards are there to provoke. */}
+          <h2 className="wayout__label">Which one is yours?</h2>
+          <div className="wayout__pathgrid">
+            {Object.entries(PATHS).map(([key, path]) => (
+              <div className="wayout__path" key={key}>
+                <h3>{path.name}</h3>
+                <p>{path.lead}</p>
+              </div>
+            ))}
+          </div>
+          <p className="wayout__fine wayout__pathnote">
+            Three minutes says which — and why the other three are not.
+          </p>
+        </div>
       </WayoutShell>
     )
   }

@@ -1722,3 +1722,51 @@ h1.wayout__heroline {
 }
 .wayout__situationcard h3 { margin: 0 0 9px; font-size: 17px; font-weight: 700; line-height: 1.3; }
 .wayout__situationcard p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+
+
+/* ═══ THE FOUR PATHS, on the opening screen ═══════════════════════════════
+   ⭐⭐ The bottom two thirds of /wayout/start was empty while the four routes
+   this product chooses between were invisible until after six questions.
+   Daniel: "this is still not really speaking to me." Naming them makes the
+   promise concrete and the question personal in the same move.
+   ⚠️ Deliberately flatter than the plan board — these are options being
+   weighed, not a plan that has been decided. The board's pins and tilt are
+   reserved for the thing they get at the end. */
+.wayout__paths { margin-top: 64px; }
+.wayout__paths .wayout__label { margin-bottom: 18px; }
+
+.wayout__pathgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.wayout__path {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 20px 22px;
+  position: relative;
+  /* A quiet left rule in the sun token — one accent, the product's own, and it
+     reads as "an option on a list" rather than as a card competing with the
+     plan board. */
+  border-left: 3px solid var(--sun);
+}
+.wayout__path h3 {
+  font-size: 16px;
+  margin: 0 0 7px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.wayout__path p {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--soft);
+  margin: 0;
+}
+
+.wayout__pathnote { margin-top: 18px; }
+
+@media (max-width: 560px) {
+  .wayout__paths { margin-top: 44px; }
+}

@@ -42,12 +42,40 @@
  * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
  * the paid opening screen. A second one and neither means anything.
  */
+/**
+ * 🔴🔴 REWRITTEN 26 Sep. Daniel, on the live page: "this is still not really
+ * speaking to me — inside, how it's designed, is more on point."
+ *
+ * The old headline was "You probably already know three things you could do."
+ * It is a riddle: it asks the reader to work out what the product is before it
+ * has given them a reason to care, and "three things" names no thing at all. And
+ * it argued the WEAKEST version of the promise — that you have options — to
+ * somebody whose whole problem is that they already have options.
+ *
+ * ⭐⭐ THE PROMISE IS ELIMINATION, AND IT IS THE ONE THING NOTHING ELSE OFFERS.
+ * Being stuck is almost never a shortage of ideas. It is four plausible routes,
+ * no way to choose, and a year lost to half-doing two of them. There are exactly
+ * four paths in PATHS below, the diagnostic names one and says why the other
+ * three do not fit — so "three of them are wrong for you" is not copy, it is
+ * literally what the next three minutes produce.
+ *
+ * ⚠️ "earning more or needing less" is load-bearing, not balance. Without it this
+ * reads as a make-money quiz, and the person who has done well and wants a
+ * smaller life — half the product — closes the tab on the first screen.
+ *
+ * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
+ * the paid opening screen. A second one and neither means anything.
+ */
 export const DIAGNOSTIC_OPENING = {
-  headline: 'You probably already know three things you could do.',
-  highlight: 'three things',
-  lead: 'The hard part is which one is first — and what to ignore.',
-  body: 'Six questions, about three minutes. At the end it names the path that actually fits you, and why the other three don\'t. Whether getting out means earning more or needing less.',
-  cta: 'Start',
+  headline: 'There are four ways out. Three of them are wrong for you.',
+  // ⚠️ SHORT ENOUGH TO SIT ON ONE LINE. "Three of them are wrong" broke across
+  // the wrap as "Three" / "of them are wrong" — box-decoration-break keeps both
+  // fragments clean, but a mark in two pieces still reads as busier than the
+  // sentence deserves. This lands whole, at the end, on the punch.
+  highlight: 'wrong for you',
+  lead: 'Being stuck is rarely a shortage of options. It is not knowing which one is worth the next year.',
+  body: 'Six questions, about three minutes. At the end it names the one that fits — and says plainly why the other three do not. Whether getting out means earning more or needing less.',
+  cta: 'Find out which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts
   // are not, which is the sentence a person braced for a bait-and-switch is
