@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { WAYOUT_SCREENS } from './wayoutIntake'
 import { WAYOUT_MOVES } from './wayoutMoves'
+import { SITUATIONS } from './unstuckSituations'
 
 /**
  * The way out — invariants between the questions and the moves.
@@ -96,5 +97,39 @@ describe('the moves library holds its own rules', () => {
   it('every move says what it costs the people at home', () => {
     // Constraints before dreams, per move — the spec's first principle.
     for (const m of WAYOUT_MOVES) expect(m.familyCost, m.key).toBeTruthy()
+  })
+})
+
+/**
+ * 🔴🔴 A SLUG IS A URL, NOT PROSE — AND A CONTENT PASS NEARLY SHIPPED ONE BROKEN.
+ *
+ * 27 Sep: a find-and-replace turning formal constructions into contractions
+ * across every string in unstuckSituations.js rewrote `cannot` → `can’t` INSIDE
+ * A SLUG, producing `want-to-leave-my-job-but-can’t-afford-to`. That is a live
+ * page, an entry in the sitemap, and a URL anything already linking to it would
+ * have followed to a 404 — and nothing in the build would have complained,
+ * because a curly apostrophe is a perfectly legal JavaScript string.
+ *
+ * ⚠️ The lesson generalises past this one file: a blind pass over CONTENT will
+ * eventually touch a field that is not content. The cheap guard is asserting
+ * what the field is allowed to look like.
+ */
+describe('situation slugs are URLs', () => {
+  it('contains only lowercase letters, digits and hyphens', () => {
+    const bad = SITUATIONS.filter(s => !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(s.slug))
+    expect(bad.map(s => s.slug)).toEqual([])
+  })
+
+  it('has no duplicates', () => {
+    expect(new Set(SITUATIONS.map(s => s.slug)).size).toBe(SITUATIONS.length)
+  })
+
+  /** ⚠️ Each one is a real page, so an empty answer is a blank result in search. */
+  it('gives every page a lead answer an assistant can lift', () => {
+    SITUATIONS.forEach(s => {
+      expect(s.answer.trim().length).toBeGreaterThan(120)
+      expect(s.body.length).toBeGreaterThanOrEqual(4)
+      expect(s.faqs.length).toBeGreaterThanOrEqual(3)
+    })
   })
 })
