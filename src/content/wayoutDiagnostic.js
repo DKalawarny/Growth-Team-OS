@@ -66,6 +66,21 @@
  * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
  * the paid opening screen. A second one and neither means anything.
  *
+ * 🔴 AND CONTRACTIONS ALONE WERE NOT IT. That was my first fix and Daniel came
+ * back: "looks good but doesn't have the Tony Robbins sound to it." He was right
+ * twice. Casual grammar on an ANALYTICAL STRUCTURE is still analysis — "being
+ * stuck is rarely a shortage of options" describes a category, and describing
+ * somebody's category to them is what a report does, not a person.
+ *
+ * ⭐⭐ THE DEVICE IS THE REVERSAL: tell them the problem is not the one they
+ * think it is. "You don't have an ideas problem. You've had the ideas for
+ * months." It is not a rhetorical trick here — it is the product's actual
+ * position, which is why it can be said flatly and still be true. Everything
+ * else in the world sells them another idea; this sorts the ones they have.
+ *
+ * ⚠️ Short sentences carry it. A reversal inside a long flowing clause stops
+ * being a reversal and becomes a comparison.
+ *
  * ⭐⭐ AND IT IS WRITTEN SPOKEN, WITH CONTRACTIONS. Daniel on the first version:
  * "it sounds kind of AI like — it needs that human touch." He was right and the
  * tell was mechanical: balanced clauses, "it is not X, it is Y", and not one
@@ -87,8 +102,8 @@
 export const DIAGNOSTIC_OPENING = {
   headline: 'There are four ways out of this. Three of them will cost you a year.',
   highlight: 'cost you a year',
-  lead: 'You’re not short on ideas. You’ve turned them over a hundred times and landed somewhere different every night.',
-  body: 'Six questions. Three minutes. At the end you’ll know which one is actually yours — and why the other three aren’t, whether getting out means earning more or needing less.',
+  lead: 'You don’t have an ideas problem. You’ve had the ideas for months. What you’re missing is a way to tell which one is worth your next year.',
+  body: 'Six questions. Three minutes. Then you’ll know which one is yours, and exactly why the other three aren’t. Whether getting out means earning more or needing less.',
   cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts
