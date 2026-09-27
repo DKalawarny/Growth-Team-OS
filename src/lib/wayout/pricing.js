@@ -114,6 +114,21 @@ export function guaranteeLine() {
  * move with you", NOT "a coach walks you through".
  */
 export function walksWithYouLine() {
-  return 'It walks the move with you — the step-by-step, your questions answered '
-    + 'as they come up, and it keeps up as things change.'
+  // 🔴 "IT WALKS THE MOVE WITH YOU" DOES NOT SOUND LIKE HELP, IT SOUNDS LIKE A
+  // TAGLINE. Daniel, 27 Sep, on the fine print: "this leaves out the sell —
+  // walked through doesn't sound like help to me." He is right: a person
+  // deciding whether to pay cannot picture "walked with", and nobody has ever
+  // wanted to be accompanied. They want to know what to SAY on Tuesday.
+  //
+  // ⭐⭐ SO NAME THE ARTEFACTS. The exact words, the number it has to clear, and
+  // what to do when the answer is no — all three are things the play-by-play
+  // genuinely produces, and all three are things somebody can picture needing.
+  //
+  // ⚠️ AND STILL NOTHING THAT IMPLIES A HUMAN. "Someone to ask" would sell far
+  // harder and would be a lie; the whole reason this works without a coach is
+  // that it is capability, not accountability. Every verb here belongs to the
+  // product, not to a person.
+  return 'The exact words to use, the number the move has to clear, and what to '
+    + 'do when the answer is no — for the one move you are standing on, not all '
+    + 'three at once.'
 }

@@ -251,7 +251,7 @@ export default function Landing() {
               <span className={`wayout__dealtag${WAYOUT_PAYMENTS_LIVE ? ' wayout__dealtag--paid' : ''}`}>
                 {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL} — only if you want it` : 'Also free while we are new'}
               </span>
-              <h3>Having it walked with you</h3>
+              <h3>Knowing what to actually say on Tuesday</h3>
               <p>
                 {walksWithYouLine()}{' '}
                 {WAYOUT_PAYMENTS_LIVE

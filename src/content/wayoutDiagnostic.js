@@ -73,10 +73,27 @@
  * somebody's category to them is what a report does, not a person.
  *
  * ⭐⭐ THE DEVICE IS THE REVERSAL: tell them the problem is not the one they
- * think it is. "You don't have an ideas problem. You've had the ideas for
- * months." It is not a rhetorical trick here — it is the product's actual
+ * think it is. It is not a rhetorical trick here — it is the product's actual
  * position, which is why it can be said flatly and still be true. Everything
- * else in the world sells them another idea; this sorts the ones they have.
+ * else in the world sells them another idea; this says which of four is open.
+ *
+ * 🔴🔴 AND THE FIRST REVERSAL ASSUMED THEY HAD IDEAS, WHICH IS A PREMISE ABOUT
+ * THEM THAT CAN BE FALSE. It read "You don't have an ideas problem. You've had
+ * the ideas for months." Daniel: "also someone might not have an idea." He is
+ * right and it is not a nitpick — telling somebody what they have been thinking
+ * about for months, when they have not, is this product failing at the only
+ * thing it cannot fail at. They stop believing they were read, and every other
+ * claim on the page goes with it.
+ *
+ * ⭐⭐ SO THE LEAD NOW COVERS BOTH ARRIVALS AND LANDS ON WHAT IS TRUE OF EACH.
+ * Somebody with three ideas cannot choose between them. Somebody with none does
+ * not know what is even available. What unites them is that NOBODY HAS EVER
+ * LAID OUT WHICH ROUTES ARE ACTUALLY OPEN GIVEN THEIR SITUATION — which is
+ * exactly what the four paths below do, so the lead hands straight to them.
+ *
+ * ⚠️ "Maybe… maybe…" is also the more spoken shape. It offers rather than
+ * asserts, which is what somebody does when they do not yet know who they are
+ * talking to.
  *
  * ⚠️ Short sentences carry it. A reversal inside a long flowing clause stops
  * being a reversal and becomes a comparison.
@@ -102,7 +119,7 @@
 export const DIAGNOSTIC_OPENING = {
   headline: 'There are four ways out of this. Three of them will cost you a year.',
   highlight: 'cost you a year',
-  lead: 'You don’t have an ideas problem. You’ve had the ideas for months. What you’re missing is a way to tell which one is worth your next year.',
+  lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
   body: 'Six questions. Three minutes. Then you’ll know which one is yours, and exactly why the other three aren’t. Whether getting out means earning more or needing less.',
   cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
@@ -110,7 +127,7 @@ export const DIAGNOSTIC_OPENING = {
   // are not, which is the sentence a person braced for a bait-and-switch is
   // scanning for. Say the entire arrangement in one breath, before a single
   // tap, and there is nothing left to dread.
-  fine: 'No account, no card. This part’s free and so is the plan at the end — the only thing you’d ever pay for is having it walked with you afterwards.',
+  fine: 'No account, no card. The questions are free and so is the plan. The only paid part is the step-by-step for actually doing a move — the words to use, what it costs, and what to do when it goes sideways.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [
