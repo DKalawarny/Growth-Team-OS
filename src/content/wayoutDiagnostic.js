@@ -27,20 +27,16 @@
  * were about to be sold something. This is the free front door, so it is the
  * first thing anyone ever sees of this product.
  *
- * ⭐ IT DOES NOT MAKE A CLAIM, IT NAMES THE SITUATION. "You probably already
- * know three things you could do" is something a person recognises about
- * themselves; "get unstuck today" is advertising, and advertising register is
- * what got nine headlines rejected on the other product. The proof is not in
- * the copy, it is that thirty seconds later the thing tells them which path
- * fits AND why the other three do not — which no landing page can claim as
- * convincingly as the product can just do.
+ * ⭐ IT NAMES THE SITUATION RATHER THAN MAKING A CLAIM. "Get unstuck today" is
+ * advertising, and advertising register is what got nine headlines rejected on
+ * the other product. The proof is not in the copy — it is that three minutes
+ * later the thing names which path fits AND why the other three do not, which
+ * no landing page can claim as convincingly as the product can simply do.
  *
- * ⚠️ "earning more or needing less" is load-bearing, not balance. Without it
- * this reads as a make-money quiz, and the person who has done well and wants a
- * smaller life — half the product — closes the tab on the first screen.
- *
- * ⚠️ NO HANDWRITING HERE. Caveat is used exactly once in the whole product, on
- * the paid opening screen. A second one and neither means anything.
+ * ⚠️ The reasoning for the CURRENT headline is on the constant below. This block
+ * used to argue for "You probably already know three things you could do", which
+ * has not existed since 26 Sep — a comment defending removed copy is worse than
+ * no comment, because the next person reads it as the standing decision.
  */
 /**
  * 🔴🔴 REWRITTEN 26 Sep. Daniel, on the live page: "this is still not really
@@ -403,14 +399,24 @@ export function choosePath(a) {
   // a truck-based plan to someone who can't fill the tank.
   if (a.money === 'negative') return 'cut-delegate'
 
-  // They told us time is the scarce thing. A second job spends the exact thing
-  // they came here short of.
-  if (wants(a, 'time')) return 'cut-delegate'
-
   // Space and equity earn without taking evenings, so they beat a hustle for
   // anyone whose constraint is hours rather than capital.
   // Cash or a property to sell is the strongest hand anyone arrives with, and
   // it was previously unsayable.
+  //
+  // 🔴🔴 THESE USED TO SIT BELOW A BARE `wants(a, 'time')` CHECK, AND IT MADE THE
+  // LADDER CONTRADICT ITS OWN COMMENT. "More time" is one of four goals, it is
+  // multi-select, and it is the most ticked thing on the first screen — so
+  // anybody who wanted time went to cut-delegate before their assets were
+  // looked at ONCE. Somebody with a spare room, a property or cash in the bank
+  // who also wanted their evenings back — precisely the person the sentence
+  // above is about — never saw the asset play.
+  //
+  // ⚠️ FOUND IN THE DATA, NOT BY READING: 9 of the first 10 diagnostics landed
+  // on cut-delegate. At that volume it is mostly test traffic, but it is exactly
+  // the shape a mis-ordered ladder makes — the first check that fires wins, so a
+  // wrong order does not fail loudly, it answers the same thing for everybody
+  // with total confidence. See supabase/maintenance/diagnostic-signal.sql.
   if (has(a, 'asset', 'cash') || has(a, 'asset', 'property')) return 'asset-play'
   if (has(a, 'asset', 'space')) return 'asset-play'
   // Money is not their constraint, so nothing that earns more is the answer.
@@ -422,6 +428,12 @@ export function choosePath(a) {
   if (has(a, 'immovable', 'nothing') && (wants(a, 'mobile') || a.horizon === '3y' || a.horizon === '5y')) {
     return 'relocate-or-stay'
   }
+
+  // ⭐ THE TIME CHECK, IN ITS RIGHT PLACE. The intent was always sound and it
+  // still stands: a second job spends the exact thing they came here short of.
+  // It just has to run AFTER the moves that earn without touching an evening,
+  // because those are the better answer for the same person.
+  if (wants(a, 'time')) return 'cut-delegate'
 
   // A vehicle or a ticket is a business that hasn't sent an invoice yet.
   if (has(a, 'asset', 'vehicle') || has(a, 'asset', 'skill') || has(a, 'asset', 'business')) return 'side-income'

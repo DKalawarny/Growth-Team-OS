@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { WAYOUT_SCREENS } from './wayoutIntake'
 import { WAYOUT_MOVES } from './wayoutMoves'
 import { SITUATIONS } from './unstuckSituations'
+import { choosePath } from './wayoutDiagnostic'
 
 /**
  * The way out — invariants between the questions and the moves.
@@ -131,5 +132,74 @@ describe('situation slugs are URLs', () => {
       expect(s.body.length).toBeGreaterThanOrEqual(4)
       expect(s.faqs.length).toBeGreaterThanOrEqual(3)
     })
+  })
+})
+
+/**
+ * 🔴🔴 THE LADDER MUST ACTUALLY DIVIDE PEOPLE, AND A BROKEN ONE DOES NOT SAY SO.
+ *
+ * choosePath runs its checks in order and the FIRST match wins. That makes a
+ * mis-ordered ladder silent: it does not throw, it does not look wrong in review,
+ * it just answers the same thing for everybody with total confidence — and the
+ * entire promise of the result screen is "why the other three do not fit".
+ *
+ * ⚠️ FOUND IN THE DATA, NOT BY READING. Nine of the first ten recorded
+ * diagnostics landed on cut-delegate, because a bare `wants(a,'time')` check sat
+ * ABOVE the asset checks. "More time" is multi-select and the most-ticked goal
+ * there is, so anyone who wanted their evenings back was routed before their
+ * spare room, their property or their savings were looked at once — which is
+ * exactly the person the asset branch was written for.
+ *
+ * ⚠️ This asserts the SHAPE of the outcome, not any single answer, because the
+ * failure is distributional. See supabase/maintenance/diagnostic-signal.sql.
+ */
+describe('choosePath divides people', () => {
+  const GOALS  = [['money'], ['time'], ['independent'], ['mobile'], ['money', 'time']]
+  const ASSETS = [['none'], ['space'], ['cash'], ['property'], ['vehicle'], ['skill']]
+  const MONEY  = ['negative', 'tight', 'some', 'lots', 'plenty']
+  const IMMOV  = [['nothing'], ['kids']]
+
+  const every = []
+  GOALS.forEach(goalType => ASSETS.forEach(asset => MONEY.forEach(money => IMMOV.forEach(immovable =>
+    every.push({ goalType, asset, money, immovable, horizon: '3y' })))))
+
+  it('reaches all four paths across plausible answers', () => {
+    const hit = new Set(every.map(choosePath))
+    expect([...hit].sort()).toEqual(['asset-play', 'cut-delegate', 'relocate-or-stay', 'side-income'])
+  })
+
+  it('never lets one path swallow the room', () => {
+    const counts = {}
+    every.forEach(a => { counts[choosePath(a)] = (counts[choosePath(a)] ?? 0) + 1 })
+    const top = Math.max(...Object.values(counts))
+    /**
+     * ⚠️ A THRESHOLD, NOT A TARGET. Some skew is correct — cut-delegate genuinely
+     * is the answer for anybody with nothing spare, and the current ladder tops
+     * out at 40%.
+     *
+     * 🔴 50% RATHER THAN 60% BECAUSE THE MATRIX UNDERSTATES THE REAL SKEW. The
+     * broken ladder measured exactly 60.0% here and 9 in 10 in production — the
+     * gap is that this matrix ticks "more time" in two of five goal sets, while
+     * real people tick it far more often than that. A guard that catches the bug
+     * it was written for by a rounding margin has no headroom for the next one.
+     */
+    expect(top / every.length).toBeLessThan(0.5)
+  })
+
+  /** 🔴 The specific regression: a passive asset beats the time shortcut. */
+  it('sends somebody who wants time AND owns something to the asset play', () => {
+    expect(choosePath({ goalType: ['time'], asset: ['space'],    money: 'some'  })).toBe('asset-play')
+    expect(choosePath({ goalType: ['time'], asset: ['property'], money: 'tight' })).toBe('asset-play')
+    expect(choosePath({ goalType: ['time'], asset: ['cash'],     money: 'some'  })).toBe('asset-play')
+  })
+
+  /** ⚠️ And the intent the time check was always right about still holds. */
+  it('still refuses to hand a second job to somebody short of time', () => {
+    expect(choosePath({ goalType: ['time'], asset: ['skill'], money: 'some' })).toBe('cut-delegate')
+  })
+
+  /** ⚠️ Survival outranks everything, including an asset. */
+  it('puts nothing-spare ahead of the asset branch', () => {
+    expect(choosePath({ money: 'negative', asset: ['space'] })).toBe('cut-delegate')
   })
 })
