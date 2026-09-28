@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { parkPendingAcceptance } from '../../lib/terms'
-import { WAYOUT_BASE, WAYOUT_NAME_TITLE } from '../../lib/wayout/brand'
+import { WAYOUT_BASE, WAYOUT_NAME_TITLE, WAYOUT_TOTAL_TIME} from '../../lib/wayout/brand'
 
 /**
  * The way out — its own front door.
@@ -61,7 +61,8 @@ function leadFor(next) {
   // there it is the six taps, here it was the six intake screens. Two different
   // sixes in one flow is the kind of small wrongness that makes somebody wonder
   // what else does not line up.
-  return 'About fifteen minutes from here. The account is so your answers are still here if you stop halfway.'
+  // ⚠️ One number, from brand.js, so this cannot drift from what the landing says.
+  return `${WAYOUT_TOTAL_TIME.replace(/^about/i, 'About')} in all. The account is so your answers are still here if you stop halfway.`
 }
 
 export default function Enter() {

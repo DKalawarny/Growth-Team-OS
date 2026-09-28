@@ -154,7 +154,7 @@ export default function Landing() {
           </p>
 
           <div className="wayout__herocta">
-            <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
+            <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
             {/* 🔴 THIS CONTRADICTED ITSELF INSIDE ONE PARAGRAPH. It read "The
                 FIRST three minutes are free and need no account" immediately
                 before priceLine() says "Your plan is free. Nothing to pay, at the
@@ -166,8 +166,7 @@ export default function Landing() {
                 times are stated now, because the honest version is also the
                 better funnel: a small first step with the real one named. */}
             <p className="wayout__fine">
-              No account, no card. About fifteen minutes more after that for the full
-              plan. {priceLine()}
+              No account, no card. About twenty minutes, start to finish. {priceLine()}
             </p>
           </div>
         </div>
@@ -391,10 +390,10 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            Three minutes and you’ll know which way is yours. Everything after that
-            builds the plan, and nothing you have already answered gets asked twice.
+            It starts by narrowing four ways out to the one that fits you, then turns
+            that into three moves in the order they work.
           </p>
-          <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
+          <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>
         </section>
       </div>

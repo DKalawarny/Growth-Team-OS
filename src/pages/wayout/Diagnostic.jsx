@@ -217,7 +217,13 @@ export default function Diagnostic() {
             ))}
           </div>
           <p className="wayout__fine wayout__pathnote">
-            Three minutes. Then you’ll know which one — and the questions after that build the plan.
+            {/* 🔴 "Three minutes" beside "Three moves" was the real problem, and it
+                took Daniel to name it: two different threes on the same product,
+                and a reader joins them — three minutes, three moves, as though one
+                produced the other. The headline owns that number for what the
+                product actually delivers. Nothing else gets to use it for a
+                duration. */}
+            Then you’ll know which one — and the questions after that build the plan.
           </p>
         </div>
       </WayoutShell>

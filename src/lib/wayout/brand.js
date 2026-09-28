@@ -141,15 +141,22 @@ export const WAYOUT_BASE = '/wayout'
  * the first is how somebody ends up feeling misled at minute four, which is the
  * one thing this product cannot afford.
  */
-export const WAYOUT_FIRST_STEP = 'three minutes'
-export const WAYOUT_FULL_STEP  = 'about fifteen more'
+export const WAYOUT_TOTAL_TIME = 'about twenty minutes'
 
-/** The whole arrangement, in one sentence. */
+/**
+ * 🔴🔴 LEADING WITH "THREE MINUTES" WAS A BAIT-AND-SWITCH IN A PRODUCT THAT HAS
+ * SPENT ITS WHOLE LIFE REFUSING ONE.
+ *
+ * Three minutes is real — it is how long the six taps take — but it is not how
+ * long THIS takes, and putting it on the button sells a commitment nobody is
+ * actually making. Somebody who starts expecting three minutes and finds twenty
+ * has been handled, and this is the product whose opening screen says the entire
+ * arrangement out loud precisely so there is nothing left to dread.
+ *
+ * ⚠️ Daniel said "6 questions 3 minutes has to be updated across the platform"
+ * and I read "updated" as "made accurate" twice before understanding he meant
+ * GONE. The honest number is the whole number.
+ */
 export function timeLine() {
-  return `Three minutes to your direction, ${WAYOUT_FULL_STEP} for the plan.`
-}
-
-/** The short form, for a button or a line of fine print. */
-export function firstStepLine() {
-  return `Start with ${WAYOUT_FIRST_STEP}`
+  return `About twenty minutes, start to finish.`
 }
