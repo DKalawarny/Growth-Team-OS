@@ -120,3 +120,36 @@ export const WAYOUT_SITE_URL = 'https://getunstuckmap.com'
 
 /** Base path for every route in this product. */
 export const WAYOUT_BASE = '/wayout'
+
+/**
+ * 🔴🔴 HOW LONG THIS TAKES, IN ONE PLACE, FOR THE SAME REASON THE PRICE IS.
+ *
+ * "Six questions, three minutes" was written across the landing page, the
+ * diagnostic, all sixteen situation pages, the sign-in screen and the intake —
+ * and when the free half and the paid half merged into one flow it stopped being
+ * true everywhere at once. It took THREE passes to clear, and each pass missed
+ * instances for the same reason: a grep for "six questions" does not match "Six
+ * honest questions", which is what the hero said.
+ *
+ * ⭐⭐ THE FIX IS NOT A BETTER GREP. A claim repeated in eight files will drift
+ * again the next time the flow changes — which is exactly why WAYOUT_PRICE_FULL
+ * exists rather than "$29" being typed into pages. Same discipline: the promise
+ * about time lives here, and nowhere writes it as a literal.
+ *
+ * ⚠️ AND THE TWO HALVES MUST BOTH BE SAID. Three minutes buys a DIRECTION — which
+ * of four ways out is yours. The plan is the questions after that. Naming only
+ * the first is how somebody ends up feeling misled at minute four, which is the
+ * one thing this product cannot afford.
+ */
+export const WAYOUT_FIRST_STEP = 'three minutes'
+export const WAYOUT_FULL_STEP  = 'about fifteen more'
+
+/** The whole arrangement, in one sentence. */
+export function timeLine() {
+  return `Three minutes to your direction, ${WAYOUT_FULL_STEP} for the plan.`
+}
+
+/** The short form, for a button or a line of fine print. */
+export function firstStepLine() {
+  return `Start with ${WAYOUT_FIRST_STEP}`
+}

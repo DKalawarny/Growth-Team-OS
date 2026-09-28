@@ -29,7 +29,11 @@ export const WAYOUT_OPENING = {
   headline: 'You’re not stuck. You’re missing the order of the steps.',
   // The word to mark. Must appear verbatim in headline and must not wrap.
   highlight: 'the order',
-  lead: 'Six honest questions. Then a plan built from what you already have — or what you’d be glad to be rid of.',
+  // ⚠️ NO COUNT HERE. "Six" already means the six TAPS on the free side; using it
+  // again for the six intake screens put two different sixes in one flow, which is
+  // the kind of small wrongness that makes somebody wonder what else does not add
+  // up. What this screen promises is the plan, so that is what it says.
+  lead: 'Honest questions, then a plan built from what you already have — or what you’d be glad to be rid of.',
   field: {
     key: 'out',
     kind: 'text',

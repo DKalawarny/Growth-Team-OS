@@ -133,9 +133,16 @@ export default function Landing() {
           {/* ⭐ The tagline carries the proposition now, so the lead does the
               job under it rather than repeating it: what it costs them, and
               what they get that nobody else gives. */}
+          {/* 🔴 THE HERO SAID "Six honest questions, then which of your moves is
+              first" — six questions do NOT give you your moves, they name which of
+              four ways out is yours. Third instance of this claim found after I
+              reported the pass complete; the first two greps missed it because
+              they looked for "six questions" and the page says "Six HONEST
+              questions". The durable fix is in brand.js: the promise about time
+              now lives in one place, like the price. */}
           <p className="wayout__herolead">
-            {WAYOUT_TAGLINE} Six honest questions, then which of your moves is
-            first — and what to ignore.
+            {WAYOUT_TAGLINE} Three minutes names which way is yours. The questions
+            after that put your moves in order — and say what to ignore.
           </p>
 
           <div className="wayout__herocta">
