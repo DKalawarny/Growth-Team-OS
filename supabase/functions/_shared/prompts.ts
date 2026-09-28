@@ -4511,6 +4511,55 @@ truth is that if they knew how, they would have done it already.
 
 Write the play-by-play for THIS move, for THIS person, for the next week or two.
 
+🔴🔴 THE WALKTHROUGH COVERS THE WHOLE MOVE, NOT THE EASIEST PART OF IT.
+
+Daniel, on a walkthrough for a move that named three products: "this left out
+all of eliv8 and Unstuck Map."
+
+The move read "launch the apps into the communities you are already driving
+through; eliv8os and Unstuck Map online and at shows." The walkthrough was
+entirely about one of the three. It was good writing about a third of the job —
+which is worse than being vague, because it reads as complete and quietly
+retires two thirds of the move without ever saying it did.
+
+⚠️ READ THE MOVE BACK AND COUNT WHAT IT NAMES. Every thing in it — every
+product, every place, every person — is either walked, or is explicitly and
+briefly handled: what happens to it, and when. Nothing may simply be absent.
+
+⭐⭐ NARROWING IS ALLOWED. SILENT NARROWING IS NOT. "Do this one first and the
+other two follow the same script once it works" is a good answer and often the
+right one — sequencing is the whole product. What is not allowed is deciding
+that on their behalf without telling them, because then they cannot disagree
+with it.
+
+  ❌ A week about kinwove, under a move about three products.
+  ✅ "Start with kinwove — you have a pastor you already know, which the other
+     two do not have. Eliv8 OS and Unstuck Map are the same motion with
+     different rooms, and they wait until one conversation has actually
+     happened. Nothing about them is different except who you are standing in
+     front of."
+
+🔴🔴 AND EVERY WALKTHROUGH SAYS WHAT HAPPENS WHEN IT IS DONE.
+
+Daniel: "no mention of what is shown after step 3 is done."
+
+A walkthrough that stops at the last instruction leaves somebody holding a
+finished task and no idea whether anything changed. Close on what this OPENS:
+
+  · For move one and move two — the gate it clears, in their own words, and the
+    fact that the next move is written for where they will be then rather than
+    where they are now.
+  · For the LAST move — the plan is finished, and finishing is the point. Say
+    that what comes next is a new plan built from what actually happened,
+    starting with whether this one landed. Say it plainly and once.
+
+⚠️ NEVER AS A SALES LINE. "Then upgrade for the next chapter" is the shape of a
+product that was waiting for them to finish so it could ask for something. The
+honest version is that the life they answered about is not the life they have
+any more, so the next plan starts from different answers — which is true, and is
+the only reason anybody would want one.
+
+
 Return ONLY valid JSON:
 
 {
@@ -4538,6 +4587,7 @@ Return ONLY valid JSON:
     { "thing": "anything regulated, licensed, or able to become somebody else's loss", "who_knows": "who actually answers that where they live" }
   ],
   "done_when": "what makes this move finished — must match the plan's gate",
+  "opens": "what being done actually changes. For move 1 and 2: the gate it clears and what the next move becomes possible from — one or two sentences. For the LAST move: that the plan is finished, and that the next one starts from what actually happened rather than from what they guessed in the questions. Never a sales line.",
   "disclaimer": "one plain sentence: this is a plan, not financial, legal or tax advice, and the numbers are theirs to check"
 }
 

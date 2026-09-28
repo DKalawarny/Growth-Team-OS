@@ -365,9 +365,16 @@ export default function Plan() {
             <p className="wayout__lead">
               Another minute at most{pass > 2 ? ' — last go' : ''}.
             </p>
+            <Working
+              stages={[
+                'Which way out actually fits',
+                'Three moves, in the order they work',
+                'What gets crossed off, and why',
+                'What this had to take as given',
+              ]}
+            />
           </>
         )}
-        <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
       </WayoutShell>
     )
   }

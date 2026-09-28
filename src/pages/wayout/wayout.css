@@ -2264,3 +2264,19 @@ h1.wayout__heroline {
   .wayout__worksteps .is-now i { animation: none; background: #EAF3ED; }
   .wayout__workbar b { transition: none; }
 }
+
+/* ⭐⭐ WHAT BEING DONE OPENS. The walkthrough used to end on its last
+   instruction, so finishing a move felt like finishing a page.
+   ⚠️ Warm, not loud — it is the end of a piece of work, not a sales moment. The
+   rule in the prompt is explicit that "then upgrade for the next chapter" is
+   the shape of a product that was waiting for them to finish so it could ask
+   for something. */
+.wayout__opens {
+  margin-top: 26px; padding: 20px 22px;
+  background: var(--tint); border-radius: 15px; border-left: 3px solid var(--sun);
+}
+.wayout__opens b {
+  display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--soft); margin-bottom: 8px;
+}
+.wayout__opens p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }

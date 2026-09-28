@@ -75,10 +75,22 @@ function Asking({ move, questions, busy, onSubmit }) {
 
   if (busy) {
     return (
-      <WayoutShell title="This week">
-        <p className="wayout__q">Writing it now.</p>
-        <p className="wayout__lead">With what you just told me. Up to a minute.</p>
-        <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
+      <WayoutShell title="This week" wide>
+        {/* ⚠️ THE THIRD WAIT, AND THE ONE HE KEPT LANDING ON. Converting the
+            other two left this one behind — it is the wait that follows the
+            questions, so it is the one somebody reaches every single time they
+            open a move. Same component, and the lead still says what changed:
+            this version is written from what they just typed. */}
+        <Working
+          title="Writing it now."
+          lead="With what you just told me."
+          stages={[
+            'What to do first, and when',
+            'The exact words to use',
+            'What you need before you start',
+            'What usually goes wrong, and what to do about it',
+          ]}
+        />
       </WayoutShell>
     )
   }

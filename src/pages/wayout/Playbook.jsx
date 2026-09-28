@@ -167,6 +167,21 @@ export default function Playbook({ play, index = 1, children, onSection }) {
         <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
       )}
 
+      {/* 🔴 "no mention of what is shown after step 3 is done." A walkthrough
+          that stops at the last instruction leaves somebody holding a finished
+          task with no idea whether anything moved. This says what being done
+          OPENS — the gate cleared, or, on the last move, that the plan is
+          finished and the next one starts from what actually happened.
+          ⚠️ Conditional like everything else on this page: if the generator did
+          not produce one, nothing renders. An empty section is information; a
+          padded one is a lie with a heading on it. */}
+      {play.opens && (
+        <div className="wayout__opens">
+          <b>And then</b>
+          <p>{play.opens}</p>
+        </div>
+      )}
+
       {/* ⚠️ THIS IS THE HALF THAT TELLS PEOPLE WHAT TO CHARGE AND WHAT TO SEND,
           so it is the half that most needs to say what it is not. The map has
           carried a disclaimer since it was built; the play-by-play had the
