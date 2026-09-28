@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import Playbook from './Playbook'
+import Working from './Working'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import {
   loadOrCreateSession, generatePlaybook, generateMoveQuestions, loadPlaybook, savePlaybook,
   playbookIsStale, loadProgress, markMoveDone, moveIsOpen,
-  askAboutMove, saveThread, WAYOUT_MAX_ASKS,
+  askAboutMove, saveThread, saveMoveNote, WAYOUT_MAX_ASKS,
 } from '../../lib/wayout/session'
 
 /**
@@ -94,9 +95,19 @@ function Asking({ move, questions, busy, onSubmit }) {
         {questions.length > 1 ? `${questions.length} things before I write it.` : 'One thing before I write it.'}
       </p>
       <p className="wayout__lead">
-        {move?.title
-          ? `You are starting: ${move.title}. What you say here changes the week I write, not just the wording of it.`
-          : 'What you say here changes the week I write, not just the wording of it.'}
+        {/* 🔴 "the week I write — weird again." It read "what you say here changes
+            the week I write, not just the wording of it." Two faults in one
+            sentence: "the week I write" is the product narrating its own
+            production schedule, which is machinery nobody asked about, and it
+            promises a WEEK to somebody who is looking at a plan measured in
+            months. What the answers actually change is the content of the plan.
+            ⚠️ Counted, not "two" — the heading above says how many there are and
+            a fixed number beneath a variable one is the kind of small wrongness
+            that makes a reader check everything else. */}
+        {move?.title ? `You are starting: ${move.title}. ` : ''}
+        {questions.length === 1
+          ? 'This one changes what the plan says, not just how it reads.'
+          : 'These change what the plan says, not just how it reads.'}
       </p>
 
       {questions.map((q, i) => (
@@ -143,7 +154,7 @@ function Asking({ move, questions, busy, onSubmit }) {
   )
 }
 
-function AskBox({ thread, onAsk, seed }) {
+function AskBox({ thread, onAsk, onPin, pinned, seed }) {
   const [q, setQ] = useState('')
 
   // ⚠️ ADJUSTED DURING RENDER, NOT IN AN EFFECT. React's own pattern for "reset
@@ -175,10 +186,32 @@ function AskBox({ thread, onAsk, seed }) {
     <div className="wayout__ask">
       <h3 className="wayout__label">Ask about this one</h3>
 
+      {/* 🔴 THE BEST ANSWERS IN THE PRODUCT WERE TRAPPED IN A THREAD. Daniel, on
+          a reply about FIRPTA and flip holding periods: "this should have a pin
+          button that goes to the main page."
+
+          He is right and it is the difference between a chat and a plan. Asking
+          a question produces the most specific writing this thing ever does —
+          and it lived at the bottom of a move page, below the fold, gone the
+          moment he navigated away. The plan board already renders their own
+          notes beside each move; this is the same shelf.
+
+          ⚠️ Replies only. Pinning your own question pins the thing you already
+          know. */}
       {thread.map((m, i) => (
-        <p key={i} className={m.role === 'user' ? 'wayout__askmine' : 'wayout__askreply'}>
-          {m.content}
-        </p>
+        <div key={i} className={m.role === 'user' ? 'wayout__askmine' : 'wayout__askreply'}>
+          <p>{m.content}</p>
+          {m.role !== 'user' && onPin && (
+            <button
+              type="button"
+              className="wayout__pin"
+              onClick={() => onPin(m.content)}
+              disabled={pinned === m.content}
+            >
+              {pinned === m.content ? '✓ On the plan' : 'Pin this to the plan'}
+            </button>
+          )}
+        </div>
       ))}
 
       {busy && <p className="wayout__askreply wayout__askwait">Thinking.</p>}
@@ -237,6 +270,8 @@ function PlayMove({ order }) {
   const [ask, setAsk]         = useState(null)
   const [session, setSession] = useState(null)
   const [thread, setThread]   = useState([])
+  // What is already on the plan, so the button can say so instead of re-pinning.
+  const [pinned, setPinned]   = useState('')
   // ⭐ What a "change this" link put in the box, waiting to be finished.
   const [seed, setSeed]       = useState('')
   const [loading, setLoading] = useState(true)
@@ -443,15 +478,20 @@ function PlayMove({ order }) {
 
   if (loading || !play) {
     return (
-      <WayoutShell title="This week">
-        <p className="wayout__q">Working out how.</p>
-        <p className="wayout__lead">
-          {move?.title
-            ? `${move.title} — what to do first, what to say, and what usually goes wrong.`
-            : 'What to do first, what to say, and what usually goes wrong.'}
-        </p>
-        <p className="wayout__lead">Up to a minute.</p>
-        <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
+      <WayoutShell title="This week" wide>
+        {/* ⚠️ The stages are the SECTIONS OF THE WALKTHROUGH, in the order they
+            will appear. That is why this is allowed to exist at all — see the
+            note at the top of Working.jsx. */}
+        <Working
+          title={move?.title ? `Writing move ${order}.` : 'Writing this one.'}
+          lead={move?.title}
+          stages={[
+            'What to do first, and when',
+            'The exact words to use',
+            'What you need before you start',
+            'What usually goes wrong, and what to do about it',
+          ]}
+        />
       </WayoutShell>
     )
   }
@@ -531,6 +571,15 @@ function PlayMove({ order }) {
           const full = [...next, { role: 'assistant', content: reply, at: new Date().toISOString() }]
           setThread(full)
           saveThread(session.id, order, full).catch(err => console.warn('[wayout] thread not saved:', err))
+        }}
+        pinned={pinned}
+        onPin={async text => {
+          // ⚠️ The plan board renders move_notes beside each move, so this is
+          // the shelf that already exists rather than a new place to look.
+          try {
+            await saveMoveNote(session.id, order, text, session.move_notes ?? {})
+            setPinned(text)
+          } catch (err) { console.warn('[wayout] pin failed:', err.message) }
         }}
       />
 

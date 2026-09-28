@@ -2188,3 +2188,79 @@ h1.wayout__heroline {
   display: inline-block; width: auto; margin-top: 0;
   padding-inline: 38px; text-decoration: none; text-align: center;
 }
+
+/* ⭐⭐ PIN AN ANSWER ONTO THE PLAN. Daniel, on a reply about FIRPTA and flip
+   holding periods: "this should have a pin button that goes to the main page."
+   The most specific writing this product does was living at the bottom of a
+   move page and vanishing the moment he navigated away.
+   ⚠️ Quiet until hovered. It sits under every reply, and a row of bright buttons
+   down a conversation would compete with the reading. */
+.wayout__askreply { position: relative; }
+.wayout__askreply p { margin: 0; }
+.wayout__pin {
+  margin-top: 10px; border: 1.5px solid var(--line); background: var(--paper);
+  font: inherit; font-size: 12px; font-weight: 700; color: var(--soft);
+  padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.wayout__pin:hover:not([disabled]) { border-color: var(--green); color: var(--green); background: #EDF3EE; }
+.wayout__pin[disabled] { border-color: var(--green); color: var(--green); background: #EAF3ED; cursor: default; }
+
+/* ═══ THE WAIT ════════════════════════════════════════════════════════════
+   See Working.jsx for why the stages name the OUTPUT and never the process. */
+.wayout__work { max-width: 46rem; }
+
+.wayout__workbar {
+  height: 4px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 34px;
+}
+.wayout__workbar b {
+  display: block; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), #4EA372);
+  transition: width 2.4s cubic-bezier(.33, 1, .68, 1);
+}
+
+.wayout__workh {
+  font-size: clamp(30px, 3.4vw, 44px); line-height: 1.05; letter-spacing: -.03em;
+  font-weight: 800; margin: 0 0 14px; color: var(--ink); text-wrap: balance;
+}
+.wayout__worklead {
+  font-size: 17px; line-height: 1.55; color: var(--soft); margin: 0 0 34px; max-width: 46ch;
+}
+
+.wayout__worksteps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.wayout__worksteps li {
+  display: flex; align-items: center; gap: 13px;
+  padding: 13px 4px; font-size: 16.5px; font-weight: 600;
+  border-bottom: 1px solid var(--line);
+  transition: color .5s, opacity .5s;
+}
+.wayout__worksteps li:last-child { border-bottom: 0; }
+.wayout__worksteps i {
+  flex: none; width: 22px; height: 22px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid currentColor; transition: background .4s, border-color .4s, color .4s;
+}
+.wayout__worksteps i svg { width: 12px; height: 12px; }
+
+.wayout__worksteps .is-done { color: var(--green); }
+.wayout__worksteps .is-done i { background: var(--green); border-color: var(--green); color: #fff; }
+
+.wayout__worksteps .is-now { color: var(--ink); }
+/* ⚠️ The ONE moving thing on the screen. A page where three things pulse reads
+   as broken; a page where the current line breathes reads as working. */
+.wayout__worksteps .is-now i {
+  border-color: var(--green);
+  animation: wayoutPulse 1.5s ease-in-out infinite;
+}
+@keyframes wayoutPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 125, 79, .38); }
+  50%      { box-shadow: 0 0 0 7px rgba(47, 125, 79, 0); }
+}
+
+.wayout__worksteps .is-next { color: #A9A392; }
+.wayout__worksteps .is-next i { border-color: #D8D1BE; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wayout__worksteps .is-now i { animation: none; background: #EAF3ED; }
+  .wayout__workbar b { transition: none; }
+}

@@ -8,6 +8,7 @@ import {
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
+import Working from './Working'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -342,6 +343,17 @@ export default function Plan() {
                 fast request. Promising twenty and taking sixty is how a working
                 page comes to look broken, and the fix is the honest number. */}
             <p className="wayout__lead">Up to a minute. Nothing to pay.</p>
+            {/* ⭐ The longest wait in the product, and it was three dots. The
+                stages are the SECTIONS OF THE PLAN, in the order they appear —
+                see Working.jsx for why it may never narrate the machine. */}
+            <Working
+              stages={[
+                'Which way out actually fits',
+                'Three moves, in the order they work',
+                'What gets crossed off, and why',
+                'What this had to take as given',
+              ]}
+            />
           </>
         ) : (
           <>
