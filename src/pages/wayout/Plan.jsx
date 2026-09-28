@@ -62,7 +62,12 @@ export default function Plan() {
       .then(s => {
         if (cancelled) return
         setSession(s)
-        if (s.status === 'draft') { navigate(WAYOUT_INTAKE, { replace: true }); return }
+        if (s.status === 'draft') {
+          // ⚠️ Same pairing as the intake: an unfinished CHAPTER goes to its own
+          // door, not back through the six screens it was built to replace.
+          navigate((s.chapter ?? 1) > 1 ? `${WAYOUT_BASE}/chapter` : WAYOUT_INTAKE, { replace: true })
+          return
+        }
         // 🔴 A STORED MAP WAS NEVER RE-CHECKED. Daniel was still looking at
         // "$120k" the day after the figures guard shipped, because the map in
         // the database was written before it existed and this line handed it

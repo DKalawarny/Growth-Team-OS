@@ -123,6 +123,25 @@ export default function Intake({ preview = false, previewReflections = null }) {
           // A plan should only change when something about the life changed.
           // So the way back in is through the questions, with their own answers
           // already in the boxes.
+          /**
+           * 🔴🔴 A CHAPTER-2 SESSION BELONGS ON /chapter, AND THIS SENT IT BACK
+           * INTO THE SIX SCREENS. Daniel, signing in: "still land here when I
+           * log in" — on "Money, plainly", screen four, with empty boxes.
+           *
+           * It was not the draft and not a leak. `startNextChapter` clears
+           * exactly the money answers, so `firstUnansweredStep` correctly found
+           * screen four unanswered and correctly resumed there — in the full
+           * intake, which is precisely what /chapter exists to replace.
+           *
+           * ⭐⭐ Chapter.jsx already refuses a chapter-1 session and sends it here.
+           * The mirror was missing, so the two screens did not agree about who
+           * owns a session and the intake won by being the default landing.
+           * ⚠️ A pair of guards has to be written as a pair.
+           */
+          if ((s.chapter ?? 1) > 1 && s.status !== 'paid') {
+            navigate(`${WAYOUT_BASE}/chapter`, { replace: true })
+            return
+          }
           if (params.get('edit')) setStep(1)
           // A paid session is finished — send them to the plan they bought
           // rather than showing an empty form on top of it.
