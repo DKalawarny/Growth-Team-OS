@@ -925,10 +925,31 @@ export async function saveThread(sessionId, moveOrder, thread) {
  * were following them. The plan may be re-planned; the play they are working
  * from stays put.
  */
+/**
+ * ⭐⭐ WHICH GENERATION OF THE PLAYBOOK RULES A STORED PLAY WAS WRITTEN UNDER.
+ *
+ * 🔴🔴 BUMP THIS WHENEVER WAYOUT_PLAYBOOK_PROMPT CHANGES MATERIALLY. Without it
+ * a prompt improvement reaches new readers only, and everybody who already has a
+ * walkthrough keeps the old one forever — which is exactly what happened on
+ * 28 Sep: the rule requiring a walkthrough to cover the WHOLE move went live at
+ * 14:15 UTC and Daniel was still reading a play written at 14:04. "Still no apps
+ * updated here."
+ *
+ * ⚠️ 1 = the rules as of 28 Sep (whole-move coverage · `opens` · conditional
+ * goes_wrong · cross-border currency · never name a structure). Everything
+ * written before carries 0 by column default, so the entire existing set
+ * refreshes itself the first time somebody opens it.
+ *
+ * ⚠️ IT IS A JUDGEMENT CALL AND IT SHOULD BE. Bumping regenerates on next open,
+ * which costs a model call per reader — worth it for a rule that changes what
+ * the walkthrough SAYS, not for a comma.
+ */
+export const WAYOUT_PLAYBOOK_RULES = 1
+
 export async function loadPlaybook(sessionId, moveOrder) {
   const { data, error } = await supabase
     .from('wayout_playbooks')
-    .select('id, move_order, move, play, asked, thread')
+    .select('id, move_order, move, play, asked, thread, rules_version')
     .eq('session_id', sessionId)
     .eq('move_order', moveOrder)
     .maybeSingle()
@@ -954,6 +975,8 @@ export async function savePlaybook({ sessionId, moveOrder, move, play, asked }) 
       move_order: moveOrder,
       move,
       play,
+      // ⚠️ Stamped on every write, so a play can always say which rules wrote it.
+      rules_version: WAYOUT_PLAYBOOK_RULES,
       ...(asked !== undefined ? { asked } : {}),
     }, { onConflict: 'session_id,move_order' })
   if (error) throw new Error(error.message)
@@ -1014,8 +1037,22 @@ export function moveIsOpen(order, done) {
 }
 
 /** Did the plan change under a play we already wrote? */
+
+/**
+ * ⚠️ TWO WAYS TO BE STALE, AND ONLY ONE OF THEM USED TO COUNT.
+ *   · The MOVE changed — the plan was rebuilt under them, so the play is about
+ *     something that is no longer the move.
+ *   · The RULES changed — the play is fine about the right move and was written
+ *     before we knew better.
+ *
+ * 🔴 AND NEVER REACH FOR `updated_at` HERE. `saveThread` writes to the same row,
+ * so asking a question bumps it without regenerating a word. A row-touch
+ * timestamp is not a generation timestamp — that is what made this invisible.
+ */
 export function playbookIsStale(stored, currentMove) {
-  if (!stored?.move || !currentMove) return false
+  if (!stored) return false
+  if ((stored.rules_version ?? 0) < WAYOUT_PLAYBOOK_RULES) return true
+  if (!stored.move || !currentMove) return false
   return String(stored.move.title ?? '').trim() !== String(currentMove.title ?? '').trim()
 }
 
