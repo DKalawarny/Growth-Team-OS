@@ -2563,3 +2563,26 @@ h1.wayout__heroline {
   display: inline-block; width: auto; margin-top: 0; padding-inline: 32px;
 }
 .wayout__thread .wayout__btn { display: inline-block; width: auto; padding-inline: 34px; }
+
+/* ⭐⭐ THE HAND-OFF INTO THE NEXT CHAPTER — the payoff of the whole page.
+   🔴 Daniel: "I want it to feel like it leads into more, not just a new thing."
+   It used to be unreachable behind an early return; now it is the event the
+   page builds to, and it is drawn as the same dark room /chapter opens into so
+   the step across is visibly a continuation rather than a restart. */
+.wayout__nextchapter {
+  background:
+    radial-gradient(120% 90% at 8% 0%, #2C4736 0%, transparent 62%),
+    linear-gradient(168deg, #1E2C21 0%, #16211A 100%);
+  color: #F2EFE4;
+  border: 0;
+}
+.wayout__nextchapter .wayout__offerkick { color: var(--sun); letter-spacing: .16em; }
+.wayout__nextchapter h3 { color: #FBF9F1; }
+.wayout__nextchapter .wayout__offerlead { color: #BFC9BE; }
+.wayout__nextchapter .wayout__offerfine { color: #9DA99C; }
+
+/* ⚠️ THE MEASURE WAS SET FOR THE NARROW COLUMN AND THIS PAGE IS WIDE. At ~40ch
+   in a 1240px sheet the copy ran as a thin strip down the left with the rest of
+   the page empty — the same "layout doesn't fit" shape flagged elsewhere. */
+.wayout__finished .wayout__lead,
+.wayout__nowh + .wayout__lead { max-width: 56ch; }

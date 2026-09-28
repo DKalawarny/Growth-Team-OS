@@ -41,11 +41,25 @@ import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } fr
  * ⚠️ Still no score, no streak, no confetti cannon. The register holds: direct
  * about the situation, never directive about the person.
  */
+/**
+ * 🔴 "these are not the questions i was thinking — this could be better, more
+ * uplifting, exciting."
+ *
+ * ⭐⭐ THE FAULT WAS THAT THEY READ AS A REPORT CARD. "Yes — that is where I am"
+ * / "I did the work and it did not land" are four ways of being marked, and
+ * three of them are a fail. Nobody is lifted by grading themselves.
+ *
+ * ⭐⭐ SO THEY POINT FORWARD INSTEAD. Each one is a POSITION somebody is standing
+ * in, and every one of them leads somewhere — which is true, because the next
+ * plan is built differently from each. ⚠️ Still four, still honest, and "it did
+ * not land" is still sayable in plain words: softening that one would cost the
+ * only answer that teaches us anything.
+ */
 const OPTIONS = [
-  { key: 'landed',  label: 'Yes — that is where I am',        hint: 'The thing you were aiming at actually happened.' },
-  { key: 'partly',  label: 'Better, but not there',           hint: 'Real ground gained, and still short of it.' },
-  { key: 'no',      label: 'I did the work and it did not land', hint: 'Worth saying plainly. It is the most useful thing you can tell us.' },
-  { key: 'changed', label: 'I want something different now',  hint: 'That happens, and it is not a failure.' },
+  { key: 'landed',  label: 'I’m there — that’s my life now',   hint: 'The thing you were aiming at actually happened. The next question is where now.' },
+  { key: 'partly',  label: 'Closer. Not there yet.',           hint: 'Real ground gained. The route from here is not the one you were given at the start.' },
+  { key: 'no',      label: 'I did it all and it didn’t land',  hint: 'The most useful thing you can tell us — and the next plan will not contain that route.' },
+  { key: 'changed', label: 'I’m after something else now',     hint: 'Everything true about your situation carries over. The destination is yours to reset.' },
 ]
 
 /**
@@ -124,36 +138,25 @@ export default function Done() {
 
   const allDone = moves.length > 0 && moves.every(m => m.done)
 
-  if (saved) {
-    return (
-      <WayoutShell title="Thank you">
-        <p className="wayout__q">Noted, and read.</p>
-        <p className="wayout__lead">
-          {picked === 'no'
-            ? 'That is the answer that changes the product, and almost nobody gives it. Thank you for it.'
-            : 'That is the only measure of this that means anything.'}
-        </p>
-        {/* ⭐⭐ "NO ONE IS JUST DONE." This page used to end here, with a link to
-            start again worded as an afterthought. The hand-off IS the page: the
-            life they answered about is not the life they have now, so the next
-            plan is not a repeat, it is the first one that could not have been
-            written before. */}
-        <p className="wayout__lead">
-          Your life is not the one you answered about any more. When you want a
-          plan for the person you are now, it starts from the questions again —
-          and the answers will be different, which is the point.
-        </p>
-        <button className="wayout__btn" onClick={() => navigate(`${WAYOUT_INTAKE}?edit=1`)}>
-          Start a new plan
-        </button>
-        <p className="wayout__rebuild">
-          <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/plan`)}>
-            Back to the plan
-          </button>
-        </p>
-      </WayoutShell>
-    )
-  }
+  /**
+   * 🔴🔴 THIS PAGE USED TO END ITSELF HERE, AND THAT IS WHY NOBODY EVER SAW THE
+   * CHAPTER. A `if (saved) return …` branch short-circuited the whole render the
+   * moment an outcome was submitted — so the forward offer below it, the one
+   * that calls startNextChapter and opens `/chapter`, WAS UNREACHABLE CODE. What
+   * a person actually got was "Noted, and read." and a button reading "Start a
+   * new plan" that dropped them into the full six-screen intake with every box
+   * prefilled.
+   *
+   * Daniel walked exactly that path: "this is not really what I want — I want it
+   * to feel like it leads into more, not just a new thing", then the old
+   * questions, "which is weird… no direction as I'm going through the pages."
+   * Every word of that was about a flow I had already replaced and he could not
+   * reach.
+   *
+   * ⭐⭐ AN EARLY RETURN THAT RENDERS A WHOLE SCREEN IS A ROUTE, NOT A BRANCH.
+   * It silently retired the rest of the page, and nothing failed — which is the
+   * same shape as the second `<Route path="/">` that never fired.
+   */
 
   /**
    * ⚠️ THE OUTCOME IS SAVED FIRST AND SEPARATELY. If starting the next chapter
@@ -207,10 +210,24 @@ export default function Done() {
           </span>
           <p className="wayout__finishedkick">All three</p>
           <h1 className="wayout__finishedh">You finished the plan.</h1>
+          {/* ⭐⭐ THE LIFT COMES FROM A REVERSAL AND AN OBSERVATION, NEVER FROM
+              ADJECTIVES. Daniel wanted this "Tony Robbins style" — and the thing
+              that actually sounds like that is not enthusiasm, it is telling
+              somebody the thing they have is not the thing they thought.
+              ⚠️ Both sentences are FACTS. "Most plans die at move one" is true of
+              plans; "you now know what your own follow-through looks like" is an
+              observation about something they demonstrably just did — which is
+              the only form of credit WAYOUT_VOICE allows, because it cannot be
+              written about somebody you did not read. */}
           <p className="wayout__lead">
-            Most people who write one never get to the end of it. You did the
-            whole order, in order — which is the hard part and the part nobody
-            sees.
+            Most plans die at move one. You ran all three, in order, and the
+            order was the hard part.
+          </p>
+          <p className="wayout__lead">
+            Those moves were built for this year and they are spent. What is not
+            spent is that you now know exactly what your own follow-through looks
+            like — which is the one thing the questions could never have told
+            you, and the reason the next plan can be bolder than this one was.
           </p>
         </div>
       ) : (
@@ -231,10 +248,15 @@ export default function Done() {
           about what they DID; this asks the only thing that matters, which is
           what it CHANGED — and the two are not the same, which is precisely why
           finishing is not allowed to stand in for arriving. */}
-      <h2 className="wayout__nowh">{allDone ? 'So where are you now?' : 'Where are you now?'}</h2>
+      {/* ⚠️ "Where does that leave you" rather than "where are you now" — the
+          second reads as a check-up, the first as the hinge into what comes
+          next. One answer here decides what the next plan is built from, and
+          the question should say so. */}
+      <h2 className="wayout__nowh">So where does that leave you?</h2>
       <p className="wayout__lead">
-        The plan said what to do and in what order. Whether it moved anything is
-        the one thing only you know, and the one thing nobody ever asks.
+        One answer, and it decides everything about the next one. Whether this
+        moved anything is the one thing only you know — and the one thing
+        nobody ever asks.
       </p>
 
       <div className="wayout__chips" style={{ marginTop: 22 }}>
@@ -276,9 +298,9 @@ export default function Done() {
           said how this one went would make the question look like a formality on
           the way to selling them something, which is exactly what it is not. */}
       {saved && NEXT[picked] && (
-        <div className="wayout__offer wayout__r" style={{ marginTop: 34 }}>
+        <div className="wayout__offer wayout__nextchapter wayout__r" style={{ marginTop: 34 }}>
           <span className="wayout__offerkick">
-            {picked === 'landed' ? 'What now' : 'From here'}
+            Chapter {(session?.chapter ?? 1) + 1}
           </span>
           <h3>{NEXT[picked].cta}</h3>
           <p className="wayout__offerlead">{NEXT[picked].line}</p>
@@ -289,10 +311,13 @@ export default function Done() {
           >
             {starting ? 'Setting it up…' : NEXT[picked].cta}
           </button>
+          {/* ⚠️ SAY HOW SHORT IT IS, because the thing somebody fears here is
+              being asked everything again — and the reason /chapter exists is
+              that they are not. */}
           <p className="wayout__offerfine">
             {picked === 'landed' || picked === 'changed'
-              ? 'A few questions — your numbers and where you are headed. The rest is already filled in.'
-              : 'Just your numbers, so the next plan starts from where you actually are.'}
+              ? 'Five questions. Your numbers, what changed, and where you are headed — everything else you already told us carries over.'
+              : 'Three questions. What changed and your numbers, so the next plan starts from where you actually are.'}
           </p>
         </div>
       )}
