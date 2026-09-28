@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { WAYOUT_BASE } from './lib/wayout/brand'
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, AuthProvider } from './hooks/useAuth'
 
 // Landing stays synchronous — it's the most common entry point and we want
@@ -236,10 +237,46 @@ function ScrollToTopOnNavigate() {
   return null
 }
 
+/**
+ * 🔴🔴 A PASSWORD RESET MUST NOT LAND SOMEBODY ON THE OTHER PRODUCT'S HOMEPAGE.
+ *
+ * Enter.jsx asks Supabase to send people to `<origin>/wayout/reset`, which is
+ * right — but Supabase only honours a redirect that is on its allow-list, and if
+ * it is not, it silently falls back to the project's Site URL. That is
+ * eliv8os.com. So a person halfway through a plan about their marriage and their
+ * money, at the least confident moment they will ever have with us, lands on a
+ * B2B contractor advisor's front page holding a recovery token.
+ *
+ * ⚠️ IT CANNOT BE FIXED IN _redirects. Supabase puts the token in the URL
+ * FRAGMENT, and a fragment never reaches the server — only the browser sees it.
+ * A client-side hop preserves it, which is why this lives here.
+ *
+ * ⭐ THE REAL FIX IS ONE LINE OF CONFIG — adding https://getunstuckmap.com/** to
+ * Supabase → Authentication → URL Configuration → Redirect URLs. This is the
+ * belt: it works whether or not that was ever done, and it costs one cheap string
+ * check on a hash that is empty on essentially every page load.
+ *
+ * 🔴 Auth config is deliberately NOT touched from here. There is no config.toml
+ * on this project, so a push resets every setting it does not list.
+ */
+function RecoveryRescue() {
+  const navigate = useNavigate()
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (!hash || !hash.includes('type=recovery')) return
+    if (pathname.startsWith(WAYOUT_BASE)) return
+    // ⚠️ The hash is carried across deliberately — it IS the token. Dropping it
+    // would land them on the right page with no way to prove who they are.
+    navigate(`${WAYOUT_BASE}/reset${hash}`, { replace: true })
+  }, [pathname, hash, navigate])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTopOnNavigate />
+      <RecoveryRescue />
       {/* ⚠️ AuthProvider must sit ABOVE the routes: every page below calls
           useAuth(), and before this existed each of those 44 call sites ran its
           own session lookup and its own profile/company fetch. One page load
