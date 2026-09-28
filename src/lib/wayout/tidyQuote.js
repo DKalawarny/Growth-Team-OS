@@ -41,3 +41,41 @@ export function tidyQuote(text) {
   out = out.replace(/,$/, '')
   return out
 }
+
+/**
+ * ⭐⭐ THE FIRST SENTENCE OR TWO, FOR SOMEWHERE THAT WAS DESIGNED FOR A SENTENCE.
+ *
+ * 🔴 Daniel, on the chapter screen: a 905-character paragraph set in the
+ * handwriting face, filling the entire door into a new chapter. He read it as
+ * somebody else's text — it was his own, on his own account, written into the
+ * "In one sentence, what does out look like for you?" box, which accepts a
+ * paragraph because nothing stops it.
+ *
+ * ⚠️ NOT A CHARACTER TRUNCATION. Cutting mid-word and adding an ellipsis makes
+ * their own words look like a database field. This takes whole sentences up to
+ * the budget and only falls back to a hard cut if the first sentence alone is
+ * enormous — somebody who wrote one long unpunctuated run still gets something
+ * readable rather than a wall.
+ *
+ * ⚠️ The FULL text is never lost: it is what the plan is built from, and
+ * `/history` shows it whole. This is display, in one place, where the design
+ * assumed a sentence.
+ */
+export function firstSentences(text, budget = 180) {
+  const t = String(text ?? '').trim()
+  if (!t || t.length <= budget) return t
+  const parts = t.match(/[^.!?]+[.!?]*/g) ?? [t]
+  let out = ''
+  for (const part of parts) {
+    if ((out + part).trim().length > budget) break
+    out += part
+  }
+  out = out.trim()
+  // ⚠️ THE UNPUNCTUATED CASE, AND IT IS NOT AN EDGE CASE — plenty of people type
+  // a long run with no full stops at all. With no sentence that fits, fall back
+  // to a cut on a WORD boundary; never mid-word, which is what makes somebody's
+  // own words look like a truncated database field.
+  if (!out) out = t.slice(0, budget).replace(/\s+\S*$/, '').trim()
+  return out.replace(/[,;:]$/, '') + ' …'
+}
+

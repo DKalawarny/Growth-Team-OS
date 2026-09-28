@@ -6,6 +6,7 @@ import { isAnswered } from '../../lib/wayout/validate'
 import { chapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
 import { loadOrCreateSession, saveAnswers, markComplete, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
+import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
 
 /**
  * The way out — the door into a new chapter.
@@ -105,7 +106,12 @@ export default function Chapter() {
         {first?.answers?.out && (
           <div className="wayout__origin">
             <span>When you started{first.createdAt ? `, ${new Date(first.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}` : ''}, you wrote:</span>
-            <q>{first.answers.out}</q>
+            {/* ⚠️ TRIMMED HERE, AND ONLY HERE. `out` asks for one sentence and
+                accepts a paragraph — a 905-character answer set in the
+                handwriting face filled this entire screen and read as somebody
+                else's text. The full answer is what the plan is built from and
+                /history shows it whole. */}
+            <q>{firstSentences(tidyQuote(first.answers.out))}</q>
             {chain.length > 1 && (
               <Link className="wayout__originlink" to={`${WAYOUT_BASE}/history`}>
                 See the whole way here →

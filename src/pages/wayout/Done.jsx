@@ -107,6 +107,7 @@ export default function Done() {
   const [saved, setSaved]     = useState(false)
   const [error, setError]     = useState('')
   const [starting, setStarting] = useState(false)
+  const [sending, setSending]   = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -129,11 +130,19 @@ export default function Done() {
   }, [navigate])
 
   async function submit() {
-    if (!picked || !session) return
+    if (!picked || !session || sending) return
+    setSending(true)
+    setError('')
     try {
       await recordOutcome(session.id, picked, note)
       setSaved(true)
-    } catch (err) { setError(err.message) }
+    } catch (err) {
+      // ⚠️ Surfaced, not swallowed. A silent failure here loses the only
+      // evidence this product ever collects about whether it works.
+      setError(err.message)
+    } finally {
+      setSending(false)
+    }
   }
 
   const allDone = moves.length > 0 && moves.every(m => m.done)
@@ -288,7 +297,23 @@ export default function Done() {
               ? 'Where it stopped, and what got in the way.'
               : 'What actually changed, or what surprised you.'}
           />
-          <button className="wayout__btn" onClick={submit}>Send it</button>
+          {/* 🔴 IT LOOKED BROKEN BECAUSE NOTHING HAPPENED. Daniel: "send button
+              doesn't work." It did work — `recordOutcome` saved, the offer
+              appeared below the fold, and the button sat there still reading
+              "Send it" as though nothing had. A control that cannot tell you it
+              succeeded is indistinguishable from one that failed.
+              ⚠️ And it is full-width, directly above a second full-width button,
+              so there were two big things to press and no order between them:
+              "confusing why this is right below — what one to click, it's not
+              straightforward." This one is quieter now, and once it is sent it
+              stops being a button at all. */}
+          {saved ? (
+            <p className="wayout__sent">✓ Saved — read by a person, and it changes what gets built next.</p>
+          ) : (
+            <button className="wayout__btn wayout__btn--quiet" onClick={submit} disabled={sending}>
+              {sending ? 'One moment…' : 'Send it'}
+            </button>
+          )}
         </>
       )}
 

@@ -2403,6 +2403,21 @@ h1.wayout__heroline {
 .wayout__offer--known .wayout__offerkick { color: var(--soft); }
 .wayout__offer--known h3,
 .wayout__offer--known .wayout__offerlead { color: var(--ink); }
+/* 🔴🔴 THE QUESTIONS WENT INVISIBLE. `.wayout__offerlist li` is `#F3EFE2` —
+   near-white, correct on the dark card this has always been. Flipping the card
+   to a light surface for people already inside recoloured the heading and the
+   lead and left the LIST behind, so three question rows rendered cream on cream.
+   Daniel: "blank now."
+   ⚠️ THE LESSON IS THE SHAPE, NOT THE COLOUR: inverting a container means
+   re-checking EVERY descendant that set a colour for the old ground, not the
+   ones you happened to think of. A partial inversion is worse than none,
+   because the half that worked hides the half that did not. */
+.wayout__offer--known .wayout__offerlist li {
+  color: var(--ink);
+  border-top-color: var(--line);
+}
+.wayout__offer--known .wayout__offerlist b { color: var(--ink); }
+.wayout__offer--known .wayout__offerlist li::before { color: #B8860B; }
 
 /* ═══ CHAPTER TWO — THE ONE DARK ROOM IN THE PRODUCT ══════════════════════
    🔴 Daniel: "it needs to be different, like entering a new level — not the
@@ -2603,3 +2618,20 @@ h1.wayout__heroline {
    the page empty — the same "layout doesn't fit" shape flagged elsewhere. */
 .wayout__finished .wayout__lead,
 .wayout__nowh + .wayout__lead { max-width: 56ch; }
+
+/* ⚠️ THE SECONDARY ACTION ON A PAGE THAT HAS TWO. The outcome is worth saving
+   and it is not the thing the page is FOR — the chapter is. Two full-width
+   green buttons stacked gave no order between them; this one recedes so the
+   one below it reads as the next step. */
+.wayout__btn--quiet {
+  width: auto; display: inline-block; padding-inline: 34px;
+  background: transparent; color: var(--green);
+  border: 2px solid var(--green);
+}
+.wayout__btn--quiet:hover:not([disabled]) { background: #EDF3EE; }
+
+/* ⭐ Confirmation, in place of the control. A button that stays pressable after
+   it has succeeded is a button somebody presses again. */
+.wayout__sent {
+  margin: 22px 0 0; font-size: 14.5px; font-weight: 600; color: var(--green);
+}
