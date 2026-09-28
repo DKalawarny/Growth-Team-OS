@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 /**
  * The way out — one component per field kind, driven by src/content/wayoutIntake.js.
@@ -265,14 +265,92 @@ export function Money({ value, onChange }) {
 
 // ── Text ────────────────────────────────────────────────────────────────────
 
+
+/**
+ * ⭐⭐ TALK INSTEAD OF TYPE. Daniel: "can we add a talk to text on the written
+ * question parts, i think people would like that."
+ *
+ * ⚠️ AND IT MATTERS MORE HERE THAN ON AN ORDINARY FORM. The three questions this
+ * product now REQUIRES in writing are what everything downstream is built from —
+ * what they have already tried, what they will not do, and whatever the chips
+ * missed. Typing is a tax on exactly the people with the least slack: somebody on
+ * a phone, at eleven at night, after a shift. The ones most likely to give a
+ * three-word answer are the ones whose plan most depends on a longer one.
+ *
+ * ⚠️ BROWSER RECOGNITION, NOT A VENDOR. It is free, it needs no key, and it adds
+ * no billing relationship — the same call made for dictation on the other
+ * product. The cost is that support is uneven, so this renders NOTHING at all
+ * where it does not exist rather than a button that does nothing.
+ *
+ * 🔴 THE TRANSCRIPT IS APPENDED, NEVER SUBSTITUTED. Recognition drops words and
+ * mishears names; replacing a box somebody has already typed into would lose
+ * their words to fix our feature. It adds to the end, and they can edit.
+ */
+const Recognition = typeof window !== 'undefined'
+  && (window.SpeechRecognition || window.webkitSpeechRecognition)
+
+function Dictate({ value, onChange, label }) {
+  const [on, setOn] = useState(false)
+  const ref = useRef(null)
+
+  // ⚠️ Stop the microphone if the field unmounts mid-sentence. Without this,
+  // navigating on while it is listening leaves the browser recording with no
+  // visible indication anywhere in the product that it is.
+  useEffect(() => () => { try { ref.current?.stop() } catch { /* already stopped */ } }, [])
+
+  if (!Recognition) return null
+
+  function toggle() {
+    if (on) { try { ref.current?.stop() } catch { /* already stopped */ } ; return }
+    const r = new Recognition()
+    ref.current = r
+    r.continuous = true
+    r.interimResults = false
+    r.lang = navigator.language || 'en-CA'
+    r.onresult = e => {
+      let said = ''
+      for (let i = e.resultIndex; i < e.results.length; i += 1) {
+        if (e.results[i].isFinal) said += e.results[i][0].transcript
+      }
+      if (!said.trim()) return
+      const base = (value ?? '').trim()
+      onChange(base ? `${base} ${said.trim()}` : said.trim())
+    }
+    r.onend = () => setOn(false)
+    // ⚠️ A denied microphone must not leave the button stuck mid-listen.
+    r.onerror = () => setOn(false)
+    try { r.start(); setOn(true) } catch { setOn(false) }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`wayout__mic${on ? ' is-on' : ''}`}
+      onClick={toggle}
+      aria-pressed={on}
+      aria-label={on ? `Stop dictating ${label ?? 'this answer'}` : `Dictate ${label ?? 'this answer'}`}
+      title={on ? 'Stop' : 'Say it instead'}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="9" y="3" width="6" height="11" rx="3" />
+        <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+      </svg>
+      <span>{on ? 'Listening…' : 'Say it'}</span>
+    </button>
+  )
+}
+
 export function LongText({ field, value, onChange }) {
   return (
-    <textarea
-      className="wayout__textarea"
-      value={value ?? ''}
-      placeholder={field.placeholder ?? ''}
-      onChange={e => onChange(e.target.value)}
-    />
+    <div className="wayout__withmic">
+      <textarea
+        className="wayout__textarea"
+        value={value ?? ''}
+        placeholder={field.placeholder ?? ''}
+        onChange={e => onChange(e.target.value)}
+      />
+      <Dictate value={value} onChange={onChange} label={field.label} />
+    </div>
   )
 }
 

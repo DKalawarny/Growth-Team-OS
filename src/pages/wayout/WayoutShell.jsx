@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
+import { Link } from 'react-router-dom'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE } from '../../lib/wayout/brand'
 import './wayout.css'
 
 /**
@@ -25,7 +26,7 @@ import './wayout.css'
  * be orphaned the way the answer pages were.
  */
 export default function WayoutShell({
-  children, count, title, noindex = true, wide = false, canonicalPath = '',
+  children, count, title, noindex = true, wide = false, canonicalPath = '', signIn = false,
 }) {
   return (
     <div className="wayout">
@@ -84,6 +85,20 @@ export default function WayoutShell({
           {/* ⚠️ The name comes from brand.js and nowhere else. */}
           {WAYOUT_NAME}
           {count && <span className="wayout__count">{count}</span>}
+          {/* 🔴 THERE WAS NO WAY BACK IN. Daniel: "do we have a log in section yet
+              for once people sign up?" /wayout/enter has existed the whole time —
+              it is where RequireWayout sends anybody without a session — but NOT
+              ONE PUBLIC PAGE LINKED TO IT. Somebody who made an account, closed
+              the tab and came back to the domain had no route to their own plan
+              except guessing a URL.
+              ⚠️ Deliberately quiet, and never on the plan itself: on the pages
+              where somebody is mid-flow it would be an exit sign beside the work,
+              and anyone already signed in does not need it. */}
+          {signIn && (
+            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter`}>
+              Already started? Sign in
+            </Link>
+          )}
         </div>
         {children}
       </div>

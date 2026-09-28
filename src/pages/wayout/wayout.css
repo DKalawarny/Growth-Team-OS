@@ -1066,12 +1066,18 @@ div:first-child > .wayout__group { margin-top: 14px; }
   --hero-soft: var(--soft);
   --hero-accent: var(--green);
   position: relative;
-  /* ⚠️ WAS `overflow: hidden`, WHICH CLIPPED EVERYTHING BELOW THE FOLD. It is
-     there to stop the drifting aura causing a horizontal scrollbar — `clip` on
-     the x axis alone does that job and still lets the page grow downward. With
-     `hidden` the page could only ever be one screen tall, which is most of why
-     it read as having nothing on it. */
-  overflow-x: clip;
+  /* 🔴 BOTH AXES, AND THE X-ONLY VERSION WAS A REGRESSION I SHIPPED THIS MORNING.
+     `.wayout__aura` sits at `inset: -20%` on purpose, so the gradient bleeds past
+     every edge instead of stopping in a line. Clipping only the x axis left 567px
+     of it hanging BELOW the page on a 2836px layout — which nothing painted, so
+     it rendered as a band of the host's near-white under the whole design.
+     Daniel: "big white space has to go."
+
+     ⚠️ `clip` rather than `hidden` because it creates no scroll container, and
+     both axes rather than one because in-flow content sets this element's height
+     and therefore never overflows it — the only thing that ever overflows here is
+     the aura, which is exactly what should be clipped. */
+  overflow: clip;
   background: var(--ground);
 }
 
@@ -2005,3 +2011,46 @@ h1.wayout__heroline {
 /* The intake's chip groups are long — they wrap across the full measure the way
    the six tap screens do, rather than stacking in a narrow column. */
 .wayout__fields .wayout__chips { max-width: 1100px; }
+
+/* ⚠️ QUIET ON PURPOSE. It is the route back for somebody who already has an
+   account, not a second call to action competing with the one that matters —
+   so it sits beside the wordmark in the same weight as the step counter. */
+.wayout__signin {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--soft);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.wayout__signin:hover { color: var(--green); border-bottom-color: currentColor; }
+@media (max-width: 560px) { .wayout__signin { font-size: 11.5px; } }
+
+/* ── Say it instead of typing it ────────────────────────────────────────────
+   ⚠️ The button sits UNDER the box, not inside it. Floating it in the corner of
+   a textarea puts it on top of the words somebody is writing at exactly the
+   moment the box is full, which is when a long answer needs the room most. */
+.wayout__withmic { display: grid; gap: 8px; justify-items: start; max-width: 680px; }
+.wayout__mic {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1.5px solid var(--line); background: transparent; border-radius: 999px;
+  padding: 7px 14px 7px 11px; font: inherit; font-size: 12.5px; font-weight: 600;
+  color: var(--soft); cursor: pointer; transition: border-color .16s, color .16s, background .16s;
+}
+.wayout__mic svg { width: 14px; height: 14px; flex: none; }
+.wayout__mic:hover { border-color: var(--green); color: var(--green); }
+/* ⚠️ Listening has to be unmistakable — a microphone that is on and does not look
+   on is the one state in this product that could record somebody unawares. */
+.wayout__mic.is-on {
+  border-color: var(--green); background: var(--green); color: #fff;
+  animation: wayoutPulse 1.6s ease-in-out infinite;
+}
+@keyframes wayoutPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(47,125,79,.45) } 50% { box-shadow: 0 0 0 7px rgba(47,125,79,0) } }
+@media (prefers-reduced-motion: reduce) { .wayout__mic.is-on { animation: none } }
+
+/* ⚠️ A 1-to-10 row does not want the whole page. Letting the field group take the
+   full width was right for CHIPS, which wrap — a ten-cell scale just stretches,
+   and a scale whose cells are 170px apart is harder to read than one you can take
+   in at a glance. */
+.wayout__fields .wayout__scores,
+.wayout__fields .wayout__scorerow { max-width: 760px; }

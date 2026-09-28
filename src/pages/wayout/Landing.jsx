@@ -119,7 +119,12 @@ export default function Landing() {
 
       <div className="wayout__hero">
         <div className="wayout__herocopy">
-          <div className="wayout__brand"><i />{WAYOUT_NAME}</div>
+          <div className="wayout__brand">
+            <i />{WAYOUT_NAME}
+            {/* 🔴 The only route back for somebody who already has an account.
+                /wayout/enter existed all along and nothing public linked to it. */}
+            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter`}>Already started? Sign in</Link>
+          </div>
 
           <h1 className="wayout__heroline">
             Three<br />moves.<br /><span>In order.</span>
@@ -307,11 +312,12 @@ export default function Landing() {
           <div className="wayout__deal">
             <div>
               <span className="wayout__dealtag">Free — no account</span>
-              <h3>Six questions, then your plan</h3>
+              <h3>The questions, then your plan</h3>
               <p>
-                Three moves in the order they work, what each is worth in your own
-                figures, and what to ignore. Yours to keep, and we don’t ask for a
-                card to see it.
+                Six taps name your direction in three minutes. The questions after
+                that build the plan — three moves in the order they work, what each is
+                worth in your own figures, and what to ignore. Yours to keep, and we
+                don’t ask for a card to see any of it.
               </p>
             </div>
             <div>
@@ -350,7 +356,15 @@ export default function Landing() {
         <section className="wayout__close">
           <h2 className="wayout__pitchh">You know your situation.</h2>
           <p className="wayout__pitchlead">
-            Six questions, three minutes, and something you can actually do this week.
+            {/* 🔴 THIS PROMISED A PLAN IN THREE MINUTES AND THREE MINUTES DOES NOT
+                BUY ONE. Six taps name which of four ways out is yours; the plan
+                itself is the questions after that. Since the two halves became one
+                flow, saying "six questions, three minutes" described the front
+                door as though it were the whole house — and the first thing that
+                happens to somebody who believes it is that they feel misled at
+                minute four, which is the one thing this product cannot afford. */}
+            Three minutes tells you which way. The plan itself takes about fifteen more —
+            and every answer you have already given carries over.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>

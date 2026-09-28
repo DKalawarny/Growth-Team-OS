@@ -152,7 +152,7 @@ export const DIAGNOSTIC_OPENING = {
    */
   highlight: 'four ways out',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
-  body: 'Six questions. Three minutes. Then you’ll know which one is yours, and exactly why the other three aren’t. Whether getting out means earning more or needing less.',
+  body: 'Six questions. Three minutes. Then you’ll know which one is yours, and exactly why the other three aren’t — whether getting out means earning more or needing less. Keep going from there and it becomes the plan.',
   cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts

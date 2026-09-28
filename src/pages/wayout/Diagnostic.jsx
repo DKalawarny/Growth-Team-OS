@@ -167,7 +167,7 @@ export default function Diagnostic() {
     // sitemap that says noindex is a contradiction, and doing one without the
     // other is how the answer pages were orphaned.
     return (
-      <WayoutShell wide noindex={false} canonicalPath="/wayout/start">
+      <WayoutShell wide noindex={false} canonicalPath="/wayout/start" signIn>
         {/* 🔴 ONE COLUMN. Daniel: "i don't like how this is laid out, looks messy
             — not sure if centering the text is better or what?"
 
@@ -217,7 +217,7 @@ export default function Diagnostic() {
             ))}
           </div>
           <p className="wayout__fine wayout__pathnote">
-            Three minutes. Then you’ll know.
+            Three minutes. Then you’ll know which one — and the questions after that build the plan.
           </p>
         </div>
       </WayoutShell>
