@@ -2518,14 +2518,31 @@ h1.wayout__heroline {
 .wayout__arcout b { color: var(--ink); }
 .wayout__arcout span { display: block; color: var(--soft); margin-top: 5px; line-height: 1.5; max-width: 52ch; }
 
-/* ⚠️ Quiet. It is a way to look back, not an action — competing with the moves
-   would be the wrong fix for "nobody could find the history". */
-.wayout__chaptercrumb { margin: 0 0 10px; font-size: 13px; }
-.wayout__chaptercrumb a {
-  color: var(--soft); text-decoration: none; font-weight: 700;
-  letter-spacing: .01em;
+/* ⭐⭐ THE CHAPTER BAND — the marker that says this is not the first plan.
+   ⚠️ SUN, NOT GREEN. Green is the working colour of the whole product; the sun
+   accent is reserved for the few structural things, and which chapter you are
+   in is exactly that: rare, and about WHERE YOU ARE rather than what to do. */
+.wayout__chapterband {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  margin: 0 0 22px; padding: 13px 20px;
+  border-radius: 999px;
+  background: linear-gradient(97deg, rgba(255, 180, 58, .22), rgba(255, 180, 58, .07));
+  border: 1px solid rgba(214, 150, 40, .35);
 }
-.wayout__chaptercrumb a:hover { color: var(--green); text-decoration: underline; }
+.wayout__chapterband b {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  color: #9A6B10;
+}
+.wayout__chapterband span { font-size: 13.5px; color: var(--soft); }
+.wayout__chapterband a {
+  margin-left: auto; font-size: 13.5px; font-weight: 700;
+  color: #9A6B10; text-decoration: none; white-space: nowrap;
+}
+.wayout__chapterband a:hover { text-decoration: underline; }
+@media (max-width: 620px) {
+  .wayout__chapterband { border-radius: 16px; }
+  .wayout__chapterband a { margin-left: 0; }
+}
 
 /* ═══ THE RUNNING THREAD ══════════════════════════════════════════════════
    ⭐⭐ Daniel: "a chat part of it — a way to retain people." The shape he agreed

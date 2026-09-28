@@ -736,10 +736,29 @@ export function Map({
       {/* ⭐⭐ THE WAY INTO THE HISTORY, and only once there is a history to see.
           On a first plan this link would point at a page that can only say
           "nothing here yet", which is worse than no link. */}
+      {/* ⭐⭐ ONCE YOU ARE IN A NEW CHAPTER, THE PLAN HAS TO SAY SO. Daniel:
+          "make sure that this new section looks different by colour or
+          something, making it distinguishable."
+
+          The door into a chapter is already the one dark screen in the product —
+          but the plan it opens onto looked identical to the first one, so the
+          only place the change was visible was the screen you pass through. This
+          is the marker that stays.
+
+          ⚠️ SUN, NOT GREEN, AND THAT IS THE WHOLE POINT. Green is the product's
+          working colour — every tick, every button, every move. The single
+          accent is reserved (the now-marker, the seen card, the final button),
+          and a chapter is exactly the kind of thing it is reserved FOR: rare,
+          structural, and about where you are rather than what to do.
+
+          ⚠️ It is a BAND, not a badge in a corner. A chapter is a fact about the
+          whole page, so it sits across the top of it. */}
       {chapter > 1 && (
-        <p className="wayout__chaptercrumb wayout__r" style={at(2.35)}>
-          <Link to={`${WAYOUT_BASE}/history`}>Chapter {chapter} · see the whole way here →</Link>
-        </p>
+        <div className="wayout__chapterband wayout__r" style={at(2.3)}>
+          <b>Chapter {chapter}</b>
+          <span>Built from what actually happened last time.</span>
+          <Link to={`${WAYOUT_BASE}/history`}>The whole way here →</Link>
+        </div>
       )}
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
