@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { loadDraft, saveDraft } from '../../lib/wayout/draft'
 import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
 import { WAYOUT_HOME, WAYOUT_INTAKE, timeLine } from '../../lib/wayout/brand'
+import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 
 /**
@@ -448,16 +449,17 @@ function Result({ answers, note }) {
         >
           Keep going — next question
         </Link>
-        <p className="wayout__hint wayout__rise wayout__r3">
-          Nothing you just answered gets asked twice.
-        </p>
+        {/* 🔴 "Nothing you just answered gets asked twice." — Daniel: "pointless
+            to say." He is right: it reassures against a fear nobody has yet, and
+            a product that says it will not waste your time is spending your time
+            saying so. If it is true, the next screen proves it. */}
 
         {/* ⭐ Their own sentence, back on the screen. It is the only thing here
             they wrote rather than tapped, and showing it is the cheapest proof
             available that something was actually read. */}
         {note?.trim() && (
           <div className="wayout__seen" style={{ marginTop: 26 }}>
-            <q>{note.trim()}</q>
+            <q>{tidyQuote(note)}</q>
             <b>The questions ahead plan around this. It’s the part six taps can’t hold.</b>
           </div>
         )}

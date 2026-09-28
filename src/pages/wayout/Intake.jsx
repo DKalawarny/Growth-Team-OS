@@ -120,6 +120,28 @@ export default function Intake({ preview = false, previewReflections = null }) {
           // A paid session is finished — send them to the plan they bought
           // rather than showing an empty form on top of it.
           else if (s.status === 'paid') navigate(`${WAYOUT_BASE}/plan`, { replace: true })
+          /**
+           * 🔴🔴 THE DEAD END AT THE END OF THE WHOLE FLOW. Daniel: "when i went
+           * to create an account and did that here is where it brought me" — back
+           * into the questions, on a screen he had already answered.
+           *
+           * Somebody signed out answers everything into a local draft, hits the
+           * account wall, signs up, and lands on `/plan`. `markComplete` is only
+           * called on the branch that HAS a session, and they never had one while
+           * answering — so the session stayed `draft`, `/plan` bounced them to the
+           * intake, and the intake put them back on a question.
+           *
+           * ⭐⭐ THE FIX IS TO ASK THE ANSWERS, NOT THE ROUTE. If there is nothing
+           * left to ask, there is nothing to show them here — mark it complete and
+           * send them to the plan they just finished earning. That is true however
+           * they got here, which the draft's step number was not.
+           */
+          else if (intakeIsComplete(s.answers ?? {})) {
+            markComplete(s.id, s.answers)
+              .then(() => { if (!cancelled) navigate(`${WAYOUT_BASE}/plan`, { replace: true }) })
+              .catch(err => { if (!cancelled) setLoadError(err.message) })
+            return
+          }
           // Someone part-way through resumes where they stopped rather than
           // re-reading questions they already answered.
           else if (s.answers && Object.keys(s.answers).length > 0) {
@@ -480,11 +502,26 @@ function visibleFields(screen, answers) {
   return (screen?.fields ?? []).filter(f => !f.showIf || f.showIf(answers))
 }
 
+/**
+ * 🔴🔴 THIS RETURNED THE LAST SCREEN WHEN EVERY SCREEN WAS ANSWERED, and that
+ * off-by-one is half of the worst bug in the product: somebody finished all the
+ * questions, was asked to make an account, made one — and was dropped back onto
+ * a question they had already answered.
+ *
+ * ⭐ Past the last screen is `WAYOUT_TOTAL_SCREENS + 1`, which is the open box.
+ * Returning `WAYOUT_TOTAL_SCREENS` means "go and read screen six again".
+ */
 function firstUnansweredStep(answers) {
   for (let i = 0; i < WAYOUT_SCREENS.length; i++) {
     const unanswered = visibleFields(WAYOUT_SCREENS[i], answers)
       .some(f => !isAnswered(f, answers[f.key]))
     if (unanswered) return i + 1
   }
-  return WAYOUT_TOTAL_SCREENS
+  return WAYOUT_TOTAL_SCREENS + 1
+}
+
+/** Every screen answered AND the open box written. Nothing left to ask. */
+function intakeIsComplete(answers) {
+  return firstUnansweredStep(answers) > WAYOUT_TOTAL_SCREENS
+    && isAnswered(WAYOUT_OPEN.field, answers[WAYOUT_OPEN.field.key])
 }

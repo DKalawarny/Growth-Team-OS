@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
@@ -7,6 +7,7 @@ import {
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
+import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -619,7 +620,10 @@ export function Map({
               contract while the insight survives, so a card can legitimately
               arrive with no quote at all — rendering an empty <q> printed a pair
               of bare quotation marks with nothing between them. */}
-          {map.seen.quote && <q>{map.seen.quote}</q>}
+          {/* ⚠️ Tidied at RENDER, never in storage — the verbatim guard has already
+              passed on the stored string. See tidyQuote.js for why spelling is
+              deliberately left alone. */}
+          {map.seen.quote && <q>{tidyQuote(map.seen.quote)}</q>}
           <b>{map.seen.insight}</b>
         </div>
       )}
@@ -803,6 +807,33 @@ export function Map({
           })}
         </div>
       </div>
+
+      {/* 🔴🔴 THREE MOVES DONE AND THEN NOTHING HAPPENED. Daniel, at the end of
+          the whole product: "once done all three there is no next step or
+          anything we talked about yet — what are we doing here?"
+
+          He is right and it is the worst possible place to stop. `/done` has
+          existed since 26 Sep — it asks whether it actually landed and starts the
+          next plan from the answer, which is the entire reason a subscription to
+          a product that FINISHES makes any sense. **Not one page linked to it.**
+
+          ⚠️ It appears only when every move is ticked. Offering "how did it go"
+          beside an unfinished plan is asking somebody to grade work they are
+          still doing. */}
+      {map.moves?.length > 0 && ticked.size >= map.moves.length && (
+        <div className="wayout__allthree">
+          <b>That is all three.</b>
+          <p>
+            The order is spent. What matters now is whether it actually moved
+            anything — and where you go from here depends on the answer, so it
+            is worth saying out loud.
+          </p>
+          {/* ⚠️ A Link, not navigate — this component is also rendered by
+              Preview.jsx to check the design, where there is no session to
+              navigate for. */}
+          <Link className="wayout__btn" to={`${WAYOUT_BASE}/done`}>Tell me how it went</Link>
+        </div>
+      )}
 
 
       {/* ⚠️ Two REAL columns. When the setup moved above the moves this left an

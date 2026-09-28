@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
+import { WAYOUT_BASE } from '../../lib/wayout/brand'
 
 /**
  * The way out — how to actually do the move you are on.
@@ -51,6 +53,17 @@ export default function Playbook({ play, index = 1, children, onSection }) {
 
   return (
     <WayoutShell title="This week" wide>
+      {/* 🔴 THERE WAS NO WAY BACK FROM HERE EXCEPT THE BROWSER BUTTON. Daniel:
+          "from this page and the previous one you should be able to go back to
+          the main plan — we need either a back button or a home plan button or
+          both." The only link to the plan sat at the very bottom of a page that
+          is several screens long, which on the densest page in the product means
+          it does not exist.
+          ⚠️ At the TOP, where somebody decides to leave — not at the end, which
+          is where somebody has already given up looking. */}
+      <p className="wayout__crumb">
+        <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
+      </p>
       <p className="wayout__who">Move {index} · how to actually do it</p>
       <h2>{play.title}</h2>
 

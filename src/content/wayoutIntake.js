@@ -408,7 +408,20 @@ export const WAYOUT_SCREENS = [
   {
     id: 's4',
     section: 'The arithmetic',
-    why: 'Rough is fine; nothing here is checked. These are the numbers your plan gets built from, and they decide what is actually possible rather than what sounds good.',
+    /**
+     * ⭐⭐ THE REASONING LIVES HERE NOW, ONCE. Daniel, on this screen: "say it
+     * only on one section." Four fields each carried a paragraph explaining why
+     * the number mattered — housing being the line plans move, the rate being
+     * what makes a debt worth clearing, the cut list needing nobody's
+     * permission. Every one of them was true and interesting, and together they
+     * turned a form into an essay with inputs in it.
+     * ⚠️ A field hint's job is to tell somebody HOW to answer. The reason to
+     * answer at all belongs to the section, said once, where it reads as the
+     * point of the screen rather than as the form defending itself.
+     */
+    why: 'Rough numbers are fine — this is the arithmetic the whole plan runs on, '
+      + 'and the two lines that decide most of it are what housing costs you and '
+      + 'what your debt is charging you.',
     question: 'Money, plainly.',
     reflectAfter: false,
     fields: [
@@ -446,7 +459,7 @@ export const WAYOUT_SCREENS = [
         key: 'savings',
         kind: 'number',
         label: 'Savings you could actually reach',
-        hint: 'Cash you could use without penalties. It decides how long a bad month is survivable, which decides how bold the plan can be.',
+        hint: 'Cash you could reach without a penalty.',
         required: false,
       },
       {
@@ -470,7 +483,7 @@ export const WAYOUT_SCREENS = [
         key: 'housingCost',
         kind: 'number',
         label: 'Of that, roughly how much is housing?',
-        hint: 'Rent or mortgage plus what comes with it — property tax, house insurance, heat and hydro. It is the line most plans end up moving, and knowing it is the difference between "you will need less" and a number.',
+        hint: 'Rent or mortgage plus property tax, insurance, heat and hydro.',
         required: false,
       },
       {
@@ -495,7 +508,7 @@ export const WAYOUT_SCREENS = [
         key: 'debt',
         kind: 'text',
         label: 'What you owe, and roughly what it costs you',
-        hint: 'Balances and rates if you know them — a statement will say. The rate is the whole difference between a debt worth clearing and one worth keeping, and almost nobody is ever shown that.',
+        hint: 'Balances and rates if you know them — a statement will say. The rate is what decides whether a debt is worth clearing.',
         placeholder: '$30k on cards at about 21%, $22k left on the truck at 4%',
         required: false,
       },
@@ -508,7 +521,7 @@ export const WAYOUT_SCREENS = [
         key: 'atStake',
         kind: 'choice',
         label: 'If the first thing you try doesn’t work, what does it cost you?',
-        hint: 'This sets how bold the plan is allowed to be. Wasted weekends and a mortgage are different amounts of room.',
+        hint: 'This sets how bold the plan is allowed to be.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
@@ -522,7 +535,7 @@ export const WAYOUT_SCREENS = [
         key: 'discretionary',
         kind: 'chips',
         label: 'Spending that isn’t must-pay',
-        hint: 'Not to shame anyone — the cut list is usually the fastest money on the page, and it is the only move that needs no customer and nobody’s permission.',
+        hint: 'Nothing here gets cut without you saying so.',
         allowCustom: true,
         required: false,
         options: [
@@ -630,10 +643,21 @@ export const WAYOUT_SCREENS = [
         hint: 'Some of the best options are seasonal — hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
         required: true,
         emptyMessage: 'Pick the closest one.',
+        /**
+         * 🔴 "weird options" — Daniel, and the fault is that one of them did not
+         * answer the question. The question asks about the SHAPE of the money:
+         * evenly, or in bursts. "Fewer hours every week, all year" is an answer
+         * about HOURS — it does not say whether the money arrives evenly, and
+         * somebody who wants both has to pick between two things that are not
+         * alternatives.
+         * ⭐ Hours are already asked properly on the work screen, so the option
+         * was also collecting an answer we had. Replaced with the third real
+         * shape of a year: one big payday that has to last.
+         */
         options: [
           { key: 'steady', label: 'Evenly — the same every month' },
           { key: 'seasonal', label: 'In bursts — flat out, then time off' },
-          { key: 'fewer-hours', label: 'Fewer hours every week, all year' },
+          { key: 'lumpy', label: 'One big payday I make last' },
           { key: 'dontmind', label: 'Don’t mind' },
         ],
       },
@@ -685,8 +709,15 @@ export const WAYOUT_SCREENS = [
         // amount of good sequencing survives that.
         key: 'refuse',
         kind: 'text',
-        label: 'What wouldn’t you do, whatever it paid?',
-        placeholder: 'Knocking on doors. Managing people. Anything on a phone.',
+        /**
+         * 🔴 "don't like the wording." "Whatever it paid" is a dare — it invites
+         * somebody to prove they are not precious rather than to answer, and the
+         * people most likely to under-answer it are exactly the ones whose first
+         * move then gets built on something they will quietly never start.
+         * ⭐ The honest version asks about the plan, not about their character.
+         */
+        label: 'What is off the table? Anything you would not do, even if it worked.',
+        placeholder: 'Cold calling. Managing staff again. Anything that means weekends.',
         // 🔴 REQUIRED as of 27 Sep. A plan containing something they would never do is
         // not a plan, it is a list they will close — and this is the only field
         // that stops it being written.
@@ -724,14 +755,36 @@ export const WAYOUT_SCREENS = [
         // those and THEN describe their life gets the categories back in
         // sentence form. An open question asked second is not an open question.
         //
-        // ⚠️ "A Tuesday" stays. It is the part that works — it stops the answer
-        // being "happy and free" and makes it "school run, then the shop, home
-        // by four". A plan can be built out of the second one.
+        /**
+         * 🔴🔴 "A TUESDAY" IS GONE FROM WHAT ANYBODY READS. Daniel, on a plan
+         * that came back saying "the thing between you and Tuesday is sequence,
+         * not resources": "this last sentence doesn't make sense — you and
+         * tuesday. Cut that stuff out."
+         *
+         * ⭐⭐ THE DEVICE WAS OURS, NOT THEIRS. Picking an arbitrary weekday is a
+         * writing trick for getting a specific answer instead of "happy and
+         * free" — and it works. But the moment the word travels back out of the
+         * product it is a private reference the reader was never in on, and it
+         * reads as the machine talking to itself. The key stays `tuesday` because
+         * renaming it would strand every stored session; nothing a person sees
+         * says it.
+         *
+         * ⚠️ THE SPECIFICITY IS KEPT — it is the whole value of the question. It
+         * is now carried by the hint asking for the ordinary detail, which is
+         * what was doing the work anyway.
+         *
+         * 🔴 AND THE EXAMPLE WAS "AI TALK". Daniel: "up at 7 without an alarm —
+         * that's more AI talk, don't like it." He is right about why: it is a
+         * lifestyle-brand morning, not a life. Nobody describes their own day in
+         * a rising tricolon. The replacement is flatter, has a job and a
+         * complication in it, and sounds like somebody answering a question
+         * rather than writing copy about themselves.
+         */
         key: 'tuesday',
         kind: 'text',
-        label: 'What do you actually want out of this? Picture a Tuesday three years from now — where are you, doing what, with who?',
-        hint: 'This is the one that shapes everything else, so take a minute. Ordinary detail beats big words — what time you get up, who is in the house, what you do that morning.',
-        placeholder: 'Up at 7 without an alarm. Kids to school. Two hours on the books, then the shop. Home for dinner, every day.',
+        label: 'Three years from now, what does a normal day look like? Where are you, doing what, with who?',
+        hint: 'This is the one that shapes everything else, so take a minute. An ordinary weekday, not a holiday — what you get up for, who is around, what you are doing by mid-morning.',
+        placeholder: 'Still working, but not six days. Home when the kids get in. Not driving an hour each way.',
         required: true,
         emptyMessage: 'A few lines is enough.',
       },
@@ -786,9 +839,20 @@ export const WAYOUT_SCREENS = [
         kind: 'text',
         // 🔴 "too vague of a question". It is the most important number on the
         // form and it was asked in three words with no anchor.
-        label: 'What would you need coming in each month for this to be worth it?',
-        hint: 'A number if you have one. If not, describe the week you’d be happy with and it’ll work the number out. This is the figure the whole plan aims at — and sometimes the useful answer is that you passed it already.',
-        placeholder: '$4,500 and my Fridays · enough that I stop checking the balance',
+        /**
+         * 🔴 "worded weird, it wouldn't apply to all types of people." Two faults,
+         * and Daniel named the second one. "Worth it" measures the PLAN against a
+         * number, which only parses for somebody chasing more — the person
+         * stepping back, or trading money for hours, is being asked whether their
+         * own life clears a bar. And "$4,500 and my Fridays" is a trade only one
+         * kind of person is making.
+         * ⭐ The question is really "what does this have to cover" — which is the
+         * same question whether they are climbing or getting out, and it is the
+         * figure the whole plan aims at either way.
+         */
+        label: 'What does it need to bring in each month for this to work?',
+        hint: 'A number if you have one, or the shape of it — covering the bills, or the bills plus something. Sometimes the useful answer is that you passed it already.',
+        placeholder: 'About $4,500 — enough to cover everything without watching the account.',
         required: false,
       },
     ],

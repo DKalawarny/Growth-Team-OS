@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import Playbook from './Playbook'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
@@ -84,6 +84,12 @@ function Asking({ move, questions, busy, onSubmit }) {
 
   return (
     <WayoutShell title="Before I write this">
+      {/* ⚠️ Same reason as the playbook's crumb — this screen asks two questions
+          and then commits to writing a week, and until now the only exit was the
+          browser's back button. */}
+      <p className="wayout__crumb">
+        <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
+      </p>
       <p className="wayout__q">
         {questions.length > 1 ? `${questions.length} things before I write it.` : 'One thing before I write it.'}
       </p>

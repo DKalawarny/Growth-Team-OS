@@ -93,6 +93,22 @@ export default function Enter() {
   // him between "you already have an account" and "invalid credentials" with no
   // exit. Eliv8's own login has a reset; this one never did.
   const [resetSent, setResetSent] = useState(false)
+  /**
+   * 🔴🔴 STICKY, AND THAT IS THE WHOLE POINT. Daniel, at the end of the
+   * questions: "it needs to be set up account not log in." This screen DOES open
+   * on Create an account — but he has an Eliv8 account, so his signup came back
+   * "already registered", the mode flipped to sign-in, and the notice explaining
+   * why was then WIPED by `clearMessages()` on his very next submit.
+   *
+   * What was left was a bare "Welcome back." over a password error, on a product
+   * he had never signed into. The screen looked like a login wall that had been
+   * there all along.
+   *
+   * ⚠️ A notice cleared on the next action is a notice that vanishes exactly
+   * when it is finally needed. This one is a FACT about the account, not a
+   * message about the last attempt, so it outlives both.
+   */
+  const [known, setKnown] = useState(false)
 
   /** One place, so nothing can be left showing from a previous attempt. */
   function clearMessages() {
@@ -153,6 +169,7 @@ export default function Enter() {
       const already = /already registered|already exists/i.test(err?.message ?? '')
       if (already) {
         setMode('in')
+        setKnown(true)
         setNotice('You already have an account with that email. Sign in and your answers come with you — or reset the password below if you don’t have it.')
       } else if (/invalid login credentials/i.test(err?.message ?? '')) {
         // ⚠️ Never "wrong password" — it might be the wrong email, and telling
@@ -187,11 +204,21 @@ export default function Enter() {
               the way to the questions has not answered any yet, so telling them
               their answers are safe is a sentence about nothing. Someone headed
               for the plan has one. */}
-          <h1>{mode === 'in' ? 'Welcome back.' : headingFor(next)}</h1>
+          {/* ⚠️ THREE STATES, NOT TWO. "Welcome back" is only honest for somebody
+              who CHOSE to sign in. Somebody who just tried to create an account
+              and turned out to have one is neither new nor returning, and telling
+              them either is wrong. */}
+          <h1>
+            {known ? 'You already have one.'
+              : mode === 'in' ? 'Welcome back.'
+              : headingFor(next)}
+          </h1>
           <p className="wayout__lead">
-            {mode === 'in'
-              ? 'Your answers and your plan are where you left them.'
-              : leadFor(next)}
+            {known
+              ? 'That email is already registered. Sign in and everything you just answered comes with you — or send yourself a reset link below.'
+              : mode === 'in'
+                ? 'Your answers and your plan are where you left them.'
+                : leadFor(next)}
           </p>
         </div>
 
@@ -295,7 +322,7 @@ export default function Enter() {
             <button
               type="button"
               className="wayout__linkbtn"
-              onClick={() => { setMode(mode === 'new' ? 'in' : 'new'); clearMessages() }}
+              onClick={() => { setMode(mode === 'new' ? 'in' : 'new'); setKnown(false); clearMessages() }}
             >
               {mode === 'new' ? 'Sign in' : 'Create an account'}
             </button>

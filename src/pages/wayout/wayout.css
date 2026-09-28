@@ -502,8 +502,13 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 /* ⚠️ The press has to be visible or the raise reads as decoration. */
 .wayout__chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #DDD5C0; }
+/* ⚠️ GREEN, NOT SUN. A 3px amber ring around a chip the person had just chosen
+   read as a warning on the one control that had gone right — Daniel flagged the
+   group as "layout doesn't fit" and this was half of what looked wrong. Sun is
+   the product's single accent and it is spoken for: the now-marker, the seen
+   card and the final button. A focus ring is not an accent. */
 .wayout__chip:focus-visible {
-  outline: 3px solid var(--sun); outline-offset: 3px;
+  outline: 2px solid var(--green); outline-offset: 3px;
 }
 /* ⭐ A custom chip is styled identically to a built-in, on purpose. The jet-ski
    case is the whole point of S3: if the thing someone added themselves looks
@@ -1552,13 +1557,31 @@ h1.wayout__heroline {
 }
 
 .wayout__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; align-items: center; }
+/* 🔴 IT WAS THE SMALLEST THING ON THE CARD AND IT IS THE POINT OF THE CARD.
+   Daniel: "Show me how button should be more prominent — I could see people not
+   clicking it." At 12px in near-black it sat level with "Mark done" beside it,
+   so the two controls read as a pair of equal options when one of them opens the
+   whole paid half and the other is a checkbox.
+   ⭐ Bigger, in the product's own green, with a lift — and `wayout__mark` next to
+   it stays quiet, which is what makes this one read as the thing to press. */
 .wayout__acts .wayout__go {
-  border: 0; background: var(--ink); color: var(--paper); font: inherit;
-  font-size: 12px; font-weight: 700; padding: 9px 15px; border-radius: 999px; cursor: pointer;
+  border: 0; background: var(--green); color: #fff; font: inherit;
+  font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 2px 0 #235F3C, 0 8px 18px -8px rgba(47, 125, 79, .55);
+  transition: transform .16s cubic-bezier(.22, 1, .36, 1), box-shadow .16s;
+}
+.wayout__acts .wayout__go:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #235F3C, 0 14px 24px -10px rgba(47, 125, 79, .6);
+}
+.wayout__acts .wayout__go:active:not([disabled]) { transform: translateY(1px); box-shadow: 0 1px 0 #235F3C; }
+@media (prefers-reduced-motion: reduce) {
+  .wayout__acts .wayout__go { transition: none; }
+  .wayout__acts .wayout__go:hover:not([disabled]) { transform: none; }
 }
 .wayout__acts .wayout__go[disabled] {
   background: transparent; color: var(--soft); border: 2px dashed #C4BCA4;
-  padding: 7px 13px; cursor: not-allowed;
+  padding: 10px 18px; font-size: 12.5px; cursor: not-allowed; box-shadow: none;
 }
 .wayout__mark {
   display: inline-flex; align-items: center; gap: 7px;
@@ -2127,3 +2150,41 @@ h1.wayout__heroline {
    in at a glance. */
 .wayout__fields .wayout__scores,
 .wayout__fields .wayout__scorerow { max-width: 760px; }
+
+/* ⭐⭐ THE WAY BACK TO THE PLAN, at the top of every page that is not it.
+   🔴 Daniel, on the move pages: "from this page and the previous one you should
+   be able to go back to the main plan — we need either a back button or a home
+   plan button or both." The only link sat at the foot of a page several screens
+   long, which on the densest page in the product is the same as no link.
+   ⚠️ Quiet on purpose. It is an exit, not an action — competing with the thing
+   the page is asking somebody to do would be the opposite fix. */
+.wayout__crumb { margin: 0 0 18px; font-size: 13.5px; }
+.wayout__crumb a {
+  color: var(--soft); text-decoration: none; font-weight: 600;
+  padding: 7px 13px 7px 10px; margin-left: -10px; border-radius: 999px;
+  display: inline-block; transition: background .15s, color .15s;
+}
+.wayout__crumb a:hover { color: var(--green); background: #EDF3EE; }
+
+/* ⭐⭐ THE END OF THE ORDER — shown only when all three are ticked.
+   🔴 Daniel: "once done all three there is no next step or anything we talked
+   about yet, what are we doing here?" /done had existed for two days and
+   nothing linked to it, so the product simply stopped.
+   ⚠️ It sits ON the board rather than under it: the moves are what they have
+   been looking at, and a next step announced somewhere else is a next step
+   nobody finds. */
+.wayout__allthree {
+  margin: 40px 0 8px;
+  padding: 26px 28px 28px;
+  border-radius: 18px;
+  background: var(--tint);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  max-width: 640px;
+}
+.wayout__allthree b { display: block; font-size: 19px; margin-bottom: 8px; }
+.wayout__allthree p { margin: 0 0 18px; color: var(--soft); font-size: 15px; line-height: 1.55; max-width: 52ch; }
+.wayout__allthree .wayout__btn {
+  display: inline-block; width: auto; margin-top: 0;
+  padding-inline: 38px; text-decoration: none; text-align: center;
+}
