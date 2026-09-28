@@ -982,6 +982,33 @@ it. So the check-in carried **no `WAYOUT_VOICE` at all** and nobody found out.
 caught a real one on the way: `WAYOUT_VOICE` sat BELOW `WAYOUT_REFLECTION_PROMPT`,
 so the check-in could not have spliced it. Both proven to fail before being kept.
 
+⭐⭐ **27 SEP — THE URLs MOVED. The product is at the ROOT of its own domain:**
+`getunstuckmap.com`, `/start`, `/stuck/…`. The `/wayout` prefix stays on
+eliv8os.com. ⚠️ **ONE BUILD SERVES BOTH DOMAINS, so `WAYOUT_BASE` is decided at
+RUNTIME from `window.location.hostname`** and falls back to the prefix when there
+is no window — which is what keeps prerendering working. Every route is registered
+under BOTH prefixes and `public/_redirects` collapses the twins per host; the root
+is a REWRITE (200), not a redirect, so the URL stays clean; `canonicalUrl()` is
+host-INDEPENDENT on purpose.
+🔴 **`scripts/sitemap.mjs` runs in node where that fallback applies** — never use
+`WAYOUT_BASE` there or you publish eliv8os's internal paths under getunstuckmap's
+domain, disagreeing with every canonical.
+🔴 **A SECOND `<Route path="/">` NEVER FIRES.** React Router takes the first of
+two identical paths, so the host-aware root must be ONE route with a conditional
+element, not two routes. This shipped broken and only the cross-host check caught
+it — getunstuckmap.com was serving "The OS that runs on integrity".
+⭐⭐ **Test runtime host detection with puppeteer `--host-resolver-rules=MAP
+getunstuckmap.com 127.0.0.1`** — it is the only way to exercise it locally.
+
+🔴🔴 **AND THE PROCESS LESSON FROM THE SAME DAY: VERIFY ON THE RENDERED PAGE, NOT
+THE SOURCE.** I reported one copy change "done across the platform" THREE times
+while instances were still live. Every miss came from grepping what I had written
+rather than reading `document.body.innerText`. ⭐⭐ **State the count found and the
+count fixed, and reconcile them out loud** — the grep returned seven, I edited
+three, and never compared the numbers. ⭐ **And a claim that has to be right in
+more than two files belongs in ONE** — the same reason `pricing.js` owns the
+price; `brand.js` now owns the time promise.
+
 🔴 **NOT DONE — in the order it matters:**
 1. **Payments.** `WAYOUT_PAYMENTS_LIVE = false`. Needs a live Stripe
    **RECURRING** price at $29, its id in `STRIPE_PRICE_ID_WAYOUT`, a `wayout`
