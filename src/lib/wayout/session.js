@@ -421,6 +421,11 @@ export function crisisFrom(raw) {
   // impossible to suppress by wording alone, which is the failure that matters.
   // Without this, "this is not a crisis of money, it is something heavier" would
   // have been thrown away.
+  // ⚠️ SAFE, AND THE DISTINCTION IS THE WHOLE POINT OF THE RULE: this is a
+  // module constant read inside a FUNCTION BODY, so it is initialised long
+  // before this line ever runs. The fatal version is the same-scope one that
+  // took down /plan on 28 Sep — a const read earlier in the SAME function.
+  // eslint-disable-next-line no-use-before-define
   if (cut !== undefined && NARRATES_A_PLANNING_VERDICT.test(lead)) return null
 
   return { crisis: true, message: lead }

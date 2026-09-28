@@ -589,6 +589,11 @@ function firstSentence(text) {
  * by definition not made up, whatever word it is standing next to.
  */
 function isOneOfTheirs(figure, answers) {
+  // ⚠️ SAFE, AND THE DISTINCTION IS THE WHOLE POINT OF THE RULE: this is a
+  // module constant read inside a FUNCTION BODY, so it is initialised long
+  // before this line ever runs. The fatal version is the same-scope one that
+  // took down /plan on 28 Sep — a const read earlier in the SAME function.
+  // eslint-disable-next-line no-use-before-define
   return NAMED_QUANTITIES.some(({ key }) => {
     const v = Number(answers?.[key])
     return Number.isFinite(v) && String(answers?.[key] ?? '').trim() !== ''

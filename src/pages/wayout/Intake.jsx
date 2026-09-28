@@ -8,7 +8,7 @@ import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto
 import { saveDraft, loadDraft } from '../../lib/wayout/draft'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
-import { priceLine, priceShort, guaranteeLine } from '../../lib/wayout/pricing'
+import { priceShort } from '../../lib/wayout/pricing'
 
 /**
  * The way out — the opening screen and the six intake screens.

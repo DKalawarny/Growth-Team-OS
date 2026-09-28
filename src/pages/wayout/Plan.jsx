@@ -584,31 +584,6 @@ export function Map({
   const hasOpened = (progress?.started?.size ?? 0) > 0
   const [openCut, setOpenCut] = useState(null)
 
-  /**
-   * ⭐⭐ THE EVENT, NOT THE STATE. Rendering the card is not the same as marking
-   * the moment: a card that is simply present when the page loads is a fact,
-   * and a card that ARRIVES when the third box is ticked is a moment. This
-   * watches for the transition and nothing else.
-   *
-   * ⚠️ And it scrolls the card into view, because the third tick usually happens
-   * at the top of the board and the card sits below the notes. A celebration
-   * below the fold is the afterthought Daniel saw.
-   */
-  const finishRef = useRef(null)
-  const [justFinished, setJustFinished] = useState(false)
-  const wasAll = useRef(null)
-  const allTicked = (map?.moves?.length ?? 0) > 0 && ticked.size >= (map?.moves?.length ?? 0)
-  useEffect(() => {
-    // ⚠️ The first render establishes the baseline rather than firing. Somebody
-    // returning to a finished plan has not just finished it.
-    if (wasAll.current === null) { wasAll.current = allTicked; return }
-    if (allTicked && !wasAll.current) {
-      setJustFinished(true)
-      finishRef.current?.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' })
-    }
-    wasAll.current = allTicked
-  }, [allTicked])
-
   // ⭐⭐ Their own words on one move. `openNote` is which box is open, `draft` is
   // what is in it. One draft, not one per move — only one box is ever open, and
   // a map of drafts would be state nobody clears.
@@ -636,6 +611,42 @@ export function Map({
 
   const [localDone, setLocalDone] = useState(() => new Set())
   const ticked = done ?? localDone
+
+  /**
+   * ⭐⭐ THE EVENT, NOT THE STATE. Rendering the card is not the same as marking
+   * the moment: a card that is simply present when the page loads is a fact,
+   * and a card that ARRIVES when the third box is ticked is a moment. This
+   * watches for the transition and nothing else.
+   *
+   * ⚠️ And it scrolls the card into view, because the third tick usually happens
+   * at the top of the board and the card sits below the notes. A celebration
+   * below the fold is the afterthought Daniel saw.
+   *
+   * 🔴🔴 AND IT MUST STAY BELOW `ticked`. I first wrote this block fifty lines
+   * higher, where `allTicked` read `ticked` before its `const` existed — and
+   * `const` is not hoisted, so the whole plan page died on load with
+   * "Cannot access 'J' before initialization" in the minified build. It shipped.
+   *
+   * ⚠️ NOTHING CAUGHT IT: the tests never render this component with a map, the
+   * build only type-free-compiles, and the prerender cannot reach /plan because
+   * it needs a session. ⭐ Same TDZ trap that is documented for prompts.ts — it
+   * simply moved from the prompt layer to the component layer, where there was
+   * no guard. `Map.smoke.test.jsx` is that guard now.
+   */
+  const finishRef = useRef(null)
+  const [justFinished, setJustFinished] = useState(false)
+  const wasAll = useRef(null)
+  const allTicked = (map?.moves?.length ?? 0) > 0 && ticked.size >= (map?.moves?.length ?? 0)
+  useEffect(() => {
+    // ⚠️ The first render establishes the baseline rather than firing. Somebody
+    // returning to a finished plan has not just finished it.
+    if (wasAll.current === null) { wasAll.current = allTicked; return }
+    if (allTicked && !wasAll.current) {
+      setJustFinished(true)
+      finishRef.current?.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' })
+    }
+    wasAll.current = allTicked
+  }, [allTicked])
 
   function toggle(i) {
     // ⚠️ i is a zero-based index here and move_order is 1-based everywhere
