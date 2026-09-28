@@ -4,7 +4,7 @@ import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { readingForPrompt } from '../../content/wayoutReading'
 import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes } from './mapContract'
 import { parseModelJson } from './parseModelJson'
-import { loadDraft, clearDraft } from './draft'
+import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse } from './draft'
 import { historyForPrompt, chapterAnswers } from './chapterHistory'
 
 export { enforceMapContract, mapProblems } from './mapContract'
@@ -127,6 +127,9 @@ export async function loadOrCreateSession() {
 export async function adoptDraftInto(session) {
   const draft = loadDraft()
   if (!draft || !Object.keys(draft.answers ?? {}).length) return session
+  // 🔴 NEVER ACROSS ACCOUNTS. A draft stamped with a different user is somebody
+  // else's half-finished form left in this browser — see draft.js.
+  if (draftBelongsToSomeoneElse(session.user_id)) { clearDraft(); return session }
   const existing = Object.keys(session.answers ?? {}).length
   // ⚠️ Never overwrite real answers with a stray draft. Theirs wins.
   if (existing > 0) { clearDraft(); return session }
@@ -137,7 +140,12 @@ export async function adoptDraftInto(session) {
     .eq('id', session.id)
     .select()
     .single()
-  if (error) return session
+  if (error) {
+    // ⚠️ Stamp it even on failure — it is now associated with this account, and
+    // leaving it unstamped is what lets the next person inherit it.
+    stampDraft(session.user_id)
+    return session
+  }
   clearDraft()
   return data
 }
@@ -251,6 +259,10 @@ export async function wantPlaybook(sessionId) {
   if (error) throw new Error(error.message)
 }
 
+/**
+ * ⚠️ Stamped as soon as there IS an owner, so a draft written by somebody who is
+ * signed in can never be adopted by the next account in this browser.
+ */
 export async function saveAnswers(sessionId, answers) {
   const { error } = await supabase
     .from('wayout_sessions')

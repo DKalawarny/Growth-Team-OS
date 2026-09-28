@@ -5,7 +5,7 @@ import { Field, Dictate } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
-import { saveDraft, loadDraft } from '../../lib/wayout/draft'
+import { saveDraft, loadDraft, stampDraft, draftBelongsToSomeoneElse } from '../../lib/wayout/draft'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceShort } from '../../lib/wayout/pricing'
@@ -64,6 +64,13 @@ export default function Intake({ preview = false, previewReflections = null }) {
       if (cancelled) return
       if (!data?.user) {
         const d = loadDraft()
+        // ⚠️ Signed out, so an owned draft cannot be theirs to resume. Belt to
+        // the sign-in braces in Enter.jsx: whichever route somebody took to get
+        // here, another account's half-finished answers do not open.
+        if (draftBelongsToSomeoneElse(null)) {
+          navigate(`${WAYOUT_BASE}/start`, { replace: true })
+          return
+        }
         // ⭐ A COLD ARRIVAL GOES TO THE FRONT DOOR, NOT THE TILL. This screen
         // is the start of the fifteen-minute paid flow; the diagnostic is three
         // minutes, free, and proves something before asking for anything. A

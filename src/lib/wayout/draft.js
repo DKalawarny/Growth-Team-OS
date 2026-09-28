@@ -34,6 +34,37 @@ const KEY = 'wayout:draft'
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000
 
 /** Save the whole answers document. Silent on failure — private mode, full disk. */
+/**
+ * ⭐⭐ WHOSE DRAFT IS THIS? A second line of defence behind the clear-on-sign-in
+ * rule in Enter.jsx.
+ *
+ * 🔴 A draft written while signed in as one account must never be handed to
+ * another. It cannot be scoped at CREATION — the whole point is that it exists
+ * before anybody has an account — so it is stamped the moment there IS one, and
+ * a stamped draft only unlocks for the account named on it.
+ *
+ * ⚠️ An UNSTAMPED draft is the ordinary anonymous case and stays adoptable; that
+ * is the sign-up flow the product is built on.
+ */
+export function stampDraft(userId) {
+  try {
+    const raw = localStorage.getItem(KEY)
+    if (!raw) return
+    const d = JSON.parse(raw)
+    localStorage.setItem(KEY, JSON.stringify({ ...d, uid: userId }))
+  } catch { /* nothing to do about it */ }
+}
+
+/** True when this draft was written by somebody else's account. */
+export function draftBelongsToSomeoneElse(userId) {
+  try {
+    const raw = localStorage.getItem(KEY)
+    if (!raw) return false
+    const { uid } = JSON.parse(raw)
+    return Boolean(uid) && uid !== userId
+  } catch { return false }
+}
+
 export function saveDraft(answers, step) {
   try {
     localStorage.setItem(KEY, JSON.stringify({ answers, step, at: Date.now() }))

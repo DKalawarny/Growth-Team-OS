@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { parkPendingAcceptance } from '../../lib/terms'
+import { clearDraft } from '../../lib/wayout/draft'
 import { WAYOUT_BASE, WAYOUT_INTAKE, WAYOUT_NAME_TITLE, WAYOUT_TOTAL_TIME} from '../../lib/wayout/brand'
 
 /**
@@ -76,7 +77,18 @@ export default function Enter() {
   // someone who had never made one. On a product with no users, first-time IS
   // the common case, and greeting a stranger as a returning customer is the
   // kind of small dishonesty people notice immediately.
-  const [mode, setMode]         = useState('new')  // 'new' | 'in'
+  /**
+   * 🔴🔴 THE LINK SAID "SIGN IN" AND OPENED A CREATE-ACCOUNT FORM. Daniel:
+   * "brings you to sign up not sign in." Every header in the product links here
+   * with the words "Already started? Sign in" — and this screen defaults to
+   * `new`, so it answered with "Before the questions." and a terms checkbox.
+   *
+   * ⭐⭐ THE DEFAULT IS STILL RIGHT; WHAT WAS MISSING IS THAT THE LINK COULD NOT
+   * SAY WHAT IT WANTED. On a product with almost no users, first-time IS the
+   * common case — so an unqualified /enter still opens on Create. A link that
+   * promises sign-in now asks for it: /enter?in=1.
+   */
+  const [mode, setMode]         = useState(params.get('in') === '1' ? 'in' : 'new')  // 'new' | 'in'
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [agreed, setAgreed]     = useState(false)
@@ -158,6 +170,27 @@ export default function Enter() {
       } else {
         const { error: e2 } = await supabase.auth.signInWithPassword({ email, password })
         if (e2) throw e2
+        /**
+         * 🔴🔴 A DRAFT BELONGS TO A SIGN-UP, NEVER TO A SIGN-IN. Daniel, logging
+         * in on a fresh account: "I log in fresh, now this shows up — not my
+         * account." He landed halfway through the questions, on somebody else's
+         * answers.
+         *
+         * `wayout:draft` is localStorage and is NOT user-scoped — it cannot be,
+         * because it exists before anybody has an account. `adoptDraftInto`
+         * refuses to overwrite real answers, but a FRESH account has none, so it
+         * took the draft left in the browser.
+         *
+         * ⭐⭐ THE RULE THAT MAKES IT SAFE IS ABOUT INTENT, NOT IDENTITY: the only
+         * legitimate path from an anonymous draft to an account is SIGNING UP at
+         * the end of the questions you just answered. Somebody signing IN already
+         * has their answers on the server — a draft in the browser is by
+         * definition not theirs.
+         *
+         * ⚠️ Sign-in is also the one moment we can be certain a different person
+         * may be at the keyboard, which is exactly when a shared laptop leaks.
+         */
+        clearDraft()
         navigate(next, { replace: true })
       }
     } catch (err) {
@@ -317,7 +350,12 @@ export default function Enter() {
             </p>
           )}
 
-          <p className="wayout__hint">
+          {/* ⚠️ "at minimum it should be clearer on the log-in screen, it's small."
+              This is the only way between the two states and it was set as a
+              hint — the smallest, quietest type on the page, under the fold on a
+              phone. It is the escape hatch for anybody who arrived at the wrong
+              one of the two, which on this screen is half the people. */}
+          <p className="wayout__switch">
             {mode === 'new' ? 'Already started? ' : 'First time? '}
             <button
               type="button"

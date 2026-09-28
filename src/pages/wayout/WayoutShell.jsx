@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { clearDraft } from '../../lib/wayout/draft'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, canonicalUrl } from '../../lib/wayout/brand'
 import './wayout.css'
 
@@ -28,6 +31,20 @@ import './wayout.css'
 export default function WayoutShell({
   children, count, title, noindex = true, wide = false, canonicalPath = '', signIn = false,
 }) {
+  /**
+   * ⚠️ READ ONCE, NOT SUBSCRIBED. This is only deciding whether to draw a link,
+   * so it does not need to follow every auth event — and `useAuth` is Eliv8's
+   * context, which this product deliberately does not mount.
+   */
+  const [signedIn, setSignedIn] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled) setSignedIn(Boolean(data?.session))
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
   return (
     <div className="wayout">
       <Helmet>
@@ -94,10 +111,40 @@ export default function WayoutShell({
               ⚠️ Deliberately quiet, and never on the plan itself: on the pages
               where somebody is mid-flow it would be an exit sign beside the work,
               and anyone already signed in does not need it. */}
-          {signIn && (
-            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter`}>
+          {signIn && !signedIn && (
+            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter?in=1`}>
               Already started? Sign in
             </Link>
+          )}
+
+          {/* 🔴🔴 THERE WAS NO WAY OUT OF THIS PRODUCT AT ALL. Daniel, about to
+              hand it to people: "so if i ask someone tests this out they will see
+              what i wrote down?"
+
+              The database answer is no — `wayout_sessions` is RLS-scoped to
+              `auth.uid() = user_id`, so another account cannot read a word of
+              his. ⭐⭐ THE BROWSER ANSWER WAS YES, AND THAT IS THE ONE THAT
+              MATTERS ON A SHARED LAPTOP: the session persists, the local draft
+              (`wayout:draft`) is not user-scoped, and this product had NO sign
+              out anywhere — the only ones in the codebase are Eliv8's sidebar,
+              which nobody here ever sees. Handing somebody your laptop meant
+              handing them your plan.
+
+              ⚠️ It clears the DRAFT as well as the session. Signing out while
+              leaving an anonymous draft in localStorage would leave the next
+              person answering into your half-finished form. */}
+          {signedIn && (
+            <button
+              type="button"
+              className="wayout__signout"
+              onClick={async () => {
+                clearDraft()
+                await supabase.auth.signOut()
+                window.location.assign(WAYOUT_BASE || '/')
+              }}
+            >
+              Sign out
+            </button>
           )}
         </div>
         {children}

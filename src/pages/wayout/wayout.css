@@ -2635,3 +2635,28 @@ h1.wayout__heroline {
 .wayout__sent {
   margin: 22px 0 0; font-size: 14.5px; font-weight: 600; color: var(--green);
 }
+
+/* ⚠️ THE ONLY WAY BETWEEN CREATE AND SIGN IN, AND IT WAS A HINT — the smallest,
+   quietest type on the page. Daniel: "at minimum it should be clearer on the
+   log-in screen, it's small." On this screen roughly half the people arrive at
+   the wrong one of the two, so this is not a footnote, it is a control. */
+.wayout__switch {
+  margin: 20px 0 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 15px; color: var(--soft);
+}
+.wayout__switch .wayout__linkbtn {
+  font-size: 15px; font-weight: 700; color: var(--green);
+  background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.wayout__switch .wayout__linkbtn:hover { color: var(--ink); }
+
+/* ⚠️ QUIET, AND PRESENT ON EVERY PAGE. It is an exit, not an action — but a
+   product somebody is going to hand to a friend on their own laptop needs one
+   that can always be found, not one behind a menu. */
+.wayout__signout {
+  margin-left: auto; background: none; border: 0; font: inherit;
+  font-size: 13px; font-weight: 600; color: var(--soft);
+  cursor: pointer; padding: 6px 10px; border-radius: 999px;
+}
+.wayout__signout:hover { color: var(--green); background: #EDF3EE; }

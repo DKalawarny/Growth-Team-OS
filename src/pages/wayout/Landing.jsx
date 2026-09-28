@@ -123,7 +123,8 @@ export default function Landing() {
             <i />{WAYOUT_NAME}
             {/* 🔴 The only route back for somebody who already has an account.
                 /wayout/enter existed all along and nothing public linked to it. */}
-            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter`}>Already started? Sign in</Link>
+            {/* ⚠️ `?in=1` — a link that says "Sign in" has to arrive on sign-in. */}
+            <Link className="wayout__signin" to={`${WAYOUT_BASE}/enter?in=1`}>Already started? Sign in</Link>
           </div>
 
           <h1 className="wayout__heroline">
