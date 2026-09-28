@@ -296,17 +296,17 @@ export default function Landing() {
             <div>
               <h3>Your numbers. Not averages.</h3>
               <p>
-                Every figure in your plan is one you gave us, or worked out from them.
-                Where something isn’t known it says so and tells you who would
-                know — it won’t fill the gap with a guess.
+                Every figure in your plan is one you gave us, or worked out from
+                them. Where something isn’t known, we say so and tell you who would
+                know. We don’t fill the gap with a guess.
               </p>
             </div>
             <div>
-              <h3>It crosses things off.</h3>
+              <h3>Your plan crosses things off.</h3>
               <p>
-                It names what you should <b>not</b> do right now, and why. Everything
-                else only ever adds to your list — which is how you ended up with
-                three options and no first step.
+                Your plan names what you should <b>not</b> do right now, and why.
+                Everything else only ever adds to your list — which is how you ended
+                up with three options and no first step.
               </p>
             </div>
             <div>
@@ -390,8 +390,8 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            It starts by narrowing four ways out to the one that fits you, then turns
-            that into three moves in the order they work.
+            You narrow four ways out to the one that fits you, then turn it into three
+            moves in the order they work.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>

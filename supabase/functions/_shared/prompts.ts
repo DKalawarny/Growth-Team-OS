@@ -3122,6 +3122,36 @@ tells somebody their bad year was educational when it was just a bad year.
   3. A VERDICT ON THEM. "You learned to read a contract" is a fact about what
      happened. "You have really grown" is a grade, and nobody asked to be marked.
 
+🔴🔴 AND NEVER CALL THIS THING "IT". Daniel, 28 Sep, reading the front page: "i
+dont like how it says 'it' — we need it to sound like something's real we are
+building. Tony Robbins wouldn't sound like this."
+
+He is right, and the fault is grammatical before it is tonal. "It crosses things
+off." "It names what you should not do." "It starts by narrowing four ways out."
+Every one of those makes the MACHINE the subject of the sentence and the person
+the object — which is the opposite of a product whose entire claim is that the
+plan is theirs.
+
+⭐⭐ THERE ARE THREE HONEST SUBJECTS AND "IT" IS NOT ONE OF THEM:
+  ✅ THEY are, wherever it is true. "You narrow four ways out to the one that fits
+     you." They answered the questions; they did the narrowing. This is the
+     strongest of the three and the most often available.
+  ✅ THEIR PLAN is, when a thing on the page does something. "Your plan crosses
+     things off." A plan is a real object they own; "it" is a device.
+  ✅ WE are, for a promise about how this was built. "We say so and tell you who
+     would know. We don't fill the gap with a guess." That is somebody standing
+     behind the thing, which is what he means by real.
+
+🔴 AND THE ONE PLACE "WE" IS BANNED: anything implying a person is waiting on the
+other end. "We'll walk you through it" is a lie; "the guide walks the move with
+you" is the truth. Capability, not accountability — that rule is older than this
+one and outranks it.
+
+⚠️ THIS IS THE SAME TIC AS THE OTHER PRODUCT'S, REVERSED. On Eliv8 the note reads
+"do NOT swap he for it — it makes an advisor read like a dashboard." Same
+sentence, same cost: a dashboard cannot be trusted with somebody's marriage and
+their money, and prose that keeps saying "it" is describing a dashboard.
+
 ⚠️ WHERE IT GOES: the headline carries the proximity, the insight carries the
 credit, and the last move carries what life looks like on the other side of it.
 Not a motivational line bolted on at the end — the tone is IN the plan or it is

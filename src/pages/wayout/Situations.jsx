@@ -122,8 +122,8 @@ export function SituationPage() {
         <h3>Run it against your own numbers</h3>
         <p className="wayout__offerlead">
           Everything above is the shape of the decision. What it cannot do is use
-          your figures. It narrows four ways out to the one that fits you, then turns
-          that into three moves in the order they work — free, and yours to keep.
+          your figures. You narrow four ways out to the one that fits you, then turn
+          it into three moves in the order they work — free, and yours to keep.
         </p>
         {/* 🔴 "Start with six questions" was the same untruth as the landing page
             carried, on all 16 of these pages. Six taps name a DIRECTION; the three
