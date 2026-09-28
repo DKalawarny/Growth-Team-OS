@@ -155,6 +155,34 @@ export const WAYOUT_BASE = onOwnDomain() ? '' : '/wayout'
 export const WAYOUT_HOME = onOwnDomain() ? '/' : '/wayout/hello'
 
 /**
+ * 🔴🔴 WHERE THE QUESTIONS LIVE — AND THE REASON THIS CONSTANT HAD TO EXIST.
+ *
+ * On eliv8os.com the intake is `/wayout`, which is `WAYOUT_BASE` exactly. So
+ * five call sites were written as `` `${WAYOUT_BASE}?edit=1` `` or plain
+ * `navigate(WAYOUT_BASE)` and they worked — because the base and the intake's
+ * address happened to be the same string.
+ *
+ * 🔴 ON ITS OWN DOMAIN `WAYOUT_BASE` IS THE EMPTY STRING, and every one of those
+ * became a RELATIVE link. `to="?start=1"` does not mean "the root with a query";
+ * React Router resolves it against the page you are standing on. Daniel, on the
+ * result screen: "now i cant get past here it wont let me go forward." The
+ * address bar read `getunstuckmap.com/start/?start=1` — the button had sent him
+ * back to the page he was already on, so the only exit from the free diagnostic
+ * was gone on the domain the product actually lives at.
+ *
+ * ⭐⭐ A BASE PATH IS NOT AN ADDRESS. `WAYOUT_BASE` is a PREFIX — it is only ever
+ * valid with something after it. The moment it is used alone it is a destination,
+ * and on one of the two hosts that destination is nothing at all. Every screen
+ * that sends somebody to the questions uses this constant now, and
+ * `wayoutRoutes.test.js` fails the build if a bare base is used as a path again.
+ *
+ * ⚠️ AND THE TWO HOSTS DO NOT SHARE A ROUTE HERE. `/questions` is a word a person
+ * can read; `/wayout` is the internal slug, which stays on eliv8os.com where this
+ * is a second product inside somebody else's house.
+ */
+export const WAYOUT_INTAKE = onOwnDomain() ? '/questions' : '/wayout'
+
+/**
  * 🔴🔴 HOW LONG THIS TAKES, IN ONE PLACE, FOR THE SAME REASON THE PRICE IS.
  *
  * "Six questions, three minutes" was written across the landing page, the

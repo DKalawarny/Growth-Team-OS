@@ -6,7 +6,7 @@ import {
   loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
-import { WAYOUT_MAP_LABEL, WAYOUT_BASE } from '../../lib/wayout/brand'
+import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -53,7 +53,7 @@ export default function Plan() {
       .then(s => {
         if (cancelled) return
         setSession(s)
-        if (s.status === 'draft') { navigate(WAYOUT_BASE, { replace: true }); return }
+        if (s.status === 'draft') { navigate(WAYOUT_INTAKE, { replace: true }); return }
         // 🔴 A STORED MAP WAS NEVER RE-CHECKED. Daniel was still looking at
         // "$120k" the day after the figures guard shipped, because the map in
         // the database was written before it existed and this line handed it
@@ -178,7 +178,7 @@ export default function Plan() {
    * different one — which is not a loophole, it is the product.
    */
   function rebuild() {
-    navigate(`${WAYOUT_BASE}?edit=1`)
+    navigate(`${WAYOUT_INTAKE}?edit=1`)
   }
 
   /**

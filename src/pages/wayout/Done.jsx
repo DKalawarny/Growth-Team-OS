@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
-import { WAYOUT_BASE } from '../../lib/wayout/brand'
+import { WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } from '../../lib/wayout/session'
 
 /**
@@ -117,7 +117,7 @@ export default function Done() {
           plan for the person you are now, it starts from the questions again —
           and the answers will be different, which is the point.
         </p>
-        <button className="wayout__btn" onClick={() => navigate(`${WAYOUT_BASE}?edit=1`)}>
+        <button className="wayout__btn" onClick={() => navigate(`${WAYOUT_INTAKE}?edit=1`)}>
           Start a new plan
         </button>
         <p className="wayout__rebuild">

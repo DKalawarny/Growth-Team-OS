@@ -267,6 +267,12 @@
    this is written like a friend would write it, and a perfectly level band of
    colour is the opposite of that claim. */
 .wayout mark {
+  /* 🔴🔴 THE STROKE HAS NEVER BEEN VISIBLE. The browser's own `mark` rule paints
+     `background-color: yellow`, and setting only `background-image` leaves it
+     underneath — so every highlight in this product has rendered as a flat
+     rectangle of pure #FFFF00 with the hand-drawn stroke lost inside it. The
+     comment above describes exactly what was NOT on the screen. */
+  background-color: transparent;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='30' preserveAspectRatio='none'%3E%3Cpath d='M3 21 C 40 13, 92 25, 142 16 S 188 12, 197 18' stroke='%23FFE566' stroke-width='17' stroke-linecap='round' fill='none' opacity='.92'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   /* ⚠️ Capped in px, not a percentage. At 62% of a 76px line the "stroke"
@@ -316,7 +322,22 @@
   cursor: pointer;
   margin-top: 22px;
 }
-.wayout__btn:disabled { opacity: .55; cursor: default; }
+/* 🔴🔴 THE DISABLED STATE WAS NOT RENDERING AT ALL, AND THE CAUSE IS A TRAP
+   WORTH KNOWING: AN ANIMATION BEATS A DECLARATION.
+   This read `opacity: .55` and measured `opacity: 1` on the live page. The
+   question screens' entrance uses `animation: wayoutRise … both`, and `both`
+   means the final keyframe — which sets `opacity: 1` — keeps applying for as
+   long as the element exists. A running or filled animation wins over any
+   ordinary rule, so nothing here could ever dim it.
+   ⚠️ So EVERY multi-answer question showed a full-strength green "Next" that
+   did nothing when pressed. The one screen where somebody is deciding whether
+   this thing works had a button lying about being ready.
+   ⭐ The fix is not `!important` — it is to stop expressing "not yet" as
+   transparency. A grey button reads as a step that has not opened; a faded
+   green one reads as a green button on a broken page. */
+.wayout__btn:disabled {
+  background: #DED8C7; color: #8C8674; cursor: default; box-shadow: none;
+}
 /* The single accent. Only the now-marker, the seen card's border and the map's
    final button are allowed to use it. */
 .wayout__btn--sun { background: var(--sun); color: var(--ink); }
@@ -408,7 +429,7 @@
 }
 
 /* ── Chips ──────────────────────────────────────────────────────────────── */
-.wayout__chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.wayout__chips { display: flex; flex-wrap: wrap; gap: 11px; }
 /* Group heading. Quiet — it is a signpost, not a question, and the moment it
    competes with the question above it the screen has two of them. */
 .wayout__group {
@@ -421,22 +442,75 @@
 }
 .wayout__chips + .wayout__group,
 div:first-child > .wayout__group { margin-top: 14px; }
+/* 🔴🔴 THEY DID NOT LOOK LIKE CONTROLS. Daniel, on the question screens: "this
+   page and the ones ahead don't look like it's something to click, like you
+   started a questionnaire — maybe the selections need to be more prominent."
+
+   ⭐⭐ THE FAULT WAS THAT THEY WERE DRAWN LIKE TAGS, NOT LIKE BUTTONS. A hairline
+   pill in a low-contrast border on a cream page is the shape a website uses to
+   LABEL something — a category, a filter that is already applied. Nothing about
+   it said press me: no raise, no shadow, no change on hover, and 14.5px type
+   smaller than the hint underneath it.
+
+   Four changes, each one a thing a physical button has:
+     · a real target — 16px type and 26px of side padding, comfortably past the
+       44px minimum on touch
+     · a surface that sits ON the page rather than being drawn into it — white,
+       with a soft drop shadow
+     · a bottom edge a shade darker, which is the oldest button cue there is
+     · motion on hover and a real press, so the first one somebody touches
+       teaches them the rest of the screen is live
+
+   ⚠️ SIZE IS NOT THE SAME AS SHOUTING. The border stays a warm neutral until it
+   is chosen; making every option loud would remove the one signal that matters,
+   which is which ones you have picked. */
 .wayout__chip {
-  border: 2px solid #DCD6C6;
+  border: 1.5px solid #CFC7B0;
   background: #fff;
   border-radius: 999px;
-  padding: 9px 14px;
+  padding: 13px 26px;
   font: inherit;
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
+  box-shadow: 0 2px 0 #DDD5C0, 0 6px 14px -8px rgba(35, 48, 31, .28);
+  transition: transform .16s cubic-bezier(.22, 1, .36, 1), box-shadow .16s, border-color .16s, background .16s;
+}
+.wayout__chip:hover {
+  border-color: var(--green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #CBDFD2, 0 12px 22px -10px rgba(47, 125, 79, .45);
+}
+/* ⚠️ The press has to be visible or the raise reads as decoration. */
+.wayout__chip:active { transform: translateY(1px); box-shadow: 0 1px 0 #DDD5C0; }
+.wayout__chip:focus-visible {
+  outline: 3px solid var(--sun); outline-offset: 3px;
 }
 /* ⭐ A custom chip is styled identically to a built-in, on purpose. The jet-ski
    case is the whole point of S3: if the thing someone added themselves looks
    like an afterthought, they treat it as one. */
-.wayout__chip--on { border-color: var(--green); background: #E8F3EC; color: var(--green); }
-.wayout__chip--add { border-style: dashed; color: var(--soft); }
+/* ⭐⭐ CHOSEN IS FILLED, NOT TINTED. The old selected state was pale green type on
+   a pale green ground inside a green hairline — three quiet signals that add up
+   to one quiet signal. On a multi-select question, where the whole job of the
+   screen is showing what you have picked so far, "chosen" has to be the loudest
+   thing on it and readable at a glance from across the list. */
+.wayout__chip--on {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 2px 0 #235F3C, 0 8px 18px -8px rgba(47, 125, 79, .55);
+}
+.wayout__chip--on:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 0 #235F3C, 0 14px 24px -10px rgba(47, 125, 79, .6);
+}
+.wayout__chip--add { border-style: dashed; color: var(--soft); box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wayout__chip { transition: none; }
+  .wayout__chip:hover, .wayout__chip:active { transform: none; }
+}
 
 /* ── Reflection card ────────────────────────────────────────────────────── */
 .wayout__reflect {
@@ -1790,52 +1864,6 @@ h1.wayout__heroline {
 .wayout__situationcard p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
 
 
-/* ═══ THE FOUR PATHS, on the opening screen ═══════════════════════════════
-   ⭐⭐ The bottom two thirds of /wayout/start was empty while the four routes
-   this product chooses between were invisible until after six questions.
-   Daniel: "this is still not really speaking to me." Naming them makes the
-   promise concrete and the question personal in the same move.
-   ⚠️ Deliberately flatter than the plan board — these are options being
-   weighed, not a plan that has been decided. The board's pins and tilt are
-   reserved for the thing they get at the end. */
-.wayout__paths { margin-top: 64px; }
-.wayout__paths .wayout__label { margin-bottom: 18px; }
-
-.wayout__pathgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
-}
-
-.wayout__path {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 20px 20px 22px;
-  position: relative;
-  /* A quiet left rule in the sun token — one accent, the product's own, and it
-     reads as "an option on a list" rather than as a card competing with the
-     plan board. */
-  border-left: 3px solid var(--sun);
-}
-.wayout__path h3 {
-  font-size: 16px;
-  margin: 0 0 7px;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.wayout__path p {
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: var(--soft);
-  margin: 0;
-}
-
-.wayout__pathnote { margin-top: 18px; }
-
-@media (max-width: 560px) {
-  .wayout__paths { margin-top: 44px; }
-}
 
 /* ═══ THE SIX, AS A SEQUENCE ═══════════════════════════════════════════════
    ⭐⭐ Daniel's brief: "you know when you get a new phone and each question it
@@ -1882,6 +1910,43 @@ h1.wayout__heroline {
   font-size: clamp(30px, 4.2vw, 54px); line-height: 1.05; letter-spacing: -.03em;
   font-weight: 800; margin: 0 0 28px; max-width: 17ch; text-wrap: balance; color: var(--ink);
 }
+
+/* ⭐⭐ THE DECK — the one sentence the deleted opening screen existed to say,
+   above the first question only. It is set BELOW the question in the hierarchy
+   on purpose: the question is what somebody has to act on, and a deck that
+   outweighs it would rebuild the block-to-action in a smaller typeface. */
+.wayout__deck {
+  font-size: clamp(16px, 1.5vw, 19px); line-height: 1.4; font-weight: 700;
+  letter-spacing: -.01em; color: var(--soft); max-width: 42ch; margin: 0 0 20px;
+  text-wrap: balance;
+}
+.wayout__deck mark {
+  background: linear-gradient(transparent 58%, rgba(255, 180, 58, .55) 58%);
+  color: inherit; padding: 0 2px;
+}
+
+/* ⭐⭐ THE VERDICT SCREEN IS TIGHTER THAN A QUESTION, and it has to be. A question
+   is one line of type and then controls; the verdict carries a name, a reason
+   and the way on, and all three have to be reachable without scrolling or the
+   screen becomes the dead end Daniel found. The type comes down, not the
+   content — see the note on Result in Diagnostic.jsx. */
+/* ⚠️ `.wayout .wayout__frame--wide h1` (0,2,1) already sets the h1 size on every
+   wide screen, so a rule at `.wayout__verdict .wayout__bigq` (0,2,0) loses — its
+   margin and measure applied while its font-size silently did not, which is the
+   worst kind of near-miss because the rule LOOKS like it worked. Measured on the
+   rendered page: 51.84px against the 40px this asks for. */
+.wayout .wayout__verdict .wayout__bigq {
+  font-size: clamp(28px, 3.1vw, 40px); margin-bottom: 16px; max-width: 20ch;
+}
+.wayout__verdict .wayout__lead { margin-bottom: 10px; max-width: 54ch; }
+.wayout__verdict .wayout__body { margin-bottom: 22px; max-width: 58ch; }
+/* ⚠️ .wayout__btn is a block — fourth time. In this column it would span the
+   full 1240px and read as a banner rather than the way forward. */
+.wayout__verdict .wayout__btn {
+  display: inline-block; width: auto; min-width: 250px; padding-inline: 40px;
+  text-align: center; align-self: flex-start;
+}
+.wayout__verdict .wayout__hint { margin-top: 10px; }
 
 /* ── The Other box ──────────────────────────────────────────────────────── */
 .wayout__otherwrap {
@@ -1956,27 +2021,6 @@ h1.wayout__heroline {
   .wayout__prog b, .wayout__p { transition: none; }
 }
 
-/* ═══ THE OPENING SCREEN ═══════════════════════════════════════════════════
-   ⭐ Same shape as the six question screens that follow it — one measure, left,
-   big type — so pressing the button changes the words and not the layout. */
-.wayout__open { max-width: 46rem; }
-.wayout__open h1 {
-  font-size: clamp(30px, 4.2vw, 54px); line-height: 1.05; letter-spacing: -.03em;
-  font-weight: 800; margin: 0 0 18px; text-wrap: balance;
-}
-/* ⚠️ 34ch left "to you." alone on its own line. A measure that orphans the last
-   two words is too narrow for the sentence, not just unlucky. */
-.wayout__open .wayout__lead { max-width: 52ch; margin-bottom: 26px; }
-.wayout__open .wayout__body { max-width: 56ch; margin-bottom: 30px; }
-/* ⚠️ .wayout__fine is centred by default — correct under a centred CTA, wrong in
-   a left-aligned column, where it was the only centred thing on the screen. */
-.wayout__open .wayout__fine { text-align: left; }
-/* ⚠️ .wayout__btn is a block — third time. Inside a plain column it stretches to
-   the full measure and reads as a banner rather than a control. */
-.wayout__open .wayout__btn {
-  display: inline-block; width: auto; min-width: 230px; padding-inline: 42px;
-}
-.wayout__open .wayout__fine { margin-top: 14px; max-width: 58ch; }
 
 
 /* ⚠️ The sample plan's headline stopped being an <h2> (it was making an invented

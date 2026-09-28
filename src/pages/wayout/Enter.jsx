@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { parkPendingAcceptance } from '../../lib/terms'
-import { WAYOUT_BASE, WAYOUT_NAME_TITLE, WAYOUT_TOTAL_TIME} from '../../lib/wayout/brand'
+import { WAYOUT_BASE, WAYOUT_INTAKE, WAYOUT_NAME_TITLE, WAYOUT_TOTAL_TIME} from '../../lib/wayout/brand'
 
 /**
  * The way out — its own front door.
@@ -69,7 +69,7 @@ export default function Enter() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   // Where they were headed before they were asked to sign in.
-  const next = params.get('next') || WAYOUT_BASE
+  const next = params.get('next') || WAYOUT_INTAKE
 
   // 🔴 DEFAULTS TO CREATING AN ACCOUNT, not signing in. The door used to open on
   // "Welcome back — your answers and your plan are where you left them" for
