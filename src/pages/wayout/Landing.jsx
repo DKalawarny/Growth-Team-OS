@@ -140,9 +140,17 @@ export default function Landing() {
               they looked for "six questions" and the page says "Six HONEST
               questions". The durable fix is in brand.js: the promise about time
               now lives in one place, like the price. */}
+          {/* 🔴 ONE PLACE PER IDEA. Daniel: "it's still all over this page." He
+              was right and it was no longer a truth problem — "three minutes"
+              appeared FIVE times on one page and three times inside this hero
+              alone: the lead, the button and the fine print all said it. Said
+              once it is an offer; said five times it reads as insisting, which is
+              the same fault as the offer card saying "free" three times.
+              ⚠️ So the division is: the LEAD carries the proposition, the BUTTON
+              carries the ask, the FINE PRINT carries the arrangement. None of
+              them repeats another. */}
           <p className="wayout__herolead">
-            {WAYOUT_TAGLINE} Three minutes names which way is yours. The questions
-            after that put your moves in order — and say what to ignore.
+            {WAYOUT_TAGLINE} Which of your moves is first — and what to ignore.
           </p>
 
           <div className="wayout__herocta">
@@ -158,8 +166,8 @@ export default function Landing() {
                 times are stated now, because the honest version is also the
                 better funnel: a small first step with the real one named. */}
             <p className="wayout__fine">
-              No account, no card. Three minutes to your direction, about fifteen more
-              for the plan. {priceLine()}
+              No account, no card. About fifteen minutes more after that for the full
+              plan. {priceLine()}
             </p>
           </div>
         </div>
@@ -334,10 +342,10 @@ export default function Landing() {
               <span className="wayout__dealtag">Free — no account</span>
               <h3>The questions, then your plan</h3>
               <p>
-                Six taps name your direction in three minutes. The questions after
-                that build the plan — three moves in the order they work, what each is
-                worth in your own figures, and what to ignore. Yours to keep, and we
-                don’t ask for a card to see any of it.
+                Your direction first, then the questions that turn it into a plan —
+                three moves in the order they work, what each is worth in your own
+                figures, and what to ignore. Yours to keep, and we don’t ask for a
+                card to see any of it.
               </p>
             </div>
             <div>
@@ -383,8 +391,8 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            Three minutes tells you which way. The plan itself takes about fifteen more —
-            and every answer you have already given carries over.
+            Three minutes and you’ll know which way is yours. Everything after that
+            builds the plan, and nothing you have already answered gets asked twice.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>
