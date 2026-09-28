@@ -327,6 +327,25 @@ export const WAYOUT_SCREENS = [
     reflectAfter: true,
     fields: [
       {
+        // 🔴 The plan is a sequence and we were asking the horizon in YEARS
+        // while never asking how many hours a week exist to build it in. Five
+        // hours and twenty-five hours are different plans, not the same plan
+        // at different speeds.
+        key: 'hoursPerWeek',
+        kind: 'choice',
+        // 🔴 "hours a week to what? doesn't say."
+        label: 'How many hours a week could you put into changing things?',
+        hint: 'On top of what you already do — evenings, a weekend morning, whatever is genuinely spare. Be honest rather than hopeful: this decides the order of the moves more than anything else here.',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: '0-5',   label: 'Under 5' },
+          { key: '5-10',  label: '5 to 10' },
+          { key: '10-20', label: '10 to 20' },
+          { key: '20+',   label: 'More than 20' },
+        ],
+      },
+      {
         key: 'assets',
         kind: 'chips',
         allowCustom: true,
@@ -384,6 +403,14 @@ export const WAYOUT_SCREENS = [
           },
         ],
       },
+      /* ⭐⭐ MOVED OFF SCREEN 5 ON 28 SEP, AND THE REASON IS THE CURVE, NOT THE
+         CATEGORY. Measured: screen five had SEVEN required answers on one page —
+         two of them essays and one a ranking exercise — arriving straight after
+         the 231-word money screen. It is the heaviest thing in the product by a
+         distance and it sits two thirds of the way in, which is exactly where
+         somebody decides whether to finish.
+         ⚠️ These three are TAPS. They were making a hard screen longer while
+         adding no thinking, and each of them reads more naturally here anyway. */
       {
         // ⭐ These two catch what no list can. They are the most universal part
         // of the screen — everyone has been asked for help with something — and
@@ -589,7 +616,7 @@ export const WAYOUT_SCREENS = [
         key: 'tradeRank',
         kind: 'score',
         label: 'How much does each of these matter to you?',
-        hint: '1 is “I’d give this up tomorrow”, 10 is “don’t touch it”. The plan will not trade away the things you score highest, whatever the arithmetic says.',
+        hint: 'Score the ones that matter. You do not have to do all nine — a few honest ones tell the plan more than nine polite ones.',
         required: true,
         emptyMessage: 'Put them in an order, even a rough one.',
         // 🔴 THIS LIST USED TO BE SIX MATERIAL THINGS — comfort, space,
@@ -608,71 +635,6 @@ export const WAYOUT_SCREENS = [
           { key: 'time-with-people', label: 'Time with the people you love' },
           { key: 'health', label: 'Your health and fitness' },
           { key: 'community', label: 'A community you’re part of' },
-        ],
-      },
-      {
-        // 🔴 The plan is a sequence and we were asking the horizon in YEARS
-        // while never asking how many hours a week exist to build it in. Five
-        // hours and twenty-five hours are different plans, not the same plan
-        // at different speeds.
-        key: 'hoursPerWeek',
-        kind: 'choice',
-        // 🔴 "hours a week to what? doesn't say."
-        label: 'How many hours a week could you put into changing things?',
-        hint: 'On top of what you already do — evenings, a weekend morning, whatever is genuinely spare. Be honest rather than hopeful: this decides the order of the moves more than anything else here.',
-        required: true,
-        emptyMessage: 'Pick the closest one.',
-        options: [
-          { key: '0-5',   label: 'Under 5' },
-          { key: '5-10',  label: '5 to 10' },
-          { key: '10-20', label: '10 to 20' },
-          { key: '20+',   label: 'More than 20' },
-        ],
-      },
-      {
-        // ⭐ THE AXIS THAT WAS MISSING ENTIRELY, and the product did worse than
-        // ignore it: the map check FLAGGED a plan as broken when someone in a
-        // cold climate had an outdoor first move and no winter work. For the
-        // landscaper who earns twelve months of money in six and spends the
-        // winter somewhere warm, the December hole IS the plan — and we would
-        // have looked at his correct answer and called it a failure.
-        // 🔴 "what shape of year — terribly worded."
-        key: 'yearShape',
-        kind: 'choice',
-        label: 'Do you want money coming in evenly, or is earning it in bursts fine?',
-        hint: 'Some of the best options are seasonal — hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
-        required: true,
-        emptyMessage: 'Pick the closest one.',
-        /**
-         * 🔴 "weird options" — Daniel, and the fault is that one of them did not
-         * answer the question. The question asks about the SHAPE of the money:
-         * evenly, or in bursts. "Fewer hours every week, all year" is an answer
-         * about HOURS — it does not say whether the money arrives evenly, and
-         * somebody who wants both has to pick between two things that are not
-         * alternatives.
-         * ⭐ Hours are already asked properly on the work screen, so the option
-         * was also collecting an answer we had. Replaced with the third real
-         * shape of a year: one big payday that has to last.
-         */
-        options: [
-          { key: 'steady', label: 'Evenly — the same every month' },
-          { key: 'seasonal', label: 'In bursts — flat out, then time off' },
-          { key: 'lumpy', label: 'One big payday I make last' },
-          { key: 'dontmind', label: 'Don’t mind' },
-        ],
-      },
-      {
-        key: 'horizon',
-        kind: 'choice',
-        label: 'How long before you want to be there?',
-        hint: 'Not a deadline — it tells the plan whether to take the fast rough route or the slower one that lasts.',
-        required: true,
-        emptyMessage: 'Pick one.',
-        options: [
-          { key: '6m', label: '6 months' },
-          { key: '1y', label: '1 year' },
-          { key: '3y', label: '3 years' },
-          { key: '5y', label: '5+ years' },
         ],
       },
       {
@@ -744,6 +706,14 @@ export const WAYOUT_SCREENS = [
     question: 'Where does this end up?',
     reflectAfter: false,
     fields: [
+      /* ⭐⭐ MOVED OFF SCREEN 5 ON 28 SEP, AND THE REASON IS THE CURVE, NOT THE
+         CATEGORY. Measured: screen five had SEVEN required answers on one page —
+         two of them essays and one a ranking exercise — arriving straight after
+         the 231-word money screen. It is the heaviest thing in the product by a
+         distance and it sits two thirds of the way in, which is exactly where
+         somebody decides whether to finish.
+         ⚠️ These three are TAPS. They were making a hard screen longer while
+         adding no thinking, and each of them reads more naturally here anyway. */
       {
         // ⭐⭐ THE HIGHEST-YIELD QUESTION ON THE FORM, AND IT IS NOW ASKED FIRST
         // ON THIS SCREEN. Daniel: "one question on intake should be what do you
@@ -787,6 +757,52 @@ export const WAYOUT_SCREENS = [
         placeholder: 'Still working, but not six days. Home when the kids get in. Not driving an hour each way.',
         required: true,
         emptyMessage: 'A few lines is enough.',
+      },
+      {
+        key: 'horizon',
+        kind: 'choice',
+        label: 'How long before you want to be there?',
+        hint: 'Not a deadline — it tells the plan whether to take the fast rough route or the slower one that lasts.',
+        required: true,
+        emptyMessage: 'Pick one.',
+        options: [
+          { key: '6m', label: '6 months' },
+          { key: '1y', label: '1 year' },
+          { key: '3y', label: '3 years' },
+          { key: '5y', label: '5+ years' },
+        ],
+      },
+      {
+        // ⭐ THE AXIS THAT WAS MISSING ENTIRELY, and the product did worse than
+        // ignore it: the map check FLAGGED a plan as broken when someone in a
+        // cold climate had an outdoor first move and no winter work. For the
+        // landscaper who earns twelve months of money in six and spends the
+        // winter somewhere warm, the December hole IS the plan — and we would
+        // have looked at his correct answer and called it a failure.
+        // 🔴 "what shape of year — terribly worded."
+        key: 'yearShape',
+        kind: 'choice',
+        label: 'Do you want money coming in evenly, or is earning it in bursts fine?',
+        hint: 'Some of the best options are seasonal — hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        /**
+         * 🔴 "weird options" — Daniel, and the fault is that one of them did not
+         * answer the question. The question asks about the SHAPE of the money:
+         * evenly, or in bursts. "Fewer hours every week, all year" is an answer
+         * about HOURS — it does not say whether the money arrives evenly, and
+         * somebody who wants both has to pick between two things that are not
+         * alternatives.
+         * ⭐ Hours are already asked properly on the work screen, so the option
+         * was also collecting an answer we had. Replaced with the third real
+         * shape of a year: one big payday that has to last.
+         */
+        options: [
+          { key: 'steady', label: 'Evenly — the same every month' },
+          { key: 'seasonal', label: 'In bursts — flat out, then time off' },
+          { key: 'lumpy', label: 'One big payday I make last' },
+          { key: 'dontmind', label: 'Don’t mind' },
+        ],
       },
       {
         // 🔴 Same correction as the diagnostic: people want several of these at

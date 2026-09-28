@@ -23,7 +23,11 @@ describe('every answer leads somewhere', () => {
     // is asked to build a plan from an asset it was given no options for. It
     // will invent one, which is the one thing the library exists to stop.
     const needed = new Set(WAYOUT_MOVES.flatMap(m => m.needs))
-    const orphans = optionsOf(screen('s3').fields[0])
+    // ⚠️ BY KEY, NOT BY POSITION. This read `fields[0]` and broke the moment a
+    // field was moved onto the screen — the guard failing for a reason that had
+    // nothing to do with what it guards. A test that breaks on reordering trains
+    // people to ignore it.
+    const orphans = optionsOf(screen('s3').fields.find(f => f.key === 'assets'))
       .map(o => o.key)
       .filter(k => !needed.has(k))
     expect(orphans).toEqual([])
@@ -34,11 +38,11 @@ describe('every answer leads somewhere', () => {
     // garage, land, equity — a list for someone with a driveway. A renter with
     // a laptop and three evenings could answer honestly and tap nothing, on the
     // screen whose whole job is telling them they have more than they think.
-    const groups = screen('s3').fields[0].groups.map(g => g.label)
+    const groups = screen('s3').fields.find(f => f.key === 'assets').groups.map(g => g.label)
     expect(groups).toContain('What you can do')
     expect(groups).toContain('Time and people')
 
-    const keys = optionsOf(screen('s3').fields[0]).map(o => o.key)
+    const keys = optionsOf(screen('s3').fields.find(f => f.key === 'assets')).map(o => o.key)
     for (const needsNoProperty of ['evenings', 'weekends', 'school-hours', 'teaching', 'admin', 'employer']) {
       expect(keys).toContain(needsNoProperty)
     }
@@ -58,7 +62,7 @@ describe('a required question always has a truthful answer', () => {
     // 🔴 `immovables` is required. Without this option, someone genuinely
     // unconstrained cannot pass screen one without inventing a tie — on the
     // screen whose entire job is an honest account of what is fixed.
-    const field = screen('s1').fields[0]
+    const field = screen('s1').fields.find(f => f.key === 'immovables')
     expect(field.required).toBe(true)
     const out = optionsOf(field).find(o => o.exclusive)
     expect(out).toBeTruthy()
@@ -263,5 +267,58 @@ describe('intake asks only what applies', () => {
       if (f.showIf && f.required) bad.push(`${sc.id}.${f.key}`)
     }))
     expect(bad).toEqual([])
+  })
+})
+
+/**
+ * 🔴🔴 THE OPEN QUESTION GOES FIRST ON ITS SCREEN, AND A REORDER MUST NOT MOVE IT.
+ *
+ * `tuesday` is documented in wayoutIntake.js as the highest-yield question on the
+ * form, with the reason spelled out: asked AFTER a set of category chips, it gets
+ * the categories back in sentence form. "An open question asked second is not an
+ * open question."
+ *
+ * ⚠️ I broke exactly that on 28 Sep while rebalancing the screens — two tap
+ * questions landed above it and nothing failed. The rule lived only in a comment,
+ * which is the same shape as every other rule in this product that drifted.
+ */
+describe('the open question is never asked second', () => {
+  it('s6 opens with the destination in their own words', () => {
+    const s6 = screen('s6')
+    expect(s6.fields[0].key).toBe('tuesday')
+    expect(s6.fields[0].kind).toBe('text')
+  })
+
+  it('no chips or choices sit above it', () => {
+    const s6 = screen('s6')
+    const firstTap = s6.fields.findIndex(f => ['chips', 'choice', 'score', 'rank'].includes(f.kind))
+    const openAt = s6.fields.findIndex(f => f.key === 'tuesday')
+    expect(openAt).toBeLessThan(firstTap === -1 ? Infinity : firstTap)
+  })
+})
+
+/**
+ * ⭐⭐ THE DIFFICULTY CURVE. Measured 28 Sep: screen five carried SEVEN required
+ * answers — two essays and a ranking exercise — arriving after the 231-word money
+ * screen. That is where somebody decides whether to finish, and it was the
+ * heaviest thing in the product by a distance.
+ *
+ * ⚠️ This is a CEILING, not a target. It does not say the form is well designed;
+ * it says no single screen may quietly become the wall again while nobody is
+ * measuring.
+ */
+describe('no screen is a wall', () => {
+  it('no screen asks for more than five required answers', () => {
+    for (const s of WAYOUT_SCREENS) {
+      const required = (s.fields ?? []).filter(f => f.required)
+      expect(`${s.id}: ${required.length}`).toBe(`${s.id}: ${Math.min(required.length, 5)}`)
+    }
+  })
+
+  it('no screen demands more than two written answers', () => {
+    for (const s of WAYOUT_SCREENS) {
+      const essays = (s.fields ?? []).filter(f => f.required && f.kind === 'text')
+      expect(`${s.id}: ${essays.length}`).toBe(`${s.id}: ${Math.min(essays.length, 2)}`)
+    }
   })
 })
