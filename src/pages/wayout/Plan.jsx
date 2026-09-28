@@ -4,11 +4,13 @@ import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
   loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
+  askAboutPlan, savePlanThread, chapterChain,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
+import PlanThread from './PlanThread'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -36,6 +38,11 @@ export default function Plan() {
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
   const [progress, setProgress] = useState(null)
+  // ⭐⭐ The running thread and the arc behind it. Loaded once with the session;
+  // the thread is per chapter (migration 067) and the chain feeds context.
+  const [thread, setThread]   = useState([])
+  const [chain, setChain]     = useState([])
+  const [asking, setAsking]   = useState(false)
   // 🔴 NOTHING STOPPED TWO GENERATIONS RUNNING AT ONCE, AND IN DEV TWO ALWAYS
   // DID. StrictMode mounts every effect twice; both calls reached the model,
   // both took ~25 seconds, and both wrote a map — so every plan Daniel built
@@ -88,6 +95,8 @@ export default function Plan() {
           return
         }
         loadProgress(s.id).then(p => { if (!cancelled) setProgress(p) }).catch(() => {})
+        setThread(Array.isArray(s.plan_thread) ? s.plan_thread : [])
+        chapterChain(s).then(c => { if (!cancelled) setChain(c) }).catch(() => {})
         if (s.map) {
           const clean = enforceMapContract(s.map, s.answers)
           const problems = mapProblems(clean, s.answers)
@@ -394,9 +403,38 @@ export default function Plan() {
   // moment it is used, so this opens the deliberate links and nothing else. It
   // cannot become the refresh loop that spent 82 generations in a day.
   const spent = !import.meta.env.DEV && (session?.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS
+
+  /**
+   * ⭐⭐ ONE TURN OF THE RUNNING THREAD. The reply is stored with its flags, so a
+   * reload still knows whether the last thing said moved the plan — otherwise
+   * the rebuild button would vanish the moment somebody refreshed to think
+   * about it, which is exactly when they would.
+   */
+  async function sayToPlan(said) {
+    if (!session || asking) return
+    setAsking(true)
+    const mine = { role: 'user', content: said, at: new Date().toISOString() }
+    const next = [...thread, mine]
+    setThread(next)
+    try {
+      const out = await askAboutPlan({ session, progress, history: chain, thread, question: said })
+      const full = [...next, {
+        role: 'assistant', content: out.reply, at: new Date().toISOString(),
+        changesPlan: out.changesPlan, whatChanged: out.whatChanged, stalling: out.stalling,
+      }]
+      setThread(full)
+      savePlanThread(session.id, full).catch(err => console.warn('[wayout] thread not saved:', err.message))
+    } finally {
+      setAsking(false)
+    }
+  }
+
   return (
     <Map
       map={map}
+      thread={thread}
+      onSay={sayToPlan}
+      asking={asking}
       onRebuild={spent ? null : rebuild}
       onOpenPlaybook={openPlaybook}
       onRegenerate={import.meta.env.DEV ? regenerateNow : null}
@@ -532,6 +570,7 @@ function WorthAsk({ onSave }) {
 export function Map({
   map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
+  thread = [], onSay = null, asking = false,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
@@ -882,6 +921,19 @@ export function Map({
           strip. The sections are now equal cards that FILL, and everything that
           is not a section runs full width below them. */}
       <div className="wayout__board">
+      {/* ⭐⭐ THE RUNNING THREAD, ON THE BOARD WITH EVERYTHING ELSE. Not a widget
+          in a corner and not a separate page: the place you tell it something
+          changed has to be the place you are looking at the thing that changed.
+          ⚠️ Only with a real session behind it — Preview renders this same
+          component to check the design and has nothing to talk to. */}
+      {onSay && (
+        <PlanThread
+          thread={thread}
+          onSay={onSay}
+          busy={asking}
+          onRedo={onRebuild ?? undefined}
+        />
+      )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (
         <section className="wayout__card">
           <h3 className="wayout__label wayout__r" style={at(3.4)}>Crossed off, on purpose</h3>

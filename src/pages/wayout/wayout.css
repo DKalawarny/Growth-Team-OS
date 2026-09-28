@@ -2476,3 +2476,40 @@ h1.wayout__heroline {
   letter-spacing: .01em;
 }
 .wayout__chaptercrumb a:hover { color: var(--green); text-decoration: underline; }
+
+/* ═══ THE RUNNING THREAD ══════════════════════════════════════════════════
+   ⭐⭐ Daniel: "a chat part of it — a way to retain people." The shape he agreed
+   to: not a chat box, a place to say what changed. See PlanThread.jsx for why
+   the difference is the whole feature. */
+.wayout__thread .wayout__label { margin-bottom: 8px; }
+.wayout__threadlead {
+  font-size: 14.5px; line-height: 1.55; color: var(--soft);
+  margin: 0 0 20px; max-width: 54ch;
+}
+.wayout__threadmine, .wayout__threadreply { margin-bottom: 14px; }
+.wayout__threadmine p {
+  margin: 0; font-size: 15px; line-height: 1.55; font-weight: 600; color: var(--ink);
+  background: var(--tint); border-radius: 14px 14px 14px 4px; padding: 13px 16px;
+  max-width: 46ch;
+}
+.wayout__threadreply p {
+  margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink);
+  border-left: 3px solid var(--line); padding: 2px 0 2px 16px; max-width: 58ch;
+}
+
+/* ⭐⭐ THE PAYOFF. Only when the model said the plan actually moved — offering a
+   rebuild after every message would make the plan feel provisional, which is
+   the opposite of what it is for. */
+.wayout__threadmoved {
+  margin: 18px 0 20px; padding: 18px 20px;
+  background: #FFF8E8; border: 1px solid #F0DFB4; border-left: 3px solid var(--sun);
+  border-radius: 14px;
+}
+.wayout__threadmoved b {
+  display: block; font-size: 15px; line-height: 1.5; color: var(--ink); margin-bottom: 14px;
+  max-width: 52ch;
+}
+.wayout__threadmoved .wayout__btn {
+  display: inline-block; width: auto; margin-top: 0; padding-inline: 32px;
+}
+.wayout__thread .wayout__btn { display: inline-block; width: auto; padding-inline: 34px; }

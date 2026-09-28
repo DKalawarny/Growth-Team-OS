@@ -768,6 +768,90 @@ export async function generatePlaybook({ answers, map, move, asked = null }) {
  */
 export const WAYOUT_MAX_ASKS = 12
 
+/**
+ * ⭐⭐ THE RUNNING THREAD ON THE PLAN. One per chapter, never per move.
+ *
+ * 🔴 `askAboutMove` dies when the move is ticked. This one persists, and it has
+ * a different job: not "answer a question about this week" but "has anything
+ * changed, and does the plan still stand". See WAYOUT_THREAD_PROMPT for why a
+ * general chat was the wrong build.
+ *
+ * ⚠️ THE CONTEXT IS HEADLINES ONLY, AND THAT IS A COST DECISION AS MUCH AS A
+ * DESIGN ONE. Sending every playbook on every turn would be the most expensive
+ * request in the product, repeated all month, on a $29 subscription. It gets
+ * their answers, the move titles, what is ticked, and one line per earlier
+ * chapter — which is what the job actually needs.
+ *
+ * ⚠️ HISTORY IS THEIR ANSWERS, NEVER AN OLD MAP'S FIGURES. Same provenance rule
+ * as startNextChapter: merging generated numbers into context launders them into
+ * facts one turn at a time.
+ */
+export const WAYOUT_MAX_PLAN_ASKS = 40
+
+export async function askAboutPlan({ session, progress, history = [], thread = [], question }) {
+  const asked = String(question ?? '').trim()
+  if (!asked) throw new Error('Say it and I will read it.')
+
+  const answers = session?.answers ?? {}
+  const map = session?.map ?? {}
+  const ticked = [...(progress?.done ?? [])]
+
+  const raw = await callClaude({
+    promptKey: 'WAYOUT_THREAD_PROMPT',
+    messages: [{
+      role: 'user',
+      content: JSON.stringify({
+        answers,
+        the_plan: {
+          headline: map?.headline,
+          moves: (map?.moves ?? []).map((m, i) => ({
+            order: i + 1, title: m.title, when: m.when, gate: m.gate, done: ticked.includes(i + 1),
+          })),
+        },
+        // ⚠️ Their words only. No map, no figures — see the note above.
+        earlier_chapters: history
+          .filter(h => h.id !== session?.id)
+          .map(h => ({ chapter: h.chapter, they_wanted: h.answers?.out ?? null, outcome: h.outcome })),
+        so_far: thread.slice(-8).map(m => ({ role: m.role, content: m.content })),
+        they_said: asked,
+      }, null, 2),
+    }],
+    maxTokens: 600,
+    model: SONNET,
+    temperature: 0.4,
+    toolId: TOOL_ID,
+    kind: 'thread',
+  })
+
+  let out
+  try {
+    out = JSON.parse(String(raw ?? '').replace(/^```json\s*|```$/g, '').trim())
+  } catch {
+    // ⚠️ A thread reply is prose with a flag on it. If the JSON is malformed the
+    // prose is still worth having — losing the whole turn over a bracket would
+    // be the parser blaming the person.
+    out = { reply: String(raw ?? '').trim(), changes_plan: false, what_changed: null, stalling: false }
+  }
+
+  const reply = scrubFigures(String(out.reply ?? '').trim(), answers)
+  if (!reply) throw new Error('That did not come back. Say it again.')
+  return {
+    reply,
+    changesPlan: out.changes_plan === true,
+    whatChanged: out.what_changed ? String(out.what_changed).trim() : null,
+    stalling: out.stalling === true,
+  }
+}
+
+/** The thread lives on the session, so it is per chapter and dies with it. */
+export async function savePlanThread(sessionId, thread) {
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ plan_thread: thread.slice(-WAYOUT_MAX_PLAN_ASKS * 2) })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+}
+
 export async function askAboutMove({ answers, map, move, play, thread = [], question }) {
   const asked = String(question ?? '').trim()
   if (!asked) throw new Error('Ask it and I will answer.')
