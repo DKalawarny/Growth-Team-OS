@@ -4511,6 +4511,30 @@ truth is that if they knew how, they would have done it already.
 
 Write the play-by-play for THIS move, for THIS person, for the next week or two.
 
+🔴 A THING THAT MIGHT GO WRONG IS NOT A THING THAT HAS GONE WRONG.
+
+Daniel, on a line under "What usually happens": "this doesn't make sense — if it
+doesn't to me, it won't to most." It read:
+
+  "The net sheet comes back lower than $605K — fees, a mortgage discharge
+   penalty, or a condition you forgot about."
+
+That is a SENTENCE IN THE PRESENT TENSE, stating as fact a thing that has not
+happened, under a heading that does not say otherwise. Read cold it looks like
+the product telling him his number is already wrong — which is alarming, untrue,
+and not what it meant.
+
+⚠️ EVERY ITEM IN goes_wrong IS A CONDITION. It opens with "If" or "When", so the
+reader knows in the first two words that they are being warned, not told.
+
+  ❌ "The net sheet comes back lower than $605K."
+  ✅ "If the net sheet comes back lower than $605K — fees, a discharge penalty,
+     or a condition you forgot about."
+
+⚠️ AND THE SAME APPLIES ANYWHERE ELSE THE PLAN DESCRIBES A POSSIBILITY. The
+difference between a warning and a verdict is one word at the front of the
+sentence, and this product cannot afford to have them confused.
+
 🔴🔴 THE WALKTHROUGH COVERS THE WHOLE MOVE, NOT THE EASIEST PART OF IT.
 
 Daniel, on a walkthrough for a move that named three products: "this left out
@@ -4581,7 +4605,7 @@ Return ONLY valid JSON:
   "need_first": ["what they genuinely need before starting — as short as it truly is"],
   "dont_need_yet": ["what they will be tempted to buy or set up and should not"],
   "goes_wrong": [
-    { "what": "what usually happens the first time", "do": "what to do about it" }
+    { "what": "what usually happens the first time, written as a CONDITION not an assertion — it starts with 'If' or 'When', because it has not happened", "do": "what to do about it" }
   ],
   "check_first": [
     { "thing": "anything regulated, licensed, or able to become somebody else's loss", "who_knows": "who actually answers that where they live" }

@@ -12,13 +12,34 @@ import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } fr
  * nothing left to produce, and the only useful thing it can do is find out
  * whether any of it worked.
  *
- * 🔴 IT DOES NOT CONGRATULATE ANYBODY. Three ticked boxes is not the same as
- * being out, and a page that celebrates somebody who is still stuck has stopped
- * listening — which is the single failure this thing cannot survive. Nothing
- * here says well done, and nothing assumes.
+ * 🔴🔴 REVISED 28 SEP, AND THE OLD RULE WAS CONFLATING TWO THINGS.
  *
- * ⚠️ No confetti, no score, no streak. The register is the same as the rest:
- * direct about the situation, never directive about the person.
+ * It read: "it does not congratulate anybody — three ticked boxes is not the
+ * same as being out, and a page that celebrates somebody who is still stuck has
+ * stopped listening." The second half of that is still true and still governs.
+ * The first half was too wide, and Daniel called it: "finishing is great, there
+ * should be a completion congratulations when done, something exciting — but
+ * then a page asking you are here now, and questions that lead into the next
+ * stage. No one is just done."
+ *
+ * ⭐⭐ THE DISTINCTION IS BETWEEN THE WORK AND THE OUTCOME.
+ *   ✅ "You did all three." — a FACT. They ticked them. Most people who make a
+ *      plan never finish one, and saying so costs nothing and assumes nothing.
+ *   ❌ "You're out." / "Congratulations, you made it." — a claim about their
+ *      LIFE that we cannot see and they have not been asked about yet.
+ *
+ * So the celebration is real, and it is about the three moves and nothing else.
+ * The question that follows is still the honest one, and it is asked before any
+ * assumption is made about how it went.
+ *
+ * ⭐⭐ AND NOBODY IS EVER LEFT AT "DONE". The completion is a beat, not a
+ * destination: it hands straight to where-are-you-now, which hands to the next
+ * plan. That is also the whole commercial logic — this product FINISHES, so the
+ * only version of it that continues is one that starts again from what actually
+ * happened.
+ *
+ * ⚠️ Still no score, no streak, no confetti cannon. The register holds: direct
+ * about the situation, never directive about the person.
  */
 const OPTIONS = [
   { key: 'landed',  label: 'Yes — that is where I am',        hint: 'The thing you were aiming at actually happened.' },
@@ -112,6 +133,11 @@ export default function Done() {
             ? 'That is the answer that changes the product, and almost nobody gives it. Thank you for it.'
             : 'That is the only measure of this that means anything.'}
         </p>
+        {/* ⭐⭐ "NO ONE IS JUST DONE." This page used to end here, with a link to
+            start again worded as an afterthought. The hand-off IS the page: the
+            life they answered about is not the life they have now, so the next
+            plan is not a repeat, it is the first one that could not have been
+            written before. */}
         <p className="wayout__lead">
           Your life is not the one you answered about any more. When you want a
           plan for the person you are now, it starts from the questions again —
@@ -146,7 +172,11 @@ export default function Done() {
       // on whatever the new chapter cleared — the money, and the destination too
       // if they arrived or changed their mind. Everything else is prefilled and
       // they walk through it. See firstUnansweredStep.
-      navigate(`${WAYOUT_BASE}/start`)
+      // 🔴 THIS SENT THEM TO THE SIX-TAP DIAGNOSTIC, CONTRADICTING THE COMMENT
+      // DIRECTLY ABOVE IT. `/start` is the free front door; the next chapter
+      // belongs in the questions, where everything that carries over is already
+      // in the boxes and only what the chapter cleared is asked again.
+      navigate(WAYOUT_INTAKE)
     } catch (err) {
       setError(err.message)
       setStarting(false)
@@ -154,10 +184,29 @@ export default function Done() {
   }
 
   return (
-    <WayoutShell title="What happened">
-      <p className="wayout__q">
-        {allDone ? 'Three moves. You worked all three.' : 'Where did it get to?'}
-      </p>
+    <WayoutShell title="What happened" wide>
+      {/* ⭐⭐ THE COMPLETION BEAT — only when all three are actually ticked, and
+          only ever about the WORK. See the note at the top of this file for why
+          that line matters: "you did all three" is a fact we can see, "you're
+          out" is a claim about their life we have not asked about yet. */}
+      {allDone ? (
+        <div className="wayout__finished">
+          <span className="wayout__finishedmark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12.5l5 5L20 7" />
+            </svg>
+          </span>
+          <p className="wayout__finishedkick">All three</p>
+          <h1 className="wayout__finishedh">You finished the plan.</h1>
+          <p className="wayout__lead">
+            Most people who write one never get to the end of it. You did the
+            whole order, in order — which is the hard part and the part nobody
+            sees.
+          </p>
+        </div>
+      ) : (
+        <p className="wayout__q">Where did it get to?</p>
+      )}
 
       {/* Their own moves, in their own words. Not a summary of what we did — a
           record of what they did, which is the only thing worth showing here. */}
@@ -169,9 +218,14 @@ export default function Done() {
         ))}
       </ul>
 
+      {/* ⚠️ THE TURN, AND IT IS THE POINT OF THE PAGE. The celebration above is
+          about what they DID; this asks the only thing that matters, which is
+          what it CHANGED — and the two are not the same, which is precisely why
+          finishing is not allowed to stand in for arriving. */}
+      <h2 className="wayout__nowh">{allDone ? 'So where are you now?' : 'Where are you now?'}</h2>
       <p className="wayout__lead">
-        The plan said what to do and in what order. Whether it worked is the one
-        thing only you know, and the one thing nobody ever asks.
+        The plan said what to do and in what order. Whether it moved anything is
+        the one thing only you know, and the one thing nobody ever asks.
       </p>
 
       <div className="wayout__chips" style={{ marginTop: 22 }}>

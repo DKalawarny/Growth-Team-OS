@@ -2280,3 +2280,76 @@ h1.wayout__heroline {
   text-transform: uppercase; color: var(--soft); margin-bottom: 8px;
 }
 .wayout__opens p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+
+/* ═══ FINISHING ══════════════════════════════════════════════════════════
+   ⭐⭐ Daniel: "finishing is great — there should be a completion
+   congratulations when done, something exciting. But then a page asking you are
+   here now, and questions that lead into the next stage. No one is just done."
+
+   ⚠️ THE CELEBRATION IS ABOUT THE WORK, NEVER THE OUTCOME. "You finished the
+   plan" is a fact — they ticked three boxes. "You're out" is a claim about a
+   life we have not asked about yet, and a page that celebrates somebody who is
+   still stuck has stopped listening. See the note at the top of Done.jsx.
+   ⚠️ So: one mark, one draw-on, and then it is over. No confetti, no score, no
+   streak — the excitement is in the movement, not in the decoration. */
+.wayout__finished { margin-bottom: 30px; }
+
+.wayout__finishedmark {
+  display: flex; align-items: center; justify-content: center;
+  width: 54px; height: 54px; border-radius: 999px;
+  background: var(--green); color: #fff; margin-bottom: 18px;
+  animation: wayoutLand .62s cubic-bezier(.34, 1.4, .64, 1) both;
+}
+.wayout__finishedmark svg { width: 26px; height: 26px; }
+.wayout__finishedmark svg path {
+  stroke-dasharray: 26; stroke-dashoffset: 26;
+  animation: wayoutDraw .5s cubic-bezier(.65, 0, .35, 1) .28s forwards;
+}
+@keyframes wayoutLand {
+  from { opacity: 0; transform: scale(.55); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes wayoutDraw { to { stroke-dashoffset: 0; } }
+
+.wayout__finishedkick {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--green); margin: 0 0 10px;
+  animation: wayoutRise .5s cubic-bezier(.22, 1, .36, 1) .18s both;
+}
+.wayout__finishedh {
+  font-size: clamp(32px, 3.6vw, 46px); line-height: 1.04; letter-spacing: -.03em;
+  font-weight: 800; margin: 0 0 16px; color: var(--ink); text-wrap: balance;
+  animation: wayoutRise .5s cubic-bezier(.22, 1, .36, 1) .26s both;
+}
+.wayout__finished .wayout__lead {
+  animation: wayoutRise .5s cubic-bezier(.22, 1, .36, 1) .34s both;
+}
+
+/* ⚠️ THE TURN. Set apart from the celebration with a rule, because the page has
+   two jobs and they must not blur: what you did, then what it changed. */
+.wayout__nowh {
+  margin: 34px 0 12px; padding-top: 30px; border-top: 1px solid var(--line);
+  font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; letter-spacing: -.02em;
+  font-weight: 800; color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wayout__finishedmark,
+  .wayout__finishedmark svg path,
+  .wayout__finishedkick,
+  .wayout__finishedh,
+  .wayout__finished .wayout__lead { animation: none; }
+  .wayout__finishedmark svg path { stroke-dashoffset: 0; }
+}
+
+/* ⚠️ THE OFFER CARD, ONCE THEY ARE ALREADY INSIDE. Same block, no longer a
+   pitch: it is the way back to the walkthrough they opened, so it drops to the
+   page's own surface instead of being the one dark door on it. */
+.wayout__offer--known {
+  background: var(--tint);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.wayout__offer--known .wayout__offerkick { color: var(--soft); }
+.wayout__offer--known h3,
+.wayout__offer--known .wayout__offerlead { color: var(--ink); }

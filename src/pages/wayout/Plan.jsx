@@ -539,6 +539,9 @@ export function Map({
   // be. Progress now comes from the database; Preview passes none and falls
   // back to ticking locally so the design can still be checked.
   const done = progress?.done ?? null
+  // ⭐ Has any walkthrough actually been opened? That is the line between
+  // somebody being sold the paid half and somebody already inside it.
+  const hasOpened = (progress?.started?.size ?? 0) > 0
   const [openCut, setOpenCut] = useState(null)
 
   // ⭐⭐ Their own words on one move. `openNote` is which box is open, `draft` is
@@ -991,13 +994,29 @@ export function Map({
           lists what is actually inside rather than describing it. And it is the
           one dark block on the page, so it reads as a door rather than another
           section. */}
-      <div className="wayout__offer wayout__r" style={at(4.2)}>
-        <span className="wayout__offerkick">The next part</span>
+      {/* 🔴 IT SOLD THEM SOMETHING THEY ALREADY HAD. Daniel: "this is kind of
+          redundant once you have paid access." He is right — a dark
+          full-width card headed "The next part", pitching the walkthrough with
+          "Free while this is being built. Nothing to pay", to somebody who has
+          already opened one. A door you have already walked through is a wall.
+
+          ⭐⭐ IT BECOMES A ROUTE INSTEAD OF A PITCH. Once any move's walkthrough
+          has been opened, the same card drops the sell and simply carries them
+          back to where they were, because at that point the useful thing it can
+          do is navigation. The card is gone entirely once all three are done —
+          the end-of-plan handoff has that job.
+          ⚠️ `started` comes from progress, which is the database, so it survives
+          a reload. A pitch that reappears after every refresh is the version of
+          this that annoys people most. */}
+      <div className={`wayout__offer wayout__r${hasOpened ? ' wayout__offer--known' : ''}`} style={at(4.2)}>
+        <span className="wayout__offerkick">{hasOpened ? 'Pick it back up' : 'The next part'}</span>
         <h3>{map.moves?.[0]?.title ?? 'Move one'}</h3>
         <p className="wayout__offerlead">
-          {Array.isArray(map.stuck) && map.stuck.length > 0
-            ? 'You know what the move is. These are the questions that turn up the moment you start it.'
-            : 'You know what it is. This is how you do it — for your town, your hours, and the people who have already paid you.'}
+          {hasOpened
+            ? 'Where you left off — what to do first, the words to use, and what usually goes wrong.'
+            : Array.isArray(map.stuck) && map.stuck.length > 0
+              ? 'You know what the move is. These are the questions that turn up the moment you start it.'
+              : 'You know what it is. This is how you do it — for your town, your hours, and the people who have already paid you.'}
         </p>
         {/* ⭐⭐ THE QUESTIONS, NOT THE FEATURES. Daniel: "telling you what is
             inside is weak, not a good sell." He is right, and the reason is
@@ -1035,7 +1054,7 @@ export function Map({
             somebody do it once.
           </p>
         )}
-        <PlaybookCta onOpen={onOpenPlaybook} />
+        <PlaybookCta onOpen={onOpenPlaybook} hasOpened={hasOpened} />
       </div>
 
       {/* ⭐⭐ THE WORTH ASK IS OFF. Daniel: "dont get why you would ask this. im
@@ -1102,7 +1121,7 @@ export function Map({
  * paid half — whether people want the how badly enough to ask for it is the
  * entire commercial thesis, and this measures it for the price of one column.
  */
-function PlaybookCta({ onOpen }) {
+function PlaybookCta({ onOpen, hasOpened = false }) {
   // ⭐⭐ IT EXISTS NOW, SO THE BUTTON DOES THE THING. This was a waiting list
   // for one day, which was the honest CTA while there was nothing behind it —
   // an empty shelf reads worse than no shelf. There is something behind it.
@@ -1121,11 +1140,18 @@ function PlaybookCta({ onOpen }) {
           ⚠️ A default parameter is not a guard when the caller is a DOM
           handler — the event is always an argument. */}
       <button className="wayout__btn wayout__btn--sun" onClick={() => onOpen()}>
-        {WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how'}
+        {hasOpened
+          ? 'Back to the walkthrough'
+          : WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how'}
       </button>
-      <p className="wayout__offerfine">
-        {WAYOUT_PAYMENTS_LIVE ? guaranteeLine() : 'Free while this is being built. Nothing to pay.'}
-      </p>
+      {/* ⚠️ THE PRICE LINE IS AN ANSWER TO "what will this cost me", and once
+          somebody is already inside, nobody is asking. Repeating "nothing to
+          pay" to an existing user is the product reassuring itself. */}
+      {!hasOpened && (
+        <p className="wayout__offerfine">
+          {WAYOUT_PAYMENTS_LIVE ? guaranteeLine() : 'Free while this is being built. Nothing to pay.'}
+        </p>
+      )}
     </>
   )
 }
