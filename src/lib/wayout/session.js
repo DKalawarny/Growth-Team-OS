@@ -956,7 +956,7 @@ export async function saveThread(sessionId, moveOrder, thread) {
  * which costs a model call per reader — worth it for a rule that changes what
  * the walkthrough SAYS, not for a comma.
  */
-export const WAYOUT_PLAYBOOK_RULES = 1
+export const WAYOUT_PLAYBOOK_RULES = 2
 
 export async function loadPlaybook(sessionId, moveOrder) {
   const { data, error } = await supabase

@@ -60,7 +60,12 @@ export const CHAPTER_SCREEN = {
     },
     { key: 'takeHome', kind: 'number', label: 'Coming in each month now', hint: 'After tax. Roughly.', required: true, emptyMessage: 'A rough number is fine.' },
     { key: 'mustPay',  kind: 'number', label: 'Going out each month now', hint: 'Everything that has to be paid.', required: true, emptyMessage: 'A rough number is fine.' },
-    { key: 'savings',  kind: 'number', label: 'What you could reach today', hint: 'Cash you could use without a penalty.', required: false },
+    /* 🔴 "what could you reach today? does that mean savings?" — it did, and
+       nobody should have to ask. The label avoided the word "savings" because
+       some people have none and it can sting; the cost was that nobody knew
+       what was being asked. ⭐ Name the thing; let the hint carry the
+       reassurance. */
+    { key: 'savings',  kind: 'number', label: 'Savings you could get to today', hint: 'Cash you could actually reach without a penalty. Zero is an answer.', required: false },
   ],
 
   /**

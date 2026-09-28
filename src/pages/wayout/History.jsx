@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { loadOrCreateSession, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
-import { tidyQuote } from '../../lib/wayout/tidyQuote'
+import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
 
 /**
  * The way out — the whole way here.
@@ -76,12 +76,12 @@ export default function History() {
           {first?.answers?.out && (
             <div className="wayout__origin wayout__origin--light">
               <span>What you said you wanted, at the very beginning</span>
-              <q>{tidyQuote(first.answers.out)}</q>
+              <q>{firstSentences(tidyQuote(first.answers.out), 260)}</q>
             </div>
           )}
 
           <ol className="wayout__arc">
-            {chain.map(c => (
+            {chain.map((c, i) => (
               <li key={c.id} className={c.outcome ? `is-${c.outcome}` : 'is-open'}>
                 <div className="wayout__arcmark" aria-hidden="true" />
                 <div className="wayout__arcbody">
@@ -90,8 +90,15 @@ export default function History() {
                     {c.createdAt && <em> · {new Date(c.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</em>}
                   </p>
 
-                  {/* Their words for the destination of that chapter. */}
-                  {c.answers?.out && <h3>{tidyQuote(c.answers.out)}</h3>}
+                  {/* 🔴 "doubled up." The origin block above IS chapter one's
+                      answer, and this printed the identical 905 characters again
+                      directly beneath it. ⭐ The first chapter's destination is
+                      already quoted at the top of the page, so here it is only
+                      shown from chapter two on — and trimmed, because a heading
+                      is a heading. */}
+                  {c.answers?.out && !(i === 0 && first?.answers?.out) && (
+                    <h3>{firstSentences(tidyQuote(c.answers.out), 120)}</h3>
+                  )}
 
                   {c.moves.length > 0 && (
                     <ul className="wayout__arcmoves">
