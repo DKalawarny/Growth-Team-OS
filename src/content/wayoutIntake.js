@@ -44,9 +44,14 @@ export const WAYOUT_OPENING = {
     emptyMessage: 'A sentence is enough.',
   },
   cta: 'Let’s figure it out',
-  // ⚠️ Set at render from pricing.js — the number has to be the same
-  // everywhere it appears, and it has to be TRUE about the actual flow.
-  fine: 'About 15 minutes.',
+  // 🔴🔴 `fine: 'About 15 minutes.'` LIVED HERE AND WAS WRONG BY FIVE MINUTES.
+  // The whole point of moving the time promise into brand.js was that a claim
+  // repeated across eight files drifts the next time the flow changes — and this
+  // is the proof, because it survived three passes: the greps were for "three
+  // minutes" and "six questions", and this said neither.
+  // ⭐ The line is composed at render from `timeLine()` and `priceShort()`. There
+  // is no time literal in this file any more, which is the only version of this
+  // that stays true on its own.
   // ⚠️ The ONLY handwritten line in the entire product (SPEC §6). Caveat is
   // loaded for this one string. If a second one appears, the first stops
   // meaning anything.

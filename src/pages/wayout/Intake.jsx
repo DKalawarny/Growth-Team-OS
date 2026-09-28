@@ -7,7 +7,7 @@ import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } fro
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
 import { saveDraft, loadDraft } from '../../lib/wayout/draft'
 import { supabase } from '../../lib/supabase'
-import { WAYOUT_BASE } from '../../lib/wayout/brand'
+import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceLine, priceShort, guaranteeLine } from '../../lib/wayout/pricing'
 
 /**
@@ -320,7 +320,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
               {WAYOUT_OPENING.cta}
             </button>
             <p className="wayout__fine wayout__rise wayout__r4" style={{ textAlign: 'left' }}>
-              {WAYOUT_OPENING.fine} {priceShort()}
+              {timeLine()} {priceShort()}
             </p>
           </div>
         </div>

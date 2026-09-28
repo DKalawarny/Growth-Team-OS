@@ -154,8 +154,26 @@
   /* ⚠️ No grid rule for the brand mark: it is a child of the FRAME, not of the
      spread, so it is not a grid item and `grid-column` on it would do nothing.
      It sits above the two columns on its own, which is what we want anyway. */
-  /* Only here, where there is a measure to carry it. */
-  .wayout .wayout__frame--wide h1 {
+  /* Only here, where there is a measure to carry it.
+
+     🔴🔴 `:not(.wayout__bigq)` IS THE WHOLE FIX, AND IT IS WHY THE VERDICT'S OWN
+     TYPE SCALE SILENTLY DID NOTHING. This is an ELEMENT selector, so it caught
+     every h1 that happened to sit inside a wide frame — including the question
+     screens and the verdict, which are not the plan and have their own scale in
+     `.wayout__bigq`. At (0,2,1) it outranked that class, so every question
+     headline has been rendering at 60px rather than the 54px its own rule asks
+     for, and nobody could see it by reading either rule.
+
+     ⭐⭐ THE LESSON IS THE SELECTOR SHAPE, NOT THE NUMBERS. A bare element inside
+     a layout class is a rule with no idea what it will hit — it claims every
+     future h1 in the widest container in the product. Scoping it to "the ones
+     that do not carry their own scale" says what it always meant.
+
+     ⚠️ The plan, the play-by-play and the done screen are unchanged: their
+     headlines carry no `wayout__bigq`, so they keep the 60px this was written
+     for. And `.wayout h1` below the breakpoint had the same problem one rung
+     down — see the `h1.wayout__bigq` note. */
+  .wayout .wayout__frame--wide h1:not(.wayout__bigq) {
     font-size: clamp(44px, 3.6vw, 60px);
     line-height: 0.99;
     letter-spacing: -0.032em;
@@ -1906,8 +1924,19 @@ h1.wayout__heroline {
   font-size: 11.5px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase;
   color: var(--sun); margin: 0 0 14px;
 }
-.wayout__bigq {
-  font-size: clamp(30px, 4.2vw, 54px); line-height: 1.05; letter-spacing: -.03em;
+/* 🔴🔴 `h1.` IS LOAD-BEARING, AND WITHOUT IT THIS RULE HAD NEVER APPLIED AT ALL.
+   Two element-bearing selectors outranked the plain class: `.wayout h1` (0,1,1)
+   below 1040px and `.wayout .wayout__frame--wide h1` (0,2,1) above it. So the
+   question headline rendered at a flat 40px on a phone and a flat 60px on a
+   desktop — with a hard jump between the two at the breakpoint — while this rule
+   sat in the file describing a smooth 30→54 ramp that nothing ever read.
+   ⚠️ THE SYMPTOM WAS INVISIBLE because both overriding values are reasonable.
+   Nothing looked broken; it simply was not this rule doing it.
+   ⭐ The range is set to what the page ACTUALLY renders today (60px at desktop)
+   rather than to the number that was never in force — the fix is that one rule
+   now governs at every width, not a resize nobody asked for. */
+.wayout h1.wayout__bigq {
+  font-size: clamp(36px, 4.4vw, 60px); line-height: 1.05; letter-spacing: -.03em;
   font-weight: 800; margin: 0 0 28px; max-width: 17ch; text-wrap: balance; color: var(--ink);
 }
 
@@ -1930,12 +1959,12 @@ h1.wayout__heroline {
    and the way on, and all three have to be reachable without scrolling or the
    screen becomes the dead end Daniel found. The type comes down, not the
    content — see the note on Result in Diagnostic.jsx. */
-/* ⚠️ `.wayout .wayout__frame--wide h1` (0,2,1) already sets the h1 size on every
-   wide screen, so a rule at `.wayout__verdict .wayout__bigq` (0,2,0) loses — its
-   margin and measure applied while its font-size silently did not, which is the
-   worst kind of near-miss because the rule LOOKS like it worked. Measured on the
-   rendered page: 51.84px against the 40px this asks for. */
-.wayout .wayout__verdict .wayout__bigq {
+/* ⚠️ `h1.` HERE FOR THE SAME REASON IT IS ON `.wayout__bigq` ABOVE. Written as
+   `.wayout__verdict .wayout__bigq` (0,2,0) this lost to `.wayout .wayout__frame--wide
+   h1` (0,2,1): its margin and measure applied while its font-size silently did
+   not — the worst kind of near-miss, because the rule LOOKS like it worked.
+   Measured on the rendered page: 51.84px against the 40px it asks for. */
+.wayout .wayout__verdict h1.wayout__bigq {
   font-size: clamp(28px, 3.1vw, 40px); margin-bottom: 16px; max-width: 20ch;
 }
 .wayout__verdict .wayout__lead { margin-bottom: 10px; max-width: 54ch; }
