@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE } from '../../lib/wayout/brand'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, canonicalUrl } from '../../lib/wayout/brand'
 import './wayout.css'
 
 /**
@@ -44,7 +44,7 @@ export default function WayoutShell({
             ⚠️ And the SAME page serves from both eliv8os.com/wayout/* and
             getunstuckmap.com/wayout/*, which is the duplicate-content shape
             that cost leadeos.com. The canonical names ONE of them. */}
-        <link rel="canonical" href={`${WAYOUT_SITE_URL}${canonicalPath}`} />
+        <link rel="canonical" href={canonicalUrl(canonicalPath)} />
         {/* ⭐⭐ THE LINK PREVIEW MUST NOT SAY ELIV8 OS. index.html carries a full
             set of Open Graph tags for the other product, and Helmet only
             manages what it DECLARES — so without these, texting somebody

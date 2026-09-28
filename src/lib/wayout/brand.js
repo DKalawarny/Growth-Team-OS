@@ -118,8 +118,41 @@ export const WAYOUT_SLUG = 'wayout'
  */
 export const WAYOUT_SITE_URL = 'https://getunstuckmap.com'
 
-/** Base path for every route in this product. */
-export const WAYOUT_BASE = '/wayout'
+/**
+ * 🔴🔴 THE INTERNAL SLUG WAS LEAKING INTO THE PUBLIC URL. Daniel, looking at the
+ * address bar on his own domain: "shouldn't this say something different?" It
+ * read `getunstuckmap.com/wayout/hello` — `wayout` is the INTERNAL name, kept
+ * deliberately so the product could be renamed with a one-line edit, and `hello`
+ * means nothing at all to somebody arriving about their money at midnight.
+ *
+ * ⭐⭐ ON ITS OWN DOMAIN THE PRODUCT LIVES AT THE ROOT: getunstuckmap.com, /start,
+ * /stuck/… The `/wayout` prefix stays on eliv8os.com, where this is a second
+ * product inside somebody else's house and the prefix is what keeps it out of
+ * the way.
+ *
+ * ⚠️ HOST-AWARE, AND IT HAS TO BE, BECAUSE ONE BUILD SERVES BOTH DOMAINS. There
+ * is no build-time answer to "which product is this" — only a runtime one.
+ *
+ * ⚠️ AND IT MUST NOT BREAK PRERENDERING. scripts/prerender.mjs runs against a
+ * local preview server where the hostname is localhost, so the fallback is the
+ * prefixed form and the emitted HTML is valid on both domains. The root URLs are
+ * reached by rewrites in public/_redirects, not by a second build.
+ *
+ * ⚠️ NOW IS THE CHEAPEST THIS CHANGE WILL EVER BE. The situation pages went live
+ * three days ago and Search Console is not connected yet, so there is almost
+ * nothing indexed to lose. Every week of waiting raises the price.
+ */
+const UNSTUCK_HOSTS = ['getunstuckmap.com', 'www.getunstuckmap.com']
+
+export function onOwnDomain() {
+  return typeof window !== 'undefined' && UNSTUCK_HOSTS.includes(window.location.hostname)
+}
+
+/** Base path for every route in this product. Empty string on its own domain. */
+export const WAYOUT_BASE = onOwnDomain() ? '' : '/wayout'
+
+/** Where the landing lives: the root of its own domain, a page inside Eliv8's. */
+export const WAYOUT_HOME = onOwnDomain() ? '/' : '/wayout/hello'
 
 /**
  * 🔴🔴 HOW LONG THIS TAKES, IN ONE PLACE, FOR THE SAME REASON THE PRICE IS.
@@ -159,4 +192,22 @@ export const WAYOUT_TOTAL_TIME = 'about twenty minutes'
  */
 export function timeLine() {
   return `About twenty minutes, start to finish.`
+}
+
+/**
+ * ⭐⭐ THE CANONICAL URL IS THE SAME SENTENCE WHOEVER RENDERS IT.
+ *
+ * One build serves both domains, so the same page can be reached at
+ * `/wayout/stuck/x` on eliv8os.com and `/stuck/x` on getunstuckmap.com. Google
+ * must be told which one is the page — and that is always the product's own
+ * domain without the internal prefix, because that is the address a person is
+ * given and the one every link should earn.
+ *
+ * ⚠️ NOT host-aware, deliberately. A canonical that changed with the host would
+ * tell each domain it is the real one, which is the same duplicate-content
+ * mistake that cost leadeos.com, made twice as fast.
+ */
+export function canonicalUrl(path = '') {
+  const clean = String(path).replace(/^\/wayout(?=\/|$)/, '') || '/'
+  return `${WAYOUT_SITE_URL}${clean === '/' ? '' : clean}`
 }

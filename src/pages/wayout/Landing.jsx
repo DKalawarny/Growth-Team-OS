@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE, WAYOUT_SITE_URL, canonicalUrl } from '../../lib/wayout/brand'
 import { priceLine, WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, walksWithYouLine } from '../../lib/wayout/pricing'
 import { SITUATIONS } from '../../content/unstuckSituations'
 import './wayout.css'
@@ -90,7 +90,7 @@ export default function Landing() {
             the page that should rank: it says what the product is. */}
         {/* Same inherited-canonical problem as WayoutShell — this page does not
             use it, so it needs its own or it claims to be the Eliv8 homepage. */}
-        <link rel="canonical" href={`${WAYOUT_SITE_URL}/wayout/hello`} />
+        <link rel="canonical" href={canonicalUrl('/')} />
         {/* ⚠️ Same reason as WayoutShell — index.html's Open Graph tags are
             Eliv8 OS's, and Helmet only manages what it declares. This page does
             not use WayoutShell, so it needs its own set or it inherits them. */}

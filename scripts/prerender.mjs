@@ -81,13 +81,24 @@ const ROUTES = [
   // the only channel that has ever brought either product a stranger.
   // ⚠️ ONLY these two. /wayout and everything past it talk to Supabase to find
   // a session, which is the same reason /dashboard is not in this list.
-  { path: '/wayout/start',  titleContains: 'Unstuck Map' },
-  { path: '/wayout/hello',  titleContains: 'Unstuck Map' },
-  { path: '/wayout/stuck',  titleContains: 'Being stuck, in specific situations' },
+  /**
+   * 🔴 PRERENDERED AT THE ROOT PATHS, because those are the ones the sitemap and
+   * the canonicals name and therefore the ones a crawler will ask for. The
+   * prefixed twins still work at runtime — the router registers both — but a
+   * crawler hitting /stuck/x must get real HTML, not the SPA shell carrying
+   * Eliv8's meta tags.
+   * ⚠️ The local preview server has no hostname, so components fall back to the
+   * prefixed base while rendering. That is fine and deliberate: every link in the
+   * emitted HTML is rewritten by the router on load, and the canonical is
+   * computed by canonicalUrl(), which is host-independent on purpose.
+   */
+  { path: '/start',  titleContains: 'Unstuck Map' },
+  { path: '/hello',  titleContains: 'Unstuck Map' },
+  { path: '/stuck',  titleContains: 'Being stuck, in specific situations' },
   // ⚠️ Generated from the same array the pages render from, exactly as the
   // answer pages are. A situation page added to the content file and forgotten
   // here would ship invisible to the one channel it was written for.
-  ...SITUATIONS.map(x => ({ path: `/wayout/stuck/${x.slug}`, titleContains: x.question.slice(0, 28) })),
+  ...SITUATIONS.map(x => ({ path: `/stuck/${x.slug}`, titleContains: x.question.slice(0, 28) })),
 
   // Trade-specific pages
   { path: '/for/plumbers',      titleContains: 'Eliv8 OS for plumbers' },

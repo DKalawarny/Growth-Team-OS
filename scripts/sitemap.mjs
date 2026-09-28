@@ -12,7 +12,7 @@
 import { writeFileSync } from 'node:fs'
 import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js'
 import { SITUATIONS } from '../src/content/unstuckSituations.js'
-import { WAYOUT_SITE_URL, WAYOUT_BASE } from '../src/lib/wayout/brand.js'
+import { WAYOUT_SITE_URL } from '../src/lib/wayout/brand.js'
 
 const today = new Date().toISOString().slice(0, 10)
 
@@ -47,11 +47,19 @@ console.log(`[sitemap] ${PUBLIC_PAGES.length} urls`)
  * ⚠️ ONLY THE PUBLIC ROUTES. Everything past them needs a session and holds
  * somebody's money and what they are running from. A sitemap is an invitation.
  */
+/**
+ * 🔴 ROOT PATHS, NOT THE INTERNAL ONES. This file runs in node, where
+ * WAYOUT_BASE falls back to `/wayout` because there is no window — so using it
+ * here would publish a sitemap of eliv8os.com's internal paths under
+ * getunstuckmap.com's domain, telling Google to index the prefixed twins as the
+ * real pages. The canonical is the root form, so the sitemap must be too: a
+ * sitemap that disagrees with the canonical is a sitemap Google ignores.
+ */
 const wayoutUrls = [
-  { path: `${WAYOUT_BASE}/hello`, priority: '1.0', freq: 'monthly' },
-  { path: `${WAYOUT_BASE}/start`, priority: '0.9', freq: 'monthly' },
-  { path: `${WAYOUT_BASE}/stuck`, priority: '0.9', freq: 'weekly' },
-  ...SITUATIONS.map(x => ({ path: `${WAYOUT_BASE}/stuck/${x.slug}`, priority: '0.8', freq: 'monthly' })),
+  { path: '',                priority: '1.0', freq: 'monthly' },
+  { path: '/start',          priority: '0.9', freq: 'monthly' },
+  { path: '/stuck',          priority: '0.9', freq: 'weekly'  },
+  ...SITUATIONS.map(x => ({ path: `/stuck/${x.slug}`, priority: '0.8', freq: 'monthly' })),
 ].map(u => `  <url>
     <loc>${WAYOUT_SITE_URL}${u.path}</loc>
     <changefreq>${u.freq}</changefreq>

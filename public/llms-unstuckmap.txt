@@ -66,5 +66,6 @@ Eliv8 Inc. (a Sarlia Holdings company), British Columbia, Canada.
 
 ## Pages
 
-- https://getunstuckmap.com/wayout/start — the free six-question read
-- https://getunstuckmap.com/wayout/hello — what it is
+- https://getunstuckmap.com/ — what it is
+- https://getunstuckmap.com/start — the free questions that name your way out
+- https://getunstuckmap.com/stuck — straight answers to specific situations

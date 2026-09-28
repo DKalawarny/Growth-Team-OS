@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { WAYOUT_BASE } from './lib/wayout/brand'
+import { WAYOUT_BASE, onOwnDomain } from './lib/wayout/brand'
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, AuthProvider } from './hooks/useAuth'
 
@@ -293,7 +293,19 @@ export default function App() {
             authed users straight to /dashboard so owners don't see marketing
             chrome on their own domain. Pricing stays public always — an owner
             revisiting it to share with a partner is a feature. */}
-        <Route path="/"         element={<RedirectIfAuthed><Landing /></RedirectIfAuthed>} />
+        {/* ⭐⭐ ONE ROOT ROUTE THAT KNOWS WHICH PRODUCT IT IS. One build serves
+            both domains, so `/` is the only path whose meaning cannot be decided
+            by the path itself: it is Unstuck Map's landing on getunstuckmap.com
+            and Eliv8's on eliv8os.com.
+            🔴 The first attempt registered a SECOND `<Route path="/">` lower down
+            and it never fired — for identical paths React Router takes the one
+            declared first, so Eliv8's landing won on both domains and the check
+            caught it rendering "The OS that runs on integrity" at
+            getunstuckmap.com. Two routes claiming one path is the bug; this is
+            one route that answers the question. */}
+        <Route path="/" element={onOwnDomain()
+          ? <LazyRoute><WayoutLanding /></LazyRoute>
+          : <RedirectIfAuthed><Landing /></RedirectIfAuthed>} />
         <Route path="/pricing"  element={<LazyRoute><Pricing /></LazyRoute>} />
         <Route path="/about"    element={<LazyRoute><About /></LazyRoute>} />
         <Route path="/answers"       element={<LazyRoute><AnswerIndex /></LazyRoute>} />
@@ -329,41 +341,51 @@ export default function App() {
         {/* ⭐ The front door. The diagnostic moves one step in — someone who
             arrives cold sees the product before being asked a question. */}
         <Route path="/wayout/hello" element={<LazyRoute><WayoutLanding /></LazyRoute>} />
+        <Route path="/hello" element={<LazyRoute><WayoutLanding /></LazyRoute>} />
         <Route path="/wayout/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
+        <Route path="/start" element={<LazyRoute><WayoutDiagnostic /></LazyRoute>} />
         {/* ⚠️ Public and indexable, deliberately — these are the door. They sit
             OUTSIDE RequireSession because somebody arriving from an assistant
             has no account and must not be asked for one to read an answer. */}
         <Route path="/wayout/stuck"       element={<LazyRoute><WayoutStuck /></LazyRoute>} />
+        <Route path="/stuck"       element={<LazyRoute><WayoutStuck /></LazyRoute>} />
         <Route path="/wayout/stuck/:slug" element={<LazyRoute><WayoutStuckPage /></LazyRoute>} />
+        <Route path="/stuck/:slug" element={<LazyRoute><WayoutStuckPage /></LazyRoute>} />
         {/* Its own front door. Public, and deliberately NOT wrapped in
             RedirectIfAuthed — an Eliv8 owner who lands here should be able to
             carry on into the way out rather than being bounced to a dashboard
             belonging to the other product. */}
         <Route path="/wayout/enter" element={<LazyRoute><WayoutEnter /></LazyRoute>} />
+        <Route path="/enter" element={<LazyRoute><WayoutEnter /></LazyRoute>} />
         {/* Its own password reset. The email must never hand somebody to the
             other product's branding mid-recovery. */}
         <Route path="/wayout/reset" element={<LazyRoute><WayoutReset /></LazyRoute>} />
+        <Route path="/reset" element={<LazyRoute><WayoutReset /></LazyRoute>} />
         {/* ⭐ PUBLIC. The six questions are answerable with no account — held in a
             local draft and adopted on sign-up. The account is asked for at the
             END, where someone can see what they would be keeping. */}
         <Route path="/wayout"       element={<LazyRoute><WayoutIntake /></LazyRoute>} />
+        <Route path="/questions"       element={<LazyRoute><WayoutIntake /></LazyRoute>} />
         <Route path="/wayout/plan"  element={<LazyRoute><RequireWayout><WayoutPlan /></RequireWayout></LazyRoute>} />
+        <Route path="/plan"  element={<LazyRoute><RequireWayout><WayoutPlan /></RequireWayout></LazyRoute>} />
         {/* The play-by-play for one move. Same guard as the plan — there is
             nothing here for anyone without a session, and the page itself
             sends them back if they have no map yet. */}
         <Route path="/wayout/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
+        <Route path="/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
         {/* After the third move — the only page that asks instead of telling. */}
         <Route path="/wayout/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
+        <Route path="/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (
           <Route path="/wayout/preview" element={<LazyRoute><WayoutPreview /></LazyRoute>} />
-        )}
+          )}
         {import.meta.env.DEV && (
           <Route path="/wayout/preview/intake" element={<LazyRoute><WayoutPreviewIn /></LazyRoute>} />
-        )}
+          )}
         {/* ⚠️ Needs a session — it calls the real model. */}
         {import.meta.env.DEV && (
           <Route path="/wayout/preview/playbook" element={<LazyRoute><RequireWayout><WayoutPreviewPb /></RequireWayout></LazyRoute>} />
-        )}
+          )}
 
         {/* Public auth routes */}
         <Route path="/login"          element={<LazyRoute><RedirectIfAuthed><Login /></RedirectIfAuthed></LazyRoute>} />

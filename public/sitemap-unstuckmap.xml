@@ -4,97 +4,97 @@
      Served at getunstuckmap.com/sitemap.xml by a host rewrite in _redirects. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://getunstuckmap.com/wayout/hello</loc>
+    <loc>https://getunstuckmap.com</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/start</loc>
+    <loc>https://getunstuckmap.com/start</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck</loc>
+    <loc>https://getunstuckmap.com/stuck</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/inherited-house-credit-card-debt</loc>
+    <loc>https://getunstuckmap.com/stuck/inherited-house-credit-card-debt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/stop-working-nights-sell-the-house</loc>
+    <loc>https://getunstuckmap.com/stuck/stop-working-nights-sell-the-house</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/pay-off-the-truck-or-invest</loc>
+    <loc>https://getunstuckmap.com/stuck/pay-off-the-truck-or-invest</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/nothing-left-at-the-end-of-the-month</loc>
+    <loc>https://getunstuckmap.com/stuck/nothing-left-at-the-end-of-the-month</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/no-retirement-savings-in-my-fifties</loc>
+    <loc>https://getunstuckmap.com/stuck/no-retirement-savings-in-my-fifties</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/sell-the-house-to-pay-off-debt</loc>
+    <loc>https://getunstuckmap.com/stuck/sell-the-house-to-pay-off-debt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/want-to-leave-my-job-but-cannot-afford-to</loc>
+    <loc>https://getunstuckmap.com/stuck/want-to-leave-my-job-but-cannot-afford-to</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/lump-sum-what-to-do-first</loc>
+    <loc>https://getunstuckmap.com/stuck/lump-sum-what-to-do-first</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/is-renting-out-a-room-worth-it</loc>
+    <loc>https://getunstuckmap.com/stuck/is-renting-out-a-room-worth-it</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/working-but-no-fixed-address</loc>
+    <loc>https://getunstuckmap.com/stuck/working-but-no-fixed-address</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/twenty-six-and-feel-behind</loc>
+    <loc>https://getunstuckmap.com/stuck/twenty-six-and-feel-behind</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/just-been-laid-off</loc>
+    <loc>https://getunstuckmap.com/stuck/just-been-laid-off</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/separated-and-the-money-does-not-work</loc>
+    <loc>https://getunstuckmap.com/stuck/separated-and-the-money-does-not-work</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/about-to-lose-my-housing</loc>
+    <loc>https://getunstuckmap.com/stuck/about-to-lose-my-housing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/business-makes-money-but-i-never-do</loc>
+    <loc>https://getunstuckmap.com/stuck/business-makes-money-but-i-never-do</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://getunstuckmap.com/wayout/stuck/we-earn-good-money-and-have-nothing</loc>
+    <loc>https://getunstuckmap.com/stuck/we-earn-good-money-and-have-nothing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
