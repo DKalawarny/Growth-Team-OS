@@ -66,6 +66,17 @@ export function historyForPrompt(history) {
  * says the first conversation was not kept.
  */
 export const CHAPTER_CLEARS_MONEY   = ['takeHome', 'mustPay', 'savings']
+/**
+ * 🔴🔴 `out` USED TO BE CLEARED AND THEN NEVER ASKED AGAIN. It lives on the
+ * intake's OPENING screen, and `firstUnansweredStep` only scans the six numbered
+ * ones — it can never return step 0. So on a "landed" or "changed" chapter the
+ * destination sentence was wiped and nothing in the flow could collect it, and
+ * the next plan was built with the field empty.
+ * ⭐ Fixed by the destination, not by the deletion: `/chapter` asks both of these
+ * directly (see wayoutChapter.js `CHAPTER_SCREEN.arrived`), so what is cleared
+ * here is what that screen puts back. ⚠️ THE TWO LISTS MUST MOVE TOGETHER — this
+ * one makes the hole, that one fills it.
+ */
 export const CHAPTER_CLEARS_DESTINY = ['tuesday', 'out']
 
 export function chapterAnswers(previousAnswers, outcome) {

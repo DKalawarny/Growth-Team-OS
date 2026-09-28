@@ -404,6 +404,7 @@ export default function Plan() {
       onInsist={insist}
       onNote={noteOnMove}
       moveNotes={session?.move_notes ?? {}}
+      chapter={session?.chapter ?? 1}
       progress={progress}
       rebuilding={building}
       spent={spent}
@@ -530,7 +531,7 @@ function WorthAsk({ onSave }) {
  */
 export function Map({
   map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
-  moveNotes = {}, progress, rebuilding = false, spent = false,
+  moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
@@ -668,6 +669,14 @@ export function Map({
       </div>
       </div>
 
+      {/* ⭐⭐ THE WAY INTO THE HISTORY, and only once there is a history to see.
+          On a first plan this link would point at a page that can only say
+          "nothing here yet", which is worse than no link. */}
+      {chapter > 1 && (
+        <p className="wayout__chaptercrumb wayout__r" style={at(2.35)}>
+          <Link to={`${WAYOUT_BASE}/history`}>Chapter {chapter} · see the whole way here →</Link>
+        </p>
+      )}
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
           it shows that this is a suggested plan, up to you to do as you wish,

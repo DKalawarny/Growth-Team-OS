@@ -1021,6 +1021,65 @@ export async function startNextChapter(session, outcome) {
  * current session in hand — the chapter link is the source of truth, not state
  * carried through the router.
  */
+/**
+ * ⭐⭐ THE WHOLE ARC, OLDEST FIRST — every chapter this person has had.
+ *
+ * Daniel, 28 Sep: "maybe it's a whole set of new goals, but there is a whole
+ * history of where the person started and what their original vision was."
+ *
+ * 🔴 THE CHAIN HAS EXISTED SINCE MIGRATION 066 AND NO SCREEN HAS EVER RENDERED
+ * IT. `historyFor` walks exactly ONE hop back, and it exists to feed the next
+ * PROMPT — so the product has always known where somebody started and has never
+ * once shown them.
+ *
+ * ⭐⭐ WHY IT IS THE COMMERCIAL SPINE, NOT A NICETY. This product FINISHES. A
+ * second plan, on its own, looks like starting over — and nobody pays to start
+ * over. What makes it a continuation is the record of where they began: their
+ * chapter-one answer, in their own words, beside where they are now. That is the
+ * motivating-tone rule made structural — credit as an observation they cannot
+ * argue with, never "you have come so far".
+ *
+ * ⚠️ BOUNDED. A malformed chain (or a cycle, which the schema should prevent and
+ * a bug could not) must not spin forever on somebody's plan page.
+ *
+ * ⚠️ RETURNS THEIR ANSWERS AND THE HEADLINE OF EACH MAP, AND NOTHING ELSE FROM
+ * IT. A previous map's figures are OURS, not theirs — see the provenance note on
+ * startNextChapter. A history screen may quote what they wrote; it may never
+ * hand an old plan's invented number forward as an established fact.
+ */
+const MAX_CHAPTERS = 24
+
+export async function chapterChain(session) {
+  if (!session) return []
+  const out = []
+  let node = session
+  for (let hops = 0; node && hops < MAX_CHAPTERS; hops++) {
+    out.unshift({
+      id: node.id,
+      chapter: node.chapter ?? 1,
+      answers: node.answers ?? {},
+      // Headline only. Never the moves' detail, and never the stats.
+      destination: node.map?.destination ?? node.map?.headline ?? null,
+      moves: Array.isArray(node.map?.moves)
+        ? node.map.moves.map(m => ({ title: m.title, when: m.when }))
+        : [],
+      outcome: node.outcome ?? null,
+      outcomeNote: node.outcome_note ?? null,
+      startedFrom: node.continues_from_outcome ?? null,
+      createdAt: node.created_at ?? null,
+    })
+    if (!node.previous_session_id) break
+    const { data, error } = await supabase
+      .from('wayout_sessions')
+      .select('id, chapter, answers, map, outcome, outcome_note, continues_from_outcome, previous_session_id, created_at')
+      .eq('id', node.previous_session_id)
+      .maybeSingle()
+    if (error || !data) break
+    node = data
+  }
+  return out
+}
+
 export async function historyFor(session) {
   if (!session?.previous_session_id) return null
   const { data: prev, error } = await supabase

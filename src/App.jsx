@@ -70,6 +70,8 @@ const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
 const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
 const WayoutDone       = lazy(() => import('./pages/wayout/Done'))
+const WayoutChapter    = lazy(() => import('./pages/wayout/Chapter'))
+const WayoutHistory    = lazy(() => import('./pages/wayout/History'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
 const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
@@ -374,6 +376,13 @@ export default function App() {
         <Route path="/wayout/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
         <Route path="/play/:move" element={<LazyRoute><RequireWayout><WayoutPlay /></RequireWayout></LazyRoute>} />
         {/* After the third move — the only page that asks instead of telling. */}
+        {/* ⭐⭐ The door into a new chapter, and the record of every one before
+            it. Both need a session and neither needs a finished plan — somebody
+            mid-chapter-two must be able to read where they started. */}
+        <Route path="/wayout/chapter" element={<LazyRoute><RequireWayout><WayoutChapter /></RequireWayout></LazyRoute>} />
+        <Route path="/chapter" element={<LazyRoute><RequireWayout><WayoutChapter /></RequireWayout></LazyRoute>} />
+        <Route path="/wayout/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
+        <Route path="/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
         <Route path="/wayout/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         <Route path="/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (

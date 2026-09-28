@@ -2353,3 +2353,126 @@ h1.wayout__heroline {
 .wayout__offer--known .wayout__offerkick { color: var(--soft); }
 .wayout__offer--known h3,
 .wayout__offer--known .wayout__offerlead { color: var(--ink); }
+
+/* ═══ CHAPTER TWO — THE ONE DARK ROOM IN THE PRODUCT ══════════════════════
+   🔴 Daniel: "it needs to be different, like entering a new level — not the
+   same background, different questions. If it's the same, people will stop
+   using it."
+
+   ⭐⭐ THIS IS THE ONLY INVERSION IN THE WHOLE PRODUCT, and it has to stay that
+   way to mean anything. Every other screen is cream; crossing into a new
+   chapter is the one moment where the ground itself changes, which is an
+   argument no amount of copy can make.
+   ⚠️ It is a ROOM, not a theme: the fields inside it keep their own shapes, so
+   nothing has to be re-learned at the moment somebody is being asked to
+   commit to another round. */
+.wayout__chapter {
+  /* ⚠️ NO TOP BLEED. Pulling up by the sheet's own padding put the dark block
+     OVER the brand mark, so the one element that says which product this is
+     disappeared at the exact moment the design changes under somebody. It
+     bleeds sideways and down; the top starts below the wordmark. */
+  margin: 8px -54px -46px;
+  padding: 52px 54px 58px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 8% 0%, #2C4736 0%, transparent 62%),
+    linear-gradient(168deg, #1E2C21 0%, #16211A 100%);
+  color: #F2EFE4;
+}
+@media (max-width: 760px) {
+  .wayout__chapter { margin: 6px -22px -28px; padding: 36px 22px 40px; border-radius: 16px; }
+}
+
+.wayout__chapterkick {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--sun); margin: 0 0 16px;
+}
+.wayout__chapterh {
+  font-size: clamp(30px, 3.5vw, 46px); line-height: 1.05; letter-spacing: -.03em;
+  font-weight: 800; margin: 0 0 16px; color: #FBF9F1; max-width: 18ch; text-wrap: balance;
+}
+.wayout__chapterlead {
+  font-size: 17.5px; line-height: 1.55; color: #BFC9BE; margin: 0 0 30px; max-width: 52ch;
+}
+
+/* ⭐⭐ THEIR OWN FIRST SENTENCE. The only form of credit the voice rules allow —
+   an observation they cannot argue with, because they wrote it. */
+.wayout__origin {
+  border-left: 3px solid var(--sun);
+  padding: 4px 0 4px 20px; margin: 0 0 38px; max-width: 58ch;
+}
+.wayout__origin span {
+  display: block; font-size: 11px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: #9DA99C; margin-bottom: 10px;
+}
+.wayout__origin q {
+  display: block; font-family: Caveat, ui-rounded, cursive; font-size: 25px;
+  line-height: 1.35; color: #F2EFE4;
+}
+.wayout__originlink {
+  display: inline-block; margin-top: 14px; font-size: 13.5px; font-weight: 700;
+  color: var(--sun); text-decoration: none;
+}
+.wayout__originlink:hover { text-decoration: underline; }
+
+/* ⚠️ The fields keep their own light surfaces — a dark form is a different
+   product, and nothing here should need re-learning. */
+.wayout__chapterfields {
+  display: grid; gap: 26px; background: var(--paper); color: var(--ink);
+  padding: 32px 30px; border-radius: 16px; margin-bottom: 26px;
+}
+.wayout__chapter .wayout__btn--sun { display: inline-block; width: auto; padding-inline: 44px; }
+.wayout__chapterfine {
+  font-size: 13.5px; color: #9DA99C; margin: 16px 0 0; max-width: 54ch; line-height: 1.55;
+}
+
+/* ═══ THE ARC ════════════════════════════════════════════════════════════ */
+.wayout__origin--light { border-left-color: var(--sun); margin-bottom: 34px; }
+.wayout__origin--light span { color: var(--soft); }
+.wayout__origin--light q { color: var(--ink); }
+
+.wayout__arc { list-style: none; margin: 0; padding: 0; position: relative; }
+.wayout__arc::before {
+  content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px;
+  width: 2px; background: var(--line);
+}
+.wayout__arc li { position: relative; padding: 0 0 34px 34px; }
+.wayout__arcmark {
+  position: absolute; left: 0; top: 4px; width: 16px; height: 16px;
+  border-radius: 999px; background: var(--paper); border: 3px solid var(--line);
+}
+.wayout__arc li.is-landed  .wayout__arcmark { border-color: var(--green); background: var(--green); }
+.wayout__arc li.is-partly  .wayout__arcmark { border-color: var(--green); }
+.wayout__arc li.is-no      .wayout__arcmark { border-color: var(--sun); }
+.wayout__arc li.is-changed .wayout__arcmark { border-color: var(--sun); background: var(--sun); }
+.wayout__arc li.is-open    .wayout__arcmark { border-color: var(--ink); }
+
+.wayout__arckick {
+  font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--soft); margin: 0 0 8px;
+}
+.wayout__arckick em { font-style: normal; font-weight: 700; color: #A9A392; }
+.wayout__arcbody h3 {
+  margin: 0 0 12px; font-size: 19px; line-height: 1.3; font-weight: 700; color: var(--ink);
+  max-width: 46ch;
+}
+.wayout__arcmoves { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 5px; }
+.wayout__arcmoves li {
+  font-size: 14px; color: var(--soft); padding-left: 16px; position: relative; line-height: 1.45;
+}
+.wayout__arcmoves li::before {
+  content: ''; position: absolute; left: 0; top: 9px;
+  width: 6px; height: 6px; border-radius: 999px; background: var(--line);
+}
+.wayout__arcout { margin: 0; font-size: 14px; }
+.wayout__arcout b { color: var(--ink); }
+.wayout__arcout span { display: block; color: var(--soft); margin-top: 5px; line-height: 1.5; max-width: 52ch; }
+
+/* ⚠️ Quiet. It is a way to look back, not an action — competing with the moves
+   would be the wrong fix for "nobody could find the history". */
+.wayout__chaptercrumb { margin: 0 0 10px; font-size: 13px; }
+.wayout__chaptercrumb a {
+  color: var(--soft); text-decoration: none; font-weight: 700;
+  letter-spacing: .01em;
+}
+.wayout__chaptercrumb a:hover { color: var(--green); text-decoration: underline; }

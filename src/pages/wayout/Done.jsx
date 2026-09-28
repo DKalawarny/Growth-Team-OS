@@ -172,11 +172,20 @@ export default function Done() {
       // on whatever the new chapter cleared — the money, and the destination too
       // if they arrived or changed their mind. Everything else is prefilled and
       // they walk through it. See firstUnansweredStep.
-      // 🔴 THIS SENT THEM TO THE SIX-TAP DIAGNOSTIC, CONTRADICTING THE COMMENT
-      // DIRECTLY ABOVE IT. `/start` is the free front door; the next chapter
-      // belongs in the questions, where everything that carries over is already
-      // in the boxes and only what the chapter cleared is asked again.
-      navigate(WAYOUT_INTAKE)
+      /**
+       * 🔴🔴 THIS WENT TO `/start` — THE SIX-TAP DIAGNOSTIC — contradicting the
+       * comment that used to sit directly above it, which described the intake
+       * resuming at the first unanswered screen.
+       *
+       * ⭐⭐ AND THE INTAKE WAS NOT THE RIGHT DESTINATION EITHER. Daniel: "it
+       * needs to be different, like entering a new level — not the same
+       * background, different questions. If it's the same, people will stop
+       * using it." Dropping somebody into the middle of the six screens with
+       * every box prefilled is efficient and feels exactly like starting over.
+       * `/chapter` is five questions only a returning person can be asked, on
+       * the one dark ground in the product.
+       */
+      navigate(`${WAYOUT_BASE}/chapter`)
     } catch (err) {
       setError(err.message)
       setStarting(false)

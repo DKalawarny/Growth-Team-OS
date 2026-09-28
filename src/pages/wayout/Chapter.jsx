@@ -1,0 +1,151 @@
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import WayoutShell from './WayoutShell'
+import { Field } from './fields'
+import { isAnswered } from '../../lib/wayout/validate'
+import { chapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
+import { loadOrCreateSession, saveAnswers, markComplete, chapterChain } from '../../lib/wayout/session'
+import { WAYOUT_BASE } from '../../lib/wayout/brand'
+
+/**
+ * The way out — the door into a new chapter.
+ *
+ * 🔴🔴 IT HAS TO FEEL LIKE A DIFFERENT ROOM. Daniel: "it needs to be different,
+ * like entering a new level — not the same background, different questions. If
+ * it's the same, people will stop using it."
+ *
+ * Before this, "start the next one" dropped somebody into the middle of the six
+ * intake screens with every box already filled and asked them to press Next to
+ * the end. The machinery was right — only four answers were actually cleared —
+ * and the EXPERIENCE was identical to starting over, which on a product whose
+ * whole shape is "three moves and out" is the difference between a subscription
+ * and a churn.
+ *
+ * ⭐⭐ SO TWO THINGS CHANGE AT ONCE, AND NEITHER WORKS ALONE.
+ *   1. THE QUESTIONS ARE ONES ONLY A RETURNING PERSON CAN BE ASKED — see
+ *      wayoutChapter.js. Nobody arriving for the first time has a last time.
+ *   2. THE GROUND IS DARK. Every other screen in this product is cream. This one
+ *      is not, and that is the entire visual argument: you are somewhere else
+ *      now. It is the only inversion in the product, so it cannot become a
+ *      pattern and cannot stop meaning anything.
+ *
+ * ⭐⭐ AND THEIR OWN FIRST WORDS ARE AT THE TOP. Not a progress bar, not a streak
+ * — the sentence they wrote about what "out" looked like before any of it
+ * happened. It is the one piece of credit that cannot be read as flattery,
+ * because they wrote it. See chapterChain() for why the old MAP never appears
+ * here and only their own answers do.
+ */
+export default function Chapter() {
+  const navigate = useNavigate()
+  const [session, setSession] = useState(null)
+  const [chain, setChain]     = useState([])
+  const [answers, setAnswers] = useState({})
+  const [errors, setErrors]   = useState({})
+  const [saving, setSaving]   = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    loadOrCreateSession()
+      .then(async s => {
+        if (cancelled) return
+        // ⚠️ A first plan has no chapter to open. Anyone who lands here without
+        // one belongs in the ordinary questions, not on a page about last time.
+        if ((s.chapter ?? 1) < 2) { navigate(`${WAYOUT_BASE}/questions`, { replace: true }); return }
+        if (s.status === 'paid' && s.map) { navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return }
+        setSession(s)
+        setAnswers(s.answers ?? {})
+        const c = await chapterChain(s)
+        if (!cancelled) { setChain(c); setLoading(false) }
+      })
+      .catch(err => { if (!cancelled) { setError(err.message); setLoading(false) } })
+    return () => { cancelled = true }
+  }, [navigate])
+
+  const outcome = session?.continues_from_outcome ?? null
+  const fields  = chapterFields(outcome)
+  const first   = chain[0] ?? null
+  const chapter = session?.chapter ?? 2
+
+  async function submit() {
+    const missing = {}
+    for (const f of fields) {
+      if (f.required && !isAnswered(f, answers[f.key])) missing[f.key] = f.emptyMessage ?? 'Add an answer.'
+    }
+    if (Object.keys(missing).length) { setErrors(missing); return }
+    setSaving(true)
+    try {
+      await saveAnswers(session.id, answers)
+      // ⚠️ Everything else carried over from the last chapter, so answering
+      // these IS finishing — there is no further screen to send them to.
+      await markComplete(session.id, answers)
+      navigate(`${WAYOUT_BASE}/plan`)
+    } catch (err) {
+      setErrors({ _save: err.message })
+      setSaving(false)
+    }
+  }
+
+  if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
+  if (error)   return <WayoutShell><p className="wayout__lead">{error}</p></WayoutShell>
+
+  return (
+    <WayoutShell title={`Chapter ${chapter}`} wide>
+      <div className="wayout__chapter">
+        <p className="wayout__chapterkick">Chapter {chapter}</p>
+        <h1 className="wayout__chapterh">A different plan, for who you are now.</h1>
+        {outcome && CHAPTER_LEAD[outcome] && (
+          <p className="wayout__chapterlead">{CHAPTER_LEAD[outcome]}</p>
+        )}
+
+        {/* ⭐⭐ WHERE THEY STARTED, IN THEIR OWN WORDS. The single most valuable
+            row in the whole history — what "out" meant to them before anything
+            had moved. ⚠️ Their answer only. Never a figure from an old map. */}
+        {first?.answers?.out && (
+          <div className="wayout__origin">
+            <span>When you started{first.createdAt ? `, ${new Date(first.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}` : ''}, you wrote:</span>
+            <q>{first.answers.out}</q>
+            {chain.length > 1 && (
+              <Link className="wayout__originlink" to={`${WAYOUT_BASE}/history`}>
+                See the whole way here →
+              </Link>
+            )}
+          </div>
+        )}
+
+        <div className="wayout__chapterfields">
+          {fields.map(f => (
+            <div key={f.key} className="wayout__chapterfield">
+              {/* ⚠️ `Field` renders the CONTROL ONLY — the label and hint are the
+                  caller's job, exactly as the intake does it. Rendering Field on
+                  its own produced a column of unlabelled inputs, which is the
+                  form asking questions it has not asked. */}
+              {f.label && <label className="wayout__label">{f.label}</label>}
+              <Field
+                field={f}
+                value={answers[f.key]}
+                onChange={v => {
+                  setAnswers(a => ({ ...a, [f.key]: v }))
+                  setErrors(e => (e[f.key] ? { ...e, [f.key]: undefined } : e))
+                }}
+              />
+              {f.hint && <p className="wayout__hint">{f.hint}</p>}
+              {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+            </div>
+          ))}
+        </div>
+
+        {errors._save && <p className="wayout__error">{errors._save}</p>}
+
+        <button className="wayout__btn wayout__btn--sun" onClick={submit} disabled={saving}>
+          {saving ? 'One moment…' : 'Build this one'}
+        </button>
+        <p className="wayout__chapterfine">
+          Everything else you told us is still here — your town, your hours, what
+          you will not do. Only what moved gets asked again.
+        </p>
+      </div>
+    </WayoutShell>
+  )
+}
