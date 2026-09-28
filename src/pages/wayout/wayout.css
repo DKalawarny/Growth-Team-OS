@@ -2173,20 +2173,63 @@ h1.wayout__heroline {
    ⚠️ It sits ON the board rather than under it: the moves are what they have
    been looking at, and a next step announced somewhere else is a next step
    nobody finds. */
+/* 🔴🔴 IT WAS A QUIET TINTED BOX AND THE MOMENT DESERVED MORE. Daniel, ticking
+   the third move: "this is it? seems very uneventful, no congratulations,
+   nothing — it's an afterthought."
+   ⭐⭐ The beat belongs where the event is: the third tick happens on the BOARD,
+   so the celebration is on the board. Same rule as /done — it is about the WORK
+   (three boxes ticked, which most people never do) and never the outcome. */
 .wayout__allthree {
-  margin: 40px 0 8px;
-  padding: 26px 28px 28px;
-  border-radius: 18px;
-  background: var(--tint);
-  border: 1px solid var(--line);
+  margin: 48px 0 12px;
+  padding: 34px 36px 36px;
+  border-radius: 20px;
+  border: 1px solid #CFE0D4;
   border-left: 4px solid var(--green);
-  max-width: 640px;
+  /* A warm lift off the board rather than another flat card. */
+  background:
+    radial-gradient(120% 140% at 0% 0%, #EAF4EC 0%, transparent 70%),
+    var(--paper);
+  box-shadow: 0 22px 48px -30px rgba(47, 125, 79, .55);
+  max-width: 660px;
 }
-.wayout__allthree b { display: block; font-size: 19px; margin-bottom: 8px; }
-.wayout__allthree p { margin: 0 0 18px; color: var(--soft); font-size: 15px; line-height: 1.55; max-width: 52ch; }
+.wayout__allthree .wayout__finishedmark { margin-bottom: 16px; }
+.wayout__allthree .wayout__finishedkick { margin-bottom: 8px; }
+.wayout__allthree b {
+  display: block; font-size: clamp(24px, 2.4vw, 31px); line-height: 1.12;
+  letter-spacing: -.02em; margin-bottom: 10px; color: var(--ink);
+}
+.wayout__allthree p { margin: 0 0 22px; color: var(--soft); font-size: 15.5px; line-height: 1.6; max-width: 52ch; }
 .wayout__allthree .wayout__btn {
   display: inline-block; width: auto; margin-top: 0;
   padding-inline: 38px; text-decoration: none; text-align: center;
+}
+.wayout__allthreefine {
+  display: block; margin-top: 12px; font-size: 13px; color: #9A9482;
+}
+
+/* ⚠️ ONLY WHEN IT HAPPENS IN FRONT OF THEM. `is-new` is set by the transition
+   from two ticks to three, never by the page simply loading a finished plan —
+   animating an old fact on every visit is what makes fanfare stop meaning
+   anything. */
+.wayout__allthree.is-new {
+  animation: wayoutArrive .6s cubic-bezier(.22, 1, .36, 1) both;
+}
+.wayout__allthree.is-new .wayout__finishedmark {
+  animation: wayoutLand .62s cubic-bezier(.34, 1.4, .64, 1) .1s both;
+}
+.wayout__allthree.is-new .wayout__finishedmark svg path {
+  stroke-dasharray: 26; stroke-dashoffset: 26;
+  animation: wayoutDraw .5s cubic-bezier(.65, 0, .35, 1) .4s forwards;
+}
+@keyframes wayoutArrive {
+  from { opacity: 0; transform: translateY(16px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wayout__allthree.is-new,
+  .wayout__allthree.is-new .wayout__finishedmark,
+  .wayout__allthree.is-new .wayout__finishedmark svg path { animation: none; }
+  .wayout__allthree.is-new .wayout__finishedmark svg path { stroke-dashoffset: 0; }
 }
 
 /* ⭐⭐ PIN AN ANSWER ONTO THE PLAN. Daniel, on a reply about FIRPTA and flip
@@ -2294,14 +2337,21 @@ h1.wayout__heroline {
    streak — the excitement is in the movement, not in the decoration. */
 .wayout__finished { margin-bottom: 30px; }
 
+/* ⚠️ THE MARK ITSELF IS STATIC. Only the two places that represent a MOMENT
+   animate it — the /done page, which is only ever reached once per plan, and
+   the board card in its `is-new` state. Putting the animation on the base rule
+   meant a finished plan replayed its own fanfare on every page load, which is
+   how fanfare stops meaning anything. */
 .wayout__finishedmark {
   display: flex; align-items: center; justify-content: center;
   width: 54px; height: 54px; border-radius: 999px;
   background: var(--green); color: #fff; margin-bottom: 18px;
-  animation: wayoutLand .62s cubic-bezier(.34, 1.4, .64, 1) both;
 }
 .wayout__finishedmark svg { width: 26px; height: 26px; }
-.wayout__finishedmark svg path {
+.wayout__finished .wayout__finishedmark {
+  animation: wayoutLand .62s cubic-bezier(.34, 1.4, .64, 1) both;
+}
+.wayout__finished .wayout__finishedmark svg path {
   stroke-dasharray: 26; stroke-dashoffset: 26;
   animation: wayoutDraw .5s cubic-bezier(.65, 0, .35, 1) .28s forwards;
 }

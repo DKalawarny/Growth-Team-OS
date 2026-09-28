@@ -584,6 +584,31 @@ export function Map({
   const hasOpened = (progress?.started?.size ?? 0) > 0
   const [openCut, setOpenCut] = useState(null)
 
+  /**
+   * ⭐⭐ THE EVENT, NOT THE STATE. Rendering the card is not the same as marking
+   * the moment: a card that is simply present when the page loads is a fact,
+   * and a card that ARRIVES when the third box is ticked is a moment. This
+   * watches for the transition and nothing else.
+   *
+   * ⚠️ And it scrolls the card into view, because the third tick usually happens
+   * at the top of the board and the card sits below the notes. A celebration
+   * below the fold is the afterthought Daniel saw.
+   */
+  const finishRef = useRef(null)
+  const [justFinished, setJustFinished] = useState(false)
+  const wasAll = useRef(null)
+  const allTicked = (map?.moves?.length ?? 0) > 0 && ticked.size >= (map?.moves?.length ?? 0)
+  useEffect(() => {
+    // ⚠️ The first render establishes the baseline rather than firing. Somebody
+    // returning to a finished plan has not just finished it.
+    if (wasAll.current === null) { wasAll.current = allTicked; return }
+    if (allTicked && !wasAll.current) {
+      setJustFinished(true)
+      finishRef.current?.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' })
+    }
+    wasAll.current = allTicked
+  }, [allTicked])
+
   // ⭐⭐ Their own words on one move. `openNote` is which box is open, `draft` is
   // what is in it. One draft, not one per move — only one box is ever open, and
   // a map of drafts would be state nobody clears.
@@ -891,17 +916,46 @@ export function Map({
           beside an unfinished plan is asking somebody to grade work they are
           still doing. */}
       {map.moves?.length > 0 && ticked.size >= map.moves.length && (
-        <div className="wayout__allthree">
-          <b>That is all three.</b>
+        <div className={`wayout__allthree${justFinished ? ' is-new' : ''}`} ref={finishRef}>
+          {/* 🔴🔴 THE MOMENT WAS ON THE WRONG PAGE. Daniel, ticking the third box:
+              "this is it? seems very uneventful, no congratulations, nothing —
+              it's an afterthought."
+
+              He is right and the diagnosis is precise: the completion beat I
+              built was on `/done`, one click away behind a button that reads
+              like admin. But **the moment of finishing is the third tick, and it
+              happens HERE** — on the board, with all three notes in front of
+              them. A celebration on the next screen is a celebration nobody
+              walks into.
+
+              ⭐⭐ So the beat moved to where the event is. Same mark, same
+              sentence, same rule as `/done`: it is about the WORK — three boxes
+              ticked, which most people who write a plan never do — and never
+              about the outcome, which nobody has been asked about yet.
+
+              ⚠️ `is-new` only when it happens in front of them. Somebody
+              returning to a finished plan gets the card without the fanfare —
+              animating an old fact every time the page loads is the thing that
+              makes fanfare meaningless. */}
+          <span className="wayout__finishedmark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12.5l5 5L20 7" />
+            </svg>
+          </span>
+          <p className="wayout__finishedkick">All three</p>
+          <b>You finished the plan.</b>
           <p>
-            The order is spent. What matters now is whether it actually moved
-            anything — and where you go from here depends on the answer, so it
-            is worth saying out loud.
+            Most people who write one never get to the end of it. You did the
+            whole order, in order — which is the hard part and the part nobody
+            sees.
           </p>
           {/* ⚠️ A Link, not navigate — this component is also rendered by
               Preview.jsx to check the design, where there is no session to
               navigate for. */}
-          <Link className="wayout__btn" to={`${WAYOUT_BASE}/done`}>Tell me how it went</Link>
+          <Link className="wayout__btn" to={`${WAYOUT_BASE}/done`}>So where are you now?</Link>
+          <span className="wayout__allthreefine">
+            One question, then the next plan is built from the answer.
+          </span>
         </div>
       )}
 
