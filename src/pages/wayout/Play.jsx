@@ -76,21 +76,17 @@ function Asking({ move, questions, busy, onSubmit }) {
   if (busy) {
     return (
       <WayoutShell title="This week" wide>
-        {/* ⚠️ THE THIRD WAIT, AND THE ONE HE KEPT LANDING ON. Converting the
-            other two left this one behind — it is the wait that follows the
-            questions, so it is the one somebody reaches every single time they
-            open a move. Same component, and the lead still says what changed:
-            this version is written from what they just typed. */}
-        <Working
-          title="Writing it now."
-          lead="With what you just told me."
-          stages={[
-            'What to do first, and when',
-            'The exact words to use',
-            'What you need before you start',
-            'What usually goes wrong, and what to do about it',
-          ]}
-        />
+        {/* ⚠️ THE WAIT SOMEBODY REACHES EVERY TIME THEY OPEN A MOVE, which is
+            why it was the one Daniel kept landing on. The first line
+            acknowledges what they just typed — this is the only wait that
+            FOLLOWS their input — and the rest name the sections of the week
+            about to arrive. */}
+        <Working foot="Up to a minute." lines={[
+          'Reading what you just told me.',
+          'Working out the week.',
+          'Finding what usually goes wrong.',
+          'Writing it down.',
+        ]} />
       </WayoutShell>
     )
   }
@@ -491,19 +487,15 @@ function PlayMove({ order }) {
   if (loading || !play) {
     return (
       <WayoutShell title="This week" wide>
-        {/* ⚠️ The stages are the SECTIONS OF THE WALKTHROUGH, in the order they
-            will appear. That is why this is allowed to exist at all — see the
-            note at the top of Working.jsx. */}
-        <Working
-          title={move?.title ? `Writing move ${order}.` : 'Writing this one.'}
-          lead={move?.title}
-          stages={[
-            'What to do first, and when',
-            'The exact words to use',
-            'What you need before you start',
-            'What usually goes wrong, and what to do about it',
-          ]}
-        />
+        {/* ⚠️ The lines are the SECTIONS OF THE WALKTHROUGH, in the order they
+            will appear — which is why this screen is allowed to exist at all.
+            See the top of Working.jsx for the rule it obeys. */}
+        <Working foot="Up to a minute." lines={[
+          'What to do first.',
+          'The words to use.',
+          'What you need before you start.',
+          'What usually goes wrong.',
+        ]} />
       </WayoutShell>
     )
   }

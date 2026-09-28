@@ -343,51 +343,34 @@ export default function Plan() {
     // reassured rather than kept waiting.
     return (
       <WayoutShell title="Your plan">
+        {/* 🔴 THIS SCREEN HAD FOUR THINGS ON IT AND THE DESIGN ALLOWS ONE. A
+            headline, two leads and then the wait itself — which is exactly the
+            pile treatment A was chosen to replace. The lines ARE the headline
+            now; the only survivor is the honest duration, because promising
+            twenty seconds and taking sixty is how a working page comes to look
+            broken. */}
         {pass === 1 ? (
-          <>
-            <p className="wayout__q">Reading it back.</p>
-            <p className="wayout__lead">
-              Going through everything you wrote — what can’t move, the numbers,
-              what you said you’d never do — and working out which of it comes
-              first.
-            </p>
-            {/* ⚠️ "Twenty seconds" was a guess and it was wrong. Measured on
-                the real page the same generation took 27s, 28s and over 60s —
-                a 28k-character prompt writing a 3,000-token answer is not a
-                fast request. Promising twenty and taking sixty is how a working
-                page comes to look broken, and the fix is the honest number. */}
-            <p className="wayout__lead">Up to a minute. Nothing to pay.</p>
-            {/* ⭐ The longest wait in the product, and it was three dots. The
-                stages are the SECTIONS OF THE PLAN, in the order they appear —
-                see Working.jsx for why it may never narrate the machine. */}
-            <Working
-              stages={[
-                'Which way out actually fits',
-                'Three moves, in the order they work',
-                'What gets crossed off, and why',
-                'What this had to take as given',
-              ]}
-            />
-          </>
+          <Working
+            foot="Up to a minute. Nothing to pay."
+            lines={[
+              'Reading what you wrote.',
+              'Working out the order.',
+              'Crossing off what will not work.',
+              'Writing it down.',
+            ]}
+          />
         ) : (
-          <>
-            <p className="wayout__q">Writing it again.</p>
-            <p className="wayout__lead">
-              The first version had a number in it you never gave us. It isn’t
-              allowed to guess about your life, so it’s going back over it.
-            </p>
-            <p className="wayout__lead">
-              Another minute at most{pass > 2 ? ' — last go' : ''}.
-            </p>
-            <Working
-              stages={[
-                'Which way out actually fits',
-                'Three moves, in the order they work',
-                'What gets crossed off, and why',
-                'What this had to take as given',
-              ]}
-            />
-          </>
+          /* ⚠️ ITS OWN LINES. This branch only runs because the first version
+             contained a figure they never gave us — a different situation, and
+             one worth naming plainly rather than dressing as an ordinary wait. */
+          <Working
+            foot={`Another minute at most${pass > 2 ? ' — last go' : ''}.`}
+            lines={[
+              'That version had a number you never gave us.',
+              'It is not allowed to guess about your life.',
+              'Writing it again.',
+            ]}
+          />
         )}
       </WayoutShell>
     )

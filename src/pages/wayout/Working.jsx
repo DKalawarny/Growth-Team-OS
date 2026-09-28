@@ -1,72 +1,75 @@
 import { useEffect, useState } from 'react'
 
 /**
- * ⭐⭐ THE WAIT, MADE HONEST AND MADE INTERESTING — in that order.
+ * ⭐⭐ THE WAIT. One hairline, and one enormous line that turns over.
  *
- * 🔴 Daniel, hitting it between every page: "this load page I keep getting while
- * moving from page to page needs a good update — needs to be streamlined, with
- * movement, create excitement."
+ * 🔴 Daniel rejected two earlier attempts — a card with three pulsing dots, then
+ * a stage-list with ticks — and was right both times: "these loading pages need
+ * to be redone, they're shit." He chose this one from three built side by side
+ * at claude.ai/code/artifact/282f827a (A · Nothing but the work).
  *
- * It was a headline, a sentence and three pulsing dots, held for up to a minute
- * at the single highest-anticipation moment in the product: the seconds before
- * somebody is handed the thing they came for.
+ * ⭐⭐ THE ARGUMENT FOR IT: a wait is dead time, and the only thing that makes
+ * dead time feel short is something worth reading at a size you cannot ignore.
+ * No card, no list, no checkmarks, no spinner — the type is the entire design.
  *
- * 🔴🔴 AND THE OBVIOUS FIX IS THE BANNED ONE. Every loading screen in every AI
- * product now narrates fake machinery — "Analysing your profile…", "Consulting
- * the knowledge base…" — and this product has a hard rule against mentioning its
- * own plumbing, for a good reason: the moment it describes a process nobody can
- * verify, it is asking to be taken on faith at the exact moment it should be
- * earning trust.
- *
- * ⭐⭐ SO THE STAGES ARE THE OUTPUT, NOT THE PROCESS. Each line names a SECTION
- * OF THE THING THEY ARE ABOUT TO READ — what to do first, the words to use, what
- * usually goes wrong. That is true whatever the machine is doing, it cannot be
- * accused of theatre, and it does the anticipation work better than a fake
- * progress bar because it is a table of contents arriving one line at a time.
+ * 🔴🔴 THE RULE EVERY VERSION OF THIS HAS HAD TO OBEY, AND THE REASON THE OBVIOUS
+ * DESIGN IS BANNED: it must never narrate the machine. Every AI product now says
+ * "Analysing your profile…" about a process nobody can verify, and this one has a
+ * hard rule against describing its own plumbing — the moment it does, it is
+ * asking to be taken on faith at exactly the moment it should be earning trust.
+ * ⭐ So what the lines name is the OUTPUT: the sections of the thing about to
+ * arrive. That is true whatever the machine is doing, and it cannot be accused of
+ * theatre because it is a table of contents, not a status report.
  *
  * ⚠️ THE BAR NEVER CLAIMS TO KNOW. It eases toward 90% and waits there. A bar
- * that hits 100% and sits is worse than no bar, and one that jumps to the end
- * when the data lands is the only honest shape.
+ * that reaches the end and sits is worse than no bar, and one that jumps to the
+ * end when the data lands is the only honest shape.
+ *
+ * ⚠️ NO `title` PROP, DELIBERATELY. The line IS the headline — a heading above it
+ * would put two of them on a screen whose whole design is that there is one.
  */
 
-/** How long each stage holds before the next lights up. */
-const STEP_MS = 2600
+/** How long each line holds. Long enough to read twice without hurrying. */
+const STEP_MS = 2400
 
-export default function Working({ title, lead, stages = [], variant = 'stack' }) {
+/**
+ * ⚠️ `foot` IS THE ONLY OTHER THING ALLOWED ON THIS SCREEN, and it earns its
+ * place: it is the honest duration. "Twenty seconds" was once a guess here and
+ * the real generation measured 27s, 28s and over sixty — promising twenty and
+ * taking sixty is how a working page comes to look broken. It sits small and
+ * quiet BELOW the line, so the design still has exactly one loud thing on it.
+ */
+export default function Working({ lines = [], foot = null }) {
   const [lit, setLit] = useState(0)
 
   useEffect(() => {
-    if (!stages.length) return undefined
-    // ⚠️ Stops on the LAST one rather than looping. A list that starts over
+    if (lines.length < 2) return undefined
+    // ⚠️ Stops on the last one rather than looping. A sequence that starts over
     // tells somebody it has been going nowhere.
-    const id = setInterval(() => setLit(n => Math.min(n + 1, stages.length - 1)), STEP_MS)
+    const id = setInterval(() => setLit(n => Math.min(n + 1, lines.length - 1)), STEP_MS)
     return () => clearInterval(id)
-  }, [stages.length])
+  }, [lines.length])
 
-  const pct = stages.length ? Math.min(90, ((lit + 1) / stages.length) * 90) : 0
+  const pct = lines.length ? Math.min(90, ((lit + 1) / lines.length) * 90) : 0
 
   return (
-    <div className={`wayout__work wayout__work--${variant}`}>
-      <div className="wayout__workbar"><b style={{ width: `${pct}%` }} /></div>
-
-      {title && <h1 className="wayout__workh">{title}</h1>}
-      {lead && <p className="wayout__worklead">{lead}</p>}
-
-      <ul className="wayout__worksteps">
-        {stages.map((s, i) => (
-          <li
-            key={s}
-            className={i < lit ? 'is-done' : i === lit ? 'is-now' : 'is-next'}
+    <div className="wayout__wait">
+      <div className="wayout__waitrule"><b style={{ width: `${pct}%` }} /></div>
+      {/* ⚠️ All of them render, stacked in the same place — the one that is lit
+          is the only one visible. Swapping textContent instead would kill the
+          cross-fade, which is the entire effect. */}
+      <div className="wayout__waitlines">
+        {lines.map((l, i) => (
+          <p
+            key={l}
+            className={`wayout__waitline${i === lit ? ' is-now' : ''}${i < lit ? ' is-past' : ''}`}
+            aria-hidden={i !== lit}
           >
-            <i aria-hidden="true">
-              {i < lit
-                ? <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3 3 7-7" /></svg>
-                : null}
-            </i>
-            <span>{s}</span>
-          </li>
+            {l}
+          </p>
         ))}
-      </ul>
+      </div>
+      {foot && <p className="wayout__waitfoot">{foot}</p>}
     </div>
   )
 }
