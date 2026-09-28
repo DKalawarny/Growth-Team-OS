@@ -57,7 +57,11 @@ function leadFor(next) {
   if (next.endsWith('/plan')) {
     return 'So the plan is still here tomorrow, and on your phone rather than just this browser.'
   }
-  return 'Six questions, about fifteen minutes. The account is so your answers are still here if you stop halfway.'
+  // ⚠️ "Six questions" meant something different here than on the landing page —
+  // there it is the six taps, here it was the six intake screens. Two different
+  // sixes in one flow is the kind of small wrongness that makes somebody wonder
+  // what else does not line up.
+  return 'About fifteen minutes from here. The account is so your answers are still here if you stop halfway.'
 }
 
 export default function Enter() {

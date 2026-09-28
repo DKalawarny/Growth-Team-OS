@@ -140,7 +140,20 @@ export default function Landing() {
 
           <div className="wayout__herocta">
             <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Start with three minutes</Link>
-            <p className="wayout__fine">The first three minutes are free and need no account. {priceLine()}</p>
+            {/* 🔴 THIS CONTRADICTED ITSELF INSIDE ONE PARAGRAPH. It read "The
+                FIRST three minutes are free and need no account" immediately
+                before priceLine() says "Your plan is free. Nothing to pay, at the
+                end or anywhere else." "First" implies a later part that is not
+                free — in the hero, which is the most-read line on the site, and
+                the exact sentence somebody braced for a bait-and-switch is
+                scanning for.
+                ⚠️ It also still sold the product as a three-minute thing. Both
+                times are stated now, because the honest version is also the
+                better funnel: a small first step with the real one named. */}
+            <p className="wayout__fine">
+              No account, no card. Three minutes to your direction, about fifteen more
+              for the plan. {priceLine()}
+            </p>
           </div>
         </div>
 
