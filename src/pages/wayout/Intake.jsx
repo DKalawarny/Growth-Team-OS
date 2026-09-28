@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
-import { Field } from './fields'
+import { Field, Dictate } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
@@ -286,37 +286,43 @@ export default function Intake({ preview = false, previewReflections = null }) {
   if (step === 0) {
     const f = WAYOUT_OPENING.field
     return (
-      <WayoutShell wide>
-        <div className="wayout__spread">
-        <div className="wayout__col">
-        <h1><Marked text={WAYOUT_OPENING.headline} highlight={WAYOUT_OPENING.highlight} /></h1>
-        <p className="wayout__lead">{WAYOUT_OPENING.lead}</p>
-        </div>
+      <WayoutShell wide signIn>
+        {/* ⚠️ THIS SCREEN AND THE OPEN BOX WERE THE LAST TWO STILL ON THE OLD
+            TWO-COLUMN LAYOUT, and they render a raw <textarea> rather than going
+            through <Field> — so the dictation added everywhere else never reached
+            either of them. One is the first question anybody answers; the other is
+            `story`, the required catch-all that carries an illness, a bankruptcy
+            or a record. Both are exactly where somebody would rather talk. */}
+        <div className="wayout__ask2">
+          <div className="wayout__askstage">
+            <h1 className="wayout__bigq wayout__rise">
+              <Marked text={WAYOUT_OPENING.headline} highlight={WAYOUT_OPENING.highlight} />
+            </h1>
+            <p className="wayout__lead wayout__rise wayout__r1" style={{ maxWidth: '54ch' }}>
+              {WAYOUT_OPENING.lead}
+            </p>
 
-        <div className="wayout__col">
-        <label className="wayout__label" htmlFor="wayout-out">{f.label}</label>
-        <textarea
-          id="wayout-out"
-          className="wayout__textarea"
-          placeholder={f.placeholder}
-          value={answers[f.key] ?? ''}
-          onChange={e => setValue(f.key, e.target.value)}
-        />
-        {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
-        <p className="wayout__hint">{f.hint}</p>
+            <label className="wayout__label wayout__rise wayout__r2" htmlFor="wayout-out">{f.label}</label>
+            <div className="wayout__withmic wayout__rise wayout__r3">
+              <textarea
+                id="wayout-out"
+                className="wayout__textarea"
+                placeholder={f.placeholder}
+                value={answers[f.key] ?? ''}
+                onChange={e => setValue(f.key, e.target.value)}
+              />
+              <Dictate value={answers[f.key]} onChange={v => setValue(f.key, v)} label={f.label} />
+            </div>
+            {f.hint && <p className="wayout__hint wayout__rise wayout__r4">{f.hint}</p>}
+            {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
 
-        <button className="wayout__btn" onClick={next} disabled={saving}>
-          {WAYOUT_OPENING.cta}
-        </button>
-
-        <p className="wayout__fine">
-          {WAYOUT_OPENING.fine} {priceLine()}<br />
-          <span className="wayout__hand">{WAYOUT_OPENING.handwritten}</span>
-        </p>
-        {/* A real promise, stated before they spend the fifteen minutes rather
-            than buried where it only helps after the fact. */}
-        {guaranteeLine() && <p className="wayout__fine">{guaranteeLine()}</p>}
-        </div>
+            <button className="wayout__btn wayout__rise wayout__r4" onClick={next} disabled={saving}>
+              {WAYOUT_OPENING.cta}
+            </button>
+            <p className="wayout__fine wayout__rise wayout__r4" style={{ textAlign: 'left' }}>
+              {WAYOUT_OPENING.fine} {priceShort()}
+            </p>
+          </div>
         </div>
       </WayoutShell>
     )
@@ -331,27 +337,37 @@ export default function Intake({ preview = false, previewReflections = null }) {
     const f = WAYOUT_OPEN.field
     return (
       <WayoutShell wide>
-        <div className="wayout__spread">
-        <div className="wayout__col">
-          <p className="wayout__q">{WAYOUT_OPEN.question}</p>
-          <p className="wayout__lead">{WAYOUT_OPEN.lead}</p>
-        </div>
-        <div className="wayout__col">
-          <label className="wayout__label" htmlFor="wayout-story">{f.label}</label>
-          <textarea
-            id="wayout-story"
-            className="wayout__textarea wayout__textarea--tall"
-            placeholder={f.placeholder}
-            value={answers[f.key] ?? ''}
-            onChange={e => setValue(f.key, e.target.value)}
-          />
-          <p className="wayout__hint">{WAYOUT_OPEN.hint}</p>
-          {errors._save && <p className="wayout__error">{errors._save}</p>}
+        <div className="wayout__ask2">
+          <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
+          <div className="wayout__askstage">
+            <p className="wayout__kicker wayout__rise">Last one</p>
+            <h1 className="wayout__bigq wayout__rise wayout__r1">{WAYOUT_OPEN.question}</h1>
+            <p className="wayout__lead wayout__rise wayout__r2" style={{ maxWidth: '56ch' }}>
+              {WAYOUT_OPEN.lead}
+            </p>
+
+            <label className="wayout__label wayout__rise wayout__r3" htmlFor="wayout-story">{f.label}</label>
+            <div className="wayout__withmic wayout__rise wayout__r3">
+              <textarea
+                id="wayout-story"
+                className="wayout__textarea wayout__textarea--tall"
+                placeholder={f.placeholder}
+                value={answers[f.key] ?? ''}
+                onChange={e => setValue(f.key, e.target.value)}
+              />
+              <Dictate value={answers[f.key]} onChange={v => setValue(f.key, v)} label={f.label} />
+            </div>
+            {WAYOUT_OPEN.hint && <p className="wayout__hint wayout__rise wayout__r4">{WAYOUT_OPEN.hint}</p>}
+            {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+            {errors._save && <p className="wayout__error">{errors._save}</p>}
+
+            <button className="wayout__btn wayout__rise wayout__r4" onClick={next} disabled={saving}>
+              {WAYOUT_OPEN.cta}
+            </button>
+          </div>
           <div className="wayout__nav">
             <button className="wayout__back" onClick={back} aria-label="Back">←</button>
-            <button className="wayout__btn" onClick={next} disabled={saving}>{WAYOUT_OPEN.cta}</button>
           </div>
-        </div>
         </div>
       </WayoutShell>
     )

@@ -140,6 +140,9 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'faithNote',
+        // ⭐ A written answer somebody might rather say out loud. Opt-in, so a
+        // microphone never turns up beside a name or an age.
+        dictate: true,
         // ⚠️ Only when they said yes. Asking "which, and anything in your week it
         // holds" of somebody who just answered "doesn't apply" is the form not
         // listening, on the screen where being listened to matters most.
@@ -168,6 +171,9 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'healthNote',
+        // ⭐ A written answer somebody might rather say out loud. Opt-in, so a
+        // microphone never turns up beside a name or an age.
+        dictate: true,
         showIf: a => {
           const v = a.health
           const picked = Array.isArray(v) ? v : v ? [v] : []
@@ -638,6 +644,9 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'locationText',
+        // ⭐ A written answer somebody might rather say out loud. Opt-in, so a
+        // microphone never turns up beside a name or an age.
+        dictate: true,
         kind: 'shorttext',
         label: 'Where are you based, and where does the work happen?',
         hint: 'Season, local economy and what is even possible all turn on this. If the work is online or abroad, say so — it changes the answer.',

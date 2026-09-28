@@ -289,7 +289,7 @@ export function Money({ value, onChange }) {
 const Recognition = typeof window !== 'undefined'
   && (window.SpeechRecognition || window.webkitSpeechRecognition)
 
-function Dictate({ value, onChange, label }) {
+export function Dictate({ value, onChange, label }) {
   const [on, setOn] = useState(false)
   const ref = useRef(null)
 
@@ -355,13 +355,28 @@ export function LongText({ field, value, onChange }) {
 }
 
 export function ShortText({ field, value, onChange }) {
-  return (
+  /**
+   * ⚠️ OPT-IN, NOT BLANKET. Daniel asked for talk-to-text on "the written question
+   * parts" and this kind covers both — "Where are you based, and where does the
+   * work happen?" is a written answer somebody might rather say out loud, and
+   * "How old are you?" is two keystrokes. A microphone beside a number field is
+   * noise, and noise beside every field is how a good affordance stops being
+   * noticed at the one place it matters.
+   */
+  const inner = (
     <input
       className="wayout__input"
       value={value ?? ''}
       placeholder={field.placeholder ?? ''}
       onChange={e => onChange(e.target.value)}
     />
+  )
+  if (!field.dictate) return inner
+  return (
+    <div className="wayout__withmic">
+      {inner}
+      <Dictate value={value} onChange={onChange} label={field.label} />
+    </div>
   )
 }
 

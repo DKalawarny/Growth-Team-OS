@@ -122,11 +122,17 @@ export function SituationPage() {
         <h3>Run it against your own numbers</h3>
         <p className="wayout__offerlead">
           Everything above is the shape of the decision. What it cannot do is use
-          your figures. Answer some questions about your actual situation and you
-          get three moves in the order they work — free, and yours to keep.
+          your figures. Three minutes of questions names which way is yours, and the
+          ones after that turn it into three moves in the order they work — free,
+          and yours to keep.
         </p>
+        {/* 🔴 "Start with six questions" was the same untruth as the landing page
+            carried, on all 16 of these pages. Six taps name a DIRECTION; the three
+            moves promised in the sentence above come from the questions after
+            that. Nobody is going to feel cheated by a button — they feel it at
+            minute four, having been told the whole thing was six taps. */}
         <Link className="wayout__btn wayout__btn--sun" to={`${WAYOUT_BASE}/start`}>
-          Start with six questions
+          Start with three minutes
         </Link>
         <p className="wayout__offerfine">Free. No card, and no account to begin.</p>
       </div>
