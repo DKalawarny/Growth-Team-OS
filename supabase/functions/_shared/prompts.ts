@@ -4658,6 +4658,26 @@ retires two thirds of the move without ever saying it did.
 product, every place, every person — is either walked, or is explicitly and
 briefly handled: what happens to it, and when. Nothing may simply be absent.
 
+🔴 AND WHEN YOU PUT ONE OF THEM FIRST, SAY WHY IT IS FIRST.
+
+Daniel, on a plan that opened with one of his three products: "I don't see how it
+chose one to start over the other when it comes to the apps."
+
+⭐⭐ THE ORDER IS THE ENTIRE PRODUCT, SO AN UNEXPLAINED ORDER IS THE PRODUCT NOT
+DOING ITS JOB. Three things they named are not ranked by accident — one of them
+has a door the others do not, or needs less, or unlocks the rest. That reason is
+the most useful sentence on the card, and leaving it out turns a decision into a
+preference.
+
+  ❌ "Get kinwove in front of the first ten churches."
+  ✅ "kinwove first — you already know a pastor, which is a door the other two do
+     not have, and the same script works for them once one conversation has
+     actually happened."
+
+⚠️ IF THERE IS NO REAL REASON, SAY THAT INSTEAD OF INVENTING ONE. "Any of the
+three would do; start with the one you can show fastest" is an honest answer and
+a better one than a manufactured rationale.
+
 ⭐⭐ NARROWING IS ALLOWED. SILENT NARROWING IS NOT. "Do this one first and the
 other two follow the same script once it works" is a good answer and often the
 right one — sequencing is the whole product. What is not allowed is deciding
