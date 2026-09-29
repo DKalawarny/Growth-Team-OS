@@ -60,12 +60,104 @@ export const CHAPTER_SCREEN = {
     },
     { key: 'takeHome', kind: 'number', label: 'Coming in each month now', hint: 'After tax. Roughly.', required: true, emptyMessage: 'A rough number is fine.' },
     { key: 'mustPay',  kind: 'number', label: 'Going out each month now', hint: 'Everything that has to be paid.', required: true, emptyMessage: 'A rough number is fine.' },
+
+    /**
+     * 🔴🔴 THE TWO MONEY LINES A PLAN IS MOST LIKELY TO HAVE CHANGED, AND THEY
+     * WERE CARRIED OVER UNTOUCHED. Daniel: "stage 2 lacks a couple of questions
+     * that should be asked about life and money — it doesn't ask where things
+     * are in those things fully."
+     *
+     * ⭐⭐ HOUSING IS THE ONE THE ARITHMETIC DEPENDS ON. `WAYOUT_MONEY` requires
+     * the plan to re-size the floor whenever a move ends a recurring cost — and
+     * the commonest first move in this product is selling a house. So the chapter
+     * that follows it was asked for a new total while silently keeping last
+     * year's housing line inside it. The floor cannot be recomputed from a number
+     * that did not move.
+     *
+     * ⚠️ Optional, both of them. They are numbers, they are fast, and demanding
+     * them would push this screen past the five-required ceiling for no gain —
+     * somebody who skips them is no worse off than they were before.
+     */
+    { key: 'housingCost', kind: 'number', label: 'Of that, how much is housing now?', hint: 'Rent or mortgage plus tax, insurance, heat and hydro. If you sold or moved, this is the line that changed most.', required: false },
+    { key: 'debt', kind: 'text', label: 'What you owe now, and what it costs you', hint: 'Balances and rates. Paid something off since last time? Say so — it changes what the plan can be bold about.', dictate: true, required: false },
     /* 🔴 "what could you reach today? does that mean savings?" — it did, and
        nobody should have to ask. The label avoided the word "savings" because
        some people have none and it can sting; the cost was that nobody knew
        what was being asked. ⭐ Name the thing; let the hint carry the
        reassurance. */
     { key: 'savings',  kind: 'number', label: 'Savings you could get to today', hint: 'Cash you could actually reach without a penalty. Zero is an answer.', required: false },
+  ],
+
+  /**
+   * ⭐⭐ WHAT ELSE MOVED — ASKED AS TAPS, NOT AS QUESTIONS.
+   *
+   * 🔴 Eleven answers about a person's life carry over untouched into a new
+   * chapter: where they live, who is at home, their hours, their health, what
+   * cannot move. Every one of those genuinely changes over the months a plan
+   * runs — and the plan is often what changes them. The first plan here was
+   * "family on the road"; carrying its location answer forward means the second
+   * plan is built for an address they no longer have.
+   *
+   * ⭐⭐ BUT RE-ASKING THEM ALL WOULD REBUILD THE INTAKE, which is the one thing
+   * this screen exists to avoid. So the default is that everything carries over
+   * and they TAP what moved — one row of chips, and a field appears only for
+   * what they picked. Nothing changed is one tap and no writing at all.
+   */
+  moved: [
+    {
+      key: 'chapterMoved',
+      kind: 'chips',
+      label: 'Has anything else moved?',
+      hint: 'Everything you told us before still stands unless you say otherwise. Tap only what is different now.',
+      required: false,
+      options: [
+        { key: 'where',   label: 'Where I live' },
+        { key: 'who',     label: 'Who is at home' },
+        { key: 'hours',   label: 'The hours I can give it' },
+        { key: 'health',  label: 'My health' },
+        { key: 'nothing', label: 'Nothing else has moved', exclusive: true },
+      ],
+    },
+    {
+      key: 'locationText',
+      kind: 'shorttext',
+      label: 'Where are you based now?',
+      hint: 'And where the work actually happens, if those are different.',
+      required: false,
+      showIf: a => picked(a, 'where'),
+    },
+    {
+      key: 'peopleNote',
+      kind: 'text',
+      label: 'Who is at home now, and what changed?',
+      hint: 'A partner, kids, somebody who moved in or out. It decides what a plan is allowed to ask of your week.',
+      dictate: true,
+      required: false,
+      showIf: a => picked(a, 'who'),
+    },
+    {
+      key: 'hoursPerWeek',
+      kind: 'choice',
+      label: 'How many hours a week could you put into it now?',
+      required: false,
+      options: [
+        { key: 'few',   label: 'A couple, if that' },
+        { key: 'five',  label: 'About five' },
+        { key: 'ten',   label: 'Ten or so' },
+        { key: 'twenty', label: 'Twenty plus' },
+        { key: 'allday', label: 'It is what I do now' },
+      ],
+      showIf: a => picked(a, 'hours'),
+    },
+    {
+      key: 'healthNote',
+      kind: 'text',
+      label: 'What changed with your health?',
+      hint: 'Only as much as you want to say. It changes what a plan can reasonably ask of you.',
+      dictate: true,
+      required: false,
+      showIf: a => picked(a, 'health'),
+    },
   ],
 
   /**
@@ -85,24 +177,53 @@ export const CHAPTER_SCREEN = {
       emptyMessage: 'A sentence is enough.',
     },
     {
+      /**
+       * ⚠️ OPTIONAL ON A CHAPTER, REQUIRED ON A FIRST PLAN, AND THE DIFFERENCE IS
+       * EARNED. With `out` above it, a "landed" chapter demanded THREE written
+       * answers — what changed, what out means now, and a normal day — which is
+       * the seven-required wall from screen five of the intake growing back in a
+       * new place.
+       *
+       * ⭐⭐ `out` AND THIS ASK THE SAME QUESTION AT TWO ZOOM LEVELS. On a first
+       * plan the detail is everything, because nothing else is known. On a
+       * chapter the product already holds their town, their hours, their
+       * immovables and a finished plan — so one sentence is enough to aim at,
+       * and the day stays there for whoever wants to paint it.
+       * ⚠️ It is still ASKED, which is the part that matters: `chapterAnswers`
+       * clears it, and a field cleared but never offered is the `out` bug.
+       */
       key: 'tuesday',
       kind: 'text',
       label: 'And a normal day, three years from here?',
-      hint: 'Ordinary detail beats big words — what you get up for, who is around, what you are doing by mid-morning.',
+      hint: 'Optional — the sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
       placeholder: 'Somewhere warm for the winter. Kids with us. Two hours of work before anyone else is up.',
       dictate: true,
-      required: true,
-      emptyMessage: 'A few lines is enough.',
+      required: false,
     },
   ],
 }
 
-/** The fields this chapter actually needs, given how the last one ended. */
+/** Was this one of the things they said had moved? */
+function picked(answers, key) {
+  const v = answers?.chapterMoved
+  return Array.isArray(v) ? v.includes(key) : v === key
+}
+
+/**
+ * The fields this chapter actually needs, given how the last one ended.
+ * ⚠️ `moved` is always included — what a person's life is doing does not depend
+ * on whether they reached a destination.
+ */
 export function chapterFields(outcome) {
   const arrived = outcome === 'landed' || outcome === 'changed'
   return arrived
-    ? [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.arrived]
-    : CHAPTER_SCREEN.always
+    ? [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.moved, ...CHAPTER_SCREEN.arrived]
+    : [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.moved]
+}
+
+/** Only the fields that apply, given what they have said so far. */
+export function visibleChapterFields(outcome, answers) {
+  return chapterFields(outcome).filter(f => !f.showIf || f.showIf(answers))
 }
 
 /**

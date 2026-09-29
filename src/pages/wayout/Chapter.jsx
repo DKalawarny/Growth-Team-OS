@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
-import { chapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
+import { visibleChapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
 import { loadOrCreateSession, saveAnswers, markComplete, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
@@ -65,7 +65,13 @@ export default function Chapter() {
   }, [navigate])
 
   const outcome = session?.continues_from_outcome ?? null
-  const fields  = chapterFields(outcome)
+  /**
+   * ⚠️ RECOMPUTED ON EVERY RENDER, because tapping "where I live" has to reveal
+   * a field immediately. And validation reads THIS list, not the full one —
+   * demanding an answer to a question the screen never showed is the oldest
+   * form-bug there is.
+   */
+  const fields  = visibleChapterFields(outcome, answers)
   const first   = chain[0] ?? null
   const chapter = session?.chapter ?? 2
 
