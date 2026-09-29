@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
+import { Marked } from '../../lib/wayout/marked.jsx'
 
 /**
  * The way out — how to actually do the move you are on.
@@ -90,14 +91,20 @@ export default function Playbook({ play, index = 1, children, onSection }) {
         <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
       </p>
       <p className="wayout__who">Move {index} · how to actually do it</p>
-      <h2>{play.title}</h2>
+      {/* ⭐⭐ THE YELLOW STROKE BELONGS HERE TOO. Daniel, on getting the old
+          design back: "no yellow highlight of the title back". He was right and
+          it had never been here — measured on the rendered page, this was the
+          one headline in the product with `marks: 0`, on the page a subscriber
+          spends the most time on.
+          ⚠️ `derive` because a move title carries no highlight field; the rule
+          and its refusals are in lib/wayout/marked.jsx. */}
+      <h2><Marked text={play.title} derive /></h2>
 
       {/* ⭐ Two columns on a desk, one on a phone. What to DO on the left —
           the action, the words, the money — and what to KNOW on the right.
           Running all of it down a 430px strip is why this read as a mobile
           page on a 1700px screen. */}
       <div className="wayout__spread">
-      <div className="wayout__col">
 
       {play.thisWeek && (
         <div className="wayout__seen">
@@ -113,14 +120,14 @@ export default function Playbook({ play, index = 1, children, onSection }) {
           what to send sends it; somebody composing it from scratch on a Sunday
           night does not. Set as something you can copy, not as prose. */}
       {play.words?.script && (
-        <>
+        <div className="wayout__block">
           <Section label={play.words.context || 'What to say'} onSection={onSection} />
           <blockquote className="wayout__script">{play.words.script}</blockquote>
-        </>
+        </div>
       )}
 
       {play.money && (
-        <>
+        <div className="wayout__block">
           <Section label="The money" onSection={onSection} />
           <dl className="wayout__facts">
             {play.money.what_to_charge && (<><dt>What to charge</dt><dd>{play.money.what_to_charge}</dd></>)}
@@ -130,14 +137,11 @@ export default function Playbook({ play, index = 1, children, onSection }) {
             {play.money.how_you_know && (<><dt>How you know</dt><dd>{play.money.how_you_know}</dd></>)}
             {play.money.getting_paid && (<><dt>Getting paid</dt><dd>{play.money.getting_paid}</dd></>)}
           </dl>
-        </>
+        </div>
       )}
 
-      </div>
-      <div className="wayout__col">
-
       {(play.need_first?.length > 0 || play.dont_need_yet?.length > 0) && (
-        <div className="wayout__twocol">
+        <div className="wayout__block wayout__twocol">
           {play.need_first?.length > 0 && (
             <div>
               <Section label="You need" onSection={onSection} />
@@ -159,7 +163,7 @@ export default function Playbook({ play, index = 1, children, onSection }) {
       )}
 
       {play.goes_wrong?.length > 0 && (
-        <>
+        <div className="wayout__block">
           <Section label="What usually happens" onSection={onSection} />
           <div className="wayout__cut">
             {play.goes_wrong.map((g, i) => (
@@ -169,13 +173,13 @@ export default function Playbook({ play, index = 1, children, onSection }) {
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
       {/* Same rule as the advisor's domain boundaries: name the thing, name who
           actually knows, do not pretend to be them. */}
       {play.check_first?.length > 0 && (
-        <>
+        <div className="wayout__block">
           <Section label="Check before you start" onSection={onSection} />
           <div className="wayout__cut">
             {play.check_first.map((c, i) => (
@@ -185,12 +189,9 @@ export default function Playbook({ play, index = 1, children, onSection }) {
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
-      {play.done_when && (
-        <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
-      )}
 
       {/* 🔴 "no mention of what is shown after step 3 is done." A walkthrough
           that stops at the last instruction leaves somebody holding a finished
@@ -200,19 +201,38 @@ export default function Playbook({ play, index = 1, children, onSection }) {
           ⚠️ Conditional like everything else on this page: if the generator did
           not produce one, nothing renders. An empty section is information; a
           padded one is a lie with a heading on it. */}
-      {play.opens && (
-        <div className="wayout__opens">
-          <b>And then</b>
-          <p>{play.opens}</p>
-        </div>
-      )}
 
       {/* ⚠️ THIS IS THE HALF THAT TELLS PEOPLE WHAT TO CHARGE AND WHAT TO SEND,
           so it is the half that most needs to say what it is not. The map has
           carried a disclaimer since it was built; the play-by-play had the
           field added to its contract and nothing rendered it, which is the
           same shape of gap as a rule living in one prompt and not another. */}
-      </div>
+
+      {/* ⭐⭐ THE CLOSE RUNS FULL WIDTH, AND THAT IS A LAYOUT FIX AND A MEANING
+          FIX AT ONCE. These two were the tail of the right-hand column, which
+          made the page 916px of "what to know" against 632px of "what to do"
+          and left a quarter-page of white under the left column — Daniel:
+          "there is still a big blank space". PAIR INSIDE A SECTION, NEVER
+          ACROSS A PAGE: the same rule the plan hero and the board both needed.
+
+          ⚠️ And they were never "things to know" anyway. Everything in that
+          column is context you read before you start; these two are what
+          finishing MEANS and what it OPENS. A conclusion that sits in one
+          column reads as a footnote to that column. */}
+      {(play.done_when || play.opens) && (
+        <div className="wayout__after">
+          {play.done_when && (
+            <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
+          )}
+          {play.opens && (
+            <div className="wayout__opens">
+              <b>And then</b>
+              <p>{play.opens}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       </div>
 
       <p className="wayout__disclaimer">{play.disclaimer}</p>

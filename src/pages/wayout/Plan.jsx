@@ -14,6 +14,7 @@ import PlanThread from './PlanThread'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
+import { Marked } from '../../lib/wayout/marked.jsx'
 
 /**
  * The way out — S7, the reveal.
@@ -1373,12 +1374,6 @@ function CrisisNote({ message }) {
   )
 }
 
-/** Split a headline on its highlight phrase. */
-function Marked({ text, highlight }) {
-  if (!highlight || !text?.includes(highlight)) return text
-  const [before, ...rest] = text.split(highlight)
-  return <>{before}<mark>{highlight}</mark>{rest.join(highlight)}</>
-}
 
 /**
  * Counts up to the figure.

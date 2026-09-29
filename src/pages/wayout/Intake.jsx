@@ -9,6 +9,7 @@ import { saveDraft, loadDraft, stampDraft, draftBelongsToSomeoneElse } from '../
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceShort } from '../../lib/wayout/pricing'
+import { Marked } from '../../lib/wayout/marked.jsx'
 
 /**
  * The way out — the opening screen and the six intake screens.
@@ -19,12 +20,6 @@ import { priceShort } from '../../lib/wayout/pricing'
  * pleasant version and it produces a plan nobody can follow.
  */
 
-/** Split a headline on its highlight phrase so the mark can wrap it. */
-function Marked({ text, highlight }) {
-  if (!highlight || !text?.includes(highlight)) return text
-  const [before, ...rest] = text.split(highlight)
-  return <>{before}<mark>{highlight}</mark>{rest.join(highlight)}</>
-}
 
 /**
  * ⚠️ `preview` is DEV ONLY (see Preview routes in App.jsx) and does exactly

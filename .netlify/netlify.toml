@@ -1,0 +1,352 @@
+plugins = []
+headers = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/danielkalawarny/growthOS/dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npx puppeteer browsers install chrome && npm run build"
+
+[build.environment]
+PUPPETEER_CACHE_DIR = "/opt/build/cache/puppeteer"
+NODE_VERSION = "20"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "http://leadeos.com/*"
+to = "https://eliv8os.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://leadeos.com/*"
+to = "https://eliv8os.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://www.leadeos.com/*"
+to = "https://eliv8os.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://www.leadeos.com/*"
+to = "https://eliv8os.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/"
+to = "https://getunstuckmap.com/"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/"
+to = "/hello/index.html"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/wayout/hello"
+to = "https://getunstuckmap.com/"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/wayout/*"
+to = "https://getunstuckmap.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://www.getunstuckmap.com/*"
+to = "https://getunstuckmap.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://www.getunstuckmap.com/*"
+to = "https://getunstuckmap.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://eliv8os.com/hello"
+to = "https://eliv8os.com/wayout/hello"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://eliv8os.com/start"
+to = "https://eliv8os.com/wayout/start"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://eliv8os.com/stuck"
+to = "https://eliv8os.com/wayout/stuck"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://eliv8os.com/stuck/*"
+to = "https://eliv8os.com/wayout/stuck/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://eliv8os.com/questions"
+to = "https://eliv8os.com/wayout"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/robots.txt"
+to = "/robots-unstuckmap.txt"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/sitemap.xml"
+to = "/sitemap-unstuckmap.xml"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/llms.txt"
+to = "/llms-unstuckmap.txt"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/favicon.svg"
+to = "/favicon-unstuckmap.svg"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/robots.txt"
+to = "/robots-unstuckmap.txt"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/sitemap.xml"
+to = "/sitemap-unstuckmap.xml"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/llms.txt"
+to = "/llms-unstuckmap.txt"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/favicon.svg"
+to = "/favicon-unstuckmap.svg"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "https://getunstuckmap.com/*"
+to = "/unstuck-shell.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://getunstuckmap.com/*"
+to = "/unstuck-shell.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/assets/prompts-*"
+to = "/index.html"
+status = 404.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

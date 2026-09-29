@@ -156,7 +156,7 @@
        measured a perfect 527/377 on a test session whose captions were shorter,
        so the layout was "fine" right up until somebody's real plan was not. */
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 0 64px;
+    gap: 30px 64px;
     align-items: start;
   }
   /* ⚠️ No grid rule for the brand mark: it is a child of the FRAME, not of the
@@ -186,8 +186,30 @@
     line-height: 0.99;
     letter-spacing: -0.032em;
   }
-  .wayout__frame--wide .wayout__col:first-child .wayout__who { margin-top: 6px; }
-  .wayout__frame--wide .wayout__col:last-child > h3:first-child { margin-top: 6px; }
+  /* 🔴 THE CLOSE SPANS BOTH TRACKS. Without this it is a grid item like any
+     other and lands in whichever column it was written next to, which is how
+     "Done when" and "And then" ended up extending the taller column and
+     deepening the very gap they now sit under.
+     ⚠️ `1 / -1` rather than `span 2` so it stays correct if the track count
+     ever changes. */
+  .wayout__frame--wide .wayout__after { grid-column: 1 / -1; }
+  /* Blocks carry their own top margin; the grid gap handles the rest. */
+  .wayout__frame--wide .wayout__spread > * { min-width: 0; }
+  /* ⭐⭐ ROWS, NOT COLUMNS — THIS IS THE WHITE-SPACE FIX.
+     Every block is now a direct grid child and auto-placement pairs them two
+     at a time, so a row is only as tall as its taller half and a long block
+     can open a gap inside its own row and nowhere else. Before this the page
+     was two page-length tracks racing each other: "what to do" ran out after
+     three blocks while "what to know" carried five, and the loser left a
+     quarter of a page of white. Daniel, twice: "there is a lot of white
+     space", then "there is still a big blank space".
+     ⭐ It is the same rule as the plan hero and the board: PAIR INSIDE A
+     SECTION, NEVER ACROSS A PAGE.
+     ⚠️ Auto-placement is also what makes it survive missing blocks — every
+     section here is conditional, and a plan with no script simply pairs the
+     next two instead of leaving a hole where a column used to start. */
+  .wayout__frame--wide .wayout__block:first-of-type > h3:first-child,
+  .wayout__frame--wide .wayout__seen:first-child { margin-top: 0; }
 }
 
 /* ── Brand mark ─────────────────────────────────────────────────────────── */
@@ -623,6 +645,27 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__seen q { font-style: normal; color: var(--soft); }
 .wayout__seen b { font-weight: 700; display: block; margin-top: 8px; }
+
+/* ⚠️ "And then" sat directly against the bottom of the Done-when card with no
+   gap at all — visible in the render as two blocks touching. They are separate
+   statements (what finishing means, and what it opens), so they get separate
+   air. */
+.wayout__after { margin-top: 26px; }
+.wayout__after .wayout__done { margin-top: 0; }
+
+/* 🔴 `.wayout__opens` HAD NO RULE AT ALL — "And then" has been rendering as
+   bare inherited text since it was added, and the moment it moved out of a
+   column it picked up a centred alignment from elsewhere on the page. An
+   element with no style of its own does not look neutral; it looks like
+   whatever it happens to land inside.
+   ⚠️ Deliberately NOT a second tinted card. "Done when" is the gate and gets
+   the weight; this is what the gate opens, so it is quieter by one step. */
+.wayout__opens { margin-top: 16px; padding-left: 24px; }
+.wayout__opens b {
+  display: block; font-size: 13px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--sun-ink);
+}
+.wayout__opens p { margin: 4px 0 0; font-size: 16px; line-height: 1.5; }
 
 .wayout__stats { display: flex; gap: 12px; margin: 22px 0 0; }
 /* ⚠️ `min-width: 0` for the same reason as the grid note above, one level down:
