@@ -1852,7 +1852,8 @@ h1.wayout__heroline {
   .wayout__head {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    gap: 18px 52px;
+    grid-template-rows: auto auto;
+    gap: 22px 52px;
     align-items: start;
     margin-bottom: 8px;
   }
@@ -1863,12 +1864,34 @@ h1.wayout__heroline {
   /* ⚠️ 560px, measured — `30ch` came out at 308px, NARROWER than the 469px
      the column gave it before the cap existed, so it added lines instead of
      removing them. A cap that makes the thing worse is not a cap. */
-  .wayout__head .wayout__top { max-width: 560px; }
-  .wayout__head .wayout__setup { max-width: none; margin-top: 6px; }
-  /* Two narrow cards side by side in half a page is cramped — stacked, each
-     number gets the full column and reads as a statement rather than a tile. */
-  .wayout__head .wayout__stats { flex-direction: column; }
-  .wayout__head .wayout__stat { flex: 1 1 auto; width: 100%; }
+  .wayout__head .wayout__top { max-width: 560px; grid-column: 1; grid-row: 1; }
+
+  /* 🔴🔴 THE LEFT COLUMN HELD A HEADLINE AND SIX HUNDRED PIXELS OF NOTHING.
+     Daniel: "lots of white at the bottom of this, that should be fixed."
+     `.wayout__setup` was ONE grid child carrying three blocks — the quote and
+     both numbers — so the entire right column was tall and the left ended at
+     the end of the sentence.
+
+     ⭐⭐ `display: contents` DISSOLVES THE WRAPPER so its children become grid
+     items in their own right and can be placed. Same trick `.wayout__spread`
+     already uses, and it keeps the narrow layout untouched: below this
+     breakpoint the wrapper is a plain block and the order is unchanged.
+
+     ⭐ THE PLACEMENT IS AN ARGUMENT, NOT A BALANCE. The headline makes a claim
+     and the numbers are its evidence, so they belong under it. The quote is a
+     different object — what the PERSON said — and it earns a column to itself. */
+  .wayout__head .wayout__setup { display: contents; }
+  .wayout__head .wayout__seen  { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
+  .wayout__head .wayout__stats { grid-column: 1; grid-row: 2; margin-top: 4px; }
+  /* ⚠️ SIDE BY SIDE AGAIN, AND THE OLD REASONING WAS MEASURED WRONG. The note
+     here said two cards in half a page is cramped — but the left column is
+     635px, so each gets ~300px, which is wider than the whole card was when
+     that was written. Stacked, they made the left column 436px tall against a
+     124px quote and moved the empty space from one side to the other.
+     ⭐ The pair also reads as one object this way: two figures of the same kind,
+     which is what they are. */
+  .wayout__head .wayout__stats { flex-direction: row; gap: 14px; }
+  .wayout__head .wayout__stat { flex: 1 1 0; min-width: 0; }
 }
 
 /* ── A superseded play ──────────────────────────────────────────────────
