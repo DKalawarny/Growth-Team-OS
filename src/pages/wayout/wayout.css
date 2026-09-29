@@ -1285,6 +1285,25 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__three p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
 
+/* The three steps of the flow. Deliberately NOT .wayout__three: that is a set
+   of claims and this is an order of events, and rendering both as bordered
+   cards made the page say one thing twice. A hairline and an eyebrow is enough
+   structure for something a reader passes through once. */
+.wayout__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+  gap: 22px 34px;
+}
+.wayout__steps > div { border-top: 2px solid var(--line); padding-top: 14px; }
+.wayout__steps span {
+  display: block; font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--sun-ink);
+}
+.wayout__steps h3 {
+  font-size: 17px; margin: 6px 0 8px; color: var(--ink); letter-spacing: -0.01em;
+}
+.wayout__steps p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
+
 /* The honest-price block. One accent, the product's own. */
 .wayout__deal {
   background: var(--paper);

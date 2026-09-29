@@ -150,8 +150,25 @@ export default function Landing() {
               ⚠️ So the division is: the LEAD carries the proposition, the BUTTON
               carries the ask, the FINE PRINT carries the arrangement. None of
               them repeats another. */}
+          {/* 🔴🔴 THE PAGE NEVER SAID WHAT IT WAS ABOUT. Daniel: "it doesn't
+              anywhere really depict what it does." Measured on the rendered
+              page, the words money, debt, job and house appeared NOWHERE above
+              the fold — the headline says "Three moves", the lead says "sort
+              out the order", the button says "show me which way" and the fine
+              print says twenty minutes. Every one true, not one of them naming
+              the subject. A stranger could not tell budgeting from therapy from
+              a productivity app, and on a phone the sample plan that carries
+              the whole meaning sits below the fold.
+              ⚠️ The nouns are the fix, not a new headline. "Three moves. In
+              order." is the mark and stays; this line is where the page is
+              allowed to be plain.
+              ⚠️ They are also the SAME four this page already uses further down
+              ("a house with debt against it… a job that pays more than the next
+              one would… a year of night shifts"). Recognition works when a
+              person meets their own situation twice, not two different lists. */}
           <p className="wayout__herolead">
-            {WAYOUT_TAGLINE} Which of your moves is first — and what to ignore.
+            {WAYOUT_TAGLINE} The house, the debt, the job, the hours — which of
+            those moves first, and what to leave alone for now.
           </p>
 
           <div className="wayout__herocta">
@@ -254,33 +271,58 @@ export default function Landing() {
           ══════════════════════════════════════════════════════════════════════ */}
       <div className="wayout__pitch">
 
-        {/* ⭐ RECOGNITION BEFORE PERSUASION. Nobody types "I am stuck" — they
-            type the specific thing. These are the pages written for exactly that,
-            so this section doubles as the internal linking those pages need. */}
+        {/* ⭐⭐ THE PAGE SHOWED THE OUTPUT AND NEVER THE PROCESS. Two finished
+            plans sit in the hero, beautifully, and nothing told anybody how one
+            comes to exist — the first mention that questions are involved was
+            the offer block, four sections down. So the most common unspoken
+            objection ("what is actually going to happen if I press that?") went
+            unanswered on the page whose only job is to get the button pressed.
+            ⚠️ Three steps because there are three, not because three is the
+            number these sections come in. The middle one is where the work is
+            and it says so. */}
         <section>
-          <h2 className="wayout__pitchh">It’s never just “stuck”.</h2>
+          <h2 className="wayout__pitchh">What happens when you press the button.</h2>
           <p className="wayout__pitchlead">
-            It’s a house with debt against it. A job that pays more than the next one
-            would. A year of night shifts you can’t see the end of. Straight answers
-            to the specific ones, free to read:
+            Nothing to install, nothing to book. You answer questions about your own
+            situation and read what comes back.
           </p>
-          <div className="wayout__board wayout__board--situations">
-            {SITUATIONS.slice(0, 6).map(x => (
-              <Link
-                key={x.slug}
-                to={`${WAYOUT_BASE}/stuck/${x.slug}`}
-                className="wayout__card wayout__situationcard"
-              >
-                <b>{x.intro}</b>
-                <h3>{x.question}</h3>
-              </Link>
-            ))}
+          {/* ⚠️ NOT THE PILLAR CARDS. Rendered side by side these two sections
+              were the same object twice — three bordered cards, then three
+              bordered cards — and a reader scanning sees one idea, not two.
+              ⭐ These are a SEQUENCE and the pillars are a set, so the eyebrow
+              carries the order in words rather than a box carrying nothing.
+              ⚠️ Words and not 01/02/03: digits are what made the walkthrough
+              read as a form to fill in, and Daniel threw that out today. Here
+              the order is real information, so it is said, not numbered. */}
+          <div className="wayout__steps">
+            <div>
+              <span>First</span>
+              <h3>Six taps, to start</h3>
+              <p>
+                Where the money goes, what you have, what you will not move. Enough to
+                narrow four ways out to the one that fits you — no account, nothing typed.
+              </p>
+            </div>
+            <div>
+              <span>Then</span>
+              {/* ⚠️ NO TIME FIGURE HERE. The hero's fine print owns that promise
+                  — the page once said "three minutes" five times and Daniel:
+                  "it's still all over this page." Said once it is an offer. */}
+              <h3>The questions that build the plan</h3>
+              <p>
+                The rent, the debt, the hours, the people it affects — in your own
+                words and your own figures, because that is what the plan is made of.
+              </p>
+            </div>
+            <div>
+              <span>And then</span>
+              <h3>Your plan, the same day</h3>
+              <p>
+                Three moves in the order they work, what each is worth in your own
+                numbers, and the list of what to leave alone. Yours to keep.
+              </p>
+            </div>
           </div>
-          {/* ⚠️ .wayout__fine centres by default — correct under a centred CTA,
-              wrong here, where it was the only centred thing in the section. */}
-          <p className="wayout__fine" style={{ marginTop: 18, textAlign: 'left' }}>
-            <Link to={`${WAYOUT_BASE}/stuck`}>All {SITUATIONS.length} situations →</Link>
-          </p>
         </section>
 
         {/* ⭐⭐ THE DIFFERENCE, STATED AS THINGS IT REFUSES TO DO. Every one of
@@ -332,6 +374,42 @@ export default function Landing() {
             failure caught on Eliv8's /pricing, where a "14-day free trial" badge
             sat above "free while in private pilot" and a button read "Start
             14-day free trial — free". One flag, one offer. */}
+        {/* ⚠️ MOVED BELOW THE ARGUMENT. Sixteen links to other pages is a
+            directory, and a directory placed between the hero and the first
+            claim interrupts a pitch to offer sixteen ways to leave it. It earns
+            its place — nobody types "I am stuck", they type the specific thing,
+            and these are the pages written for exactly that — but it reads as
+            "here is more to read" AFTER the case is made and as "this is not
+            for you specifically" before. */}
+        {/* ⭐ RECOGNITION BEFORE PERSUASION. Nobody types "I am stuck" — they
+            type the specific thing. These are the pages written for exactly that,
+            so this section doubles as the internal linking those pages need. */}
+        <section>
+          <h2 className="wayout__pitchh">It’s never just “stuck”.</h2>
+          <p className="wayout__pitchlead">
+            It’s a house with debt against it. A job that pays more than the next one
+            would. A year of night shifts you can’t see the end of. Straight answers
+            to the specific ones, free to read:
+          </p>
+          <div className="wayout__board wayout__board--situations">
+            {SITUATIONS.slice(0, 6).map(x => (
+              <Link
+                key={x.slug}
+                to={`${WAYOUT_BASE}/stuck/${x.slug}`}
+                className="wayout__card wayout__situationcard"
+              >
+                <b>{x.intro}</b>
+                <h3>{x.question}</h3>
+              </Link>
+            ))}
+          </div>
+          {/* ⚠️ .wayout__fine centres by default — correct under a centred CTA,
+              wrong here, where it was the only centred thing in the section. */}
+          <p className="wayout__fine" style={{ marginTop: 18, textAlign: 'left' }}>
+            <Link to={`${WAYOUT_BASE}/stuck`}>All {SITUATIONS.length} situations →</Link>
+          </p>
+        </section>
+
         <section>
           <h2 className="wayout__pitchh">
             {WAYOUT_PAYMENTS_LIVE ? 'The plan is free. Keep it either way.' : 'All of it is free right now.'}
@@ -364,7 +442,17 @@ export default function Landing() {
                      draft said "not for anyone using it now", which commits
                      Daniel to free-for-life for every early user — his call to
                      make, not copy's. */
-                  : <><b>You will know well before that changes.</b></>}
+                  /* 🔴 THIS READ "You will know well before that changes", which
+                     is a sentence about a pricing event nobody has been told is
+                     coming — Daniel could not parse it and neither could I on a
+                     cold read. What a reader wants here is what the guide DOES,
+                     not a reassurance about a future they have not been shown.
+                     ⚠️ Still no figure while WAYOUT_PAYMENTS_LIVE is false. The
+                     price appears in the branch above the moment it is real —
+                     advertising $29 on a page whose every other line says free
+                     is the two-offers failure this block was written to end. */
+                  : <><b>Free while this is being built</b>, and you will be asked
+                      before that ever changes.</>}
               </p>
             </div>
           </div>
@@ -381,8 +469,22 @@ export default function Landing() {
           </p>
         </section>
 
+        {/* 🔴 THE CLOSE WAS THE HERO AGAIN. Same opening sentence, same button,
+            same fine print, 2,000px lower — so the last thing the page did was
+            repeat its first thing, which is the one position where repeating
+            reads as having nothing further to say. Daniel: "there has to be a
+            sell still and a close."
+            ⭐⭐ A CLOSE DOES DIFFERENT WORK FROM A HERO. The hero earns
+            attention; the close answers what is still holding somebody on the
+            page — what it costs them to try, what they walk away holding, and
+            whose the answers are. All three are already true here, and none of
+            them had ever been said together.
+            ⚠️ "Saturday morning" is deliberate: it is the page's own phrase
+            from "Advice is cheap" — none of that tells you what to do on
+            Saturday morning — and closing on the promise the argument opened
+            with is the difference between a close and a second introduction. */}
         <section className="wayout__close">
-          <h2 className="wayout__pitchh">You know your situation.</h2>
+          <h2 className="wayout__pitchh">The first move is the only one you have to pick.</h2>
           <p className="wayout__pitchlead">
             {/* 🔴 THIS PROMISED A PLAN IN THREE MINUTES AND THREE MINUTES DOES NOT
                 BUY ONE. Six taps name which of four ways out is yours; the plan
@@ -391,8 +493,10 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            You narrow four ways out to the one that fits you, then turn it into three
-            moves in the order they work.
+            Answer the questions, read what comes back, keep it. No account and no
+            card, your answers stay yours, and the whole plan is on the screen
+            before anything is ever asked of you. Then you will know what Saturday
+            morning is for.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>
