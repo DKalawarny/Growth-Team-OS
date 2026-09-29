@@ -2763,3 +2763,120 @@ h1.wayout__heroline {
 .wayout__arcopen { margin: 0 0 12px; font-size: 13.5px; }
 .wayout__arcopen a { color: var(--green); font-weight: 700; text-decoration: none; }
 .wayout__arcopen a:hover { text-decoration: underline; }
+
+/* ═══ THE WALKTHROUGH, AS A SEQUENCE ══════════════════════════════════════
+   🔴🔴 Daniel: "a lot of white space on all of these… less daunting, cleaner,
+   more organised, with steps or headings."
+
+   ⭐⭐ The white space was a SYMPTOM. The page was two columns — what to DO
+   beside what to KNOW — and the reference material is about twice the height of
+   the instructions, so the left column ran out every time for any content.
+   ⭐⭐ And a walkthrough is a SEQUENCE laid out as two topics, which is why it
+   read as homework: action and reference at equal weight, no order between them.
+   See the note at the top of Playbook.jsx. */
+
+/* ⭐⭐ ONE CENTRED MEASURE FOR THE WHOLE PAGE. A walkthrough is a reading page,
+   so it gets a reading column and everything shares one left edge. Full-width
+   rules with a 540px text column under them is the same dangling white the
+   rebuild exists to remove, one level down. */
+.wayout__playwrap { max-width: 56rem; margin-inline: auto; }
+.wayout__play { max-width: none; }
+.wayout__playh { max-width: 28ch; }
+
+/* ⭐⭐ THE SHAPE OF THE PAGE BEFORE ANY OF IT — six short words that say this is
+   finite. Most of "less daunting" is here rather than in any single section. */
+.wayout__steps {
+  list-style: none; margin: 22px 0 34px; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 8px 10px;
+}
+.wayout__steps li {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  font-size: 13px; font-weight: 600; color: var(--soft);
+  background: var(--tint); border-radius: 999px; padding: 7px 15px 7px 11px;
+}
+.wayout__steps i {
+  font-style: normal; font-size: 10.5px; font-weight: 800;
+  letter-spacing: .06em; color: var(--label);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── A step ── */
+.wayout__step { padding: 26px 0 2px; border-top: 1px solid var(--line); }
+.wayout__step:first-child { border-top: 0; padding-top: 0; }
+
+.wayout__stepbar { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+/* ⚠️ Quiet numerals. MOVE 1/2/3 already numbers things on the board, and two
+   numbering systems on one product is the "two different threes" mistake. This
+   is a spine, not a rank. */
+.wayout__stepn {
+  font-style: normal; font-size: 11.5px; font-weight: 800; letter-spacing: .08em;
+  color: var(--label); font-variant-numeric: tabular-nums; flex: none;
+}
+.wayout__steph {
+  margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.01em; color: var(--ink);
+}
+.wayout__stepbar .wayout__change { margin-left: auto; }
+.wayout__stepbody { padding-left: 34px; max-width: none; }
+@media (max-width: 620px) { .wayout__stepbody { padding-left: 0; } }
+
+/* ⭐⭐ ONLY THE FIRST STEP IS LOUD. "You need" used to shout as loudly as the
+   thing to do tonight, which is how a page of instructions becomes a page of
+   material. */
+.wayout__step.is-loud {
+  background: linear-gradient(transparent 0, var(--tint) 0);
+  border-radius: 18px; border-top: 0;
+  padding: 26px 28px 24px; margin-bottom: 30px;
+}
+.wayout__step.is-loud .wayout__stepbody { padding-left: 34px; max-width: none; }
+.wayout__when {
+  margin: 0 0 8px; font-size: 13px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--sun-ink);
+}
+.wayout__action {
+  margin: 0; font-size: clamp(19px, 1.9vw, 24px); line-height: 1.32;
+  font-weight: 700; letter-spacing: -.015em; color: var(--ink);
+}
+.wayout__why {
+  margin: 14px 0 0; font-size: 14.5px; line-height: 1.6; color: var(--soft);
+  border-left: 2px solid var(--line); padding-left: 14px;
+}
+
+/* ── Before you start ── */
+.wayout__before { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 34px; }
+@media (max-width: 700px) { .wayout__before { grid-template-columns: 1fr; } }
+.wayout__before h4, .wayout__checks h4 {
+  margin: 0 0 9px; font-size: 11.5px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--label);
+}
+.wayout__checks { margin-top: 24px; }
+.wayout__checks p { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.wayout__checks b { display: block; color: var(--ink); font-weight: 600; }
+.wayout__checks span { color: var(--soft); font-size: 14px; }
+
+/* ── If it goes wrong ── */
+/* ⚠️ Closed by default: the longest block on the page, wanted only once
+   something has actually gone wrong. */
+.wayout__wrong { border-bottom: 1px solid var(--line); }
+.wayout__wrong:last-of-type { border-bottom: 0; }
+.wayout__wrong summary {
+  cursor: pointer; padding: 13px 0 13px 24px; position: relative;
+  font-size: 15.5px; font-weight: 600; color: var(--ink); line-height: 1.45;
+  list-style: none;
+}
+.wayout__wrong summary::-webkit-details-marker { display: none; }
+.wayout__wrong summary::before {
+  content: ''; position: absolute; left: 4px; top: 20px;
+  width: 7px; height: 7px; border-right: 2px solid var(--label);
+  border-bottom: 2px solid var(--label); transform: rotate(-45deg);
+  transition: transform .18s;
+}
+.wayout__wrong[open] summary::before { transform: rotate(45deg); top: 18px; }
+.wayout__wrong summary:hover { color: var(--green); }
+.wayout__wrong p {
+  margin: 0 0 16px; padding-left: 24px; font-size: 15px; line-height: 1.6; color: var(--soft);
+}
+
+.wayout__donewhen { margin: 0; font-size: 16px; line-height: 1.55; color: var(--ink); }
+.wayout__step .wayout__opens { margin-top: 18px; }
+.wayout__step .wayout__script { margin: 0; }
+.wayout__step .wayout__facts { margin: 0; }
