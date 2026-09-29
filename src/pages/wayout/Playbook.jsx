@@ -140,11 +140,19 @@ export default function Playbook({ play, index = 1, children, onSection }) {
           on the densest page in the product is the same as no link.
           ⚠️ At the TOP, where somebody decides to leave — not at the end, which
           is where somebody has already given up looking. */}
-      {/* ⭐⭐ ONE CENTRED MEASURE FOR THE WHOLE PAGE. A walkthrough is a reading
-          page, so it gets a reading column — and everything inside it shares one
-          left edge. Leaving the rules full-width with a 540px text column under
-          them would have recreated the same dangling white one level down, which
-          is exactly what the rebuild was for. */}
+      {/* ⭐⭐ HYBRID, 29 Sep. Daniel: "I think I liked the design better before —
+          can we do a bit of a hybrid between the two."
+          
+          He is right that the narrow centred column threw away what the old
+          two-column page had: it used the width, and it read as a substantial
+          document rather than a thin strip in a big sheet.
+          
+          ⭐⭐ THE FIX IS WHERE THE PAIRING HAPPENS, NOT WHETHER IT DOES. The old
+          page paired at the PAGE level — all the doing on the left, all the
+          knowing on the right — and those two piles are never the same height,
+          so one always ran out. This pairs INSIDE a step, where the two halves
+          are about one thing and therefore about one size. The width comes back
+          and the dangling white does not. */}
       <div className="wayout__playwrap">
       <p className="wayout__crumb">
         <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
@@ -166,10 +174,15 @@ export default function Playbook({ play, index = 1, children, onSection }) {
         {play.thisWeek && (
           <Step n={next()} label="Do this first" loud>
             {play.thisWeek.when && <p className="wayout__when">{play.thisWeek.when}</p>}
-            <p className="wayout__action">{play.thisWeek.action}</p>
-            {play.thisWeek.why_first && (
-              <p className="wayout__why">{play.thisWeek.why_first}</p>
-            )}
+            {/* ⚠️ The reason sits BESIDE the action rather than under it — same
+                subject, so the two halves are about the same height and the card
+                fills instead of trailing off. */}
+            <div className="wayout__doing">
+              <p className="wayout__action">{play.thisWeek.action}</p>
+              {play.thisWeek.why_first && (
+                <p className="wayout__why">{play.thisWeek.why_first}</p>
+              )}
+            </div>
           </Step>
         )}
 
@@ -184,6 +197,9 @@ export default function Playbook({ play, index = 1, children, onSection }) {
 
         {hasBefore && (
           <Step n={next()} label="Before you start" onSection={onSection}>
+            {/* ⚠️ Three-up across the width — what to bring, what to leave, what
+                to ask. They are the same KIND of list, so they belong on one
+                row; it was the old page's best idea and it is kept. */}
             <div className="wayout__before">
               {play.need_first?.length > 0 && (
                 <div>
@@ -203,18 +219,17 @@ export default function Playbook({ play, index = 1, children, onSection }) {
                   </ul>
                 </div>
               )}
-            </div>
-
             {/* Same rule as the advisor's domain boundaries: name the thing, name
                 who actually knows, do not pretend to be them. */}
-            {play.check_first?.length > 0 && (
-              <div className="wayout__checks">
-                <h4>Check first</h4>
-                {play.check_first.map((c, i) => (
-                  <p key={i}><b>{c.thing}</b><span>Ask: {c.who_knows}</span></p>
-                ))}
-              </div>
-            )}
+              {play.check_first?.length > 0 && (
+                <div className="wayout__checks">
+                  <h4>Check first</h4>
+                  {play.check_first.map((c, i) => (
+                    <p key={i}><b>{c.thing}</b><span>Ask: {c.who_knows}</span></p>
+                  ))}
+                </div>
+              )}
+            </div>
           </Step>
         )}
 
