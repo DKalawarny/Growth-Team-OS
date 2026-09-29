@@ -48,241 +48,175 @@ function Section({ label, onSection }) {
   )
 }
 
-
 /**
- * ⭐⭐ ONE STEP OF THE WALKTHROUGH. Heading, an optional "change this", and the
- * content — with a quiet numeral on the spine so the sequence is visible without
- * being counted out loud.
+ * 🔴🔴 REVERTED 29 Sep, AND THE REVERT IS THE DECISION — do not "improve" this
+ * back into a single sequence without asking.
  *
- * ⚠️ THE NUMERALS ARE SET SMALL AND LOWERCASE-QUIET ON PURPOSE. The plan board
- * already numbers things — MOVE 1, MOVE 2, MOVE 3 — and two numbering systems on
- * one product is the "two different threes" mistake. These are visually
- * subordinate: a spine, not a rank.
- */
-function Step({ n, label, onSection, loud = false, children }) {
-  return (
-    <section className={`wayout__step${loud ? ' is-loud' : ''}`}>
-      <div className="wayout__stepbar">
-        <i className="wayout__stepn">{String(n).padStart(2, '0')}</i>
-        <h3 className="wayout__steph">{label}</h3>
-        {onSection && (
-          <button type="button" className="wayout__change" onClick={() => onSection(label)}>
-            change this
-          </button>
-        )}
-      </div>
-      <div className="wayout__stepbody">{children}</div>
-    </section>
-  )
-}
-
-/**
- * The way out — how to actually do the move you are on.
+ * I rebuilt this page as a numbered one-column walkthrough (an index at the top,
+ * steps, only the first one loud, the long block collapsed) because Daniel asked
+ * for something "less daunting, cleaner, more organised". Then, looking at it:
+ * **"I'm not a big fan — I think I actually liked it before we changed it. I
+ * like the yellow highlights, the whole feel before."**
  *
- * 🔴🔴 REBUILT 29 Sep. Daniel: "there is a lot of white space on all of these,
- * and I think they could be less daunting — cleaner, more organised, with steps
- * or headings."
+ * ⭐⭐ WHAT THE REBUILD GOT WRONG WAS NOT THE STRUCTURE, IT WAS THE CHARACTER.
+ * Two columns, the warm highlighted card, the marked-up feel — that IS the
+ * product's voice on this page, and a tidy numbered list is a manual. Being
+ * easier to scan is not worth sounding like somebody else.
  *
- * ⭐⭐ THE WHITE SPACE WAS A SYMPTOM AND THE CAUSE WAS THE FILING. This page had
- * two columns — "what to DO" on the left, "what to KNOW" on the right — and the
- * reference material is roughly twice the height of the instructions. So the
- * left column ran out while the right kept going, every single time, for any
- * content. Balancing it would have been treating the stain.
+ * ⚠️ The white space it was meant to fix is real and still open. The honest
+ * shape of that fix is the one the plan hero and the board both needed: PAIR
+ * INSIDE A SECTION, NEVER ACROSS A PAGE. Doing it here means keeping this
+ * layout and pairing within each block — not replacing the page.
  *
- * ⭐⭐ A WALKTHROUGH IS A SEQUENCE, AND IT WAS LAID OUT AS TWO TOPICS. That is
- * also why it read as daunting: with action and reference given equal weight and
- * no order between them, a reader cannot tell how much of the page is a thing to
- * do tonight and how much is a list to consult if something goes wrong. It all
- * looks like homework.
- *
- * Three things do the work now:
- *   · ONE COLUMN. A single measure cannot run out beside anything, so the white
- *     space is gone structurally rather than by balancing two heights.
- *   · AN INDEX AT THE TOP, so the first thing somebody sees is how few steps
- *     there are. That is most of "less daunting" on its own.
- *   · ONLY THE FIRST STEP IS LOUD. "You need" used to shout as loudly as the
- *     thing to do tonight.
- *
- * ⚠️ AND "WHAT USUALLY HAPPENS" IS COLLAPSED. It is the longest block on the
- * page and it is only wanted when something has actually gone wrong — native
- * <details>, so it costs no JavaScript and keeps its keyboard behaviour.
- *
- * ⚠️ Presentation only, unchanged: every block is conditional, because a
- * play-by-play that invents a licensing requirement or a going rate to fill a
- * section is the exact failure the prompt spends most of its length preventing.
- * An empty section is information; a padded one is a lie with a heading on it.
+ * ⚠️ AND ONE THING FROM THE REBUILD IS WORTH TAKING WHEN HE WANTS IT: "what
+ * usually happens" is the longest block on the page and is only wanted once
+ * something has gone wrong. Collapsing it removed about a fifth of the height
+ * without touching the feel. Not applied — his call.
  */
 export default function Playbook({ play, index = 1, children, onSection }) {
   if (!play) return null
 
-  const hasBefore = play.need_first?.length > 0
-    || play.dont_need_yet?.length > 0
-    || play.check_first?.length > 0
-
-  // ⚠️ Built from what actually exists, so the index can never advertise a step
-  // the page does not have.
-  const steps = [
-    play.thisWeek && 'Do this first',
-    play.words?.script && (play.words.context || 'Say this'),
-    hasBefore && 'Before you start',
-    play.money && 'The money',
-    play.goes_wrong?.length > 0 && 'If it goes wrong',
-    (play.done_when || play.opens) && 'You are done when',
-  ].filter(Boolean)
-
-  let n = 0
-  const next = () => (n += 1)
-
   return (
     <WayoutShell title="This week" wide>
-      {/* 🔴 THERE WAS NO WAY BACK FROM HERE EXCEPT THE BROWSER BUTTON. The only
-          link to the plan sat at the foot of a page several screens long, which
-          on the densest page in the product is the same as no link.
+      {/* 🔴 THERE WAS NO WAY BACK FROM HERE EXCEPT THE BROWSER BUTTON. Daniel:
+          "from this page and the previous one you should be able to go back to
+          the main plan — we need either a back button or a home plan button or
+          both." The only link to the plan sat at the very bottom of a page that
+          is several screens long, which on the densest page in the product means
+          it does not exist.
           ⚠️ At the TOP, where somebody decides to leave — not at the end, which
           is where somebody has already given up looking. */}
-      {/* ⭐⭐ HYBRID, 29 Sep. Daniel: "I think I liked the design better before —
-          can we do a bit of a hybrid between the two."
-          
-          He is right that the narrow centred column threw away what the old
-          two-column page had: it used the width, and it read as a substantial
-          document rather than a thin strip in a big sheet.
-          
-          ⭐⭐ THE FIX IS WHERE THE PAIRING HAPPENS, NOT WHETHER IT DOES. The old
-          page paired at the PAGE level — all the doing on the left, all the
-          knowing on the right — and those two piles are never the same height,
-          so one always ran out. This pairs INSIDE a step, where the two halves
-          are about one thing and therefore about one size. The width comes back
-          and the dangling white does not. */}
-      <div className="wayout__playwrap">
       <p className="wayout__crumb">
         <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
       </p>
       <p className="wayout__who">Move {index} · how to actually do it</p>
-      <h2 className="wayout__playh">{play.title}</h2>
+      <h2>{play.title}</h2>
 
-      {/* ⭐⭐ THE SHAPE OF THE PAGE, BEFORE ANY OF IT. Six short words tell
-          somebody this is finite — which is the difference between a walkthrough
-          and homework. */}
-      <ol className="wayout__steps">
-        {steps.map((label, i) => (
-          <li key={label}><i>{String(i + 1).padStart(2, '0')}</i>{label}</li>
-        ))}
-      </ol>
+      {/* ⭐ Two columns on a desk, one on a phone. What to DO on the left —
+          the action, the words, the money — and what to KNOW on the right.
+          Running all of it down a 430px strip is why this read as a mobile
+          page on a 1700px screen. */}
+      <div className="wayout__spread">
+      <div className="wayout__col">
 
-      <div className="wayout__play">
+      {play.thisWeek && (
+        <div className="wayout__seen">
+          <q>{play.thisWeek.when}</q>
+          <b>{play.thisWeek.action}</b>
+          {play.thisWeek.why_first && (
+            <span className="wayout__gate" style={{ marginTop: 10 }}>{play.thisWeek.why_first}</span>
+          )}
+        </div>
+      )}
 
-        {play.thisWeek && (
-          <Step n={next()} label="Do this first" loud>
-            {play.thisWeek.when && <p className="wayout__when">{play.thisWeek.when}</p>}
-            {/* ⚠️ The reason sits BESIDE the action rather than under it — same
-                subject, so the two halves are about the same height and the card
-                fills instead of trailing off. */}
-            <div className="wayout__doing">
-              <p className="wayout__action">{play.thisWeek.action}</p>
-              {play.thisWeek.why_first && (
-                <p className="wayout__why">{play.thisWeek.why_first}</p>
-              )}
-            </div>
-          </Step>
-        )}
+      {/* ⭐ The words are usually the whole blocker. Somebody who knows exactly
+          what to send sends it; somebody composing it from scratch on a Sunday
+          night does not. Set as something you can copy, not as prose. */}
+      {play.words?.script && (
+        <>
+          <Section label={play.words.context || 'What to say'} onSection={onSection} />
+          <blockquote className="wayout__script">{play.words.script}</blockquote>
+        </>
+      )}
 
-        {/* ⭐ The words are usually the whole blocker. Somebody who knows exactly
-            what to send sends it; somebody composing it from scratch on a Sunday
-            night does not. Set as something to copy, not as prose. */}
-        {play.words?.script && (
-          <Step n={next()} label={play.words.context || 'Say this'} onSection={onSection}>
-            <blockquote className="wayout__script">{play.words.script}</blockquote>
-          </Step>
-        )}
+      {play.money && (
+        <>
+          <Section label="The money" onSection={onSection} />
+          <dl className="wayout__facts">
+            {play.money.what_to_charge && (<><dt>What to charge</dt><dd>{play.money.what_to_charge}</dd></>)}
+            {/* ⚠️ Where the figure came from is shown deliberately. The prompt
+                forbids inventing a rate, so this line is how a reader can tell
+                the difference between their own history and a guess. */}
+            {play.money.how_you_know && (<><dt>How you know</dt><dd>{play.money.how_you_know}</dd></>)}
+            {play.money.getting_paid && (<><dt>Getting paid</dt><dd>{play.money.getting_paid}</dd></>)}
+          </dl>
+        </>
+      )}
 
-        {hasBefore && (
-          <Step n={next()} label="Before you start" onSection={onSection}>
-            {/* ⚠️ Three-up across the width — what to bring, what to leave, what
-                to ask. They are the same KIND of list, so they belong on one
-                row; it was the old page's best idea and it is kept. */}
-            <div className="wayout__before">
-              {play.need_first?.length > 0 && (
-                <div>
-                  <h4>What you need</h4>
-                  <ul className="wayout__list">{play.need_first.map((t, i) => <li key={i}>{t}</li>)}</ul>
-                </div>
-              )}
-              {/* ⭐ As important as the other list. Most people do not fail from
-                  under-preparing — they spend three weeks and four hundred
-                  dollars on a logo, a name and a magnetic sign and never knock
-                  on a door. */}
-              {play.dont_need_yet?.length > 0 && (
-                <div>
-                  <h4>What to skip for now</h4>
-                  <ul className="wayout__list wayout__list--skip">
-                    {play.dont_need_yet.map((t, i) => <li key={i}>{t}</li>)}
-                  </ul>
-                </div>
-              )}
-            {/* Same rule as the advisor's domain boundaries: name the thing, name
-                who actually knows, do not pretend to be them. */}
-              {play.check_first?.length > 0 && (
-                <div className="wayout__checks">
-                  <h4>Check first</h4>
-                  {play.check_first.map((c, i) => (
-                    <p key={i}><b>{c.thing}</b><span>Ask: {c.who_knows}</span></p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Step>
-        )}
-
-        {play.money && (
-          <Step n={next()} label="The money" onSection={onSection}>
-            <dl className="wayout__facts">
-              {play.money.what_to_charge && (<><dt>What to charge</dt><dd>{play.money.what_to_charge}</dd></>)}
-              {/* ⚠️ Where the figure came from is shown deliberately. The prompt
-                  forbids inventing a rate, so this line is how a reader tells
-                  their own history from a guess. */}
-              {play.money.how_you_know && (<><dt>How you know</dt><dd>{play.money.how_you_know}</dd></>)}
-              {play.money.getting_paid && (<><dt>Getting paid</dt><dd>{play.money.getting_paid}</dd></>)}
-            </dl>
-          </Step>
-        )}
-
-        {play.goes_wrong?.length > 0 && (
-          <Step n={next()} label="If it goes wrong" onSection={onSection}>
-            {/* ⚠️ CLOSED BY DEFAULT. This is the longest block on the page and it
-                is only wanted once something has actually gone wrong — open, it
-                was most of what made the page look like homework.
-                ⭐ Native <details>: no JavaScript, and it keeps its keyboard and
-                find-in-page behaviour, which a hand-rolled toggle loses. */}
-            {play.goes_wrong.map((g, i) => (
-              <details className="wayout__wrong" key={i}>
-                <summary>{g.what}</summary>
-                <p>{g.do}</p>
-              </details>
-            ))}
-          </Step>
-        )}
-
-        {(play.done_when || play.opens) && (
-          <Step n={next()} label="You are done when">
-            {play.done_when && <p className="wayout__donewhen">{play.done_when}</p>}
-            {/* 🔴 "no mention of what is shown after step 3 is done." A
-                walkthrough that stops at its last instruction leaves somebody
-                holding a finished task with no idea whether anything moved. */}
-            {play.opens && (
-              <div className="wayout__opens">
-                <b>And then</b>
-                <p>{play.opens}</p>
-              </div>
-            )}
-          </Step>
-        )}
       </div>
+      <div className="wayout__col">
+
+      {(play.need_first?.length > 0 || play.dont_need_yet?.length > 0) && (
+        <div className="wayout__twocol">
+          {play.need_first?.length > 0 && (
+            <div>
+              <Section label="You need" onSection={onSection} />
+              <ul className="wayout__list">{play.need_first.map((t, i) => <li key={i}>{t}</li>)}</ul>
+            </div>
+          )}
+          {/* ⭐ As important as the other column. Most people do not fail from
+              under-preparing — they spend three weeks and four hundred dollars
+              on a logo, a name and a magnetic sign and never knock on a door. */}
+          {play.dont_need_yet?.length > 0 && (
+            <div>
+              <Section label="Skip for now" onSection={onSection} />
+              <ul className="wayout__list wayout__list--skip">
+                {play.dont_need_yet.map((t, i) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {play.goes_wrong?.length > 0 && (
+        <>
+          <Section label="What usually happens" onSection={onSection} />
+          <div className="wayout__cut">
+            {play.goes_wrong.map((g, i) => (
+              <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
+                <s style={{ textDecoration: 'none' }}>{g.what}</s>
+                <span className="wayout__cutwhy">{g.do}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Same rule as the advisor's domain boundaries: name the thing, name who
+          actually knows, do not pretend to be them. */}
+      {play.check_first?.length > 0 && (
+        <>
+          <Section label="Check before you start" onSection={onSection} />
+          <div className="wayout__cut">
+            {play.check_first.map((c, i) => (
+              <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
+                <s style={{ textDecoration: 'none' }}>{c.thing}</s>
+                <span className="wayout__cutwhy">Ask: {c.who_knows}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {play.done_when && (
+        <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
+      )}
+
+      {/* 🔴 "no mention of what is shown after step 3 is done." A walkthrough
+          that stops at the last instruction leaves somebody holding a finished
+          task with no idea whether anything moved. This says what being done
+          OPENS — the gate cleared, or, on the last move, that the plan is
+          finished and the next one starts from what actually happened.
+          ⚠️ Conditional like everything else on this page: if the generator did
+          not produce one, nothing renders. An empty section is information; a
+          padded one is a lie with a heading on it. */}
+      {play.opens && (
+        <div className="wayout__opens">
+          <b>And then</b>
+          <p>{play.opens}</p>
+        </div>
+      )}
 
       {/* ⚠️ THIS IS THE HALF THAT TELLS PEOPLE WHAT TO CHARGE AND WHAT TO SEND,
-          so it is the half that most needs to say what it is not. */}
+          so it is the half that most needs to say what it is not. The map has
+          carried a disclaimer since it was built; the play-by-play had the
+          field added to its contract and nothing rendered it, which is the
+          same shape of gap as a rule living in one prompt and not another. */}
+      </div>
+      </div>
+
       <p className="wayout__disclaimer">{play.disclaimer}</p>
       {children}
-      </div>
     </WayoutShell>
   )
 }
