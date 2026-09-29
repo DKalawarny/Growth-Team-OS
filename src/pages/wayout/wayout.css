@@ -1749,16 +1749,34 @@ h1.wayout__heroline {
    one page. These are the same material as the notes above: paper, a shadow,
    a pin. Not tilted, because four tilted cards in a grid reads as clutter
    rather than as a board; the tilt is reserved for the three that matter. */
+/* 🔴🔴 GRID CANNOT PACK CARDS OF UNEQUAL HEIGHT, AND THESE ARE ALWAYS UNEQUAL.
+   Daniel: "all this to" — a screenshot of "What this took as given" running to
+   600px beside a "Crossed off" list that stopped a third of the way down, with
+   the rest of the row blank.
+
+   ⚠️ The previous note here was right that a FIXED 7:5 split could not adapt,
+   and wrong that auto-fit solved it. `align-items: start` puts every card at its
+   natural height, so a row is as tall as its tallest card and every shorter one
+   leaves a hole underneath. That is grid working correctly — it lays out ROWS,
+   and this content is not rows.
+
+   ⭐⭐ MULTI-COLUMN PACKS INSTEAD OF ALIGNING. Each card is kept whole with
+   `break-inside: avoid` and the browser fills top-to-bottom, so a short card is
+   followed immediately by the next one rather than by empty page.
+   ⚠️ Reading order becomes down-then-across, which is correct HERE and would not
+   be everywhere: these sections are parallel — what got crossed off, what was
+   assumed, what to read — not steps in a sequence. */
 .wayout__board {
-  display: grid;
-  /* ⚠️ auto-fit + minmax, so the cards FILL the row at any width. The old
-     7:5 split left ~900px of dead page beside a short "crossed off" list —
-     a fixed two-column layout cannot adapt to sections of wildly unequal
-     length, and these always will be. */
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
-  gap: 22px;
-  align-items: start;
+  columns: 2;
+  column-gap: 22px;
   margin: 40px 0 34px;
+}
+@media (max-width: 860px) { .wayout__board { columns: 1; } }
+.wayout__board > * {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 22px;
 }
 
 .wayout__card {
