@@ -23,7 +23,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { writeFile, mkdir } from 'node:fs/promises'
+import { writeFile, readFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -128,6 +128,10 @@ async function main() {
   if (!existsSync(DIST)) {
     throw new Error(`dist/ not found at ${DIST} — run \`vite build\` before prerendering`)
   }
+
+  // ⚠️ Captured BEFORE the loop writes over dist/index.html with the rendered
+  // Eliv8 landing. See the note where unstuck-shell.html is written.
+  const shellHtml = await readFile(path.join(DIST, 'index.html'), 'utf8')
 
   console.log('[prerender] starting vite preview…')
   const preview = spawn(
@@ -281,6 +285,40 @@ async function main() {
 
       await page.close()
     }
+    /**
+     * 🔴🔴 THE SPA FALLBACK WAS ELIV8'S LANDING PAGE, FULLY RENDERED.
+     *
+     * Daniel, hard-refreshing a wayout route: "the refresh shows the Eliv8
+     * homescreen." He is right and it is this loop's doing — route `/` writes to
+     * `dist/index.html`, which is also the document Netlify serves for every
+     * path that is not a real file. So `/plan`, `/questions`, `/chapter` and the
+     * rest hand the browser 28KB of Eliv8's rendered landing, which paints
+     * immediately, and only then does React boot, read the hostname and replace
+     * it.
+     *
+     * ⚠️ IT ONLY SHOWS ON A HARD REFRESH because that is the one case where the
+     * bundle is not cached: normally React takes over within a frame. Which is
+     * exactly why it survived this long.
+     *
+     * ⭐⭐ THE ANSWER IS A NEUTRAL SHELL, NOT A SECOND LANDING. Pointing the
+     * fallback at Unstuck Map's own landing would flash the wrong page instead
+     * of the wrong product. These routes are all authenticated and cannot be
+     * prerendered anyway, so the honest document is an EMPTY one carrying the
+     * right name — cream, wordmark, nothing to be wrong about.
+     *
+     * ⚠️ Built from the ORIGINAL index.html, captured before this loop
+     * overwrote it — vite leaves `<div id="root"></div>` empty there, so there
+     * is nothing to strip and no fragile regex over nested divs.
+     */
+    const shell = shellHtml
+      .replace(/<title>[^<]*<\/title>/, '<title>Unstuck Map</title>')
+      .replace(/<meta name="description"[^>]*>/, '')
+      .replace(/<link rel="canonical"[^>]*>/, '')
+      .replace(/<meta property="og:[^"]*"[^>]*>/g, '')
+      .replace(/<meta name="twitter:[^"]*"[^>]*>/g, '')
+      .replace('</head>', '  <meta name="robots" content="noindex, nofollow">\n  </head>')
+    await writeFile(path.join(DIST, 'unstuck-shell.html'), shell, 'utf8')
+    console.log('[prerender]   → dist/unstuck-shell.html (neutral SPA fallback for getunstuckmap.com)')
   } finally {
     if (browser) await browser.close()
     if (!preview.killed) {

@@ -122,6 +122,27 @@ http://getunstuckmap.com/sitemap.xml    /sitemap-unstuckmap.xml    200!
 http://getunstuckmap.com/llms.txt       /llms-unstuckmap.txt       200!
 http://getunstuckmap.com/favicon.svg    /favicon-unstuckmap.svg    200!
 
+# 🔴🔴 THE SPA FALLBACK ON THIS HOST MUST NOT BE ELIV8'S LANDING.
+#
+# `/*  /index.html  200` at the foot of this file is what serves every path that
+# is not a real file — and scripts/prerender.mjs writes the rendered Eliv8
+# landing INTO dist/index.html, because route "/" and the fallback document are
+# the same file. So hard-refreshing /plan or /chapter on getunstuckmap.com
+# painted 28KB of "Eliv8 OS — an advisor for owners who care how it's run"
+# before React booted and replaced it. Daniel: "the refresh shows the eliv8
+# homescreen."
+#
+# ⚠️ ONLY VISIBLE ON A HARD REFRESH, which is why it lasted: with the bundle
+# cached React takes over within a frame.
+#
+# ⭐ unstuck-shell.html is the same built document with an empty root and this
+# product's name — these routes are all authenticated and cannot be prerendered,
+# so the honest fallback is an empty one rather than somebody else's page.
+# ⚠️ MUST stay below the rules above (real files and the root rewrite win first)
+# and above the generic fallback at the foot.
+https://getunstuckmap.com/*   /unstuck-shell.html   200
+http://getunstuckmap.com/*    /unstuck-shell.html   200
+
 # ⚠️ Kill the retired prompt chunks.
 #
 # src/lib/prompts.js used to be bundled and served, so Solomon's full system
