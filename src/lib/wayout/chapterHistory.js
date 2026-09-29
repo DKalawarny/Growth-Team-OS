@@ -77,13 +77,26 @@ export const CHAPTER_CLEARS_MONEY   = ['takeHome', 'mustPay', 'savings']
  * here is what that screen puts back. ⚠️ THE TWO LISTS MUST MOVE TOGETHER — this
  * one makes the hole, that one fills it.
  */
-export const CHAPTER_CLEARS_DESTINY = ['tuesday', 'out']
+export const CHAPTER_CLEARS_DESTINY = ['tuesday']
+
+/**
+ * ⭐⭐ THE DESTINATION SENTENCE IS RE-ASKED OF EVERYONE, SO IT IS CLEARED FOR
+ * EVERYONE. It used to sit in CHAPTER_CLEARS_DESTINY, cleared only for somebody
+ * who arrived — which is the same mistake as not asking them: "closer, not
+ * there" and "it did not land" are the two answers most likely to come with a
+ * changed mind, and both kept last round's destination silently.
+ * ⚠️ `tuesday` stays conditional and that is deliberate. It is optional on a
+ * chapter, so clearing it for somebody who has NOT arrived would throw away a
+ * picture they never got a chance to reach; carried forward it pre-fills and
+ * they can edit it.
+ */
+export const CHAPTER_CLEARS_ALWAYS = ['out']
 
 export function chapterAnswers(previousAnswers, outcome) {
   const keep = { ...(previousAnswers ?? {}) }
   const clear = outcome === 'landed' || outcome === 'changed'
-    ? [...CHAPTER_CLEARS_MONEY, ...CHAPTER_CLEARS_DESTINY]
-    : CHAPTER_CLEARS_MONEY
+    ? [...CHAPTER_CLEARS_MONEY, ...CHAPTER_CLEARS_ALWAYS, ...CHAPTER_CLEARS_DESTINY]
+    : [...CHAPTER_CLEARS_MONEY, ...CHAPTER_CLEARS_ALWAYS]
   clear.forEach(k => { delete keep[k] })
   return keep
 }

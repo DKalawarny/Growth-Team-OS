@@ -46,15 +46,36 @@ describe('chapterAnswers — what a new chapter re-asks', () => {
    * 🔴 THE RULE THAT MATTERS MOST. Somebody who did the work and did not get
    * there is not looking for a new ambition.
    */
-  it('KEEPS the destination when they have not arrived', () => {
+  /**
+   * 🔴🔴 REVERSED 29 Sep, AND THIS TEST USED TO ASSERT THE OPPOSITE. Do not
+   * "restore" it — the old rule was the bug.
+   *
+   * It read: "KEEPS the destination when they have not arrived", on the
+   * reasoning that somebody who answered partly or no has not got there, so
+   * asking again would be the product forgetting what they said. That sounds
+   * careful and it meant **half of all returning people were never asked where
+   * they wanted to get to** — and "closer, not there" and "I did it all and it
+   * did not land" are precisely the two answers most likely to arrive with a
+   * changed mind.
+   *
+   * Daniel: "there should be a general question on where do you want to be now
+   * that you're at this stage."
+   *
+   * ⚠️ `tuesday` STILL carries over for these two, and that distinction is the
+   * point: the one-sentence destination is re-asked of everybody, while the
+   * detailed picture is optional on a chapter and would be thrown away for
+   * somebody who never got the chance to reach it.
+   */
+  it('re-asks the one-sentence destination however it went', () => {
     ;['partly', 'no'].forEach(outcome => {
       const next = chapterAnswers(PREVIOUS, outcome)
+      expect(next.out).toBeUndefined()
+      // The detailed picture is theirs until they actually arrive at it.
       expect(next.tuesday).toBe('Home for dinner. Not working Saturdays.')
-      expect(next.out).toBe('I am doing 55 hours and it is never enough.')
     })
   })
 
-  it('clears the destination only when they arrived or said they want another', () => {
+  it('clears the detailed picture too, once they arrived or changed their mind', () => {
     ;['landed', 'changed'].forEach(outcome => {
       const next = chapterAnswers(PREVIOUS, outcome)
       expect(next.tuesday).toBeUndefined()

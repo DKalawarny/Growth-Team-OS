@@ -38,7 +38,7 @@ export const CHAPTER_SCREEN = {
       kind: 'text',
       label: 'What actually changed?',
       hint: 'Since the last plan. The facts, not the feeling — what is different about your week, your money or the people around you.',
-      placeholder: 'House sold in November. Debt is gone. Still doing the same six days.',
+      placeholder: 'The debt is gone. Same hours as before. One less person at home.',
       dictate: true,
       required: true,
       emptyMessage: 'A couple of lines. This is the one that shapes the rest.',
@@ -54,7 +54,7 @@ export const CHAPTER_SCREEN = {
       kind: 'text',
       label: 'What do you know now that you didn’t when you started?',
       hint: 'Anything the doing taught you — about the work, the numbers, or what you will actually put up with.',
-      placeholder: 'I hate managing people more than I thought. And the rental took twice as long to fill.',
+      placeholder: 'I will not do the admin side of it. And everything takes longer than people say.',
       dictate: true,
       required: false,
     },
@@ -107,15 +107,25 @@ export const CHAPTER_SCREEN = {
     {
       key: 'chapterMoved',
       kind: 'chips',
-      label: 'Has anything else moved?',
-      hint: 'Everything you told us before still stands unless you say otherwise. Tap only what is different now.',
+      /**
+       * 🔴 "this is vague." It read "Has anything else moved?" — and "moved" is
+       * the wrong word twice over: it can mean moved HOUSE, which is one of the
+       * options, and it can mean moved ON. "Anything else" then names no domain
+       * at all, so the question relies entirely on the reader looking down at the
+       * chips to work out what is being asked.
+       * ⭐ The question points AT the answers now, and the chips are parallel —
+       * four things somebody owns, in the same grammatical shape, so the set
+       * reads as one question rather than four unrelated taps.
+       */
+      label: 'Is any of this different now?',
+      hint: 'Everything else you told us still stands. Tap only what has changed.',
       required: false,
       options: [
         { key: 'where',   label: 'Where I live' },
-        { key: 'who',     label: 'Who is at home' },
-        { key: 'hours',   label: 'The hours I can give it' },
+        { key: 'who',     label: 'Who’s at home' },
+        { key: 'hours',   label: 'My hours' },
         { key: 'health',  label: 'My health' },
-        { key: 'nothing', label: 'Nothing else has moved', exclusive: true },
+        { key: 'nothing', label: 'None of these', exclusive: true },
       ],
     },
     {
@@ -161,17 +171,31 @@ export const CHAPTER_SCREEN = {
   ],
 
   /**
-   * ⚠️ ONLY WHEN THE DESTINATION WAS CLEARED — "landed" or "changed". Somebody
-   * who answered "partly" or "no" has NOT arrived, so their destination stands
-   * and asking again would be the product forgetting what they just told it.
+   * 🔴🔴 ASKED OF EVERYONE NOW, AND THE OLD RULE WAS EXACTLY BACKWARDS.
+   *
+   * It read: "only when the destination was cleared — somebody who answered
+   * partly or no has NOT arrived, so their destination stands." That sounds
+   * careful and it meant **half the people were never asked where they wanted to
+   * get to.** "Closer, not there" and "I did it all and it didn't land" are the
+   * two answers most likely to come with a changed mind — and those were the two
+   * the product refused to ask.
+   *
+   * Daniel: *"there should be a general question on where do you want to be now
+   * that you're at this stage."*
+   *
+   * ⭐⭐ THE OUTCOME CHANGES THE WORDING, NOT WHETHER IT IS ASKED. Somebody who
+   * arrived is being asked what is next; somebody who did the work and watched it
+   * fail is being asked whether the destination survived. Same field, same
+   * answer key, honest sentence either way — see `destinationLabel`.
    */
-  arrived: [
+  destination: [
     {
       key: 'out',
       kind: 'text',
-      label: 'So what does “out” look like now?',
-      hint: 'One sentence, the way you would say it.',
-      placeholder: 'Off the road, one property running itself, the apps paying the rest.',
+      // ⚠️ Label is set per outcome by chapterFields — see destinationLabel.
+      label: 'Where do you want to get to now?',
+      hint: 'One sentence, the way you would say it out loud.',
+      placeholder: 'Out of the job, with enough coming in that I am not counting it every week.',
       dictate: true,
       required: true,
       emptyMessage: 'A sentence is enough.',
@@ -196,11 +220,29 @@ export const CHAPTER_SCREEN = {
       kind: 'text',
       label: 'And a normal day, three years from here?',
       hint: 'Optional — the sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
-      placeholder: 'Somewhere warm for the winter. Kids with us. Two hours of work before anyone else is up.',
+      placeholder: 'Same town, fewer hours, and home when the kids get in.',
       dictate: true,
       required: false,
     },
   ],
+}
+
+/**
+ * ⭐⭐ THE SAME QUESTION, IN THE SENTENCE THAT IS HONEST FOR THIS PERSON.
+ *
+ * Asking "so where now?" of somebody who just told you their plan did not land
+ * is the product not listening. Asking "is that still where you want to get to?"
+ * of somebody who arrived is worse. One field, one answer key, four sentences.
+ *
+ * ⚠️ None of them congratulate and none of them commiserate — the register rule
+ * holds here as everywhere: direct about the situation, never directive about
+ * the person.
+ */
+const DESTINATION_LABEL = {
+  landed:  'You got there. So where do you want to get to now?',
+  changed: 'So where do you want to get to now?',
+  partly:  'You are closer. Is that still where you are headed, or has it moved?',
+  no:      'That route did not work. Is that still where you want to get to?',
 }
 
 /** Was this one of the things they said had moved? */
@@ -215,10 +257,10 @@ function picked(answers, key) {
  * on whether they reached a destination.
  */
 export function chapterFields(outcome) {
-  const arrived = outcome === 'landed' || outcome === 'changed'
-  return arrived
-    ? [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.moved, ...CHAPTER_SCREEN.arrived]
-    : [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.moved]
+  return [...CHAPTER_SCREEN.always, ...CHAPTER_SCREEN.moved, ...CHAPTER_SCREEN.destination]
+    .map(f => (f.key === 'out' && DESTINATION_LABEL[outcome]
+      ? { ...f, label: DESTINATION_LABEL[outcome] }
+      : f))
 }
 
 /** Only the fields that apply, given what they have said so far. */

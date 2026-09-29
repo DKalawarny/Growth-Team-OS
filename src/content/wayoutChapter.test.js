@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { chapterFields, visibleChapterFields, CHAPTER_LEAD } from './wayoutChapter'
-import { CHAPTER_CLEARS_MONEY, CHAPTER_CLEARS_DESTINY, chapterAnswers } from '../lib/wayout/chapterHistory'
+import { CHAPTER_CLEARS_MONEY, CHAPTER_CLEARS_DESTINY, CHAPTER_CLEARS_ALWAYS, chapterAnswers } from '../lib/wayout/chapterHistory'
 
 /**
  * 🔴🔴 THE BUG THIS FILE EXISTS TO PREVENT, WHICH ALREADY HAPPENED ONCE.
@@ -24,11 +24,12 @@ describe('a new chapter asks for everything it cleared', () => {
     })
   }
 
-  // ⚠️ The detector, checked against the failure it is written for.
+  // ⚠️ The detector, checked against the failure it is written for: a key that
+  // is cleared and never offered. `out` was exactly that once.
   it('would have caught the shipped bug', () => {
     const asked = ['takeHome', 'mustPay', 'savings', 'tuesday']   // `out` missing
     expect(asked).not.toContain('out')
-    expect(CHAPTER_CLEARS_DESTINY).toContain('out')
+    expect([...CHAPTER_CLEARS_ALWAYS, ...CHAPTER_CLEARS_DESTINY]).toContain('out')
   })
 
   it('never asks again for what carried over', () => {
@@ -38,13 +39,26 @@ describe('a new chapter asks for everything it cleared', () => {
     }
   })
 
-  it('does not re-ask the destination when they have not arrived', () => {
-    for (const outcome of ['partly', 'no']) {
-      const asked = chapterFields(outcome).map(f => f.key)
-      expect(asked).not.toContain('out')
-      expect(asked).not.toContain('tuesday')
-      for (const k of CHAPTER_CLEARS_MONEY) expect(asked).toContain(k)
+  /**
+   * 🔴🔴 REVERSED 29 Sep. This asserted that somebody who had NOT arrived was
+   * never asked about their destination — which meant half of all returning
+   * people were never asked where they wanted to get to. Do not restore it.
+   * ⭐⭐ The outcome changes the WORDING, not whether it is asked.
+   */
+  it('asks everyone where they want to get to, in wording that fits', () => {
+    const seen = new Set()
+    for (const outcome of ['landed', 'changed', 'partly', 'no']) {
+      const out = chapterFields(outcome).find(f => f.key === 'out')
+      expect(out).toBeTruthy()
+      expect(out.required).toBe(true)
+      seen.add(out.label)
+      for (const k of CHAPTER_CLEARS_MONEY) {
+        expect(chapterFields(outcome).map(f => f.key)).toContain(k)
+      }
     }
+    // ⚠️ Asking somebody whose plan failed "so where now?" is the product not
+    // listening. Four outcomes, four sentences.
+    expect(seen.size).toBe(4)
   })
 
   /**
