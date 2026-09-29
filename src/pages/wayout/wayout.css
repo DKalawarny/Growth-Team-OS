@@ -2674,3 +2674,31 @@ h1.wayout__heroline {
 .wayout__waitfoot {
   margin: 2.5vh 0 0; font-size: 14.5px; color: var(--soft);
 }
+
+/* ⭐⭐ A FINISHED CHAPTER, OPENED FOR READING. The only difference from the live
+   board is that it says so — same notes, same ticks, because the point of coming
+   back is seeing what you actually did, not a summary of it. */
+.wayout__pastband {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  margin: 0 0 22px; padding: 13px 20px; border-radius: 999px;
+  background: var(--tint); border: 1px solid var(--line);
+}
+.wayout__pastband b {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--label);
+}
+.wayout__pastband span { font-size: 13.5px; color: var(--soft); }
+.wayout__pastband a {
+  margin-left: auto; font-size: 13.5px; font-weight: 700;
+  color: var(--green); text-decoration: none; white-space: nowrap;
+}
+.wayout__pastband a:hover { text-decoration: underline; }
+@media (max-width: 620px) {
+  .wayout__pastband { border-radius: 16px; }
+  .wayout__pastband a { margin-left: 0; }
+}
+
+/* The way in, from the arc. */
+.wayout__arcopen { margin: 0 0 12px; font-size: 13.5px; }
+.wayout__arcopen a { color: var(--green); font-weight: 700; text-decoration: none; }
+.wayout__arcopen a:hover { text-decoration: underline; }

@@ -124,6 +124,31 @@ export async function loadOrCreateSession() {
  * case where someone made an account earlier, came back, answered as a guest in
  * another tab, and then signed in.
  */
+/**
+ * ⭐⭐ ONE SPECIFIC SESSION, FOR READING A CHAPTER YOU HAVE FINISHED.
+ *
+ * 🔴 `loadOrCreateSession` always returns the NEWEST row, so once chapter two
+ * existed there was no way back to chapter one's plan at all — Daniel: "how do I
+ * get back to my first plan from the second?" `/history` showed a summary; the
+ * board itself was gone. That is a thing somebody paid attention to and worked
+ * for, and it should not become unreachable because they carried on.
+ *
+ * ⚠️ NO USER FILTER HERE AND THAT IS CORRECT, NOT AN OVERSIGHT. RLS on
+ * wayout_sessions is `auth.uid() = user_id` (migration 046), so this can only
+ * ever return a row belonging to whoever is asking. Adding a client-side filter
+ * would imply the database was not already enforcing it.
+ */
+export async function loadSessionById(id) {
+  if (!id) return null
+  const { data, error } = await supabase
+    .from('wayout_sessions')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+  if (error) throw new Error(`Could not open that plan: ${error.message}`)
+  return data ?? null
+}
+
 export async function adoptDraftInto(session) {
   const draft = loadDraft()
   if (!draft || !Object.keys(draft.answers ?? {}).length) return session

@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import {
-  loadOrCreateSession, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
+  loadOrCreateSession, loadSessionById, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
   askAboutPlan, savePlanThread, chapterChain,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
@@ -55,13 +55,31 @@ export default function Plan() {
   // went out, which is precisely the window this has to close.
   const buildingRef = useRef(false)
   const [error, setError]       = useState('')
+  /**
+   * ⭐⭐ READING A CHAPTER YOU HAVE FINISHED. `?was=<id>` opens that plan instead
+   * of the current one — the only way back to a board you worked, now that a
+   * second chapter exists.
+   * ⚠️ READ-ONLY, AND THAT IS THE POINT. Ticking a box, rebuilding or talking to
+   * an old plan would rewrite history rather than read it, and history is the
+   * thing this product is starting to be worth something for.
+   */
+  const past = params.get('was')
 
   useEffect(() => {
     let cancelled = false
-    loadOrCreateSession()
+    ;(past ? loadSessionById(past) : loadOrCreateSession())
       .then(s => {
         if (cancelled) return
+        if (!s) { setError('That plan is not there any more.'); return }
         setSession(s)
+        // ⚠️ A past chapter is shown exactly as it was left: its stored map, its
+        // ticks, and nothing that could change either.
+        if (past) {
+          loadProgress(s.id).then(pr => { if (!cancelled) setProgress(pr) }).catch(() => {})
+          if (s.map) setMap(enforceMapContract(s.map, s.answers))
+          else setError('That chapter never got a plan.')
+          return
+        }
         if (s.status === 'draft') {
           // ⚠️ Same pairing as the intake: an unfinished CHAPTER goes to its own
           // door, not back through the six screens it was built to replace.
@@ -118,7 +136,7 @@ export default function Plan() {
       .catch(err => { if (!cancelled) setError(err.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [navigate, params])
+  }, [navigate, params, past])
 
   /**
    * Generate and store the map.
@@ -420,15 +438,18 @@ export default function Plan() {
   return (
     <Map
       map={map}
-      thread={thread}
-      onSay={sayToPlan}
+      /* ⚠️ EVERY WRITE IS WITHHELD ON A PAST CHAPTER. Not disabled in the UI —
+         not passed at all, so there is nothing to enable by accident. */
+      thread={past ? [] : thread}
+      onSay={past ? null : sayToPlan}
       asking={asking}
-      onRebuild={spent ? null : rebuild}
-      onOpenPlaybook={openPlaybook}
-      onRegenerate={import.meta.env.DEV ? regenerateNow : null}
-      onMove={setMoveDone}
-      onInsist={insist}
-      onNote={noteOnMove}
+      past={Boolean(past)}
+      onRebuild={past || spent ? null : rebuild}
+      onOpenPlaybook={past ? null : openPlaybook}
+      onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
+      onMove={past ? null : setMoveDone}
+      onInsist={past ? null : insist}
+      onNote={past ? null : noteOnMove}
       moveNotes={session?.move_notes ?? {}}
       chapter={session?.chapter ?? 1}
       progress={progress}
@@ -558,7 +579,7 @@ function WorthAsk({ onSave }) {
 export function Map({
   map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
-  thread = [], onSay = null, asking = false,
+  thread = [], onSay = null, asking = false, past = false,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
@@ -752,7 +773,18 @@ export function Map({
 
           ⚠️ It is a BAND, not a badge in a corner. A chapter is a fact about the
           whole page, so it sits across the top of it. */}
-      {chapter > 1 && (
+      {/* ⭐⭐ THE ONLY THING THAT CHANGES ON A PAST CHAPTER IS THAT IT SAYS SO.
+          Everything else is exactly as they left it — the same board, the same
+          ticks — because the point of coming back is seeing what you actually
+          did, not a summary of it. */}
+      {past && (
+        <div className="wayout__pastband wayout__r" style={at(2.2)}>
+          <b>Finished plan</b>
+          <span>This is how you left it. Nothing here can be changed.</span>
+          <Link to={`${WAYOUT_BASE}/plan`}>Back to the plan you are on →</Link>
+        </div>
+      )}
+      {!past && chapter > 1 && (
         <div className="wayout__chapterband wayout__r" style={at(2.3)}>
           <b>Chapter {chapter}</b>
           <span>Built from what actually happened last time.</span>
@@ -998,7 +1030,7 @@ export function Map({
           changed has to be the place you are looking at the thing that changed.
           ⚠️ Only with a real session behind it — Preview renders this same
           component to check the design and has nothing to talk to. */}
-      {onSay && (
+      {!past && onSay && (
         <PlanThread
           thread={thread}
           onSay={onSay}

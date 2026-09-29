@@ -106,6 +106,18 @@ export default function History() {
                     </ul>
                   )}
 
+                  {/* ⭐⭐ THE WAY BACK INTO A FINISHED PLAN. Daniel: "how do I get
+                      back to my first plan from the second?" — and until now the
+                      answer was that you could not. This page showed the shape of
+                      each chapter; the board itself was unreachable.
+                      ⚠️ Only where a plan was actually written. A chapter that
+                      never got one would open on an error. */}
+                  {c.destination !== undefined && c.moves.length > 0 && c.id !== chain[chain.length - 1].id && (
+                    <p className="wayout__arcopen">
+                      <Link to={`${WAYOUT_BASE}/plan?was=${c.id}`}>Open this plan →</Link>
+                    </p>
+                  )}
+
                   {c.outcome ? (
                     <p className="wayout__arcout">
                       <b>{OUTCOME_LABEL[c.outcome] ?? c.outcome}</b>
