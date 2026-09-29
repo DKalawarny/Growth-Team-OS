@@ -2679,7 +2679,11 @@ h1.wayout__heroline {
    work". No card, no list, no spinner — one hairline and one enormous line that
    turns over. See the note at the top of Working.jsx for why the obvious
    loading-screen design is banned here. */
-.wayout__wait { padding-top: 6px; max-width: 60rem; }
+/* ⚠️ NO CAP ON THE BLOCK. The rule is a full-width element — it measures the
+   page, so stopping it at 60rem inside a 1292px sheet made it look like a
+   half-drawn line rather than a progress bar. The MEASURE belongs on the line
+   itself, which already has one. */
+.wayout__wait { padding-top: 6px; }
 
 .wayout__waitrule {
   height: 2px; background: var(--line); border-radius: 99px;
@@ -2692,18 +2696,34 @@ h1.wayout__heroline {
   transition: width 2.2s cubic-bezier(.33, 1, .68, 1);
 }
 
-/* ⚠️ A fixed block, so the page does not jump as lines of different lengths
-   take their turn — the only thing allowed to move is the sentence. */
-.wayout__waitlines { position: relative; min-height: clamp(150px, 22vh, 230px); }
+/* ⭐⭐ ALL THE LINES SHARE ONE GRID CELL, which is what stops the page jumping
+   as sentences of different lengths take their turn — and it costs nothing,
+   because the cell is exactly as tall as the tallest line.
+   🔴 This was `position: absolute` plus `min-height: clamp(150px, 22vh, 230px)`,
+   and the min-height was a GUESS: at 900px tall it reserved 198px for a block
+   whose tallest line is about 130px, so every wait had a band of dead space
+   between the sentence and the line under it. Daniel: "fitment's off."
+   ⚠️ Stacking in one cell measures instead of guessing, and it cannot drift when
+   the copy changes. */
+.wayout__waitlines { display: grid; }
 
 .wayout__waitline {
-  position: absolute; inset: 0 auto auto 0; margin: 0; max-width: 16ch;
+  grid-area: 1 / 1; margin: 0; max-width: 16ch;
   font-size: clamp(30px, 5vw, 64px); line-height: 1.03; letter-spacing: -.035em;
   font-weight: 800; color: var(--ink); text-wrap: balance;
   opacity: 0; transform: translateY(22px);
-  transition: opacity .65s cubic-bezier(.22, 1, .36, 1), transform .65s cubic-bezier(.22, 1, .36, 1);
+  transition: opacity .34s cubic-bezier(.22, 1, .36, 1), transform .34s cubic-bezier(.22, 1, .36, 1);
 }
-.wayout__waitline.is-now  { opacity: 1; transform: none; }
+/* ⚠️ OUT FIRST, THEN IN — NOT A CROSS-FADE. Two sentences of different lengths
+   overlapping at half opacity is a smear, not a transition: "Reading what you
+   wrote." wraps to two lines and "Working out the order." does not, so the
+   outgoing one hangs below the incoming one while both are partly visible.
+   ⭐ Delaying the arrival past the departure gives a clean beat of empty page
+   between them, which reads as deliberate rather than as a rendering fault. */
+.wayout__waitline.is-now {
+  opacity: 1; transform: none;
+  transition-delay: .36s;
+}
 .wayout__waitline.is-past { opacity: 0; transform: translateY(-18px); }
 
 @media (prefers-reduced-motion: reduce) {
