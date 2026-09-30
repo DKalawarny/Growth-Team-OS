@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { clearDraft } from '../../lib/wayout/draft'
-import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, canonicalUrl } from '../../lib/wayout/brand'
+import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, WAYOUT_HOME, canonicalUrl } from '../../lib/wayout/brand'
 import './wayout.css'
 
 /**
@@ -30,6 +30,7 @@ import './wayout.css'
  */
 export default function WayoutShell({
   children, count, title, noindex = true, wide = false, canonicalPath = '', signIn = false,
+  home = false,
 }) {
   /**
    * ⚠️ READ ONCE, NOT SUBSCRIBED. This is only deciding whether to draw a link,
@@ -98,9 +99,24 @@ export default function WayoutShell({
           is a deliverable, not a question, so it earns the width. */}
       <div className={`wayout__frame${wide ? ' wayout__frame--wide' : ''}`}>
         <div className="wayout__brand">
+          {/* 🔴 THE WORDMARK WAS NOT A LINK ON ANY SCREEN IN THIS PRODUCT, so a
+              public page had no route back to the front door at all. Daniel,
+              on a /stuck page: "there is no back button on any of these to the
+              homepage." Somebody arriving from an assistant — which is the only
+              channel that has ever brought this product a stranger — reads the
+              answer and then has nowhere to go but the back button.
+
+              ⚠️ ONLY WHERE LEAVING IS A REASONABLE THING TO OFFER. On the
+              intake, the plan or a play, a link out of the flow is an exit sign
+              beside the work, which is the same reason `signIn` is not drawn
+              there either. Those screens carry their own crumb to the plan.
+              ⭐ WAYOUT_HOME, not a literal: it is `/` on this product's own
+              domain and `/wayout/hello` under the Eliv8 prefix. */}
           <i />
           {/* ⚠️ The name comes from brand.js and nowhere else. */}
-          {WAYOUT_NAME}
+          {home
+            ? <Link className="wayout__brandhome" to={WAYOUT_HOME}>{WAYOUT_NAME}</Link>
+            : WAYOUT_NAME}
           {count && <span className="wayout__count">{count}</span>}
           {/* 🔴 THERE WAS NO WAY BACK IN. Daniel: "do we have a log in section yet
               for once people sign up?" /wayout/enter has existed the whole time —

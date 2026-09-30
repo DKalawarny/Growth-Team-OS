@@ -1285,6 +1285,12 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__three p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
 
+/* The wordmark as a route home. It must read as the wordmark, not as a link —
+   the underline only appears on hover, so nothing about the header changes for
+   somebody who is not looking for a way out of the page. */
+.wayout__brandhome { color: inherit; text-decoration: none; }
+.wayout__brandhome:hover { text-decoration: underline; text-underline-offset: 3px; }
+
 /* ── The record: how far, and what they did ───────────────────────────────
    ⚠️ Deliberately NOT a trophy case. No badges, no ring, no streak, no
    percentage — this is somebody in a hard spot, not a fitness app, and a

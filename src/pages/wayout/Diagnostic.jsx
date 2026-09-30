@@ -224,6 +224,7 @@ export default function Diagnostic() {
       noindex={!first}
       canonicalPath={first ? '/wayout/start' : ''}
       signIn={first}
+      home={first}
     >
       {/* ⚠️ `wide` on an intake screen reverses an earlier call in WayoutShell
           ("the narrow column is the point"). The reason behind that was not
