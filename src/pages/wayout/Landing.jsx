@@ -404,9 +404,22 @@ export default function Landing() {
             that withholds the useful part to drive a signup reads as
             withholding. Saying it out loud is what makes it worth trusting. */}
         <section>
+          {/* 🔴🔴 NAMING THE COUNT TURNED A LIBRARY INTO A MENU, AND A MENU
+              INVITES "MINE IS NOT ON IT". Daniel, reading his own page as a
+              user: "this makes me as a user feel like there are only 16
+              scenarios, maybe mine is too unique."
+              ⭐⭐ And it quietly contradicted the product. Nothing here is
+              matched to a list — the plan is GENERATED from their answers, so a
+              number implying a finite set of covered cases argues against the
+              one thing that makes this worth doing. The most specific situation
+              is the one this serves best, and the copy was telling that person
+              to check whether they qualify.
+              ⚠️ The count is gone from the link below for the same reason. A
+              figure that is useful navigation on a directory page is a ceiling
+              on a landing page. */}
           <h2 className="wayout__pitchh">Read the one that sounds like yours.</h2>
           <p className="wayout__pitchlead">
-            {SITUATIONS.length} situations, answered properly — what the number
+            Some of what people arrive with, answered properly — what the number
             really is, what changes it, and what order things go in. Free to read,
             nothing to fill in, and written to be worth your time whether or not
             you ever make a plan.
@@ -425,8 +438,19 @@ export default function Landing() {
           </div>
           {/* ⚠️ .wayout__fine centres by default — correct under a centred CTA,
               wrong here, where it was the only centred thing in the section. */}
-          <p className="wayout__fine" style={{ marginTop: 18, textAlign: 'left' }}>
-            <Link to={`${WAYOUT_BASE}/stuck`}>All {SITUATIONS.length} situations →</Link>
+          {/* ⭐⭐ AND THE ANSWER FOR THE PERSON WHOSE SITUATION IS NOT HERE — which
+              is everybody, and is the point. Daniel: "maybe say here's some
+              examples, and put somewhere 'and for the unique ones'."
+              ⚠️ Said as what the product DOES, not as reassurance. "Don't worry,
+              we cover that too" is a promise; "built from your answers" is how
+              it works, and a reader can check it in twenty minutes. */}
+          <p className="wayout__unique">
+            Yours will not be on this list, and that is the point — a plan is built
+            from your own answers, not matched to one of these. The specifics are
+            the whole input.
+          </p>
+          <p className="wayout__fine" style={{ marginTop: 14, textAlign: 'left' }}>
+            <Link to={`${WAYOUT_BASE}/stuck`}>More situations →</Link>
           </p>
         </section>
 

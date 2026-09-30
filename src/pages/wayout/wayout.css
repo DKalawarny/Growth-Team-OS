@@ -1310,6 +1310,14 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__didlist li em { font-style: normal; flex: none; font-size: 13px; color: var(--soft);
   font-variant-numeric: tabular-nums; }
 
+/* The line that answers "what if mine is not here". Quiet — it is a fact about
+   how the product works, not a reassurance being pressed. */
+.wayout__unique {
+  margin: 22px 0 0; max-width: 62ch;
+  font-size: 15.5px; line-height: 1.6; color: var(--soft);
+  border-left: 3px solid var(--sun); padding-left: 16px;
+}
+
 /* The three steps of the flow. Deliberately NOT .wayout__three: that is a set
    of claims and this is an order of events, and rendering both as bordered
    cards made the page say one thing twice. A hairline and an eyebrow is enough
