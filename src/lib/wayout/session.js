@@ -1240,6 +1240,40 @@ export async function chapterChain(session) {
     if (error || !data) break
     node = data
   }
+
+  /**
+   * ⭐⭐ WHEN EACH MOVE WAS ACTUALLY DONE — the one fact in this product that is
+   * a record of what a PERSON did rather than what the plan said.
+   *
+   * `done_at` has been written on every tick since the gates were built and
+   * nothing has ever read it back except the gate itself, which only asks
+   * whether the previous move is done. So the product has always known the date
+   * somebody had the conversation they had been dreading for a year, and has
+   * never once told them.
+   *
+   * ⚠️ ONE QUERY FOR THE WHOLE CHAIN, not one per chapter. Fetching inside the
+   * loop above is the `useAuth` mistake in miniature — the same table hit N
+   * times because nobody looked at the shape of the page.
+   */
+  const ids = out.map(c => c.id).filter(Boolean)
+  if (ids.length) {
+    const { data: pbs } = await supabase
+      .from('wayout_playbooks')
+      .select('session_id, move_order, done_at')
+      .in('session_id', ids)
+    const bySession = new Map()
+    ;(pbs ?? []).forEach(r => {
+      if (!r.done_at) return
+      if (!bySession.has(r.session_id)) bySession.set(r.session_id, new Map())
+      bySession.get(r.session_id).set(r.move_order, r.done_at)
+    })
+    out.forEach(c => {
+      const done = bySession.get(c.id)
+      // ⚠️ move_order is 1-based and matches the map's move index.
+      c.moves = c.moves.map((m, i) => ({ ...m, doneAt: done?.get(i + 1) ?? null }))
+    })
+  }
+
   return out
 }
 

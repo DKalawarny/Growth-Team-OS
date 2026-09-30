@@ -4,6 +4,7 @@ import WayoutShell from './WayoutShell'
 import { loadOrCreateSession, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
+import { distance, doneMoves } from '../../lib/wayout/distance'
 
 /**
  * The way out — the whole way here.
@@ -56,21 +57,90 @@ export default function History() {
   if (error)   return <WayoutShell><p className="wayout__lead">{error}</p></WayoutShell>
 
   const first = chain[0]
+  const moved = distance(chain)
+  const did = doneMoves(chain)
+  const money = n => `$${Math.abs(n).toLocaleString()}`
+  const when = d => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
     <WayoutShell title="The whole way here" wide>
       <p className="wayout__crumb"><Link to={`${WAYOUT_BASE}/plan`}>← The plan you are on</Link></p>
       <h1 className="wayout__bigq">The whole way here.</h1>
 
+      {/* ⭐⭐ THE DISTANCE, IN THEIR OWN FIGURES — and it is the strongest thing
+          this page can say precisely because it says nothing.
+          `takeHome` and `mustPay` are asked at the intake and re-asked at every
+          chapter, so the product has always held their margin at March and their
+          margin at September and has never once put the two side by side.
+          ⚠️ No adjective, no verdict, no "well done". The voice rules ban
+          encouragement because a sentence that could be pasted into a stranger's
+          plan proves nobody read theirs. Two numbers they typed themselves is
+          the one form of credit they cannot argue with.
+          ⚠️ And it renders a FALL exactly as plainly as a rise. A product that
+          only shows the distance when the distance flatters is not keeping a
+          record, it is running a campaign. */}
+      {moved && (
+        <div className="wayout__moved">
+          <span className="wayout__label">Left at the end of the month, in your own numbers</span>
+          <div className="wayout__movedrow">
+            <div>
+              <b>{money(moved.then)}</b>
+              <em>{moved.fromDate ? when(moved.fromDate) : 'when you started'}</em>
+            </div>
+            <i aria-hidden="true">→</i>
+            <div>
+              <b>{money(moved.now)}</b>
+              <em>now</em>
+            </div>
+          </div>
+          {moved.direction !== 'flat' && (
+            <p className="wayout__movedsum">
+              {moved.direction === 'up' ? 'Up' : 'Down'} {money(moved.change)} a month
+              since your first plan.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* ⭐⭐ WHAT THEY ACTUALLY DID, WITH THE DATE. `done_at` has been written on
+          every tick since the gates were built and only the gate has ever read
+          it — so the product has always known the day somebody had the
+          conversation they had been dreading for a year, and never told them.
+          ⭐ The date is what turns a checkbox into an achievement: it says a
+          particular morning in March was the morning they did it.
+          ⚠️ This shows on a FIRST plan too, which the page previously could not
+          do — it opened with "there is nothing behind it yet" even for somebody
+          who had already done two of their three moves. Their history does not
+          begin at chapter two. */}
+      {did.length > 0 && (
+        <div className="wayout__didlist">
+          <h2 className="wayout__sectionh">What you have done so far</h2>
+          <ol>
+            {did.map((m, i) => (
+              <li key={`${m.chapter}-${i}`}>
+                <b>{m.title}</b>
+                <em>{when(m.doneAt)}</em>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       {/* ⚠️ ONE CHAPTER IS NOT A HISTORY. Showing a single card under a heading
           about how far somebody has come would be the product congratulating
-          them for arriving at the start line. */}
+          them for arriving at the start line.
+          ⚠️ AND THE EMPTY STATE MUST NOT READ AS AN ACCUSATION. A record of what
+          you achieved is a record of what you did not, for anybody who stalled —
+          so where nothing is ticked this says what is true (the plan is the
+          newest thing here) and never counts what is missing. */}
       {chain.length < 2 ? (
-        <p className="wayout__lead">
-          This is your first plan, so there is nothing behind it yet. When you
-          finish it and start the next one, what you wrote today is what shows up
-          here.
-        </p>
+        did.length === 0 && (
+          <p className="wayout__lead">
+            This is your first plan, so there is nothing behind it yet. As you
+            tick moves off they show up here with the date, and when you start
+            your next plan what you wrote today sits at the top of it.
+          </p>
+        )
       ) : (
         <>
           {first?.answers?.out && (

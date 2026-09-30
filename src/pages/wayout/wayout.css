@@ -1285,6 +1285,31 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__three p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
 
+/* ── The record: how far, and what they did ───────────────────────────────
+   ⚠️ Deliberately NOT a trophy case. No badges, no ring, no streak, no
+   percentage — this is somebody in a hard spot, not a fitness app, and a
+   scoreboard would be the gimmick the whole product refuses. The figures carry
+   themselves; the styling's only job is to put the two of them side by side. */
+.wayout__moved { margin: 26px 0 0; padding: 22px 24px; background: #FFF5DC;
+  border-left: 5px solid var(--sun); border-radius: 0 16px 16px 0; }
+.wayout__movedrow { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+.wayout__movedrow > div { display: flex; flex-direction: column; }
+.wayout__movedrow b { font-size: 34px; font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1; font-variant-numeric: tabular-nums; }
+.wayout__movedrow em { font-style: normal; font-size: 13px; color: var(--soft); margin-top: 6px; }
+.wayout__movedrow i { font-style: normal; font-size: 24px; color: var(--sun-ink); }
+.wayout__movedsum { margin: 14px 0 0; font-size: 15px; color: var(--soft); }
+
+.wayout__didlist { margin: 30px 0 0; }
+.wayout__didlist ol { list-style: none; margin: 12px 0 0; padding: 0; }
+/* ⚠️ A hairline per row, not a card each. Twelve cards down a page reads as a
+   backlog; twelve lines reads as a record. */
+.wayout__didlist li { display: flex; justify-content: space-between; align-items: baseline;
+  gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.wayout__didlist li b { font-weight: 600; font-size: 16px; }
+.wayout__didlist li em { font-style: normal; flex: none; font-size: 13px; color: var(--soft);
+  font-variant-numeric: tabular-nums; }
+
 /* The three steps of the flow. Deliberately NOT .wayout__three: that is a set
    of claims and this is an order of events, and rendering both as bordered
    cards made the page say one thing twice. A hairline and an eyebrow is enough
