@@ -46,6 +46,46 @@ interface Due {
  * harder. Someone who has ignored four of these is telling us something, and
  * the honest response is to offer the door.
  */
+/**
+ * ⭐⭐ WHAT THEY HAVE ALREADY DONE, IN ONE LINE, BEFORE THE ASK.
+ *
+ * A nudge that opens on what is outstanding is a reminder of a debt. The same
+ * email that opens on the last thing they finished is a different object, and
+ * it costs nothing extra to send — `done_at` is already loaded here to work out
+ * which move they are standing on.
+ *
+ * 🔴 IT IS EVIDENCE, NOT ENCOURAGEMENT. The voice rules ban "you've come so
+ * far" because it could be written without reading a word they typed. A move
+ * they ticked and the date they ticked it is a fact they cannot argue with, and
+ * it does the same work without the flattery.
+ *
+ * ⚠️ RETURNS NOTHING WHEN NOTHING IS DONE. A record of what you achieved is a
+ * record of what you did not, for anybody who has stalled — and the person most
+ * likely to be reading a fourth check-in is exactly that person. Silence is the
+ * right output there; the escalating copy below already handles them honestly.
+ */
+function alreadyDone(
+  pbs: Array<{ move_order: number; done_at: string | null }>,
+  moves: Array<{ title?: string }>,
+): string | null {
+  const done = pbs
+    .filter(p => p.done_at)
+    .sort((a, b) => Date.parse(b.done_at!) - Date.parse(a.done_at!))
+  if (!done.length) return null
+
+  const last = done[0]
+  const title = moves[last.move_order - 1]?.title
+  if (!title) return null
+
+  const when = new Date(last.done_at!).toLocaleDateString('en-CA', {
+    day: 'numeric', month: 'long',
+  })
+  // ⚠️ One sentence. This sits above the ask and must not become the email.
+  return done.length === 1
+    ? `You marked "${title}" done on ${when}.`
+    : `That is ${done.length} done so far — the last was "${title}", on ${when}.`
+}
+
 function compose(moveTitle: string, gate: string, count: number) {
   if (count >= 4) {
     return {
@@ -154,9 +194,18 @@ Deno.serve(async (req: Request) => {
       if (!move?.title) { failures.push(`${row.session_id}: no move ${current}`); continue }
 
       const first = (row.name ?? '').split(' ')[0] || 'there'
-      const { subject, lead, ask } = compose(
+      const { subject, lead: baseLead, ask } = compose(
         move.title, move.gate ?? 'you decide it is done.', row.checkin_count,
       )
+      /**
+       * ⚠️ NOT ON THE FOURTH ONE. At that point the email is offering to stop,
+       * and opening it with a tally of what they have managed would read as
+       * making a point. The record belongs where somebody is still moving.
+       */
+      const record = row.checkin_count >= 4
+        ? null
+        : alreadyDone(pbs ?? [], moves)
+      const lead = record ? `${record} ${baseLead}` : baseLead
       const link = `${site}/wayout/plan`
       const stopLink = `${Deno.env.get('SUPABASE_URL')}/functions/v1/wayout-checkin?stop=${row.session_id}`
 
