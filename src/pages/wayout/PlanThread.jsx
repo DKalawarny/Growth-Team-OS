@@ -59,7 +59,16 @@ export default function PlanThread({ thread = [], onSay, onRedo, busy = false })
       {/* ⭐⭐ THE ONE CONTROL THAT MATTERS. It only exists when the model said the
           plan actually moved — offering "redo" after every message would make
           the plan feel provisional, which is the opposite of what it is for. */}
-      {!busy && last?.changesPlan && (
+      {/* 🔴🔴 A CONTROL MUST NOT EXIST WITHOUT ITS HANDLER, and this rendered on
+          `changesPlan` alone. When the parent decided not to pass `onRedo` the
+          button still drew itself — enabled, full strength, doing nothing on
+          click. That is not a small styling miss: "it does nothing" is the
+          hardest kind of bug for somebody to report usefully, and it was
+          reported four times before it was measured.
+          ⭐ Requiring the handler makes the failure impossible rather than
+          unlikely — the same posture as passing no write functions at all on a
+          past chapter instead of disabling them in the UI. */}
+      {!busy && onRedo && last?.changesPlan && (
         <div className="wayout__threadmoved">
           <b>{last.whatChanged ?? 'That changes the order.'}</b>
           <button type="button" className="wayout__btn wayout__btn--sun" onClick={onRedo}>

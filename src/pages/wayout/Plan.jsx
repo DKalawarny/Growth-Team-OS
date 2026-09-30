@@ -534,7 +534,19 @@ export default function Plan() {
       asking={asking}
       past={Boolean(past)}
       onRebuild={past || spent ? null : rebuild}
-      onRedoFromThread={past || spent ? null : redoFromThread}
+      /**
+       * 🔴🔴 `spent` IS THE ANSWERS COUNTER, AND GATING THIS ON IT PUT THE BUG
+       * BACK. I moved the cap check inside the effect this afternoon and left
+       * this line alone — so with `rebuilds >= 1` the handler was nulled here,
+       * at the prop, before the fixed code could run. The button rendered,
+       * enabled, and did nothing. Daniel, for the fourth time: "when i click
+       * the button to regenerate it does nothing." Measured this time rather
+       * than reasoned about: clicked in a real browser, URL never changed, no
+       * request left the page.
+       * ⚠️ Only `past` belongs here. A finished chapter is read-only; a spent
+       * answers-rebuild has nothing to do with whether their life changed.
+       */
+      onRedoFromThread={past ? null : redoFromThread}
       refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
