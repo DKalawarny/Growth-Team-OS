@@ -1,10 +1,9 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
-import { supabase } from '../../lib/supabase'
 import {
   loadOrCreateSession, loadSessionById, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  askAboutPlan, savePlanThread, chapterChain,
+  askAboutPlan, savePlanThread, chapterChain, saveMapKeepingLast, restorePreviousMap,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
@@ -225,11 +224,15 @@ export default function Plan() {
           ...(saidSince.length ? { theyAlsoSaidSince: saidSince } : {}),
         }, setPass, s.move_notes, history,
       )
-      const { error: wErr } = await supabase
-        .from('wayout_sessions')
-        .update({ map: generated })
-        .eq('id', s.id)
-      if (wErr) throw new Error(wErr.message)
+      /**
+       * ⭐⭐ THE PLAN BEING REPLACED IS KEPT, so the rebuild can be undone. One
+       * statement writes both — separately, a failure between them leaves a new
+       * plan with the old one recorded as current, which is worse than no undo.
+       * ⚠️ Only when there WAS a plan. A first generation has nothing to keep,
+       * and an empty entry would offer a control that restores nothing.
+       */
+      const kept = await saveMapKeepingLast(s.id, generated, s.map ?? null, s.map_history ?? [])
+      setSession(c => (c ? { ...c, map: generated, map_history: kept } : c))
       setMap(generated)
     } catch (err) {
       setError(err.message)
@@ -320,7 +323,6 @@ export default function Plan() {
     const marked = [...thread, {
       role: 'assistant', rebuilt: true, at: new Date().toISOString(),
       content: 'Rewritten around that.',
-      mapBefore: map ?? null,
     }]
     setThread(marked)
     if (session) {
@@ -563,22 +565,23 @@ export default function Plan() {
    */
   async function restorePlan() {
     if (!session || building) return
-    const i = thread.map(m => m.rebuilt === true && !!m.mapBefore).lastIndexOf(true)
-    if (i < 0) return
-    const previous = thread[i].mapBefore
-
-    const next = thread.map((m, n) => (n === i
-      // eslint-disable-next-line no-unused-vars
-      ? (({ mapBefore, ...rest }) => ({ ...rest, content: 'Put back the way it was.' }))(m)
-      : m))
-    setThread(next)
-    setMap(enforceMapContract(previous, session.answers))
-
-    const { error } = await supabase
-      .from('wayout_sessions').update({ map: previous }).eq('id', session.id)
-    if (error) { setError(error.message); return }
-    savePlanThread(session.id, next)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    const history = session.map_history ?? []
+    if (!history.length) return
+    try {
+      const out = await restorePreviousMap(session.id, history)
+      if (!out) return
+      setMap(enforceMapContract(out.map, session.answers))
+      setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
+      const note = [...thread, {
+        role: 'assistant', at: new Date().toISOString(),
+        content: 'Put back the way it was.',
+      }]
+      setThread(note)
+      savePlanThread(session.id, note)
+        .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   async function undoLastSaid() {
@@ -648,7 +651,7 @@ export default function Plan() {
        */
       onRedoFromThread={past ? null : redoFromThread}
       onUndoSaid={past ? null : undoLastSaid}
-      onRestore={past ? null : restorePlan}
+      onRestore={past || !(session?.map_history ?? []).length ? null : restorePlan}
       refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
@@ -1491,6 +1494,26 @@ export function Map({
             {rebuilding ? 'Building…' : 'Regenerate from the same answers'}
           </button>
           {' '}— dev only, not in the build.
+        </p>
+      )}
+
+      {/* ⭐⭐ THE WAY BACK, WHERE IT CAN BE FOUND. Daniel: "there should be
+          something to click to bring it back." There was — but only inside the
+          running thread, which is a place he had already emptied, so for him
+          there was nothing on the screen at all. A plan can be replaced from
+          more than one route, so the control that undoes that belongs beside
+          the plan rather than inside the conversation that happened to trigger
+          it. The thread keeps its copy; this one is always there.
+          ⚠️ Shown only when there is genuinely something to restore — the
+          session carries the history, so an empty one draws nothing rather than
+          a button that does not work. That was this morning's lesson. */}
+      {onRestore && (
+        <p className="wayout__rebuild wayout__r" style={at(4.14)}>
+          Not what you wanted?{' '}
+          <button type="button" className="wayout__again" onClick={onRestore} disabled={rebuilding}>
+            put the previous plan back
+          </button>
+          {' '}— exactly as it was, nothing regenerated.
         </p>
       )}
 

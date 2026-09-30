@@ -886,6 +886,53 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
 }
 
 /** The thread lives on the session, so it is per chapter and dies with it. */
+/**
+ * ⭐⭐ WRITE THE NEW PLAN AND KEEP THE OLD ONE, IN ONE STATEMENT.
+ *
+ * A rebuild used to be irreversible, which is what makes people hesitate over a
+ * button — Daniel: "i cant bring back the plan to the kissemme plan." The first
+ * version of this parked the outgoing map on a thread entry and he lost it by
+ * using the thread's own undo. A safety net inside the thing it protects
+ * against is not a safety net; it belongs on the session.
+ *
+ * ⚠️ ONE UPDATE, not two. Written separately, a failure between them leaves a
+ * new plan with the old one recorded as still current, or an unreachable
+ * history entry — and both are worse than no undo at all.
+ * ⭐ Three deep: this is an undo, not an archive.
+ */
+export const WAYOUT_MAP_HISTORY = 3
+
+export async function saveMapKeepingLast(sessionId, nextMap, previousMap, history = [], why = 'rebuild') {
+  const kept = previousMap
+    ? [{ map: previousMap, at: new Date().toISOString(), why }, ...(history ?? [])]
+      .slice(0, WAYOUT_MAP_HISTORY)
+    : (history ?? []).slice(0, WAYOUT_MAP_HISTORY)
+
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ map: nextMap, map_history: kept })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+  return kept
+}
+
+/**
+ * Put the previous plan back. Pops the newest entry and writes it as the map.
+ *
+ * ⚠️ The entry is SPENT, not kept — otherwise the same click flips a plan
+ * between two versions forever and "previous" stops meaning anything.
+ */
+export async function restorePreviousMap(sessionId, history = []) {
+  const [head, ...rest] = history ?? []
+  if (!head?.map) return null
+  const { error } = await supabase
+    .from('wayout_sessions')
+    .update({ map: head.map, map_history: rest })
+    .eq('id', sessionId)
+  if (error) throw new Error(error.message)
+  return { map: head.map, history: rest }
+}
+
 export async function savePlanThread(sessionId, thread) {
   const { error } = await supabase
     .from('wayout_sessions')

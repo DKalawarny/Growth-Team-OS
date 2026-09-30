@@ -99,7 +99,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
               this one on the entry that says the plan was rewritten.
               ⚠️ It disappears once used, because `mapBefore` is stripped as it
               is spent. A plan should not ping-pong between two versions. */}
-          {onRestore && m.rebuilt && m.mapBefore && !busy && (
+          {onRestore && m.rebuilt && !busy && (
             <button type="button" className="wayout__threadundo" onClick={onRestore}>
               Put the plan back
             </button>
