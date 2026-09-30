@@ -2236,16 +2236,38 @@ h1.wayout__heroline {
   letter-spacing: -.02em; color: var(--ink); margin: 0;
 }
 
-/* 🔴 THE SITUATIONS GRID WAS 4 ACROSS AND LEFT A HALF-EMPTY SECOND ROW — four,
-   then two, with the cards at four different heights. On a pin board a little
-   rag is the charm; a row that stops halfway reads as unfinished. Three across
-   fills both rows exactly, since six are shown. */
-.wayout__board--situations { grid-template-columns: repeat(3, 1fr); }
+/* 🔴🔴 EVERY RULE IN THIS BLOCK HAD BEEN DEAD, AND NOTHING ABOUT READING IT SAID
+   SO. `.wayout__board` is `columns: 2` — a MULTI-COLUMN element, not a grid —
+   so `grid-template-columns` and `align-self` here applied to nothing at all,
+   silently, in three breakpoints. The comment below describes a three-across
+   layout that has never once rendered; what shipped was two ragged
+   multi-column stacks with a card broken across the fold and its pin cut in
+   half. Daniel: "fitment".
+
+   ⚠️ THIS IS THE THIRD TIME THE SAME SHAPE HAS COST A DAY: a rule that reads
+   correctly and does not apply. An animation with fill-mode outranking a
+   declaration, a bare element selector claiming every future h1, and now a
+   grid property on a element that is not a grid. Reading CSS cannot catch any
+   of them — only the computed value can.
+
+   ⭐ The board became `columns: 2` because GRID CANNOT PACK CARDS OF UNEQUAL
+   HEIGHT, which was right for the plan's board where the cards are notes of
+   wildly different lengths. These six are not that: they are a fixed set of
+   equal-weight links, and the thing that matters is that two rows of three
+   come out even. So this one takes the grid back, explicitly, and turns the
+   inherited column layout off rather than hoping to out-specify it. */
+.wayout__board--situations {
+  columns: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+/* ⚠️ The base board spaces its children with margin because multi-column has no
+   gap; in grid that margin is added to the gap and breaks the row rhythm. */
+.wayout__board--situations > * { margin-bottom: 0; }
 @media (max-width: 900px) { .wayout__board--situations { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .wayout__board--situations { grid-template-columns: 1fr; } }
-/* ⚠️ Equal heights per row so the pins sit on one line. The rag that reads as
-   charm is the TILT, not four different card depths in a row. */
-.wayout__board--situations .wayout__situationcard { align-self: stretch; }
 
 /* ⚠️ The intake asks SEVERAL fields per screen where a tap screen asks one, so
    they need rhythm between them — without this they run together into a wall. */

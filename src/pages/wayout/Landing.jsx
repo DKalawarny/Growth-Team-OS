@@ -383,13 +383,33 @@ export default function Landing() {
             for you specifically" before. */}
         {/* ⭐ RECOGNITION BEFORE PERSUASION. Nobody types "I am stuck" — they
             type the specific thing. These are the pages written for exactly that,
-            so this section doubles as the internal linking those pages need. */}
+            so this section doubles as the internal linking those pages need.
+
+            🔴 THE OLD COPY STOPPED WORKING THE MOMENT THIS SECTION MOVED. It
+            opened "It's never just 'stuck'. It's a house with debt against it.
+            A job that pays more than the next one would." — which was fine as
+            the page's FIRST claim and became two faults once it sat after the
+            argument: it restarts the case from nothing, and it lists the same
+            four things the hero lead now names, in the same order, 1,500px
+            below. Daniel: "i don't like the write up."
+            ⭐⭐ The section's job here is different from its job up top. Up top
+            it was recognition — "this is about you". Down here the reader has
+            already had the argument, so what they need is a way IN that is not
+            the button: something to read while they decide. So the heading
+            invites rather than diagnoses, and the lead says what these pages
+            actually do.
+            ⚠️ "Whether or not you ever make a plan" is their own standard, not
+            a flourish: the test written into unstuckSituations.js is whether
+            somebody who never pays a cent is genuinely better off, and a page
+            that withholds the useful part to drive a signup reads as
+            withholding. Saying it out loud is what makes it worth trusting. */}
         <section>
-          <h2 className="wayout__pitchh">It’s never just “stuck”.</h2>
+          <h2 className="wayout__pitchh">Read the one that sounds like yours.</h2>
           <p className="wayout__pitchlead">
-            It’s a house with debt against it. A job that pays more than the next one
-            would. A year of night shifts you can’t see the end of. Straight answers
-            to the specific ones, free to read:
+            {SITUATIONS.length} situations, answered properly — what the number
+            really is, what changes it, and what order things go in. Free to read,
+            nothing to fill in, and written to be worth your time whether or not
+            you ever make a plan.
           </p>
           <div className="wayout__board wayout__board--situations">
             {SITUATIONS.slice(0, 6).map(x => (
