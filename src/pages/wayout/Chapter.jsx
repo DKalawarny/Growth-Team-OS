@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
+import { sessionHome } from '../../lib/wayout/sessionHome'
 import { visibleChapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
 import { loadOrCreateSession, saveAnswers, markComplete, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
@@ -54,7 +55,10 @@ export default function Chapter() {
         // ⚠️ A first plan has no chapter to open. Anyone who lands here without
         // one belongs in the ordinary questions, not on a page about last time.
         if ((s.chapter ?? 1) < 2) { navigate(`${WAYOUT_BASE}/questions`, { replace: true }); return }
-        if (s.status === 'paid' && s.map) { navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return }
+        // 🔴 THIS ASKED WHETHER THEY HAD PAID, WHICH CANNOT BE TRUE YET, SO THE
+        //    DOOR TO A FINISHED CHAPTER NEVER CLOSED. See lib/wayout/sessionHome.js
+        //    — the decision lives there so the test can check the real thing.
+        if (sessionHome(s) === 'plan') { navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return }
         setSession(s)
         setAnswers(s.answers ?? {})
         const c = await chapterChain(s)

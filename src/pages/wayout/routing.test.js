@@ -1,4 +1,17 @@
 import { describe, it, expect } from 'vitest'
+import { sessionHome as whereDoesThisSessionBelong } from '../../lib/wayout/sessionHome'
+
+/**
+ * 🔴🔴 THIS FILE USED TO CARRY ITS OWN COPY OF THE FUNCTION IT TESTS, so it went
+ * green for weeks while the screen it was written to protect was broken. The
+ * copy here asked `status === 'paid'`; so did Chapter.jsx; and because payments
+ * are off, neither could ever be true. A test that reimplements the rule
+ * certifies the rule — it cannot check the code.
+ *
+ * ⚠️ It imports the real decision now. Same lesson as anthropic.test.js
+ * asserting the WIRE, and as the prompt-coverage test that had to stop
+ * hand-maintaining its own list of prompts.
+ */
 
 /**
  * 🔴🔴 TWO SCREENS DISAGREED ABOUT WHO OWNS A SESSION, AND THE DEFAULT WON.
@@ -12,12 +25,6 @@ import { describe, it, expect } from 'vitest'
  * not half a fix — it is a loop waiting for the other side to be added, and in
  * the meantime whichever screen is the default landing wins every time.
  */
-function whereDoesThisSessionBelong(session) {
-  const chapter = session?.chapter ?? 1
-  if (session?.status === 'paid' && session?.map) return 'plan'
-  if (chapter > 1) return 'chapter'
-  return 'questions'
-}
 
 describe('a session has exactly one home', () => {
   it('a first plan mid-answer belongs in the questions', () => {
@@ -87,5 +94,40 @@ describe('a finished chapter is readable and unchangeable', () => {
       expect(`${name}: ${allowed}`).toBe(`${name}: false`)
     }
     expect(c.showsBanner).toBe(true)
+  })
+})
+
+/**
+ * 🔴🔴 THE SHIPPED FAILURE, 29 Sep. Daniel finished chapter two in the morning
+ * and got a plan. That evening the same door offered him the same form again,
+ * he filled it in, and landed back on the plan he already had: "when i submit
+ * this it brings me back to the build a plan page."
+ *
+ * ⚠️ These assertions were checked against the OLD guard first and fail on it,
+ * which is the only reason they are worth keeping.
+ */
+describe('a finished chapter does not ask again', () => {
+  it('sends a completed chapter with a plan to the plan', () => {
+    expect(whereDoesThisSessionBelong({ chapter: 2, status: 'complete', map: { moves: [] } })).toBe('plan')
+  })
+
+  it('still sends a PAID one there, on the day that becomes possible', () => {
+    expect(whereDoesThisSessionBelong({ chapter: 2, status: 'paid', map: { moves: [] } })).toBe('plan')
+    expect(whereDoesThisSessionBelong({ chapter: 1, status: 'paid', map: { moves: [] } })).toBe('plan')
+  })
+
+  /**
+   * ⚠️ The recovery path. A chapter that completed but whose generation failed
+   * has no plan to show, so it goes back to the form rather than to an empty
+   * page — which is the one case where asking again is right.
+   */
+  it('sends a completed chapter with NO plan back to its own door', () => {
+    expect(whereDoesThisSessionBelong({ chapter: 2, status: 'complete', map: null })).toBe('chapter')
+    expect(whereDoesThisSessionBelong({ chapter: 1, status: 'complete' })).toBe('questions')
+  })
+
+  it('leaves a draft exactly where it was', () => {
+    expect(whereDoesThisSessionBelong({ chapter: 2, status: 'draft', map: { moves: [] } })).toBe('chapter')
+    expect(whereDoesThisSessionBelong({ chapter: 1, status: 'draft' })).toBe('questions')
   })
 })
