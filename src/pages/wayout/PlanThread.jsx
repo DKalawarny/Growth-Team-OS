@@ -130,6 +130,38 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
         </div>
       )}
 
+      {/* ⭐⭐ THE MODEL'S JUDGEMENT DECIDES WHAT IS OFFERED. IT DOES NOT DECIDE
+          WHAT IS ALLOWED. Daniel proposed a concrete change — a Texas flip
+          instead of the Kissimmee hold — and the reply asked him a question
+          back rather than concluding the plan had moved. That is usually right:
+          it named two bars the new move has to clear first. But it left him
+          with a direction he had chosen and nothing on the screen to act on
+          it: "no button to make this the new plan."
+
+          ⭐ THIS PRODUCT ALREADY HAS THE ANSWER TO THAT, on the crossed-off
+          list — "I want this one anyway — put it in the plan." Being able to
+          overrule is an established idiom here, and the thread was the one
+          place it was missing.
+
+          ⚠️ QUIETER THAN THE OFFER, ON PURPOSE. When the reply says the plan
+          moved, rebuilding is the obvious next thing and gets a button. Here it
+          is a choice against advice, so it reads as a link and says what it is
+          overruling. A plan is not more provisional for having a way to insist;
+          it is more provisional when every message offers to redo it, which is
+          why this appears only after the model has actually answered. */}
+      {!busy && onRedo && !moved && lastMine > -1 && last && (
+        <p className="wayout__threadinsist">
+          {/* ⭐ The faster route first. The reply usually asked for something
+              specific, and answering it produces a better plan than insisting
+              does — so that is what this recommends before offering the
+              override. */}
+          Answering that gets you a better plan than guessing.{' '}
+          <button type="button" className="wayout__again" onClick={onRedo}>
+            Or rebuild around it anyway
+          </button>
+        </p>
+      )}
+
       {spent ? (
         <p className="wayout__hint">
           That is a lot of back and forth on one plan. Whatever is next is

@@ -1306,6 +1306,12 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 .wayout__leftalone { margin: 30px 0 0; }
 
+/* The override. Sits below the reply, in the soft ink — it is a choice against
+   advice, so it must not look like the recommended path. */
+.wayout__threadinsist {
+  margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft);
+}
+
 /* "Take that back" — quiet, and only ever on the last thing they said. It must
    not read as a second action beside the answer; it is an escape hatch. */
 .wayout__threadundo {
