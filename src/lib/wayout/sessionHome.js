@@ -45,3 +45,26 @@ export function sessionHome(session) {
 
   return chapter > 1 ? 'chapter' : 'questions'
 }
+
+/**
+ * Where "change this plan" sends somebody — the answers that built it.
+ *
+ * ⭐⭐ A PLAN CHANGES WHEN THE LIFE CHANGES, NOT ON A BUTTON. Re-rolling the
+ * model on identical answers says neither plan meant much, and the whole
+ * product rests on the order being right rather than merely plausible. So the
+ * control routes through the questions — which also means somebody farming free
+ * plans has to re-answer to get a different one.
+ *
+ * 🔴🔴 IT SENT EVERYBODY TO CHAPTER ONE'S QUESTIONS. A later chapter's answers
+ * are not in the intake; they are on the chapter door, which exists to replace
+ * those thirty questions. The intake's own redirect quietly corrected it — so
+ * the wrong destination landed on the right screen, until the door learned to
+ * close on a finished chapter and the accident stopped working.
+ *
+ * ⚠️ A ROUTE THAT DEPENDS ON ANOTHER SCREEN'S REDIRECT IS NOT A ROUTE. That is
+ * the whole lesson here, and it is why this is a function rather than a line
+ * inside a component.
+ */
+export function editDestination(session) {
+  return (session?.chapter ?? 1) > 1 ? 'chapter' : 'questions'
+}

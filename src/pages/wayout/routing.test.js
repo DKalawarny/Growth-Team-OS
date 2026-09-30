@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sessionHome as whereDoesThisSessionBelong } from '../../lib/wayout/sessionHome'
+import { sessionHome as whereDoesThisSessionBelong, editDestination } from '../../lib/wayout/sessionHome'
 
 /**
  * 🔴🔴 THIS FILE USED TO CARRY ITS OWN COPY OF THE FUNCTION IT TESTS, so it went
@@ -129,5 +129,47 @@ describe('a finished chapter does not ask again', () => {
   it('leaves a draft exactly where it was', () => {
     expect(whereDoesThisSessionBelong({ chapter: 2, status: 'draft', map: { moves: [] } })).toBe('chapter')
     expect(whereDoesThisSessionBelong({ chapter: 1, status: 'draft' })).toBe('questions')
+  })
+})
+
+/**
+ * 🔴🔴 "REBUILD THE PLAN AROUND IT" SENT EVERYBODY TO CHAPTER ONE'S QUESTIONS.
+ *
+ * A chapter-two session's answers do not live in the intake — they live on the
+ * chapter door, which exists to replace those thirty questions. So the button
+ * went to /questions, the intake bounced it to /chapter because the chapter is
+ * not 1, and the person landed on a door they had already walked through.
+ *
+ * ⚠️ IT ONLY EVER WORKED BECAUSE TWO BUGS CANCELLED. The intake's redirect made
+ * the wrong destination land on the right screen — until the door learned to
+ * close on a finished chapter, and the accident stopped working. A route that
+ * depends on another screen's redirect is not a route, and this is the test
+ * that says so.
+ */
+/** ⚠️ The real function, not a copy of it — see the note at the top of this file. */
+const whereDoesRebuildGo = s => `${editDestination(s)}?edit=1`
+
+describe('changing a plan goes to the answers that built it', () => {
+  it('sends chapter one back through the intake', () => {
+    expect(whereDoesRebuildGo({ chapter: 1, status: 'complete' })).toBe('questions?edit=1')
+    expect(whereDoesRebuildGo({})).toBe('questions?edit=1')
+  })
+
+  // 🔴 The shipped failure.
+  it('sends a later chapter to its OWN door, not through the intake', () => {
+    expect(whereDoesRebuildGo({ chapter: 2, status: 'complete' })).toBe('chapter?edit=1')
+    expect(whereDoesRebuildGo({ chapter: 3, status: 'complete' })).toBe('chapter?edit=1')
+  })
+
+  /**
+   * ⚠️ AND THE DOOR MUST REOPEN FOR THAT EDIT. sessionHome closes it on a
+   * finished chapter, which is right for somebody arriving cold and fatal for
+   * somebody sent here to change something — so `?edit=1` is checked BEFORE it.
+   * These two rules are a pair and neither is safe alone.
+   */
+  it('the closed door is the arrival rule, not the edit rule', () => {
+    const finished = { chapter: 2, status: 'complete', map: { moves: [] } }
+    expect(whereDoesThisSessionBelong(finished)).toBe('plan')          // arriving cold
+    expect(whereDoesRebuildGo(finished)).toBe('chapter?edit=1')        // sent to change it
   })
 })

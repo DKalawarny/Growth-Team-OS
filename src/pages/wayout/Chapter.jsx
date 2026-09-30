@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
@@ -39,6 +39,7 @@ import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
  */
 export default function Chapter() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const [session, setSession] = useState(null)
   const [chain, setChain]     = useState([])
   const [answers, setAnswers] = useState({})
@@ -58,7 +59,17 @@ export default function Chapter() {
         // 🔴 THIS ASKED WHETHER THEY HAD PAID, WHICH CANNOT BE TRUE YET, SO THE
         //    DOOR TO A FINISHED CHAPTER NEVER CLOSED. See lib/wayout/sessionHome.js
         //    — the decision lives there so the test can check the real thing.
-        if (sessionHome(s) === 'plan') { navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return }
+        //
+        // ⭐⭐ `?edit=1` IS THE ONE THING THAT REOPENS IT, and it has to, because
+        //    this screen is BOTH the door into a chapter and the place that
+        //    chapter's answers are edited. "Rebuild the plan around it" sends
+        //    people here on purpose — a plan changes when the life changes, not
+        //    on a button — and closing the door to them would take away the only
+        //    way a chapter-two plan can be changed at all.
+        //    ⚠️ Exactly the shape the intake already uses for chapter one.
+        if (!params.get('edit') && sessionHome(s) === 'plan') {
+          navigate(`${WAYOUT_BASE}/plan`, { replace: true }); return
+        }
         setSession(s)
         setAnswers(s.answers ?? {})
         const c = await chapterChain(s)
@@ -66,7 +77,7 @@ export default function Chapter() {
       })
       .catch(err => { if (!cancelled) { setError(err.message); setLoading(false) } })
     return () => { cancelled = true }
-  }, [navigate])
+  }, [navigate, params])
 
   const outcome = session?.continues_from_outcome ?? null
   /**
@@ -91,7 +102,18 @@ export default function Chapter() {
       // ⚠️ Everything else carried over from the last chapter, so answering
       // these IS finishing — there is no further screen to send them to.
       await markComplete(session.id, answers)
-      navigate(`${WAYOUT_BASE}/plan`)
+      /**
+       * 🔴🔴 EDITING THE ANSWERS CHANGED NOTHING ON THE SCREEN. /plan regenerates
+       * only when there is NO map or when it is told to, so somebody who came
+       * back here, corrected what was wrong and pressed the button landed on
+       * the identical plan they had before. Verified in the data: answers saved
+       * at 00:34Z, stored map still the one written fourteen hours earlier.
+       * ⚠️ `?rebuild=1` is the existing instruction for this, and it is capped
+       * and stripped from the URL on arrival — so a reload cannot spend money
+       * twice. A chapter being finished for the FIRST time has no map, and
+       * /plan builds it without being asked.
+       */
+      navigate(session.map ? `${WAYOUT_BASE}/plan?rebuild=1` : `${WAYOUT_BASE}/plan`)
     } catch (err) {
       setErrors({ _save: err.message })
       setSaving(false)

@@ -8,6 +8,7 @@ import {
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
+import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread from './PlanThread'
@@ -212,8 +213,24 @@ export default function Plan() {
    * it. Someone farming free plans has to re-answer thirty questions to get a
    * different one — which is not a loophole, it is the product.
    */
+  /**
+   * 🔴🔴 AND IT SENT EVERYBODY TO CHAPTER ONE'S QUESTIONS, INCLUDING PEOPLE ON
+   * CHAPTER TWO. A chapter-two session's answers do not live in the intake —
+   * they live on the chapter door, which is the screen built to replace those
+   * thirty questions. So "Rebuild the plan around it" went to /questions, the
+   * intake bounced it to /chapter because the chapter is not 1, and the person
+   * landed on a door they had already walked through. Daniel: "still pops up
+   * like this after i click this."
+   *
+   * ⚠️ IT SURVIVED ONLY BECAUSE TWO BUGS CANCELLED. The intake's redirect made
+   * the wrong destination land on the right screen — until the chapter door
+   * learned to close on a finished chapter, and then the accident stopped
+   * working. A route that depends on another screen's redirect is not a route.
+   */
   function rebuild() {
-    navigate(`${WAYOUT_INTAKE}?edit=1`)
+    navigate(editDestination(session) === 'chapter'
+      ? `${WAYOUT_BASE}/chapter?edit=1`
+      : `${WAYOUT_INTAKE}?edit=1`)
   }
 
   /**
