@@ -56,6 +56,7 @@ export default function Plan() {
   // ⚠️ A ref, not state — state would not have settled before the second call
   // went out, which is precisely the window this has to close.
   const buildingRef = useRef(false)
+  const [refused, setRefused] = useState(false)
   const [error, setError]       = useState('')
   /**
    * ⭐⭐ READING A CHAPTER YOU HAVE FINISHED. `?was=<id>` opens that plan instead
@@ -109,13 +110,41 @@ export default function Plan() {
         // a bookmark or a back button cannot spend money again. And the cap is
         // checked HERE, where the spending happens, not only on the links that
         // offer it — a limit enforced in the UI is a suggestion.
-        if (s.map && params.get('rebuild')) {
+        /**
+         * 🔴🔴 THE BUTTON RAN, HIT A CAP, AND SAID NOTHING. Daniel: "when i click
+         * the button to regenerate it does nothing." It was doing exactly this —
+         * stripping the instruction, finding `rebuilds` already at the limit of
+         * one, re-rendering the identical map and returning. A refusal that
+         * looks like a no-op is indistinguishable from a broken button, and he
+         * reported it as one.
+         *
+         * ⭐⭐ AND THE CAP WAS THE WRONG CAP FOR THIS PATH. One rebuild is a good
+         * rule for GOING BACK TO THE ANSWERS — "somebody with one thinks first",
+         * and that reasoning is untouched below. But the thread is not tweaking:
+         * it is "my life changed", and a life changes more than once. Locking
+         * somebody out of an accurate plan for the rest of a chapter because
+         * they corrected something in week two is the opposite of what this
+         * product is for.
+         *
+         * ⚠️ IT IS STILL BOUNDED, just by the right thing. A thread rebuild
+         * cannot happen unless they typed something AND the model judged that it
+         * moves the plan, and the thread carries its own ask limit. The cost
+         * floor is a written answer either way — which is the same price the
+         * questions charge.
+         */
+        const rebuildAsked = params.get('rebuild')
+        if (s.map && rebuildAsked) {
           navigate(`${WAYOUT_BASE}/plan`, { replace: true })
-          if (!import.meta.env.DEV && (s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
+          const fromThread = rebuildAsked === 'thread'
+          if (!fromThread && !import.meta.env.DEV && (s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
             setMap(enforceMapContract(s.map, s.answers))
+            setRefused(true)
             return
           }
-          countRebuild(s.id, s.rebuilds).then(n => setSession(c => ({ ...c, rebuilds: n })))
+          // ⚠️ Only the answers path spends the answers budget.
+          if (!fromThread) {
+            countRebuild(s.id, s.rebuilds).then(n => setSession(c => ({ ...c, rebuilds: n })))
+          }
           build(s)
           return
         }
@@ -266,7 +295,7 @@ export default function Plan() {
    * a written answer, which is the same price the questions charge.
    */
   function redoFromThread() {
-    navigate(`${WAYOUT_BASE}/plan?rebuild=1`)
+    navigate(`${WAYOUT_BASE}/plan?rebuild=thread`)
   }
 
   function rebuild() {
@@ -506,6 +535,7 @@ export default function Plan() {
       past={Boolean(past)}
       onRebuild={past || spent ? null : rebuild}
       onRedoFromThread={past || spent ? null : redoFromThread}
+      refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
       onMove={past ? null : setMoveDone}
@@ -638,7 +668,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1198,6 +1228,19 @@ export function Map({
             finishing it.
           </p>
           {/* ⭐ The sentence above is only true if something can act on it. */}
+          {/* 🔴 A REFUSAL THAT LOOKS LIKE A NO-OP IS A BROKEN BUTTON. The one
+              rebuild from the answers is spent, and until now that fact was
+              never said anywhere — the page simply redrew the same plan.
+              ⚠️ It names the route that is still open rather than only the one
+              that is closed: saying what changed is not rationed the way going
+              back through the questions is. */}
+          {refused && (
+            <p className="wayout__hint">
+              That was the one go back through the questions. If something about
+              your situation has changed since, say so under “Something changed?”
+              and the plan is written again around it.
+            </p>
+          )}
           {onRebuild && (
             <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
               One of these is wrong — change my answers
