@@ -173,7 +173,23 @@ async function main() {
       browser = await puppeteer.launch({
         headless: 'new',
         ...(executablePath ? { executablePath } : {}),
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+          '--no-sandbox', '--disable-setuid-sandbox',
+          /**
+           * 🔴🔴 WITHOUT THESE THE BUILD HANGS, AND IT LOOKS LIKE MACHINE LOAD.
+           * Chrome throttles pages it believes are backgrounded or occluded —
+           * and a throttled page STOPS FIRING requestAnimationFrame entirely.
+           * The rAF tick below then never resolves, and the failure surfaces
+           * 180 seconds later as `Runtime.callFunctionOn timed out`, which
+           * names the transport rather than the cause.
+           * ⚠️ It was recorded twice as "puppeteer flake under load" and it is
+           * not flaky: it is deterministic whenever the machine has enough
+           * other Chrome windows for this one to be treated as background.
+           */
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+        ],
       })
     } catch (launchErr) {
       // Deliberately NOT fatal — a missing browser must never block a deploy.
@@ -206,16 +222,48 @@ async function main() {
         if (msg.type() === 'error') console.error(`[page console] ${route} →`, msg.text())
       })
 
-      await page.goto(HOST + route, { waitUntil: 'networkidle0', timeout: 60_000 })
+      /**
+       * ⚠️ `networkidle0` WAS THE WRONG READINESS SIGNAL AND IT IS NOT THE ONE
+       * THIS SCRIPT ACTUALLY TRUSTS. It waits for 500ms with no connections at
+       * all — which a page that fetches Google Fonts, or retries anything, or
+       * is simply slow because the machine is busy, may never reach. The build
+       * then dies on a navigation timeout that says nothing about the page.
+       *
+       * ⭐ The real check is three lines below and always has been: poll
+       * `document.title` for this route's signature. Helmet rewrites the title
+       * in place, so that fires exactly when the page-level Helmet has run —
+       * and every other tag this script serialises (meta, JSON-LD) is written
+       * in the same pass. Waiting for the DOM and then for THAT is both faster
+       * and strictly more correct than waiting for the network to go quiet.
+       */
+      await page.goto(HOST + route, { waitUntil: 'domcontentloaded', timeout: 60_000 })
 
       // Wait for Helmet to flush by polling document.title for the route's
       // signature substring. react-helmet-async rewrites the title in place
       // (document.title = ...), so this is a single, deterministic source
       // of truth for "the page-level Helmet has run."
       try {
+        /**
+         * 🔴🔴 `polling` IS THE WHOLE BUG, AND IT TOOK FOUR FAILED BUILDS TO SEE.
+         * puppeteer's default for waitForFunction is `'raf'` — it re-evaluates
+         * the predicate once per animation frame. Chrome stops firing frames in
+         * a page it considers backgrounded or occluded, which is any headless
+         * page on a machine with enough other Chrome windows open. So the
+         * predicate was never evaluated ONCE, the wait died at 20s, and the
+         * catch below then read a title that had been correct the whole time:
+         *   expected to contain: "Answers for owner-operators"
+         *   actual title:        "Answers for owner-operators — Eliv8 OS"
+         * A failure message that disproves itself is the tell.
+         *
+         * ⚠️ This is the same cause as the rAF tick further down and the
+         * "protocol timeout" that has been written off twice as machine load.
+         * It is not load and it is not flaky — it is deterministic, and every
+         * wait in this script had it.
+         * ⭐ A plain interval cannot be throttled out of existence.
+         */
         await page.waitForFunction(
           (needle) => document.title.includes(needle),
-          { timeout: 20_000 },
+          { timeout: 20_000, polling: 250 },
           titleContains,
         )
       } catch {
@@ -232,7 +280,17 @@ async function main() {
       }
 
       // One more rAF tick so any final Helmet flush settles before we serialize.
-      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r())))
+      /**
+       * ⚠️ AND THE TICK ITSELF MUST BE ABLE TO GIVE UP. The flags above stop the
+       * throttling that causes this, but an unbounded wait on a frame is the
+       * wrong shape regardless: this is a grace note — one frame so a final
+       * Helmet flush settles — and a grace note may never be the thing that
+       * blocks a deploy. Whichever of the two fires first wins.
+       */
+      await page.evaluate(() => new Promise((r) => {
+        requestAnimationFrame(() => r())
+        setTimeout(r, 250)
+      }))
 
       // De-dupe <head>. The static index.html ships a fallback head; Helmet
       // appends its own copy of every overridden tag, so a naive snapshot

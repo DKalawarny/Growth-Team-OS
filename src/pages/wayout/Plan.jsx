@@ -170,8 +170,31 @@ export default function Plan() {
       // that asks the same questions again. ⚠️ Read from the CHAPTER LINK rather
       // than from router state, so a reload mid-generation still knows.
       const history = await historyFor(s)
+      /**
+       * ⭐⭐ WHAT THEY SAID IN THE THREAD IS AN ANSWER, AND REBUILDING WITHOUT IT
+       * THREW AWAY THE ONLY NEW INFORMATION THERE WAS. Somebody types "going to
+       * renovate a flip instead now", the reply agrees it moves the whole plan,
+       * and the rebuild then regenerated from answers written weeks earlier —
+       * so the new plan could not possibly mention the flip.
+       *
+       * ⚠️ THEIR TURNS ONLY. The assistant's replies are OURS, and the rule that
+       * has held since 16 Sep is that their answers count as theirs while
+       * anything the model wrote does not. Feeding the replies back in would
+       * launder our own figures into established fact — exactly what the old map
+       * is kept out of this payload to prevent.
+       * ⭐ Riding in as free text is what makes provenance work with no new rule:
+       * `freeText(answers)` finds it, so a figure they typed in the thread counts
+       * as theirs to the invention guards. Same mechanism as theirNotesOnMoves.
+       */
+      const saidSince = (Array.isArray(s.plan_thread) ? s.plan_thread : [])
+        .filter(m => m?.role === 'user' && m.content)
+        .map(m => String(m.content))
       const generated = await generateMap(
-        { ...s.answers, insisted: s.insisted ?? [] }, setPass, s.move_notes, history,
+        {
+          ...s.answers,
+          insisted: s.insisted ?? [],
+          ...(saidSince.length ? { theyAlsoSaidSince: saidSince } : {}),
+        }, setPass, s.move_notes, history,
       )
       const { error: wErr } = await supabase
         .from('wayout_sessions')
@@ -227,6 +250,25 @@ export default function Plan() {
    * learned to close on a finished chapter, and then the accident stopped
    * working. A route that depends on another screen's redirect is not a route.
    */
+  /**
+   * 🔴🔴 "REBUILD THE PLAN AROUND IT" HANDED THEM A FORM. It shared a handler
+   * with the buttons that mean "one of my answers is wrong", which route back
+   * through the questions on purpose — a plan changes when the life changes,
+   * not on a button. But this control is different in the one way that matters:
+   * THEY HAVE ALREADY SAID WHAT CHANGED. They typed it, the reply read it and
+   * agreed it moves the plan, and then the product asked them to go and type it
+   * again somewhere else. Daniel, three times: "still pops up like this."
+   *
+   * ⭐ So this regenerates, and it does it through `?rebuild=1` — the existing
+   * instruction, already capped by WAYOUT_MAX_REBUILDS and already stripped from
+   * the URL on arrival, so a reload cannot spend money twice. The free-re-roll
+   * worry that shaped `rebuild()` does not apply here: this path costs a person
+   * a written answer, which is the same price the questions charge.
+   */
+  function redoFromThread() {
+    navigate(`${WAYOUT_BASE}/plan?rebuild=1`)
+  }
+
   function rebuild() {
     navigate(editDestination(session) === 'chapter'
       ? `${WAYOUT_BASE}/chapter?edit=1`
@@ -463,6 +505,7 @@ export default function Plan() {
       asking={asking}
       past={Boolean(past)}
       onRebuild={past || spent ? null : rebuild}
+      onRedoFromThread={past || spent ? null : redoFromThread}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
       onMove={past ? null : setMoveDone}
@@ -595,7 +638,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1053,7 +1096,7 @@ export function Map({
           thread={thread}
           onSay={onSay}
           busy={asking}
-          onRedo={onRebuild ?? undefined}
+          onRedo={onRedoFromThread ?? undefined}
         />
       )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (
