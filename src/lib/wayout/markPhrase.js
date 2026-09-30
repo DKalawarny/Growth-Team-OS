@@ -25,9 +25,17 @@
  * five words gets no mark at all. An unmarked headline looks plain. A
  * mis-marked one looks broken.
  */
+/**
+ * ⚠️ ` by ` EARNS ITS PLACE ON THE PLAN HEADLINES SPECIFICALLY. Almost every
+ * destination this product writes is "<the thing> by <the date>" — "Four days a
+ * week by March", "Out of the hole by June" — and without it the whole headline
+ * is one clause too long to mark, so the most common shape in the product got
+ * no highlight at all. With it, the thing is marked and the deadline is not,
+ * which is the right half anyway.
+ */
 const JOINERS = [
   ' before ', ' after ', ' so that ', ' so ', ' and then ', ' then ',
-  ' until ', ' while ', ' because ', ' when ', ' if ', ' — ', ', ',
+  ' until ', ' while ', ' because ', ' when ', ' if ', ' by ', ' — ', ', ',
 ]
 
 export function headClause(text) {

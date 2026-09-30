@@ -1285,6 +1285,27 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__three p { font-size: 15px; line-height: 1.55; color: var(--soft); margin: 0; }
 
+/* "What you are aiming at now" — the same object as the origin quote it sits
+   under, in the product's own green rather than the muted grey, so the pair
+   reads as then-and-now rather than as two identical blocks. */
+/* 🔴 `.wayout__origin` IS BUILT FOR THE DARK CHAPTER ROOM — its quote is
+   near-white (#F2EFE4). `--light` is what makes it legible on paper, so the
+   now-quote carries BOTH classes; without the second one it rendered as pale
+   grey on cream and was all but invisible. Caught in the render, not the
+   source, which is the only place it could have been caught.
+   ⚠️ Compound selector because `--light` is declared later in this file and
+   would otherwise win the border colour on equal specificity. */
+.wayout__origin--now.wayout__origin--light {
+  border-left-color: var(--green);
+  margin-top: 0;
+}
+/* ⚠️ The origin block carries 34px below it for the arc that normally follows.
+   With the now-quote directly under it that becomes a 50px gulf between two
+   halves of one idea. */
+.wayout__origin--light:has(+ .wayout__origin--now) { margin-bottom: 14px; }
+
+.wayout__leftalone { margin: 30px 0 0; }
+
 /* The wordmark as a route home. It must read as the wordmark, not as a link —
    the underline only appears on hover, so nothing about the header changes for
    somebody who is not looking for a way out of the page. */
@@ -2611,7 +2632,7 @@ h1.wayout__heroline {
 .wayout__origin--light span { color: var(--soft); }
 .wayout__origin--light q { color: var(--ink); }
 
-.wayout__arc { list-style: none; margin: 0; padding: 0; position: relative; }
+.wayout__arc { list-style: none; margin: 38px 0 0; padding: 0; position: relative; }
 .wayout__arc::before {
   content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px;
   width: 2px; background: var(--line);

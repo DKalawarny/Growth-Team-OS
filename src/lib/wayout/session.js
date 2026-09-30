@@ -1226,6 +1226,19 @@ export async function chapterChain(session) {
       moves: Array.isArray(node.map?.moves)
         ? node.map.moves.map(m => ({ title: m.title, when: m.when }))
         : [],
+      /**
+       * ⭐⭐ WHAT THEY WERE TOLD TO LEAVE ALONE, which nothing else in this
+       * product's category records. The road not taken is the thing people stay
+       * anxious about for months, and a plan that crossed it off with a reason
+       * is the only place that anxiety has an answer.
+       * ⚠️ DISPLAY ONLY, and that is the whole distinction. A map's own words
+       * may be SHOWN back to the person they were written for; they may never
+       * be fed into the next generation as fact, which is the laundering path
+       * guarded against since 16 Sep. This rides to a screen, never to a prompt.
+       */
+      cut: Array.isArray(node.map?.cut)
+        ? node.map.cut.map(c => ({ label: c.label, why: c.why }))
+        : [],
       outcome: node.outcome ?? null,
       outcomeNote: node.outcome_note ?? null,
       startedFrom: node.continues_from_outcome ?? null,

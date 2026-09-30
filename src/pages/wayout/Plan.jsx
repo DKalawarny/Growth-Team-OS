@@ -809,8 +809,21 @@ export function Map({
       <div className="wayout__head">
       <div className="wayout__top">
         <p className="wayout__who wayout__r" style={at(0.1)}>{WAYOUT_MAP_LABEL}</p>
+        {/* 🔴 THE PLAN'S HEADLINE WAS LOSING ITS YELLOW MARK SILENTLY. The
+            contract drops `highlight` whenever the model's phrase is not an
+            exact substring of the headline it wrote — correct, because a mark
+            that matches nothing renders as a design fault rather than a data
+            one — but the result was a headline with no highlight at all, on the
+            one page the whole product is for. Caught in a console warning
+            during an unrelated run: "[wayout] highlight not found in headline
+            — dropping the mark".
+            ⭐ `derive` is the fallback the walkthrough already uses: mark the
+            instruction and leave the qualifier, from a closed list of joining
+            words, and mark NOTHING when the sentence cannot be read
+            confidently. So a dropped highlight degrades to a derived one and
+            only then to none. */}
         <h2 className="wayout__r" style={at(0.3)}>
-          <Marked text={map.headline} highlight={map.highlight} />
+          <Marked text={map.headline} highlight={map.highlight} derive />
         </h2>
       </div>
 

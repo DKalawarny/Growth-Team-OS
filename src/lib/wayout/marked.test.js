@@ -23,6 +23,14 @@ describe('headClause', () => {
       .toBe('Book the call')
   })
 
+  /** ⭐ The commonest shape in the product: a destination and a date. */
+  it('marks the destination and leaves the deadline', () => {
+    expect(headClause('Four days a week by March')).toBe('Four days a week')
+    expect(headClause('Out of the hole by June, without a second job')).toBe('Out of the hole')
+    expect(headClause('Six months of breathing room — starting this weekend'))
+      .toBe('Six months of breathing room')
+  })
+
   it('marks a short title whole', () => {
     expect(headClause('Open the business account')).toBe('Open the business account')
   })

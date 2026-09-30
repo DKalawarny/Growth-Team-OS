@@ -57,6 +57,24 @@ export default function History() {
   if (error)   return <WayoutShell><p className="wayout__lead">{error}</p></WayoutShell>
 
   const first = chain[0]
+  const latest = chain[chain.length - 1]
+  const sameWant = (a, b) => String(a ?? '').trim() === String(b ?? '').trim()
+  const latestWant = chain.length > 1 && latest?.answers?.out
+    && !sameWant(latest.answers.out, first?.answers?.out)
+    ? latest.answers.out
+    : null
+
+  /**
+   * ⭐⭐ THE ROAD NOT TAKEN, GATHERED ACROSS EVERY CHAPTER. Deduplicated on the
+   * label because a thing ruled out in chapter one is usually ruled out again
+   * in chapter two, and the same line twice reads as a bug rather than as
+   * consistency.
+   * ⚠️ Newest wins on a repeat: the reason a thing is still crossed off may
+   * have changed even when the thing has not.
+   */
+  const cuts = [...new Map(
+    chain.flatMap(c => (c.cut ?? []).filter(x => x?.label).map(x => [x.label, x])),
+  ).values()]
   const moved = distance(chain)
   const did = doneMoves(chain)
   const money = n => `$${Math.abs(n).toLocaleString()}`
@@ -102,6 +120,32 @@ export default function History() {
         </div>
       )}
 
+      {/* ⭐⭐ THEIR FIRST SENTENCE BESIDE THEIR LATEST, and it sits directly under
+          the figures because these two are the same statement told twice — once
+          in money and once in their own words. Below the lists it read as an
+          afterthought to a receipt.
+          ⚠️ ONLY WHERE THEY ACTUALLY DIFFER. The destination carries over
+          untouched on a "partly" or a "no" — they have not arrived, so it is
+          not re-asked — and printing the identical paragraph twice under a
+          heading about how far they have come would be the product inventing a
+          change they did not make.
+          ⭐ The origin quote shows from the FIRST chapter, not the second. Their
+          own opening sentence is worth meeting again whether or not there is
+          anything behind it yet. */}
+      {first?.answers?.out && (
+        <div className="wayout__origin wayout__origin--light">
+          <span>What you said you wanted, at the very beginning</span>
+          <q>{firstSentences(tidyQuote(first.answers.out), 260)}</q>
+        </div>
+      )}
+
+      {latestWant && (
+        <div className="wayout__origin wayout__origin--light wayout__origin--now">
+          <span>What you are aiming at now</span>
+          <q>{firstSentences(tidyQuote(latestWant), 260)}</q>
+        </div>
+      )}
+
       {/* ⭐⭐ WHAT THEY ACTUALLY DID, WITH THE DATE. `done_at` has been written on
           every tick since the gates were built and only the gate has ever read
           it — so the product has always known the day somebody had the
@@ -126,6 +170,29 @@ export default function History() {
         </div>
       )}
 
+      {/* ⭐⭐ WHAT THEY LEFT ALONE, AND WHY — and nothing else in this category
+          keeps this record. Everything else a person reads adds to the list;
+          this is the only page that tells them what they were right to ignore,
+          months later, in the plan's own words.
+          🔴 IT IS A RECORD, NOT A VERDICT. "You were right not to" is a
+          judgement this product cannot make — it does not know what would have
+          happened. So the heading states what they did and the reason is the
+          one the plan gave at the time. The reassurance is in the fact, not in
+          an adjective laid on top of it. */}
+      {cuts.length > 0 && (
+        <div className="wayout__leftalone">
+          <h2 className="wayout__sectionh">What you decided to leave alone</h2>
+          <div className="wayout__cut">
+            {cuts.map((c, i) => (
+              <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
+                <s style={{ textDecoration: 'none' }}>{c.label}</s>
+                {c.why && <span className="wayout__cutwhy">{c.why}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ⚠️ ONE CHAPTER IS NOT A HISTORY. Showing a single card under a heading
           about how far somebody has come would be the product congratulating
           them for arriving at the start line.
@@ -143,12 +210,6 @@ export default function History() {
         )
       ) : (
         <>
-          {first?.answers?.out && (
-            <div className="wayout__origin wayout__origin--light">
-              <span>What you said you wanted, at the very beginning</span>
-              <q>{firstSentences(tidyQuote(first.answers.out), 260)}</q>
-            </div>
-          )}
 
           <ol className="wayout__arc">
             {chain.map((c, i) => (
