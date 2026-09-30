@@ -48,6 +48,14 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
    * actually happening — which writes its own entry below.
    */
   const lastMine  = thread.map(m => m.role === 'user').lastIndexOf(true)
+  /**
+   * ⚠️ ONCE THE PLAN HAS BEEN REWRITTEN AROUND SOMETHING, IT CANNOT BE TAKEN
+   * BACK. The plan in front of them is built on it, so withdrawing the sentence
+   * would leave a plan standing on a message that no longer exists — and would
+   * delete the only entry that can put the old plan back.
+   */
+  const canUndo   = !thread.slice(thread.map(m => m.role === 'user').lastIndexOf(true))
+    .some(m => m.rebuilt === true)
   const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
@@ -79,7 +87,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
       {thread.map((m, i) => (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
           <p>{m.content}</p>
-          {onUndo && m.role === 'user' && i === lastMine && !busy && (
+          {onUndo && canUndo && m.role === 'user' && i === lastMine && !busy && (
             <button type="button" className="wayout__threadundo" onClick={onUndo}>
               Take that back
             </button>

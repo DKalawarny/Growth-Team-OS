@@ -585,7 +585,21 @@ export default function Plan() {
     if (!session || asking) return
     const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
     if (lastMine < 0) return
-    const next = thread.slice(0, lastMine)
+    /**
+     * 🔴🔴 THIS TRUNCATED TO THE END AND COULD TAKE A REBUILD MARKER WITH IT —
+     * which is the ONLY route back to a previous plan. Daniel, after using it:
+     * "nothing there to bring it back." Undoing a sentence must never be able
+     * to destroy the record of a plan being rewritten; those are different
+     * objects and one of them holds the way home.
+     * ⚠️ Belt and braces with the guard in PlanThread, which does not offer the
+     * control at all once a rebuild has happened. A control that cannot be
+     * pressed and a function that refuses are two different protections, and
+     * this one is cheap.
+     */
+    const next = [
+      ...thread.slice(0, lastMine),
+      ...thread.slice(lastMine).filter(m => m.rebuilt === true),
+    ]
     setThread(next)
     savePlanThread(session.id, next)
       .catch(err => console.warn('[wayout] thread not saved:', err.message))
