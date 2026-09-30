@@ -303,9 +303,24 @@ export default function Plan() {
      * flow never did: a line in the thread saying their words were acted on,
      * rather than a plan that silently differs above.
      */
+    /**
+     * ⭐⭐ THE PLAN IT IS ABOUT TO REPLACE RIDES ALONG, so the rebuild can be
+     * undone. Daniel: "the take it back doesnt change it to the previose."
+     * Taking back a MESSAGE was never going to restore a PLAN — but a rebuild
+     * is now one click and was irreversible, which is exactly the shape of
+     * thing that makes somebody afraid to press the button at all.
+     *
+     * ⚠️ SAFE TO PARK HERE, AND CHECKED RATHER THAN ASSUMED. The thread reaches
+     * the model as `so_far: thread.slice(-8).map(m => ({role, content}))` — two
+     * fields, explicitly picked — and the rebuild reads only `role === 'user'`
+     * turns. So an old MAP stored on an assistant entry cannot reach a prompt
+     * by either route, which is the line that has held since 16 Sep: their
+     * answers are theirs, our map is ours and never becomes evidence.
+     */
     const marked = [...thread, {
       role: 'assistant', rebuilt: true, at: new Date().toISOString(),
       content: 'Rewritten around that.',
+      mapBefore: map ?? null,
     }]
     setThread(marked)
     if (session) {
@@ -535,6 +550,37 @@ export default function Plan() {
    * ⚠️ AND ONLY THE LAST ONE. Editing further back would rewrite a
    * conversation the current plan was already built from.
    */
+  /**
+   * ⭐⭐ PUT THE PLAN BACK. The previous map was parked on the rebuild's own
+   * thread entry, so undoing is a write of something we already hold rather
+   * than another generation — no model call, no cost, and the result is
+   * byte-identical to what they had rather than a fresh attempt at it.
+   *
+   * ⚠️ ONE USE. `mapBefore` is stripped as it is spent, so the control cannot
+   * ping-pong a plan between two versions — and the entry stays in the thread
+   * saying what happened, because a plan that silently reverts is the same
+   * fault as one that silently changes.
+   */
+  async function restorePlan() {
+    if (!session || building) return
+    const i = thread.map(m => m.rebuilt === true && !!m.mapBefore).lastIndexOf(true)
+    if (i < 0) return
+    const previous = thread[i].mapBefore
+
+    const next = thread.map((m, n) => (n === i
+      // eslint-disable-next-line no-unused-vars
+      ? (({ mapBefore, ...rest }) => ({ ...rest, content: 'Put back the way it was.' }))(m)
+      : m))
+    setThread(next)
+    setMap(enforceMapContract(previous, session.answers))
+
+    const { error } = await supabase
+      .from('wayout_sessions').update({ map: previous }).eq('id', session.id)
+    if (error) { setError(error.message); return }
+    savePlanThread(session.id, next)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
   async function undoLastSaid() {
     if (!session || asking) return
     const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
@@ -588,6 +634,7 @@ export default function Plan() {
        */
       onRedoFromThread={past ? null : redoFromThread}
       onUndoSaid={past ? null : undoLastSaid}
+      onRestore={past ? null : restorePlan}
       refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
@@ -721,7 +768,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onUndoSaid, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onUndoSaid, onRestore, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1194,6 +1241,7 @@ export function Map({
           busy={asking}
           onRedo={onRedoFromThread ?? undefined}
           onUndo={onUndoSaid ?? undefined}
+          onRestore={onRestore ?? undefined}
         />
       )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (

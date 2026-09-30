@@ -25,7 +25,7 @@ import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
  * says so. Same spine as the twelve-ask cap on a move: the next real answer is
  * on the other side of trying it.
  */
-export default function PlanThread({ thread = [], onSay, onRedo, onUndo, busy = false }) {
+export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onRestore, busy = false }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
 
@@ -82,6 +82,18 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, busy = 
           {onUndo && m.role === 'user' && i === lastMine && !busy && (
             <button type="button" className="wayout__threadundo" onClick={onUndo}>
               Take that back
+            </button>
+          )}
+          {/* ⭐⭐ UNDOING A MESSAGE WAS NEVER GOING TO UNDO A PLAN, and Daniel
+              reasonably expected it to — "the take it back doesnt change it to
+              the previose". They are two different acts and now they are two
+              different controls, each sitting on the thing it actually undoes:
+              this one on the entry that says the plan was rewritten.
+              ⚠️ It disappears once used, because `mapBefore` is stripped as it
+              is spent. A plan should not ping-pong between two versions. */}
+          {onRestore && m.rebuilt && m.mapBefore && !busy && (
+            <button type="button" className="wayout__threadundo" onClick={onRestore}>
+              Put the plan back
             </button>
           )}
         </div>
