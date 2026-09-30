@@ -1820,7 +1820,29 @@ h1.wayout__heroline {
        sheet 1600 → 323px ✓   1400 → 280px ✓   1160 → 228px ✗
    Below that one wide column beats five narrow ones every time — which is the
    whole of "its hard to read". */
-@media (max-width: 1360px) {
+/* 🔴🔴 THE PIN BOARD WAS INVISIBLE TO MOST LAPTOPS, AND IT IS THE SIGNATURE OF
+   THIS PRODUCT. Daniel, on his own plan: "it looked like this before with the
+   steps across like a pin board, now its not." Nothing had changed — his window
+   was simply under the old 1360 threshold, where the board collapses. A 13-inch
+   laptop that is not maximised lives in that gap all day, so the one thing that
+   makes this page look like something a person made was never being seen.
+
+   ⭐ 1360 → 1200, AND THE NUMBERS SAY IT IS SAFE. The measure that matters is
+   the note, and the tracks are 3×1fr + 2×.62fr on (window − 108px):
+       1400 → 282px (today, judged fine)   1280 → 276px   1200 → 258px
+   So a 1200px window now gets a note within 24px of what 1400 gives — the board
+   survives two hundred more pixels of window for a difference nobody can see.
+   ⚠️ 1200 is the floor, not a preference. Below it the note passes under ~250px
+   and the earlier measurement (228px at 1160) is the one that made this
+   breakpoint exist — Daniel's "its hard to read". One wide column genuinely
+   beats five narrow ones there.
+
+   🔴 TWO ACROSS IS NOT AVAILABLE AS A MIDDLE STEP, which is worth writing down
+   because it is the obvious idea. The five tracks are note · gate · note ·
+   gate · note — the gates sit BETWEEN the moves, which is what makes the row a
+   sequence rather than a set. Two tracks pair each note with its own gate and
+   leave a third of the row empty; tried it, rendered it, it reads as a mistake. */
+@media (max-width: 1200px) {
   .wayout__notes { grid-template-columns: 1fr; gap: 46px 0; padding-top: 26px; }
   /* ⚠️ A stacked note must still be READ. Without this it took the whole sheet
      — 1211px of single-line measure at 1360px wide, which is worse than the
