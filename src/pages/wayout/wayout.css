@@ -1309,8 +1309,24 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* The override. Sits below the reply, in the soft ink — it is a choice against
    advice, so it must not look like the recommended path. */
 .wayout__threadinsist {
-  margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft);
+  margin: 12px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft);
+  padding-left: 19px;
 }
+
+/* 🔴 THREE ACTIONS ON ONE CARD WITH NOTHING SAYING WHICH BELONGED TO WHAT —
+   take a message back, overrule the answer, say something new. Daniel: "this is
+   a bit confusing how its set up." The rule that fixes it is the one this file
+   already lives by: a control sits ON the thing it acts on, and a new turn is
+   separated from the exchange it follows. */
+.wayout__threadsay {
+  margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line);
+}
+.wayout__threadsay .wayout__label { display: block; margin-bottom: 10px; }
+
+/* ⚠️ The undo belongs to the bubble above it, so it is indented to the bubble's
+   own edge rather than floating at the card's margin between two speakers. */
+.wayout__threadmine .wayout__threadundo { margin-left: 16px; }
+.wayout__threadreply .wayout__threadundo { margin-left: 19px; }
 
 /* "Take that back" — quiet, and only ever on the last thing they said. It must
    not read as a second action beside the answer; it is an escape hatch. */

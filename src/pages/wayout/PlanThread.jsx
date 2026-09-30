@@ -87,6 +87,10 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
       {thread.map((m, i) => (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
           <p>{m.content}</p>
+          {/* ⚠️ INSIDE THE BUBBLE'S BLOCK AND ALIGNED TO IT. Sitting between the
+              two speakers it read as a heading on the reply rather than a
+              control on the thing said above it — Daniel: "this is a bit
+              confusing how its set up." */}
           {onUndo && canUndo && m.role === 'user' && i === lastMine && !busy && (
             <button type="button" className="wayout__threadundo" onClick={onUndo}>
               Take that back
@@ -149,14 +153,15 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
           overruling. A plan is not more provisional for having a way to insist;
           it is more provisional when every message offers to redo it, which is
           why this appears only after the model has actually answered. */}
+      {/* ⚠️ IT WAS THE LOUDEST THING IN THE CARD — bold, green, underlined,
+          beating the reply it was meant to sit under, and jammed against the
+          input so it read as a label for the box. Quiet ink, its own space, and
+          the recommended route stated plainly rather than competing with the
+          override beside it. */}
       {!busy && onRedo && !moved && lastMine > -1 && last && (
         <p className="wayout__threadinsist">
-          {/* ⭐ The faster route first. The reply usually asked for something
-              specific, and answering it produces a better plan than insisting
-              does — so that is what this recommends before offering the
-              override. */}
-          Answering that gets you a better plan than guessing.{' '}
-          <button type="button" className="wayout__again" onClick={onRedo}>
+          Answer that and it will tell you what moves.{' '}
+          <button type="button" className="wayout__threadundo" onClick={onRedo}>
             Or rebuild around it anyway
           </button>
         </p>
@@ -176,8 +181,16 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
         </p>
       ) : null}
 
+      {/* ⚠️ THE BOX HAD NO LABEL AND NO SEPARATION. Three different actions sat
+          on one card with nothing saying which belonged to what: take a message
+          back, overrule the answer, and say something new. The divider and the
+          label are what make the last of those obviously a new turn rather than
+          a continuation of the exchange above it. */}
       {!spent && (
-        <>
+        <div className="wayout__threadsay">
+          <label className="wayout__label" htmlFor="wayout-thread">
+            {lastMine > -1 ? 'Anything else changed?' : 'What changed?'}
+          </label>
           <textarea
             id="wayout-thread"
             className="wayout__textarea"
@@ -190,7 +203,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
             {busy ? 'Reading…' : 'Tell it'}
           </button>
           {err && <p className="wayout__error">{err}</p>}
-        </>
+        </div>
       )}
     </section>
   )
