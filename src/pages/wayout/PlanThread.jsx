@@ -25,13 +25,32 @@ import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
  * says so. Same spine as the twelve-ask cap on a move: the next real answer is
  * on the other side of trying it.
  */
-export default function PlanThread({ thread = [], onSay, onRedo, busy = false }) {
+export default function PlanThread({ thread = [], onSay, onRedo, onUndo, busy = false }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
 
   const mine  = thread.filter(m => m.role === 'user').length
   const spent = mine >= WAYOUT_MAX_PLAN_ASKS
   const last  = [...thread].reverse().find(m => m.role === 'assistant')
+
+  /**
+   * 🔴🔴 THE OFFER WAS TIED TO THE LAST REPLY, SO A LATER REPLY COULD WITHDRAW
+   * IT. Daniel said the same thing twice; the second reply was "you already
+   * said that" — correctly `changesPlan: false` — and the rebuild button
+   * vanished. The plan still needed rewriting, he had been told so, and the
+   * only control that could do it had been taken off the screen by an answer
+   * that was not about whether the plan had moved. "i even tried it again and
+   * it didnt work and no way to delete it or go back."
+   *
+   * ⭐⭐ A PLAN THAT NEEDS REWRITING DOES NOT STOP NEEDING IT BECAUSE THE NEXT
+   * SENTENCE WAS ABOUT SOMETHING ELSE. So the offer stands on the most recent
+   * reply that said the plan moved, and is withdrawn only by the rebuild
+   * actually happening — which writes its own entry below.
+   */
+  const lastMine  = thread.map(m => m.role === 'user').lastIndexOf(true)
+  const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
+  const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
+  const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
 
   async function send() {
     const said = text.trim()
@@ -48,9 +67,23 @@ export default function PlanThread({ thread = [], onSay, onRedo, busy = false })
         being true, say so here and it will tell you what it moves.
       </p>
 
+      {/* ⭐⭐ A WAY BACK OUT OF SOMETHING YOU JUST SAID. There was none — every
+          message was permanent the moment it sent, so a typo, a duplicate or a
+          sentence that came out wrong sat in the plan's history forever and
+          went into the next rebuild as if it were meant. Daniel: "no way to
+          delete it or go back."
+          ⚠️ THE LAST EXCHANGE ONLY, and only their own. Editing further back
+          would rewrite a conversation the plan was already built on; taking
+          back the thing you just said is a different act from revising
+          history. */}
       {thread.map((m, i) => (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
           <p>{m.content}</p>
+          {onUndo && m.role === 'user' && i === lastMine && !busy && (
+            <button type="button" className="wayout__threadundo" onClick={onUndo}>
+              Take that back
+            </button>
+          )}
         </div>
       ))}
 
@@ -68,9 +101,9 @@ export default function PlanThread({ thread = [], onSay, onRedo, busy = false })
           ⭐ Requiring the handler makes the failure impossible rather than
           unlikely — the same posture as passing no write functions at all on a
           past chapter instead of disabling them in the UI. */}
-      {!busy && onRedo && last?.changesPlan && (
+      {!busy && onRedo && moved && (
         <div className="wayout__threadmoved">
-          <b>{last.whatChanged ?? 'That changes the order.'}</b>
+          <b>{moved.whatChanged ?? 'That changes the order.'}</b>
           <button type="button" className="wayout__btn wayout__btn--sun" onClick={onRedo}>
             Rebuild the plan around it
           </button>

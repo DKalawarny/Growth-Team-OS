@@ -295,6 +295,23 @@ export default function Plan() {
    * a written answer, which is the same price the questions charge.
    */
   function redoFromThread() {
+    /**
+     * ⭐⭐ THE OFFER IS WITHDRAWN BY THE REBUILD HAPPENING, not by whatever gets
+     * said next. Without this marker the control would stand for the rest of
+     * the chapter — the reply that said the plan moved never stops being the
+     * most recent such reply. It also gives the person the one thing the old
+     * flow never did: a line in the thread saying their words were acted on,
+     * rather than a plan that silently differs above.
+     */
+    const marked = [...thread, {
+      role: 'assistant', rebuilt: true, at: new Date().toISOString(),
+      content: 'Rewritten around that.',
+    }]
+    setThread(marked)
+    if (session) {
+      savePlanThread(session.id, marked)
+        .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    }
     navigate(`${WAYOUT_BASE}/plan?rebuild=thread`)
   }
 
@@ -505,6 +522,29 @@ export default function Plan() {
    * the rebuild button would vanish the moment somebody refreshed to think
    * about it, which is exactly when they would.
    */
+  /**
+   * ⭐⭐ TAKE BACK THE LAST THING YOU SAID. Every message used to be permanent
+   * the moment it sent — so a duplicate, a typo or a sentence that came out
+   * wrong stayed in the plan's history and rode into the next rebuild as if it
+   * had been meant. Daniel, stuck with the same sentence twice: "no way to
+   * delete it or go back."
+   *
+   * ⚠️ IT DROPS THE PAIR, NOT THE MESSAGE. A reply with nothing above it reads
+   * as the product talking to itself, and the reply is only about the thing
+   * they took back.
+   * ⚠️ AND ONLY THE LAST ONE. Editing further back would rewrite a
+   * conversation the current plan was already built from.
+   */
+  async function undoLastSaid() {
+    if (!session || asking) return
+    const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
+    if (lastMine < 0) return
+    const next = thread.slice(0, lastMine)
+    setThread(next)
+    savePlanThread(session.id, next)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
   async function sayToPlan(said) {
     if (!session || asking) return
     setAsking(true)
@@ -547,6 +587,7 @@ export default function Plan() {
        * answers-rebuild has nothing to do with whether their life changed.
        */
       onRedoFromThread={past ? null : redoFromThread}
+      onUndoSaid={past ? null : undoLastSaid}
       refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
       onRegenerate={!past && import.meta.env.DEV ? regenerateNow : null}
@@ -680,7 +721,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onUndoSaid, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1152,6 +1193,7 @@ export function Map({
           onSay={onSay}
           busy={asking}
           onRedo={onRedoFromThread ?? undefined}
+          onUndo={onUndoSaid ?? undefined}
         />
       )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (
