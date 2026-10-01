@@ -11,6 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread from './PlanThread'
+import { threadVersions, planChanges, canGoBack } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -35,6 +36,8 @@ export default function Plan() {
   const [map, setMap]           = useState(null)
   const [loading, setLoading]   = useState(true)
   const [building, setBuilding] = useState(false)
+  const [threadBuild, setThreadBuild] = useState(null)
+  const [threadErr, setThreadErr] = useState('')
   // Which go this is. 1 is the first; anything higher means the first one had
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
@@ -177,8 +180,8 @@ export default function Plan() {
    * cannot be saved even if this code were wrong. That is deliberate: the
    * paywall is a database constraint, not a branch in a component.
    */
-  async function build(s) {
-    if (buildingRef.current) return
+  async function build(s, why = 'rebuild') {
+    if (buildingRef.current) return null
     buildingRef.current = true
     setBuilding(true)
     setPass(1)
@@ -231,11 +234,13 @@ export default function Plan() {
        * ⚠️ Only when there WAS a plan. A first generation has nothing to keep,
        * and an empty entry would offer a control that restores nothing.
        */
-      const kept = await saveMapKeepingLast(s.id, generated, s.map ?? null, s.map_history ?? [])
+      const kept = await saveMapKeepingLast(s.id, generated, s.map ?? null, s.map_history ?? [], why)
       setSession(c => (c ? { ...c, map: generated, map_history: kept } : c))
       setMap(generated)
+      return generated
     } catch (err) {
       setError(err.message)
+      return null
     } finally {
       buildingRef.current = false
       setBuilding(false)
@@ -297,39 +302,87 @@ export default function Plan() {
    * worry that shaped `rebuild()` does not apply here: this path costs a person
    * a written answer, which is the same price the questions charge.
    */
-  function redoFromThread() {
+  async function redoFromThread() {
+    if (!session || building || threadBuild) return
     /**
-     * ⭐⭐ THE OFFER IS WITHDRAWN BY THE REBUILD HAPPENING, not by whatever gets
-     * said next. Without this marker the control would stand for the rest of
-     * the chapter — the reply that said the plan moved never stops being the
-     * most recent such reply. It also gives the person the one thing the old
-     * flow never did: a line in the thread saying their words were acted on,
-     * rather than a plan that silently differs above.
-     */
-    /**
-     * ⭐⭐ THE PLAN IT IS ABOUT TO REPLACE RIDES ALONG, so the rebuild can be
-     * undone. Daniel: "the take it back doesnt change it to the previose."
-     * Taking back a MESSAGE was never going to restore a PLAN — but a rebuild
-     * is now one click and was irreversible, which is exactly the shape of
-     * thing that makes somebody afraid to press the button at all.
+     * 🔴🔴 THE MARKER WAS WRITTEN BEFORE THE PLAN. "Rewritten around that." went
+     * into the thread the instant the button was pressed and the rebuild ran
+     * afterwards — so a failure, or a refresh mid-build, left a thread saying
+     * the plan had been rewritten over a plan that never was. It is written
+     * now from the result, and only when there is one.
      *
-     * ⚠️ SAFE TO PARK HERE, AND CHECKED RATHER THAN ASSUMED. The thread reaches
-     * the model as `so_far: thread.slice(-8).map(m => ({role, content}))` — two
-     * fields, explicitly picked — and the rebuild reads only `role === 'user'`
-     * turns. So an old MAP stored on an assistant entry cannot reach a prompt
-     * by either route, which is the line that has held since 16 Sep: their
-     * answers are theirs, our map is ours and never becomes evidence.
+     * ⭐⭐ AND IT BUILDS HERE, NOT BY NAVIGATING TO `?rebuild=thread`. The round
+     * trip through the URL re-read the session from the database while the
+     * thread save was still in flight, so the rebuild could miss the very
+     * sentence it was meant to be about.
+     */
+    const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
+    const about = lastMine > -1 ? thread[lastMine].content : null
+    const versions = threadVersions(thread)
+    const pending = { about, version: versions.next, from: versions.current }
+    setThreadBuild(pending)
+    setThreadErr('')
+    const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+    const before = session.map
+    const after = await build({ ...session, plan_thread: thread }, `thread:${id}`)
+    setThreadBuild(null)
+    if (!after) {
+      setThreadErr('That did not rewrite. Your plan has not changed — try it again.')
+      return
+    }
+    /**
+     * ⚠️ THE PREVIOUS MAP IS NOT STORED ON THE ENTRY. It lives in `map_history`,
+     * tagged with this entry's id, so the thread — which reaches the model as
+     * `so_far` — never carries a map, and "go back" can prove the plan it
+     * would restore is the one this entry replaced.
      */
     const marked = [...thread, {
-      role: 'assistant', rebuilt: true, at: new Date().toISOString(),
+      role: 'assistant', rebuilt: true, id, at: new Date().toISOString(),
+      version: pending.version, from: pending.from, about,
+      changes: planChanges(before, after),
       content: 'Rewritten around that.',
     }]
     setThread(marked)
-    if (session) {
-      savePlanThread(session.id, marked)
+    savePlanThread(session.id, marked)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
+  /**
+   * ⭐⭐ KEEP IT. Nothing is written to the plan — it is already the plan. What
+   * it settles is the QUESTION: the version stops offering a way back, and the
+   * thread says it was chosen rather than leaving two live buttons per rewrite.
+   */
+  function keepRebuild(i) {
+    if (!session) return
+    const next = thread.map((m, j) => (j === i ? { ...m, kept: true } : m))
+    setThread(next)
+    savePlanThread(session.id, next)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
+  /**
+   * ⭐⭐ GO BACK — TO THE PLAN THIS VERSION REPLACED, AND ONLY THAT ONE.
+   * 🔴🔴 Every "Put the plan back" in the thread used to pop the same shared
+   * stack, so the button on the FIRST rewrite undid the LAST one, and none of
+   * them disappeared. Each one now proves the newest saved plan is the one it
+   * replaced (`why === thread:<id>`) or it is not offered at all.
+   */
+  async function undoRebuild(i) {
+    if (!session || building) return
+    const history = session.map_history ?? []
+    if (!canGoBack(thread, i, history)) return
+    try {
+      const out = await restorePreviousMap(session.id, history)
+      if (!out) return
+      setMap(enforceMapContract(out.map, session.answers))
+      setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
+      const next = thread.map((m, j) => (j === i ? { ...m, undone: true } : m))
+      setThread(next)
+      savePlanThread(session.id, next)
         .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    } catch (err) {
+      setThreadErr(err.message)
     }
-    navigate(`${WAYOUT_BASE}/plan?rebuild=thread`)
   }
 
   function rebuild() {
@@ -572,10 +625,17 @@ export default function Plan() {
       if (!out) return
       setMap(enforceMapContract(out.map, session.answers))
       setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
-      const note = [...thread, {
-        role: 'assistant', at: new Date().toISOString(),
-        content: 'Put back the way it was.',
-      }]
+      // ⚠️ If the plan it put back was replaced by a thread version, THAT
+      // version is what was undone — say so on it, not in a new line that
+      // leaves the version above still offering to go back.
+      const tag = String(history[0]?.why ?? '')
+      const at = tag.startsWith('thread:') ? thread.findIndex(m => m.id === tag.slice(7)) : -1
+      const note = at > -1
+        ? thread.map((m, j) => (j === at ? { ...m, undone: true } : m))
+        : [...thread, {
+          role: 'assistant', at: new Date().toISOString(),
+          content: 'Put back the way it was.',
+        }]
       setThread(note)
       savePlanThread(session.id, note)
         .catch(err => console.warn('[wayout] thread not saved:', err.message))
@@ -651,6 +711,11 @@ export default function Plan() {
        */
       onRedoFromThread={past ? null : redoFromThread}
       onUndoSaid={past ? null : undoLastSaid}
+      onKeepVersion={past ? null : keepRebuild}
+      onUndoVersion={past ? null : undoRebuild}
+      mapHistory={session?.map_history ?? []}
+      threadBuild={threadBuild}
+      threadErr={threadErr}
       onRestore={past || !(session?.map_history ?? []).length ? null : restorePlan}
       refused={refused}
       onOpenPlaybook={past ? null : openPlaybook}
@@ -785,7 +850,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onUndoSaid, onRestore, refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onUndoSaid, onRestore, onKeepVersion, onUndoVersion, mapHistory = [], threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1043,7 +1108,7 @@ export function Map({
           />
         </svg>
 
-        <div className="wayout__notes">
+        <div className="wayout__notes" id="wayout-moves">
           {map.moves?.map((m, i) => {
             const order = i + 1
             const isDone = ticked.has(order)
@@ -1257,9 +1322,13 @@ export function Map({
           onSay={onSay}
           busy={asking}
           rebuilding={rebuilding}
+          pending={threadBuild}
+          error={threadErr}
+          history={mapHistory}
           onRedo={onRedoFromThread ?? undefined}
           onUndo={onUndoSaid ?? undefined}
-          onRestore={onRestore ?? undefined}
+          onKeep={onKeepVersion ?? undefined}
+          onGoBack={onUndoVersion ?? undefined}
         />
       )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (

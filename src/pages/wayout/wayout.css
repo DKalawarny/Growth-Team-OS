@@ -2961,7 +2961,31 @@ h1.wayout__heroline {
 .wayout__arcopen a { color: var(--green); font-weight: 700; text-decoration: none; }
 .wayout__arcopen a:hover { text-decoration: underline; }
 
-/* The rebuild in progress, on the thread entry that asked for it. The dots are
-   the same "working" mark the first build uses, so it reads as the same act. */
-.wayout__threadbuilding p { margin: 0; }
-.wayout__threadbuilding .wayout__working { margin-top: 12px; }
+
+/* ⭐⭐ A VERSION OF THE PLAN — its own block in the thread, not another reply.
+   Daniel: "if its more then one change it gets lost there is nothing
+   differentiating between them." Numbered, boxed, and stating what it moved. */
+.wayout__version {
+  margin: 4px 0 18px; padding: 14px 16px 16px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--paper, transparent);
+}
+.wayout__version--undone { opacity: .62; }
+.wayout__version--undone .wayout__versionchanges b { text-decoration: line-through; }
+.wayout__versionhead {
+  margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green);
+}
+.wayout__versionabout { margin: 6px 0 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.wayout__versionnote { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.wayout__versionstate { margin: 10px 0 0; font-size: 13.5px; font-weight: 600; color: var(--soft); }
+.wayout__versionchanges { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.wayout__versionchanges li { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 14px; line-height: 1.45; }
+.wayout__versionchanges span { font-weight: 700; color: var(--soft); min-width: 4.5em; }
+.wayout__versionchanges s { color: var(--soft); }
+.wayout__versionchanges s + b::before { content: '→ '; font-weight: 400; color: var(--soft); }
+.wayout__versionchanges em { color: var(--soft); }
+.wayout__versionlook {
+  display: inline-block; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--green);
+}
+.wayout__versionask { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 12px; }
+.wayout__versionask .wayout__threadundo { margin: 0; font-size: 14px; }
+.wayout__version--pending .wayout__working { margin-top: 12px; }
