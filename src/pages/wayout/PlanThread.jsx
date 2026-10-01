@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, showingKey, openFrom } from '../../lib/wayout/planVersions'
 
@@ -241,6 +241,26 @@ function toPlan() {
  */
 export function VersionSwitch({ thread = [], liveMap = null, onSwitch, onRemove, disabled = false }) {
   const [asking, setAsking] = useState(null)
+  const dialog = useRef(null)
+  /**
+   * ⭐ A REAL POPUP FOR THE DELETE. Daniel: "can we make sure the x has a pop up
+   * to confirm delete" — the inline question appeared under the chips, easy to
+   * miss and easy to scroll past. A native <dialog> opened with showModal():
+   * the page behind is inert, Escape cancels, focus is held inside it, and the
+   * browser draws the backdrop. ⚠️ Never window.confirm — it blocks the page
+   * and cannot say what will happen in this product's words.
+   */
+  useEffect(() => {
+    const d = dialog.current
+    if (!d) return
+    if (asking != null && !d.open) {
+      d.showModal?.()
+      // ⚠️ showModal focuses the FIRST button, which is Delete — so Enter by
+      // reflex would delete. The safe answer gets the focus.
+      d.querySelector('[data-keep]')?.focus()
+    }
+    if (asking == null && d.open) d.close()
+  }, [asking])
   const plans = versionList(thread)
   if (plans.length < 2) return null
   const showing = showingKey(thread, liveMap)
@@ -277,28 +297,39 @@ export function VersionSwitch({ thread = [], liveMap = null, onSwitch, onRemove,
           </span>
         ))}
       </div>
-      {doomed ? (
-        // ⚠️ A deleted version's plan is gone for good, so it asks once,
-        // inline — never a browser dialog.
-        <div className="wayout__versionconfirm">
-          <p>
-            Delete {doomed.label}? Its plan cannot be brought back
-            {showing === doomed.key ? ', and your plan steps back to the one before it.' : '.'}
-          </p>
-          <button type="button" className="wayout__btn" onClick={() => { setAsking(null); onRemove(doomed.key) }}>
-            Delete it
-          </button>
-          <button type="button" className="wayout__threadundo" onClick={() => setAsking(null)}>Keep it</button>
-        </div>
-      ) : (
-        <p className="wayout__versionnote">
+      <dialog
+        ref={dialog}
+        className="wayout__dialog"
+        aria-labelledby="wayout-delete-title"
+        onClose={() => setAsking(null)}
+        onClick={e => { if (e.target === e.currentTarget) setAsking(null) }}
+      >
+        {doomed && (
+          <div className="wayout__dialogbody">
+            <h3 id="wayout-delete-title">Delete {doomed.label}?</h3>
+            {doomed.about && <p className="wayout__dialogabout">Rewritten around “{doomed.about}”</p>}
+            <p>
+              Its plan cannot be brought back
+              {showing === doomed.key ? ', and your plan steps back to the version before it.' : '.'}
+            </p>
+            <div className="wayout__dialogactions">
+              <button type="button" className="wayout__btn wayout__btn--danger" onClick={() => { const k = doomed.key; setAsking(null); onRemove(k) }}>
+                Delete it
+              </button>
+              <button type="button" className="wayout__threadundo" data-keep onClick={() => setAsking(null)}>
+                Keep it
+              </button>
+            </div>
+          </div>
+        )}
+      </dialog>
+      <p className="wayout__versionnote">
           {showing == null
             ? 'Your plan was rebuilt from your answers since — none of these is showing.'
             : showing === -1
               ? 'The plan from your answers, before anything you said below.'
               : on?.about ? `Rewritten around “${on.about}”.` : null}
-        </p>
-      )}
+      </p>
     </div>
   )
 }

@@ -3009,9 +3009,21 @@ h1.wayout__heroline {
   padding: 8px 12px 8px 4px; margin-left: -8px; font-size: 17px; line-height: 1; font-weight: 400; opacity: .55;
 }
 .wayout__versionchip .wayout__versionx:hover { opacity: 1; }
-.wayout__versionconfirm { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.wayout__versionconfirm p { flex-basis: 100%; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
-.wayout__versionconfirm .wayout__threadundo { margin: 0; font-size: 14px; }
+/* The delete confirmation — a native <dialog>, so the backdrop, Escape and
+   focus are the browser's. Styled as one of the plan's own cards. */
+.wayout__dialog {
+  width: min(420px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 16px;
+  background: var(--paper); color: var(--ink); box-shadow: 0 24px 60px rgba(31, 41, 28, .28);
+}
+.wayout__dialog::backdrop { background: rgba(31, 41, 28, .45); }
+.wayout__dialogbody { padding: 24px 24px 20px; }
+.wayout__dialogbody h3 { margin: 0 0 8px; font-size: 19px; line-height: 1.3; }
+.wayout__dialogbody p { margin: 0 0 8px; font-size: 15px; line-height: 1.55; }
+.wayout__dialogabout { color: var(--soft); }
+.wayout__dialogactions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 18px; }
+.wayout__dialogactions .wayout__threadundo { margin: 0; font-size: 14.5px; }
+.wayout__btn--danger { background: #A33A2B; color: #fff; }
+.wayout__btn--danger:hover { background: #8A2F22; }
 
 /* The thread's version list: one line per plan, the showing one marked. */
 .wayout__versionlist { list-style: none; margin: 4px 0 18px; padding: 0; display: grid; gap: 6px; }
@@ -3043,3 +3055,6 @@ h1.wayout__heroline {
 /* Over the moves, so a switch and the moves it changes are in one view. */
 #wayout-versions { margin: 18px 0 14px; scroll-margin-top: 90px; }
 #wayout-versions .wayout__versionnote { margin-top: 10px; }
+/* ⚠️ The base button is full-width with a top margin for forms; in the dialog
+   the two answers sit side by side. */
+.wayout__dialogactions .wayout__btn { width: auto; margin: 0; padding-left: 26px; padding-right: 26px; }
