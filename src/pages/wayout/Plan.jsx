@@ -11,7 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
-import { planChanges, versionList, removeVersion, takeBack, samePlan } from '../../lib/wayout/planVersions'
+import { planChanges, versionList, removeVersion, dropDraft, samePlan } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -390,11 +390,10 @@ export default function Plan() {
     }
   }
 
-  /** Take back something said that no version was built from. The plan never moved. */
-  async function takeBackAt(i) {
-    if (!session || asking) return
-    const next = takeBack(thread, i)
-    if (!next) return
+  /** Drop the idea in progress — everything said since the newest version. The plan never moved. */
+  async function dropDraftNow() {
+    if (!session || asking || building) return
+    const next = dropDraft(thread)
     setThread(next)
     savePlanThread(session.id, next)
       .catch(err => console.warn('[wayout] thread not saved:', err.message))
@@ -704,7 +703,7 @@ export default function Plan() {
        * answers-rebuild has nothing to do with whether their life changed.
        */
       onRedoFromThread={past ? null : redoFromThread}
-      onTakeBack={past ? null : takeBackAt}
+      onDropDraft={past ? null : dropDraftNow}
       onRemoveVersion={past ? null : removeVersionAt}
       onSwitchVersion={past ? null : switchVersion}
       liveMap={session?.map ?? null}
@@ -844,7 +843,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onTakeBack, onRemoveVersion, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1326,7 +1325,7 @@ export function Map({
           error={threadErr}
           liveMap={liveMap}
           onRedo={onRedoFromThread ?? undefined}
-          onTakeBack={onTakeBack ?? undefined}
+          onDropDraft={onDropDraft ?? undefined}
           onSwitch={onSwitchVersion ?? undefined}
         />
       )}

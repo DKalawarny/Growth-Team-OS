@@ -3058,3 +3058,30 @@ h1.wayout__heroline {
 /* ⚠️ The base button is full-width with a top margin for forms; in the dialog
    the two answers sit side by side. */
 .wayout__dialogactions .wayout__btn { width: auto; margin: 0; padding-left: 26px; padding-right: 26px; }
+
+/* ⭐ The version list's second line: what tells two versions of one sentence apart. */
+.wayout__versionrow small { display: block; margin-top: 3px; font-size: 13px; color: var(--soft); }
+
+/* ⭐⭐ THE IDEA IN PROGRESS — one box, shaped like the versions it will join.
+   Dashed, because it is not a version yet. */
+.wayout__draft {
+  margin: 4px 0 6px; padding: 14px 16px 16px;
+  border: 1.5px dashed var(--line); border-radius: 12px;
+}
+.wayout__draft.is-building { border-style: solid; border-color: var(--sun); }
+.wayout__drafthead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wayout__drafthead .wayout__versionx {
+  background: none; border: 0; cursor: pointer; font: inherit; font-size: 20px; line-height: 1;
+  color: var(--soft); padding: 2px 4px;
+}
+.wayout__drafthead .wayout__versionx:hover { color: var(--ink); }
+.wayout__draftsaid { margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; font-weight: 600; color: var(--ink); }
+.wayout__draftreply { margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.wayout__draftwait { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 14px; color: var(--soft); }
+.wayout__draftwait .wayout__working { margin: 0; }
+.wayout__draftact { margin-top: 14px; }
+.wayout__draftmoved { margin: 0 0 10px; font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.wayout__draftnote { margin: 0 0 10px; font-size: 14px; line-height: 1.5; color: var(--soft); }
+.wayout__draftact .wayout__btn { width: auto; margin: 0; padding: 12px 24px; font-size: 16px; }
+.wayout__btn--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.wayout__btn--quiet:hover { background: var(--tint); }

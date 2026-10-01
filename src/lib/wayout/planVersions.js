@@ -111,24 +111,19 @@ export function removeVersion(thread = [], key, currentMap) {
 }
 
 /**
- * Take back something said that no version has been built from yet. Removes
- * it and the replies to it; the plan is untouched because it never moved.
- */
-export function takeBack(thread = [], i) {
-  const t = thread ?? []
-  if (t[i]?.role !== 'user') return null
-  let end = i + 1
-  while (end < t.length && t[end]?.role !== 'user') end++
-  if (t.slice(i + 1, end).some(m => m?.rebuilt)) return null
-  return [...t.slice(0, i), ...t.slice(end)]
-}
-
-/**
  * Where the conversation still in progress starts: everything after the
  * newest version. Earlier turns are folded into the versions they produced.
  */
 export function openFrom(thread = []) {
   return (thread ?? []).map(m => m?.rebuilt === true).lastIndexOf(true) + 1
+}
+
+/**
+ * Drop the idea in progress: everything after the newest version. Nothing a
+ * version was built from can be reached this way, so the plan never moves.
+ */
+export function dropDraft(thread = []) {
+  return (thread ?? []).slice(0, openFrom(thread))
 }
 
 /**

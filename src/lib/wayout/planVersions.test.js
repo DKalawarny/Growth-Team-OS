@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  versionList, showingKey, samePlan, removeVersion, takeBack, openFrom, planChanges, versionAbout,
+  versionList, showingKey, samePlan, removeVersion, dropDraft, openFrom, planChanges, versionAbout,
 } from './planVersions'
 
 const said = c => ({ role: 'user', content: c })
@@ -73,12 +73,12 @@ describe('removeVersion', () => {
   })
 })
 
-describe('takeBack', () => {
-  it('removes something said and its reply before any version is built', () => {
-    expect(takeBack([...daniel(), said('typo'), reply('r')], 4)).toEqual(daniel())
+describe('dropDraft', () => {
+  it('drops everything said since the newest version, and nothing before it', () => {
+    expect(dropDraft([...daniel(), said('advisor instead'), reply('r')])).toEqual(daniel())
   })
-  it('not something a version was built from', () => {
-    expect(takeBack(daniel(), 0)).toBe(null)
+  it('with no versions, the whole conversation is the draft', () => {
+    expect(dropDraft([said('a'), reply('b')])).toEqual([])
   })
 })
 
