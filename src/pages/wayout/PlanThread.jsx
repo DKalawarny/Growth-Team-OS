@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
 import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
+import { humanError } from '../../lib/wayout/humanError'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -87,8 +88,8 @@ export default function PlanThread({
     <section className="wayout__card wayout__thread">
       <h3 className="wayout__label">Something changed?</h3>
       <p className="wayout__threadlead">
-        The plan is built on what was true when you answered. When that stops
-        being true, say so here and it will tell you what it moves.
+        Your plan is built on what was true when you answered. When that stops
+        being true, say so here and we will show you what it moves.
       </p>
 
       {/* ⭐⭐ THE VERSIONS, NOT THE TRANSCRIPT. Daniel: "this should just show
@@ -191,7 +192,7 @@ export default function PlanThread({
           )}
         </div>
       )}
-      {error && !pending && <p className="wayout__error">{error}</p>}
+      {error && !pending && <p className="wayout__error">{humanError(error)}</p>}
       {busy && !drafting && <p className="wayout__threadreply wayout__askwait">Reading that.</p>}
 
       {onDropDraft && (
@@ -244,9 +245,9 @@ export default function PlanThread({
             onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send() }}
           />
           <button className="wayout__btn" onClick={send} disabled={quiet || !text.trim()}>
-            {busy ? 'Reading…' : 'Tell it'}
+            {busy ? 'Reading…' : 'Send'}
           </button>
-          {err && <p className="wayout__error">{err}</p>}
+          {err && <p className="wayout__error">{humanError(err)}</p>}
         </div>
       )}
     </section>
@@ -327,7 +328,7 @@ export function VersionSwitch({
             ? 'Your plan was rebuilt from your answers since — none of these is showing.'
             : showing === -1
               ? 'The plan from your answers, before anything you said below.'
-              : on?.about ? `Rewritten around “${on.about}”.` : null}
+              : on?.about ? `Rewritten around “${on.about.replace(/[.!?]+$/, '')}”.` : null}
       </p>
 
       {/* ⭐⭐ HELP ME CHOOSE. Not a score — a score invites re-rolling and makes
@@ -350,7 +351,7 @@ export function VersionSwitch({
               <span className="wayout__choosenote">Compares them against what you told us. Twice a day.</span>
             </>
           )}
-          {chooseErr && <p className="wayout__error">{chooseErr}</p>}
+          {chooseErr && <p className="wayout__error">{humanError(chooseErr)}</p>}
         </div>
       )}
     </div>

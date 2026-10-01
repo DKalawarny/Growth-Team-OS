@@ -11,6 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
+import { humanError } from '../../lib/wayout/humanError'
 import { correctableAnswers, correctionSentence } from '../../lib/wayout/correctable'
 import { versionList, liveVersions, removeVersion, dropDraft, openFrom, samePlan, crossOffOthers, bringBack, storeChoice, rebuildTurns } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
@@ -665,7 +666,9 @@ export default function Plan() {
     return (
       <WayoutShell title="Your plan">
         <p className="wayout__q">That didn’t come through.</p>
-        <p className="wayout__lead">{error}</p>
+        {/* 🔴 The raw error read "Failed to fetch (…supabase.co)" to a person.
+            It goes to the console; they get a sentence they can act on. */}
+        <p className="wayout__lead">{humanError(error)}</p>
         {/* 🔴 Not on a finished chapter — "Try again" there wrote a new plan
             onto a chapter that is meant to be read-only. */}
         {!past && session && (
@@ -1043,7 +1046,7 @@ export function Map({
           one anyway" did nothing visible and quietly reverted on reload. */}
       {error && (
         <div className="wayout__alert" role="alert">
-          <p>{error}</p>
+          <p>{humanError(error)}</p>
           {onDismissError && (
             <button type="button" className="wayout__threadundo" onClick={onDismissError}>Dismiss</button>
           )}
@@ -1555,9 +1558,21 @@ export function Map({
               and the plan is written again around it.
             </p>
           )}
-          {onRebuild && (
-            <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
-              One of these is wrong — change my answers
+          {/* ⭐ ONE WAY TO SAY "THAT IS NOT TRUE". This used to send them back
+              through every question — rationed to one go, so once spent a wrong
+              assumption could not be fixed. Saying what is true under "Something
+              changed?" is never rationed and rebuilds around it. */}
+          {onSay && (
+            <button
+              type="button"
+              className="wayout__again"
+              onClick={() => {
+                const box = document.getElementById('wayout-thread')
+                box?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                box?.focus({ preventScroll: true })
+              }}
+            >
+              One of these is wrong? Say what is true
             </button>
           )}
         </section>

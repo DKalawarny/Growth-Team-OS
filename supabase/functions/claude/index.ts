@@ -266,7 +266,9 @@ async function assertKindDailyCap(
     throw err
   }
   if ((count ?? 0) >= cap) {
-    const err = new Error(`That is today's ${cap}. It opens again within 24 hours.`)
+    const err = new Error(cap === 2
+      ? 'You have used both comparisons for today. They come back within 24 hours.'
+      : `You have used all ${cap} for today. They come back within 24 hours.`)
     ;(err as Error & { code?: string }).code = 'kind_daily_limit'
     throw err
   }
