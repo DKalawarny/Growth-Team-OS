@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import {
   loadOrCreateSession, loadSessionById, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  askAboutPlan, savePlanThread, chapterChain, saveMapKeepingLast, restorePreviousMap,
+  askAboutPlan, chooseBetween, savePlanThread, chapterChain, saveMapKeepingLast, restorePreviousMap,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
@@ -11,7 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
-import { planChanges, versionList, removeVersion, dropDraft, samePlan } from '../../lib/wayout/planVersions'
+import { planChanges, versionList, liveVersions, removeVersion, dropDraft, samePlan, crossOffOthers, bringBack, storeChoice } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -38,6 +38,8 @@ export default function Plan() {
   const [building, setBuilding] = useState(false)
   const [threadBuild, setThreadBuild] = useState(null)
   const [threadErr, setThreadErr] = useState('')
+  const [choosing, setChoosing] = useState(false)
+  const [chooseErr, setChooseErr] = useState('')
   // Which go this is. 1 is the first; anything higher means the first one had
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
@@ -390,6 +392,62 @@ export default function Plan() {
     }
   }
 
+  /**
+   * ⭐⭐ HELP ME CHOOSE — see chooseBetween and WAYOUT_CHOOSE_PROMPT. Twice a
+   * day, counted on the server; the server's refusal is shown as it is.
+   * The answer is kept on the thread so a reload does not spend another.
+   */
+  async function chooseNow() {
+    if (!session || choosing || building) return
+    const versions = liveVersions(thread)
+    if (versions.length < 2) return
+    setChoosing(true)
+    setChooseErr('')
+    try {
+      const out = await chooseBetween({ session, versions })
+      const byN = Object.fromEntries(versions.map(v => [v.n, v.key]))
+      const next = storeChoice(thread, {
+        pick: byN[out.pick],
+        why: out.why,
+        checkWith: out.checkWith,
+        versions: out.versions.map(v => ({ key: byN[v.n], fits: v.fits, costs: v.costs })),
+      })
+      setThread(next)
+      await savePlanThread(session.id, next)
+    } catch (err) {
+      setChooseErr(err.message)
+    } finally {
+      setChoosing(false)
+    }
+  }
+
+  /**
+   * Go with one version: it goes on the plan, and the others are crossed off
+   * with the reason the comparison gave for each — or a plain one.
+   */
+  async function goWith(key, reasons = {}) {
+    if (!session || building) return
+    const target = versionList(thread).find(v => v.key === key)
+    if (!target) return
+    setThreadErr('')
+    try {
+      if (!samePlan(target.map, session.map)) await putOnPlan(target.map, `choose:${target.n}`)
+      const next = crossOffOthers(thread, key, reasons)
+      setThread(next)
+      await savePlanThread(session.id, next)
+    } catch (err) {
+      setThreadErr(err.message)
+    }
+  }
+
+  async function bringBackAt(key) {
+    if (!session) return
+    const next = bringBack(thread, key)
+    setThread(next)
+    savePlanThread(session.id, next)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
   /** Drop the idea in progress — everything said since the newest version. The plan never moved. */
   async function dropDraftNow() {
     if (!session || asking || building) return
@@ -705,6 +763,11 @@ export default function Plan() {
       onRedoFromThread={past ? null : redoFromThread}
       onDropDraft={past ? null : dropDraftNow}
       onRemoveVersion={past ? null : removeVersionAt}
+      onChoose={past ? null : chooseNow}
+      onGoWith={past ? null : goWith}
+      onBringBack={past ? null : bringBackAt}
+      choosing={choosing}
+      chooseErr={chooseErr}
       onSwitchVersion={past ? null : switchVersion}
       liveMap={session?.map ?? null}
       threadBuild={threadBuild}
@@ -843,7 +906,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onChoose, onGoWith, onBringBack, choosing = false, chooseErr = '', onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1094,6 +1157,8 @@ export function Map({
         <VersionSwitch
           thread={thread} liveMap={liveMap} disabled={rebuilding}
           onSwitch={onSwitchVersion ?? undefined} onRemove={onRemoveVersion ?? undefined}
+          onChoose={onChoose ?? undefined} onGoWith={onGoWith ?? undefined}
+          choosing={choosing} chooseErr={chooseErr}
         />
       )}
       <div className="wayout__string wayout__r" style={at(2.6)}>
@@ -1326,6 +1391,7 @@ export function Map({
           liveMap={liveMap}
           onRedo={onRedoFromThread ?? undefined}
           onDropDraft={onDropDraft ?? undefined}
+          onBringBack={onBringBack ?? undefined}
           onSwitch={onSwitchVersion ?? undefined}
         />
       )}

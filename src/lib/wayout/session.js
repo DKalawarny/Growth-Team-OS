@@ -885,6 +885,58 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
   }
 }
 
+/**
+ * ⭐⭐ HELP ME CHOOSE. Compares every live version of the plan against what the
+ * person told us, and says which fits most closely and what each costs.
+ * Twice a day, enforced in the edge function (`wayout:choose`), not here.
+ * See WAYOUT_CHOOSE_PROMPT for the liability lines it is held to.
+ *
+ * ⚠️ The versions go in by DISPLAY NUMBER and come back by it; the caller maps
+ * them back to thread keys, because the numbers close up after a delete.
+ * ⚠️ Every sentence is scrubbed against their own figures, the same guard the
+ * thread reply gets — a comparison is exactly where an invented number would
+ * be believed.
+ */
+export async function chooseBetween({ session, versions }) {
+  const answers = session?.answers ?? {}
+  const raw = await callClaude({
+    promptKey: 'WAYOUT_CHOOSE_PROMPT',
+    messages: [{
+      role: 'user',
+      content: JSON.stringify({
+        answers,
+        versions: versions.map(v => ({
+          n: v.n,
+          name: v.label,
+          built_around: v.about ?? null,
+          headline: v.map?.headline ?? null,
+          numbers: (v.map?.stats ?? []).map(st => ({ label: st.label, value: st.value, caption: st.caption })),
+          moves: (v.map?.moves ?? []).map((m, i) => ({ order: i + 1, title: m.title, when: m.when, gate: m.gate })),
+        })),
+      }, null, 2),
+    }],
+    maxTokens: 900,
+    model: SONNET,
+    temperature: 0.3,
+    toolId: TOOL_ID,
+    kind: 'choose',
+    json: true,
+  })
+  const out = parseModelJson(raw, 'That comparison')
+  const known = new Set(versions.map(v => v.n))
+  const pick = Number(out?.pick)
+  if (!out || !known.has(pick)) throw new Error('That comparison did not come back. Try again.')
+  const clean = t => (t ? scrubFigures(String(t).trim(), answers) : null)
+  return {
+    pick,
+    why: clean(out.why),
+    versions: (Array.isArray(out.versions) ? out.versions : [])
+      .filter(v => known.has(Number(v?.n)))
+      .map(v => ({ n: Number(v.n), fits: clean(v.fits), costs: clean(v.costs) })),
+    checkWith: clean(out.check_with),
+  }
+}
+
 /** The thread lives on the session, so it is per chapter and dies with it. */
 /**
  * ⭐⭐ WRITE THE NEW PLAN AND KEEP THE OLD ONE, IN ONE STATEMENT.

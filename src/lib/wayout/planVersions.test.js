@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  versionList, showingKey, samePlan, removeVersion, dropDraft, openFrom, planChanges, versionAbout,
+  versionList, liveVersions, crossOffOthers, bringBack, storeChoice, currentChoice, showingKey, samePlan, removeVersion, dropDraft, openFrom, planChanges, versionAbout,
 } from './planVersions'
 
 const said = c => ({ role: 'user', content: c })
@@ -101,5 +101,33 @@ describe('versionAbout', () => {
   it('uses the stored sentence, else the last thing they said before it', () => {
     expect(versionAbout([{ rebuilt: true, about: 'x' }], 0)).toBe('x')
     expect(versionAbout(daniel(), 3)).toBe('flip instead')
+  })
+})
+
+describe('crossOffOthers', () => {
+  it('⭐ going with V2 crosses off V3 with its reason, never the original', () => {
+    const t = crossOffOthers(daniel(), 2, { 3: 'Waits on a second property.' })
+    expect(liveVersions(t).map(v => v.label)).toEqual(['Original', 'Version 2'])
+    expect(versionList(t)[2].crossed.why).toBe('Waits on a second property.')
+    expect(t[2].base).toEqual(V1)
+  })
+  it('a crossed-off version can be brought back', () => {
+    const t = bringBack(crossOffOthers(daniel(), 2), 3)
+    expect(liveVersions(t)).toHaveLength(3)
+  })
+  it('going with the original crosses off every rewrite', () => {
+    expect(liveVersions(crossOffOthers(daniel(), -1)).map(v => v.key)).toEqual([-1])
+  })
+})
+
+describe('storeChoice / currentChoice', () => {
+  it('a comparison holds while the same versions are in play', () => {
+    const t = storeChoice(daniel(), { pick: 2 })
+    expect(currentChoice(t).pick).toBe(2)
+  })
+  it('🔴 and goes stale the moment the versions change', () => {
+    const t = storeChoice(daniel(), { pick: 2 })
+    expect(currentChoice([...t, said('new'), { role: 'assistant', rebuilt: true, map: V4 }])).toBe(null)
+    expect(currentChoice(crossOffOthers(t, 2))).toBe(null)
   })
 })

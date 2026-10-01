@@ -35,9 +35,64 @@ export function versionList(thread = []) {
   t.forEach((m, i) => {
     if (!m?.rebuilt || !m.map) return
     const n = out.length + 1
-    out.push({ key: i, n, label: `Version ${n}`, map: m.map, about: versionAbout(t, i) })
+    out.push({ key: i, n, label: `Version ${n}`, map: m.map, about: versionAbout(t, i), crossed: m.crossed ?? null })
   })
   return out
+}
+
+/** The versions still in play — everything not crossed off. The original always is. */
+export function liveVersions(thread = []) {
+  return versionList(thread).filter(v => !v.crossed)
+}
+
+/**
+ * ⭐⭐ GO WITH ONE: the other versions are CROSSED OFF, ON PURPOSE — the same
+ * idiom as the plan's own cut list, with the reason each was not chosen.
+ * Not deleted: crossing off says "considered, and here is why not", and it can
+ * be undone. ⚠️ The original is never crossed off — Daniel: "to get rid of the
+ * original plan doesnt make sense."
+ * `why` maps a version key to its reason; a missing reason gets a plain one.
+ */
+export function crossOffOthers(thread = [], keep, why = {}) {
+  const at = new Date().toISOString()
+  return (thread ?? []).map((m, i) => {
+    if (!m?.rebuilt || !m.map) return m
+    const { choice: _spent, ...rest } = m
+    if (i === keep || m.crossed) return rest
+    return { ...rest, crossed: { why: why[i] ?? 'Not the one you went with.', at } }
+  })
+}
+
+/** Bring a crossed-off version back into play. */
+export function bringBack(thread = [], key) {
+  return (thread ?? []).map((m, i) => {
+    if (i !== key || !m?.crossed) return m
+    const { crossed: _gone, ...rest } = m
+    return rest
+  })
+}
+
+/**
+ * The comparison is kept on the newest version entry, with the keys it
+ * compared, and is only shown while those are still exactly the versions in
+ * play. ⚠️ Kept on an entry the prompts never read — the thread reaches a model
+ * only as { role, content }.
+ */
+export function storeChoice(thread = [], choice) {
+  const t = thread ?? []
+  const newest = t.map(m => Boolean(m?.rebuilt && m.map)).lastIndexOf(true)
+  if (newest < 0) return t
+  const keys = liveVersions(t).map(v => v.key)
+  return t.map((m, i) => (i === newest ? { ...m, choice: { ...choice, keys, at: new Date().toISOString() } } : m))
+}
+
+export function currentChoice(thread = []) {
+  const t = thread ?? []
+  const newest = t.map(m => Boolean(m?.rebuilt && m.map)).lastIndexOf(true)
+  const c = newest > -1 ? t[newest].choice : null
+  if (!c) return null
+  const keys = liveVersions(t).map(v => v.key)
+  return JSON.stringify(c.keys) === JSON.stringify(keys) ? c : null
 }
 
 /**

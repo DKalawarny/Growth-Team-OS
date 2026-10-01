@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
-import { versionList, showingKey, openFrom } from '../../lib/wayout/planVersions'
+import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -27,7 +27,7 @@ import { versionList, showingKey, openFrom } from '../../lib/wayout/planVersions
  * on the other side of trying it.
  */
 export default function PlanThread({
-  thread = [], onSay, onRedo, onDropDraft, onSwitch, busy = false, rebuilding = false,
+  thread = [], onSay, onRedo, onDropDraft, onBringBack, onSwitch, busy = false, rebuilding = false,
   pending = null, error = '', liveMap = null,
 }) {
   const [text, setText] = useState('')
@@ -92,7 +92,7 @@ export default function PlanThread({
           sentence and read as deleting the original plan. */}
       {plans.length > 0 && (
         <ol className="wayout__versionlist">
-          {plans.map(v => (
+          {plans.filter(v => !v.crossed).map(v => (
             <li key={v.key}>
               <button
                 type="button"
@@ -113,6 +113,22 @@ export default function PlanThread({
             </li>
           ))}
         </ol>
+      )}
+      {/* ⭐ CROSSED OFF, ON PURPOSE — the versions not chosen, with why, the
+          same idiom as the plan's own cut list. Not deleted: they can come back. */}
+      {plans.some(v => v.crossed) && (
+        <div className="wayout__versioncut">
+          <p className="wayout__versionshead">Crossed off</p>
+          {plans.filter(v => v.crossed).map(v => (
+            <div key={v.key} className="wayout__versioncutrow">
+              <s>V{v.n} “{v.about ?? 'Rewritten'}”</s>
+              <span>{v.crossed.why}</span>
+              {onBringBack && !quiet && (
+                <button type="button" className="wayout__threadundo" onClick={() => onBringBack(v.key)}>Bring it back</button>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
       {/* ⭐⭐ THE IDEA IN PROGRESS IS ONE THING, SHAPED LIKE THE VERSIONS IT IS
@@ -236,10 +252,13 @@ function toPlan() {
  * ⚠️ Read from the plan itself (`showingVersion`), so it cannot claim a version
  * is showing when it is not. Switching regenerates nothing.
  */
-export function VersionSwitch({ thread = [], liveMap = null, onSwitch, onRemove, disabled = false }) {
+export function VersionSwitch({
+  thread = [], liveMap = null, onSwitch, onRemove, onChoose, onGoWith, choosing = false, chooseErr = '', disabled = false,
+}) {
   const [asking, setAsking] = useState(null)
-  const plans = versionList(thread)
+  const plans = liveVersions(thread)
   if (plans.length < 2) return null
+  const choice = currentChoice(thread)
   const showing = showingKey(thread, liveMap)
   const on = plans.find(v => v.key === showing)
   const doomed = plans.find(v => v.key === asking)
@@ -294,6 +313,30 @@ export function VersionSwitch({ thread = [], liveMap = null, onSwitch, onRemove,
               ? 'The plan from your answers, before anything you said below.'
               : on?.about ? `Rewritten around “${on.about}”.` : null}
       </p>
+
+      {/* ⭐⭐ HELP ME CHOOSE. Not a score — a score invites re-rolling and makes
+          us the judge. It says which version fits what THEY told us, what each
+          one costs, and the ones not chosen are crossed off on purpose. */}
+      {choice ? (
+        <Choice plans={plans} choice={choice} onGoWith={onGoWith} disabled={disabled} />
+      ) : onChoose && (
+        <div className="wayout__choose">
+          {choosing ? (
+            <div className="wayout__draftwait" role="status">
+              <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
+              <span>Comparing your versions against what you told us.</span>
+            </div>
+          ) : (
+            <>
+              <button type="button" className="wayout__btn wayout__btn--quiet" disabled={disabled} onClick={onChoose}>
+                Help me choose
+              </button>
+              <span className="wayout__choosenote">Compares them against what you told us. Twice a day.</span>
+            </>
+          )}
+          {chooseErr && <p className="wayout__error">{chooseErr}</p>}
+        </div>
+      )}
     </div>
   )
 }
@@ -338,5 +381,54 @@ function Confirm({ open, title, quote = null, body, yes, onYes, onNo }) {
         </div>
       )}
     </dialog>
+  )
+}
+
+/**
+ * The comparison, and the way to act on it.
+ * 🔴 LIABILITY, AS DANIEL ASKED — "make sure it is safe from getting sued". The
+ * prompt carries the real lines (no named products, no predicted returns,
+ * never "safe", a named kind of professional when money, tax or law is in
+ * play). This says the rest plainly where it will be read: it is a comparison
+ * against what they told us, not advice, and the choice is theirs — which is
+ * also simply true, since nothing happens until they press a button.
+ */
+function Choice({ plans, choice, onGoWith, disabled }) {
+  const byKey = Object.fromEntries(plans.map(v => [v.key, v]))
+  const picked = byKey[choice.pick]
+  const reasons = Object.fromEntries((choice.versions ?? []).map(v => [v.key, v.costs]))
+  return (
+    <div className="wayout__choice">
+      <p className="wayout__versionshead">Which fits what you told us</p>
+      {picked && <p className="wayout__choicepick">Closest fit: <b>{picked.label}</b></p>}
+      {choice.why && <p className="wayout__choicewhy">{choice.why}</p>}
+      <ul className="wayout__choicelist">
+        {(choice.versions ?? []).filter(v => byKey[v.key]).map(v => (
+          <li key={v.key} className={v.key === choice.pick ? 'is-pick' : ''}>
+            <b>{byKey[v.key].label}</b>
+            {v.fits && <span>{v.fits}</span>}
+            {v.costs && <span className="wayout__choicecost">{v.costs}</span>}
+            {onGoWith && (
+              <button
+                type="button"
+                className={`wayout__btn ${v.key === choice.pick ? 'wayout__btn--sun' : 'wayout__btn--quiet'}`}
+                disabled={disabled}
+                onClick={() => onGoWith(v.key, reasons)}
+              >
+                Go with {byKey[v.key].label === 'Original' ? 'the original' : byKey[v.key].label}
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+      {choice.checkWith && (
+        <p className="wayout__choicecheck"><b>Before you act on it:</b> {choice.checkWith}</p>
+      )}
+      <p className="wayout__choicefine">
+        This compares your versions against what you told us. It is not financial,
+        legal or tax advice, and the choice is yours. The ones you do not go with are
+        crossed off, not deleted.
+      </p>
+    </div>
   )
 }

@@ -230,6 +230,49 @@ async function assertCapsServerSide(
 }
 
 
+/**
+ * ⭐ A DAILY COUNT ON ONE KIND OF CALL. Daniel, on Unstuck Map's "Help me
+ * choose": "maybe only can be used twice a day." Enforced HERE, where the money
+ * is spent — a limit kept in the browser is a suggestion. Rolling 24 hours, so
+ * it does not depend on anybody's timezone.
+ * ⚠️ Counted from usage_events, which is written when a call completes; two
+ * clicks inside the same second could both pass. The spend caps still stand
+ * behind it, and that is an acceptable edge for a two-a-day courtesy limit.
+ */
+const KIND_DAILY_CAP: Record<string, number> = {
+  'wayout:choose': 2,
+}
+
+async function assertKindDailyCap(
+  admin: ReturnType<typeof serviceClient>,
+  companyId: string,
+  toolId: string,
+  kind: string,
+) {
+  const cap = KIND_DAILY_CAP[`${toolId}:${kind}`]
+  if (!cap) return
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const { count, error } = await admin
+    .from('usage_events')
+    .select('id', { count: 'exact', head: true })
+    .eq('company_id', companyId)
+    .eq('tool_id', toolId)
+    .eq('kind', kind)
+    .gte('created_at', since)
+  // ⚠️ Fail closed, same as the spend check.
+  if (error) {
+    const err = new Error('Could not check today\'s limit — try again in a moment.')
+    ;(err as Error & { code?: string }).code = 'cap_check_failed'
+    throw err
+  }
+  if ((count ?? 0) >= cap) {
+    const err = new Error(`That is today's ${cap}. It opens again within 24 hours.`)
+    ;(err as Error & { code?: string }).code = 'kind_daily_limit'
+    throw err
+  }
+}
+
+
 // ── Usage write ───────────────────────────────────────────────────────────────
 
 async function recordUsage(
@@ -458,6 +501,7 @@ Deno.serve(async (req) => {
     // TOOL_CAP_EXEMPT. Nothing is exempt from the money.
     try {
       await assertCapsServerSide(admin, user.companyId, toolId)
+      await assertKindDailyCap(admin, user.companyId, toolId, kind)
     } catch (err) {
       const code = (err as Error & { code?: string }).code
       return json(
