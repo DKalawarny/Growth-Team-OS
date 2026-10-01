@@ -109,3 +109,15 @@ describe('shared prompt blocks reach every wayout prompt', () => {
     expect(broken).toEqual([])
   })
 })
+
+/**
+ * ⭐ THE ABBREVIATION RULE RIDES IN WAYOUT_VOICE, so the coverage above carries
+ * it to every prompt. This pins that it is still IN the block — Daniel, 30 Sep:
+ * "whats str most people wont know abreviations".
+ */
+describe('no abbreviations', () => {
+  it('WAYOUT_VOICE carries the rule, with the currency-code exception', () => {
+    expect(BLOCKS.WAYOUT_VOICE).toContain('NO ABBREVIATIONS. WRITE THE WORDS OUT.')
+    expect(BLOCKS.WAYOUT_VOICE).toContain('THE ONE EXCEPTION IS A CURRENCY CODE')
+  })
+})
