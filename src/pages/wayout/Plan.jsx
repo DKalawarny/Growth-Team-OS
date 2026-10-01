@@ -11,7 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
-import { threadVersions, planChanges, showingVersion, versionList, dropIdea, samePlan } from '../../lib/wayout/planVersions'
+import { planChanges, versionList, removeVersion, takeBack, samePlan } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -318,8 +318,7 @@ export default function Plan() {
      */
     const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
     const about = lastMine > -1 ? thread[lastMine].content : null
-    const showing = showingVersion(thread, session.map)
-    const pending = { about, version: threadVersions(thread).next, from: showing ?? 1 }
+    const pending = { about, n: (versionList(thread).length || 1) + 1 }
     setThreadBuild(pending)
     setThreadErr('')
     const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
@@ -339,7 +338,7 @@ export default function Plan() {
     const first = !versionList(thread).length
     const marked = [...thread, {
       role: 'assistant', rebuilt: true, id, at: new Date().toISOString(),
-      version: pending.version, from: pending.from, about,
+      about,
       changes: planChanges(before, after),
       map: after,
       ...(first && before ? { base: before } : {}),
@@ -359,44 +358,56 @@ export default function Plan() {
    * ⚠️ Through saveMapKeepingLast, so the "put the previous plan back" control
    * under the plan still undoes the switch like any other change.
    */
-  async function switchVersion(version) {
+  async function switchVersion(key) {
     if (!session || building) return
-    const target = versionList(thread).find(v => v.version === version)
+    const target = versionList(thread).find(v => v.key === key)
     if (!target || samePlan(target.map, session.map)) return
     setThreadErr('')
     try {
-      const kept = await saveMapKeepingLast(session.id, target.map, session.map ?? null, session.map_history ?? [], `switch:${version}`)
-      setSession(c => (c ? { ...c, map: target.map, map_history: kept } : c))
-      setMap(enforceMapContract(target.map, session.answers))
+      await putOnPlan(target.map, `switch:${target.n}`)
     } catch (err) {
       setThreadErr(err.message)
     }
   }
 
   /**
-   * ⭐⭐ GET RID OF THE IDEA. Daniel: "there is no way to just get rid of the
-   * idea." Taking a sentence back only worked before a rebuild — after one, the
-   * idea was in the plan for good. Now dropping it removes the sentence, its
-   * reply and every version built from it, and puts back the plan that was
-   * there before it was said. The rules (and why "everything after it" goes
-   * too) are in planVersions.dropIdea.
+   * ⭐⭐ THE × ON A VERSION. Daniel: "to get rid of the original plan doesnt
+   * make sense i was thinking to get rid of new ideas … just having an x".
+   * Deletes that version — never the original — and the idea with its last
+   * version. The rules are in planVersions.removeVersion.
    */
-  async function dropIdeaAt(i) {
+  async function removeVersionAt(key) {
     if (!session || building || asking) return
-    const out = dropIdea(thread, i)
+    const out = removeVersion(thread, key, session.map)
     if (!out) return
     setThreadErr('')
     try {
-      if (out.restore && !samePlan(out.restore, session.map)) {
-        const kept = await saveMapKeepingLast(session.id, out.restore, session.map ?? null, session.map_history ?? [], 'drop')
-        setSession(c => (c ? { ...c, map: out.restore, map_history: kept } : c))
-        setMap(enforceMapContract(out.restore, session.answers))
-      }
+      if (out.restore) await putOnPlan(out.restore, 'remove-version')
       setThread(out.thread)
       await savePlanThread(session.id, out.thread)
     } catch (err) {
       setThreadErr(err.message)
     }
+  }
+
+  /** Take back something said that no version was built from. The plan never moved. */
+  async function takeBackAt(i) {
+    if (!session || asking) return
+    const next = takeBack(thread, i)
+    if (!next) return
+    setThread(next)
+    savePlanThread(session.id, next)
+      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  }
+
+  /**
+   * ⚠️ Through saveMapKeepingLast, so the "put the previous plan back" control
+   * under the plan still undoes a switch like any other change.
+   */
+  async function putOnPlan(next, why) {
+    const kept = await saveMapKeepingLast(session.id, next, session.map ?? null, session.map_history ?? [], why)
+    setSession(c => (c ? { ...c, map: next, map_history: kept } : c))
+    setMap(enforceMapContract(next, session.answers))
   }
 
   function rebuild() {
@@ -693,7 +704,8 @@ export default function Plan() {
        * answers-rebuild has nothing to do with whether their life changed.
        */
       onRedoFromThread={past ? null : redoFromThread}
-      onDropIdea={past ? null : dropIdeaAt}
+      onTakeBack={past ? null : takeBackAt}
+      onRemoveVersion={past ? null : removeVersionAt}
       onSwitchVersion={past ? null : switchVersion}
       liveMap={session?.map ?? null}
       threadBuild={threadBuild}
@@ -832,7 +844,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onDropIdea, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onTakeBack, onRemoveVersion, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1080,7 +1092,10 @@ export function Map({
           the product. See wayout.css for why the string is a fixed-height svg
           and why the grid gaps are percentages. */}
       {!past && (
-        <VersionSwitch thread={thread} liveMap={liveMap} onSwitch={onSwitchVersion ?? undefined} disabled={rebuilding} />
+        <VersionSwitch
+          thread={thread} liveMap={liveMap} disabled={rebuilding}
+          onSwitch={onSwitchVersion ?? undefined} onRemove={onRemoveVersion ?? undefined}
+        />
       )}
       <div className="wayout__string wayout__r" style={at(2.6)}>
         <svg className="wayout__twine" viewBox="0 0 900 74" preserveAspectRatio="none" aria-hidden="true">
@@ -1311,7 +1326,7 @@ export function Map({
           error={threadErr}
           liveMap={liveMap}
           onRedo={onRedoFromThread ?? undefined}
-          onDrop={onDropIdea ?? undefined}
+          onTakeBack={onTakeBack ?? undefined}
           onSwitch={onSwitchVersion ?? undefined}
         />
       )}

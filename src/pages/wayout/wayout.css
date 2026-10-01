@@ -2996,12 +2996,38 @@ h1.wayout__heroline {
 .wayout__versionshead { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
 .wayout__versionsrow { display: flex; flex-wrap: wrap; gap: 8px; }
 .wayout__versionchip {
-  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
-  padding: 8px 14px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  display: inline-flex; align-items: center; border-radius: 99px; border: 1px solid var(--line); color: var(--ink);
 }
-.wayout__versionchip:hover:not(:disabled) { border-color: var(--ink); }
-.wayout__versionchip.is-on { background: var(--green); border-color: var(--green); color: #fff; cursor: default; }
-.wayout__versionchip:disabled:not(.is-on) { opacity: .5; cursor: default; }
+.wayout__versionchip button {
+  font: inherit; font-size: 14px; font-weight: 600; color: inherit; background: none; border: 0; cursor: pointer;
+  padding: 8px 14px;
+}
+.wayout__versionchip:hover:not(.is-on) { border-color: var(--ink); }
+.wayout__versionchip.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+.wayout__versionchip.is-on button { cursor: default; }
+.wayout__versionchip .wayout__versionx {
+  padding: 8px 12px 8px 4px; margin-left: -8px; font-size: 17px; line-height: 1; font-weight: 400; opacity: .55;
+}
+.wayout__versionchip .wayout__versionx:hover { opacity: 1; }
+.wayout__versionconfirm { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.wayout__versionconfirm p { flex-basis: 100%; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.wayout__versionconfirm .wayout__threadundo { margin: 0; font-size: 14px; }
+
+/* The thread's version list: one line per plan, the showing one marked. */
+.wayout__versionlist { list-style: none; margin: 4px 0 18px; padding: 0; display: grid; gap: 6px; }
+.wayout__versionrow {
+  width: 100%; display: flex; align-items: baseline; gap: 12px; text-align: left; cursor: pointer;
+  font: inherit; font-size: 15px; line-height: 1.45; color: var(--ink);
+  background: none; border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px;
+}
+.wayout__versionrow:hover:not(:disabled) { border-color: var(--ink); }
+.wayout__versionrow b { flex: none; min-width: 2em; color: var(--green); font-size: 13px; letter-spacing: .04em; }
+.wayout__versionrow span { flex: 1; min-width: 0; }
+.wayout__versionrow em {
+  flex: none; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: #fff; background: var(--green); border-radius: 99px; padding: 2px 8px;
+}
+.wayout__versionrow.is-on { border-color: var(--green); cursor: default; }
 
 /* Dropping an idea states what it will do before it does it. */
 .wayout__dropask { margin: 10px 0 0 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }

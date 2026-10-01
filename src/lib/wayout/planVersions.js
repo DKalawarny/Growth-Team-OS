@@ -1,18 +1,19 @@
 /**
  * ⭐⭐ VERSIONS OF THE PLAN, AS THE RUNNING THREAD SEES THEM.
  *
- * Daniel, looking at two identical "Rewritten around that." lines, each with
- * its own "Put the plan back": "if its more then one change it gets lost there
- * is nothing differentiating between them." So every rewrite became a numbered
- * version. Then, the same evening: "there is no way to just get rid of the idea
- * you cant switch between the options or go back to original idea."
+ * How this got its shape, all on 30 Sep, all Daniel:
+ * 1. "if its more then one change it gets lost there is nothing
+ *    differentiating between them" — so every rewrite became a numbered version.
+ * 2. "you cant switch between the options or go back to original idea" — so
+ *    each version carries its own map, the first carries the original as
+ *    `base`, and any of them goes on the plan in one click, nothing regenerated.
+ * 3. "to get rid of the original plan doesnt make sense i was thinking to get
+ *    rid of new ideas … just having an x" — so what can be deleted is a
+ *    VERSION, never the original, and an idea goes when its last version does.
  *
- * ⭐⭐ SO A VERSION IS A PLAN YOU CAN STAND ON, NOT A STEP ON A STACK. Each
- * version entry carries its own map, and the first carries the original as
- * `base`, so any of them — the original included — can be put on the plan in
- * one click, with no model call and byte-for-byte what it was. And an idea can
- * be dropped outright: the sentence goes, the versions built on it go, and the
- * plan returns to what was showing before it was said.
+ * ⭐ A version is identified by its INDEX in the thread (`key`); the original
+ * is key -1. Display numbers are positional — Version 1 is always the original
+ * and the rest count up with no gaps, so deleting one never leaves "1, 3".
  *
  * ⚠️ MAPS ON THREAD ENTRIES NEVER REACH A PROMPT. The thread goes to the model
  * as `so_far: thread.slice(-8).map(m => ({ role, content }))` and the rebuild
@@ -23,34 +24,19 @@
  */
 
 /**
- * Number every rebuild entry in the thread.
- * ⚠️ Entries written before 30 Sep carry no `version`; they are numbered in
- * order, so an old thread reads the same way a new one does.
- */
-export function threadVersions(thread = []) {
-  let highest = 1
-  const at = {}
-  ;(thread ?? []).forEach((m, i) => {
-    if (!m?.rebuilt) return
-    const version = m.version ?? highest + 1
-    highest = Math.max(highest, version)
-    at[i] = { version, from: m.from ?? version - 1 }
-  })
-  return { at, next: highest + 1 }
-}
-
-/**
  * Every plan the thread can put back: the original, then each version that
- * kept its map. In order, oldest first.
+ * kept its map, oldest first.
  */
 export function versionList(thread = []) {
-  const { at } = threadVersions(thread)
-  const base = (thread ?? []).find(m => m?.rebuilt && m.base)?.base
-  const out = base ? [{ version: 1, label: 'Original', map: base, index: -1 }] : []
-  for (const [i, v] of Object.entries(at)) {
-    const m = thread[i]
-    if (m?.map) out.push({ version: v.version, label: `Version ${v.version}`, map: m.map, index: Number(i) })
-  }
+  const t = thread ?? []
+  const base = t.find(m => m?.rebuilt && m.base)?.base
+  if (!base) return []
+  const out = [{ key: -1, n: 1, label: 'Original', map: base, about: null }]
+  t.forEach((m, i) => {
+    if (!m?.rebuilt || !m.map) return
+    const n = out.length + 1
+    out.push({ key: i, n, label: `Version ${n}`, map: m.map, about: versionAbout(t, i) })
+  })
   return out
 }
 
@@ -72,37 +58,77 @@ function stable(v) {
 }
 
 /**
- * Which version is on the plan right now — or null when none of them is (a
- * rebuild from the answers, say). Read from the plan itself rather than kept
- * as a flag, so it cannot disagree with what is on the screen.
+ * Which version is on the plan right now (its key), or null when none of them
+ * is — a rebuild from the answers, say. Read from the plan itself rather than
+ * kept as a flag, so it cannot disagree with what is on the screen.
  */
-export function showingVersion(thread = [], currentMap) {
+export function showingKey(thread = [], currentMap) {
   const hit = [...versionList(thread)].reverse().find(v => samePlan(v.map, currentMap))
-  return hit ? hit.version : null
+  return hit ? hit.key : null
 }
 
 /**
- * Drop the idea said at thread[i], and everything after it.
+ * Delete one version. Never the original.
  *
- * ⚠️ EVERYTHING AFTER IT, because later turns were answered with it in the
- * room and later versions were built from it — keeping them would keep the
- * idea. When it is the last thing said, that is just the idea and its reply.
+ * ⭐ WHEN THE LAST VERSION OF AN IDEA GOES, THE IDEA GOES WITH IT — the
+ * sentence and the replies to it. Left behind, it would still be read by the
+ * next rebuild (which takes every sentence they said), so a deleted idea
+ * would quietly come back.
+ * ⚠️ If the deleted version is the one showing, the plan steps back to the
+ * version before it — the original at the latest, which always survives.
+ * ⚠️ The original rides on the first version entry as `base`; if that entry
+ * goes, the next surviving version carries it on.
  *
- * Returns the thread without it and the plan to put back: the newest version
- * before it, or the original. `restore` is null when no version was built
- * from it, because then the plan never moved and must not be touched.
+ * Returns { thread, restore } — `restore` is the map to put on the plan, or
+ * null when the plan does not need to change.
  */
-export function dropIdea(thread = [], i) {
+export function removeVersion(thread = [], key, currentMap) {
+  const t = thread ?? []
+  const entry = t[key]
+  if (key < 0 || !entry?.rebuilt || !entry.map) return null
+  const list = versionList(t)
+  const at = list.findIndex(v => v.key === key)
+  const restore = samePlan(entry.map, currentMap) ? list[at - 1]?.map ?? null : null
+
+  let next = t.filter((_, i) => i !== key)
+  if (entry.base) {
+    const heir = next.findIndex(m => m?.rebuilt && m.map)
+    if (heir > -1) next = next.map((m, i) => (i === heir ? { ...m, base: entry.base } : m))
+  }
+
+  // The idea this version came from: the last thing they said before it.
+  let idea = -1
+  for (let j = key - 1; j >= 0; j--) if (t[j]?.role === 'user') { idea = j; break }
+  if (idea > -1) {
+    let end = idea + 1
+    while (end < next.length && next[end]?.role !== 'user') end++
+    const stillBuilt = next.slice(idea + 1, end).some(m => m?.rebuilt && m.map)
+    if (!stillBuilt) {
+      next = [...next.slice(0, idea), ...next.slice(idea + 1, end).filter(m => m?.rebuilt), ...next.slice(end)]
+    }
+  }
+  return { thread: next, restore }
+}
+
+/**
+ * Take back something said that no version has been built from yet. Removes
+ * it and the replies to it; the plan is untouched because it never moved.
+ */
+export function takeBack(thread = [], i) {
   const t = thread ?? []
   if (t[i]?.role !== 'user') return null
-  const builtOnIt = t.slice(i).some(m => m?.rebuilt)
-  const kept = t.slice(0, i)
-  if (!builtOnIt) return { thread: kept, restore: null, to: null }
-  const before = versionList(t).filter(v => v.index > -1 && v.index < i).pop()
-  const original = versionList(t).find(v => v.version === 1)
-  const target = before ?? original
-  if (!target) return { thread: kept, restore: null, to: null }
-  return { thread: kept, restore: target.map, to: target.label }
+  let end = i + 1
+  while (end < t.length && t[end]?.role !== 'user') end++
+  if (t.slice(i + 1, end).some(m => m?.rebuilt)) return null
+  return [...t.slice(0, i), ...t.slice(end)]
+}
+
+/**
+ * Where the conversation still in progress starts: everything after the
+ * newest version. Earlier turns are folded into the versions they produced.
+ */
+export function openFrom(thread = []) {
+  return (thread ?? []).map(m => m?.rebuilt === true).lastIndexOf(true) + 1
 }
 
 /**

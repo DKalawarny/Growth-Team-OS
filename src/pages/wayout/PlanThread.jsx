@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
-import { threadVersions, versionList, showingVersion, dropIdea, versionAbout } from '../../lib/wayout/planVersions'
+import { versionList, showingKey, openFrom } from '../../lib/wayout/planVersions'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -27,14 +27,11 @@ import { threadVersions, versionList, showingVersion, dropIdea, versionAbout } f
  * on the other side of trying it.
  */
 export default function PlanThread({
-  thread = [], onSay, onRedo, onDrop, onSwitch, busy = false, rebuilding = false,
+  thread = [], onSay, onRedo, onTakeBack, onSwitch, busy = false, rebuilding = false,
   pending = null, error = '', liveMap = null,
 }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
-  // ⚠️ Dropping removes what they said, so it asks once, inline — never a
-  // browser dialog.
-  const [confirmAt, setConfirmAt] = useState(-1)
 
   const mine  = thread.filter(m => m.role === 'user').length
   const spent = mine >= WAYOUT_MAX_PLAN_ASKS
@@ -58,8 +55,9 @@ export default function PlanThread({
   const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
-  const versions  = threadVersions(thread)
-  const showing   = showingVersion(thread, liveMap)
+  const plans     = versionList(thread)
+  const showing   = showingKey(thread, liveMap)
+  const open      = openFrom(thread)
   const quiet     = busy || rebuilding
 
   async function send() {
@@ -77,44 +75,55 @@ export default function PlanThread({
         being true, say so here and it will tell you what it moves.
       </p>
 
-      {/* ⭐⭐ ANY IDEA CAN BE DROPPED, NOT ONLY THE LAST ONE BEFORE A REBUILD.
-          "Take that back" vanished the moment a rebuild happened, which left
-          an idea in the plan for good. Daniel: "there is no way to just get rid
-          of the idea." Dropping now takes the sentence, its reply and every
-          version built from it, and says first exactly what it will do. */}
-      {thread.map((m, i) => m.rebuilt ? (
-        <Version
-          key={i}
-          m={m}
-          v={versions.at[i]}
-          about={versionAbout(thread, i)}
-          showing={showing === versions.at[i]?.version}
-          onSwitch={onSwitch && m.map && !quiet ? () => { onSwitch(versions.at[i].version); toPlan() } : null}
-        />
-      ) : (
-        <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
-          <p>{m.content}</p>
-          {/* ⚠️ INSIDE THE BUBBLE'S BLOCK AND ALIGNED TO IT — a control sits on
-              the thing it acts on. */}
-          {onDrop && m.role === 'user' && !quiet && (
-            <Drop
-              thread={thread} i={i}
-              asking={confirmAt === i}
-              onAsk={() => setConfirmAt(i)}
-              onCancel={() => setConfirmAt(-1)}
-              onDrop={() => { setConfirmAt(-1); onDrop(i) }}
-            />
-          )}
-        </div>
-      ))}
+      {/* ⭐⭐ THE VERSIONS, NOT THE TRANSCRIPT. Daniel: "this should just show
+          v1 v2 v3 and below an option for a new one." Once an idea has been
+          built into a version, its back-and-forth has done its job — it folds
+          into the one line that says what the version was built around.
+          ⚠️ Deleting lives on the × above the moves, not here: two places to
+          delete the same thing is how "Drop this idea" came to sit under a
+          sentence and read as deleting the original plan. */}
+      {plans.length > 0 && (
+        <ol className="wayout__versionlist">
+          {plans.map(v => (
+            <li key={v.key}>
+              <button
+                type="button"
+                className={`wayout__versionrow${showing === v.key ? ' is-on' : ''}`}
+                aria-pressed={showing === v.key}
+                disabled={!onSwitch || quiet || showing === v.key}
+                onClick={() => { onSwitch(v.key); toPlan() }}
+              >
+                <b>V{v.n}</b>
+                <span>{v.key === -1 ? 'Original — from your answers' : `“${v.about ?? 'Rewritten'}”`}</span>
+                {showing === v.key && <em>Showing</em>}
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {/* The conversation still in progress — what has not become a version yet. */}
+      {thread.slice(open).map((m, j) => {
+        const i = open + j
+        return (
+          <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
+            <p>{m.content}</p>
+            {onTakeBack && m.role === 'user' && !quiet && (
+              <button type="button" className="wayout__threadundo" onClick={() => onTakeBack(i)}>
+                Take that back
+              </button>
+            )}
+          </div>
+        )
+      })}
 
       {/* The version being written, in the place it will land. */}
       {pending && (
         <div className="wayout__version wayout__version--pending" role="status">
-          <p className="wayout__versionhead">Version {pending.version}</p>
+          <p className="wayout__versionhead">V{pending.n}</p>
           {pending.about && <p className="wayout__versionabout">Rewriting the plan around “{pending.about}”</p>}
           <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
-          <p className="wayout__versionnote">Up to a minute. Your plan stays on {nameOf(pending.from)} until this one is ready.</p>
+          <p className="wayout__versionnote">Up to a minute. Your plan stays as it is until this one is ready.</p>
         </div>
       )}
       {error && !pending && <p className="wayout__error">{error}</p>}
@@ -230,111 +239,66 @@ function toPlan() {
  * ⚠️ Read from the plan itself (`showingVersion`), so it cannot claim a version
  * is showing when it is not. Switching regenerates nothing.
  */
-export function VersionSwitch({ thread = [], liveMap = null, onSwitch, disabled = false }) {
+export function VersionSwitch({ thread = [], liveMap = null, onSwitch, onRemove, disabled = false }) {
+  const [asking, setAsking] = useState(null)
   const plans = versionList(thread)
   if (plans.length < 2) return null
-  const showing = showingVersion(thread, liveMap)
-  const on = plans.find(v => v.version === showing)
-  const about = on && on.index > -1 ? versionAbout(thread, on.index) : null
+  const showing = showingKey(thread, liveMap)
+  const on = plans.find(v => v.key === showing)
+  const doomed = plans.find(v => v.key === asking)
   return (
     <div className="wayout__versions" id="wayout-versions" role="group" aria-label="Which version of your plan is showing">
       <p className="wayout__versionshead">Version showing</p>
       <div className="wayout__versionsrow">
         {plans.map(v => (
-          <button
-            key={v.version}
-            type="button"
-            className={`wayout__versionchip${showing === v.version ? ' is-on' : ''}`}
-            aria-pressed={showing === v.version}
-            disabled={!onSwitch || disabled || showing === v.version}
-            onClick={() => onSwitch(v.version)}
-          >
-            {v.label}
-          </button>
+          <span key={v.key} className={`wayout__versionchip${showing === v.key ? ' is-on' : ''}`}>
+            <button
+              type="button"
+              aria-pressed={showing === v.key}
+              disabled={!onSwitch || disabled || showing === v.key}
+              onClick={() => { setAsking(null); onSwitch(v.key) }}
+            >
+              {v.label}
+            </button>
+            {/* ⭐⭐ THE ×. Daniel: "to get rid of the original plan doesnt make
+                sense i was thinking to get rid of new ideas maybe just having an
+                x on the top." So there is none on the original. */}
+            {onRemove && v.key !== -1 && (
+              <button
+                type="button"
+                className="wayout__versionx"
+                aria-label={`Delete ${v.label}`}
+                disabled={disabled}
+                onClick={() => setAsking(v.key)}
+              >
+                ×
+              </button>
+            )}
+          </span>
         ))}
       </div>
-      <p className="wayout__versionnote">
-        {showing == null
-          ? 'Your plan was rebuilt from your answers since — none of these is showing.'
-          : showing === 1
-            ? 'The plan from your answers, before anything you said below.'
-            : about ? `Rewritten around “${about}”.` : null}
-      </p>
-    </div>
-  )
-}
-
-function nameOf(version) {
-  return version === 1 ? 'the original plan' : `version ${version}`
-}
-
-/**
- * "Drop this idea", with the consequence stated before it happens.
- * ⚠️ Everything after it goes too — see planVersions.dropIdea for why.
- */
-function Drop({ thread, i, asking, onAsk, onCancel, onDrop }) {
-  const out = dropIdea(thread, i)
-  if (!out) return null
-  const more = thread.slice(i + 1).some(m => m?.role === 'user')
-  const back = out.restore ? (out.to === 'Original' ? 'the original plan' : out.to.toLowerCase()) : null
-  if (!asking) {
-    return (
-      <button type="button" className="wayout__threadundo" onClick={onAsk}>
-        Drop this idea
-      </button>
-    )
-  }
-  return (
-    <div className="wayout__dropask">
-      <p>
-        {more ? 'This and everything said after it goes' : 'This and the reply to it go'}
-        {back ? `, and your plan goes back to ${back}.` : '. Your plan does not change.'}
-      </p>
-      <button type="button" className="wayout__btn" onClick={onDrop}>Drop it</button>
-      <button type="button" className="wayout__threadundo" onClick={onCancel}>Keep it</button>
-    </div>
-  )
-}
-
-/**
- * ⭐⭐ ONE REWRITE OF THE PLAN — numbered, saying what it was built around and
- * what it moved, and saying whether it is the one on the plan right now. Any
- * version can be switched to from here or from the row below; nothing about
- * an older version is locked because a newer one exists.
- */
-function Version({ m, v, about, showing, onSwitch }) {
-  const version = v?.version ?? 2
-  const changes = Array.isArray(m.changes) ? m.changes : null
-  return (
-    <div className={`wayout__version${showing ? ' is-on' : ''}`}>
-      <p className="wayout__versionhead">
-        Version {version}
-        {showing && <span className="wayout__versionbadge">On your plan now</span>}
-      </p>
-      {about && <p className="wayout__versionabout">Rewritten around “{about}”</p>}
-
-      {changes && changes.length > 0 && (
-        <ul className="wayout__versionchanges">
-          {changes.slice(0, 4).map(c => (
-            <li key={c.order}>
-              <span>Move {c.order}</span>
-              {c.before && <s>{c.before}</s>}
-              {c.after ? <b>{c.after}</b> : <em>dropped</em>}
-            </li>
-          ))}
-        </ul>
+      {doomed ? (
+        // ⚠️ A deleted version's plan is gone for good, so it asks once,
+        // inline — never a browser dialog.
+        <div className="wayout__versionconfirm">
+          <p>
+            Delete {doomed.label}? Its plan cannot be brought back
+            {showing === doomed.key ? ', and your plan steps back to the one before it.' : '.'}
+          </p>
+          <button type="button" className="wayout__btn" onClick={() => { setAsking(null); onRemove(doomed.key) }}>
+            Delete it
+          </button>
+          <button type="button" className="wayout__threadundo" onClick={() => setAsking(null)}>Keep it</button>
+        </div>
+      ) : (
+        <p className="wayout__versionnote">
+          {showing == null
+            ? 'Your plan was rebuilt from your answers since — none of these is showing.'
+            : showing === -1
+              ? 'The plan from your answers, before anything you said below.'
+              : on?.about ? `Rewritten around “${on.about}”.` : null}
+        </p>
       )}
-      {changes && changes.length === 0 && (
-        <p className="wayout__versionnote">Same moves in the same order — the detail under them changed.</p>
-      )}
-
-      {showing ? (
-        <a className="wayout__versionlook" href="#wayout-moves">See it on the plan ↑</a>
-      ) : onSwitch ? (
-        <button type="button" className="wayout__threadundo wayout__versionuse" onClick={onSwitch}>
-          Put version {version} on the plan
-        </button>
-      ) : null}
     </div>
   )
 }
