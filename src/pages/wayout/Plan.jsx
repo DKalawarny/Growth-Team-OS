@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import {
   loadOrCreateSession, loadSessionById, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
-  askAboutPlan, chooseBetween, savePlanThread, chapterChain, saveMapKeepingLast, restorePreviousMap,
+  askAboutPlan, chooseBetween, savePlanThread, saveAnswers, chapterChain, saveMapKeepingLast, restorePreviousMap,
   markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
@@ -11,6 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
+import { correctableAnswers, correctionSentence } from '../../lib/wayout/correctable'
 import { planChanges, versionList, liveVersions, removeVersion, dropDraft, samePlan, crossOffOthers, bringBack, storeChoice } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -448,6 +449,37 @@ export default function Plan() {
       .catch(err => console.warn('[wayout] thread not saved:', err.message))
   }
 
+  /**
+   * ⭐⭐ CORRECT ONE ANSWER. Daniel: "no way of going back in here and change
+   * things that could be wrong." The answer is saved, and a sentence saying so
+   * goes into the thread as THEIR turn — so it shows as the idea in progress,
+   * "Make it V5" rebuilds around it (the rebuild reads the saved answers AND
+   * every sentence they said), and it can be dropped like any other idea.
+   * ⚠️ Not counted against the one trip back through the questions: that
+   * limit is about re-rolling a whole form, and this is one fact.
+   */
+  async function correctAnswer(key, value) {
+    if (!session || building || asking) return
+    const field = correctableAnswers(session.answers).find(f => f.key === key)
+    const to = String(value ?? '').trim()
+    if (!field || to === field.value.trim()) return
+    setThreadErr('')
+    try {
+      const answers = { ...(session.answers ?? {}), [key]: to }
+      await saveAnswers(session.id, answers)
+      setSession(c => (c ? { ...c, answers } : c))
+      const next = [...thread, {
+        role: 'user', at: new Date().toISOString(),
+        correction: { key, from: field.value, to },
+        content: correctionSentence(field, field.value, to),
+      }]
+      setThread(next)
+      await savePlanThread(session.id, next)
+    } catch (err) {
+      setThreadErr(err.message)
+    }
+  }
+
   /** Drop the idea in progress — everything said since the newest version. The plan never moved. */
   async function dropDraftNow() {
     if (!session || asking || building) return
@@ -766,6 +798,8 @@ export default function Plan() {
       onChoose={past ? null : chooseNow}
       onGoWith={past ? null : goWith}
       onBringBack={past ? null : bringBackAt}
+      onCorrect={past ? null : correctAnswer}
+      answers={session?.answers ?? {}}
       choosing={choosing}
       chooseErr={chooseErr}
       onSwitchVersion={past ? null : switchVersion}
@@ -906,7 +940,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onChoose, onGoWith, onBringBack, choosing = false, chooseErr = '', onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onChoose, onGoWith, onBringBack, onCorrect, answers = {}, choosing = false, chooseErr = '', onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1392,6 +1426,8 @@ export function Map({
           onRedo={onRedoFromThread ?? undefined}
           onDropDraft={onDropDraft ?? undefined}
           onBringBack={onBringBack ?? undefined}
+          onCorrect={onCorrect ?? undefined}
+          answers={answers}
           onSwitch={onSwitchVersion ?? undefined}
         />
       )}

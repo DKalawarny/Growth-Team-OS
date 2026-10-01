@@ -866,8 +866,14 @@ export const WAYOUT_SCREENS = [
          * same question whether they are climbing or getting out, and it is the
          * figure the whole plan aims at either way.
          */
-        label: 'What does it need to bring in each month for this to work?',
-        hint: 'A number if you have one, or the shape of it — covering the bills, or the bills plus something. Sometimes the useful answer is that you passed it already.',
+        /**
+         * 🔴 "NEED" ASKED FOR A FLOOR AND GOT AN AIM. Daniel answered $8,000 —
+         * what he would like to make — and the plan then called it his floor
+         * and judged every option as failing it. The floor is already asked:
+         * "What has to go out every month". This one is the aim, so it says so.
+         */
+        label: 'What would you like it to bring in each month?',
+        hint: 'The number you are aiming for, not the minimum — what has to go out every month is asked separately. Sometimes the useful answer is that you passed it already.',
         placeholder: 'About $4,500 — enough to cover everything without watching the account.',
         required: false,
       },

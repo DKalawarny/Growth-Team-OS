@@ -3111,3 +3111,18 @@ h1.wayout__heroline {
 .wayout__versioncutrow s { color: var(--soft); }
 .wayout__versioncutrow span { color: var(--ink); }
 .wayout__versioncutrow .wayout__threadundo { justify-self: start; margin-top: 2px; }
+
+/* ⭐⭐ Correct an answer — the facts the plan stands on, each fixable in place. */
+.wayout__fix { margin: 18px 0 4px; }
+.wayout__fixlist { list-style: none; margin: 12px 0 0; padding: 0; display: grid; }
+.wayout__fixlist li { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); }
+.wayout__fixlabel { font-size: 13.5px; color: var(--soft); }
+.wayout__fixrow { display: flex; align-items: baseline; gap: 14px; font-size: 15.5px; }
+.wayout__fixrow .wayout__threadundo { margin: 0; }
+.wayout__fixedit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.wayout__fixinput {
+  flex: 1 1 180px; min-width: 0; font: inherit; font-size: 15.5px; color: var(--ink);
+  padding: 9px 12px; border: 1.5px solid var(--ink); border-radius: 10px; background: var(--paper);
+}
+.wayout__fixedit .wayout__btn { width: auto; margin: 0; padding: 9px 18px; font-size: 15px; }
+.wayout__fixedit .wayout__threadundo { margin: 0; }

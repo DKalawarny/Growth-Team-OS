@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
+import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -27,12 +28,13 @@ import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '
  * on the other side of trying it.
  */
 export default function PlanThread({
-  thread = [], onSay, onRedo, onDropDraft, onBringBack, onSwitch, busy = false, rebuilding = false,
+  thread = [], onSay, onRedo, onDropDraft, onBringBack, onCorrect, answers = {}, onSwitch, busy = false, rebuilding = false,
   pending = null, error = '', liveMap = null,
 }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
   const [dropping, setDropping] = useState(false)
+  const [fixing, setFixing] = useState(false)
 
   const mine  = thread.filter(m => m.role === 'user').length
   const spent = mine >= WAYOUT_MAX_PLAN_ASKS
@@ -63,6 +65,9 @@ export default function PlanThread({
   const drafting  = draft.some(m => m.role === 'user') || Boolean(pending)
   const nextN     = pending?.n ?? (plans.length || 1) + 1
   const lastReply = [...draft].reverse().find(m => m.role === 'assistant')
+  // ⚠️ A correction is complete on its own — it gets no reply, and it must still
+  // be possible to build a version from it.
+  const corrected = draft.some(m => m.correction)
   // ⚠️ "Answer that" is only true when the reply ASKED something. It was
   // printed under every reply, including ones with no question in them.
   const asked     = /\?/.test(lastReply?.content ?? '')
@@ -166,7 +171,7 @@ export default function PlanThread({
               <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
               <span>Building V{nextN}. Up to a minute — your plan stays as it is until it is ready.</span>
             </div>
-          ) : !quiet && onRedo && lastReply && (
+          ) : !quiet && onRedo && (lastReply || corrected) && (
             <div className="wayout__draftact">
               {moved && <p className="wayout__draftmoved">{moved.whatChanged ?? 'That changes the order.'}</p>}
               {!moved && asked && (
@@ -216,6 +221,12 @@ export default function PlanThread({
           back, overrule the answer, and say something new. The divider and the
           label are what make the last of those obviously a new turn rather than
           a continuation of the exchange above it. */}
+      {/* ⭐⭐ CORRECT AN ANSWER. Daniel: "no way of going back in here and change
+          things that could be wrong." One fact at a time, in place. */}
+      {onCorrect && !quiet && (
+        <Corrections answers={answers} open={fixing} onOpen={() => setFixing(!fixing)} onCorrect={onCorrect} />
+      )}
+
       {!spent && (
         <div className="wayout__threadsay">
           <label className="wayout__label" htmlFor="wayout-thread">
@@ -429,6 +440,57 @@ function Choice({ plans, choice, onGoWith, disabled }) {
         legal or tax advice, and the choice is yours. The ones you do not go with are
         crossed off, not deleted.
       </p>
+    </div>
+  )
+}
+
+/**
+ * The answers the plan is built on, each one correctable where it stands.
+ * Saving one adds it to the idea in progress, so the change is visible and the
+ * plan is only rewritten when they say "Make it".
+ */
+function Corrections({ answers, open, onOpen, onCorrect }) {
+  const [editing, setEditing] = useState(null)
+  const [value, setValue] = useState('')
+  const fields = correctableAnswers(answers)
+  return (
+    <div className="wayout__fix">
+      <button type="button" className="wayout__threadundo" aria-expanded={open} onClick={onOpen}>
+        {open ? 'Hide your answers' : 'Is one of your answers wrong? Correct it'}
+      </button>
+      {open && (
+        <ul className="wayout__fixlist">
+          {fields.map(f => (
+            <li key={f.key}>
+              <span className="wayout__fixlabel">{f.label}</span>
+              {editing === f.key ? (
+                <form
+                  className="wayout__fixedit"
+                  onSubmit={e => { e.preventDefault(); setEditing(null); onCorrect(f.key, value) }}
+                >
+                  <input
+                    className="wayout__fixinput"
+                    autoFocus
+                    inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                    value={value}
+                    onChange={e => setValue(e.target.value)}
+                    aria-label={f.label}
+                  />
+                  <button type="submit" className="wayout__btn" disabled={!value.trim() || value.trim() === f.value.trim()}>Save</button>
+                  <button type="button" className="wayout__threadundo" onClick={() => setEditing(null)}>Cancel</button>
+                </form>
+              ) : (
+                <span className="wayout__fixrow">
+                  <b>{showAnswer(f.kind, f.value)}</b>
+                  <button type="button" className="wayout__threadundo" onClick={() => { setEditing(f.key); setValue(f.value) }}>
+                    Change
+                  </button>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

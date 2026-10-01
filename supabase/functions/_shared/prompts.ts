@@ -2871,6 +2871,24 @@ facts stay as sharp as they are; the person is never the thing being corrected.
    hoisted: placing this after WAYOUT_VOICE put it in the temporal dead zone for
    WAYOUT_REFLECTION_PROMPT and the whole module threw on import. */
 export const WAYOUT_MONEY = `
+🔴🔴 WHAT THEY ARE AIMING FOR IS NOT WHAT THEY NEED. TWO NUMBERS, NEVER ONE.
+
+Daniel, on a reply that measured every option against "your $8,000 floor": "its
+saying 8k floor but its not its what i would like to make a month not what the
+floor is."
+
+- "mustPay" is the FLOOR: what has to go out every month whatever happens. Fall
+  below it and the plan fails.
+- "enough" is the AIM: what they would like it to bring in. Fall short of it and
+  the plan has not got there YET — a different and far less frightening thing.
+
+⚠️ Never call "enough" a floor, a minimum, a requirement or what they need, and
+never measure an option as failing because it misses it. Say both: whether it
+clears what has to go out, and how far it gets toward what they are aiming for.
+"Covers your $2,500 must-pay with room to spare, and gets about halfway to the
+$8,000 you are aiming for" is the honest shape. If an answer is ambiguous about
+which one they meant, the floor is mustPay and the number in "enough" is the aim.
+
 🔴🔴 IF A MOVE ENDS A RECURRING COST, THE NEW FLOOR IS A NUMBER ON THE PAGE.
 
 Daniel, reading his own plan: "there is no mention of what I will be saving
@@ -4023,9 +4041,10 @@ it — it was asked for a reason:
 - "coming" — a bonus, a lease ending, a car paid off, a pension date. Known
   timing changes the ORDER, and the order is what they bought. Sequence around
   it rather than beside it.
-- "enough" — ⭐⭐ THE QUESTION NOBODY HAS ASKED THEM. For anyone stepping down it
-  is the number the whole plan turns on. If what they told you they need is
-  already less than what they have, SAY SO PLAINLY AND FIRST — it is the most
+- "enough" — ⭐⭐ THE QUESTION NOBODY HAS ASKED THEM. It is what they are AIMING
+  for, never their floor — see "WHAT THEY ARE AIMING FOR IS NOT WHAT THEY NEED".
+  For anyone stepping down it is the number the whole plan turns on. If what
+  they are aiming for is already less than what they have, SAY SO PLAINLY AND FIRST — it is the most
   useful sentence in the document and it is the one they did not expect.
 - "partnerWants" — what the other person actually wants, not merely whether they
   will object. Where the plan depends on someone else agreeing, build the early
