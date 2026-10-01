@@ -3013,3 +3013,7 @@ h1.wayout__heroline {
 .wayout__threadmine .wayout__dropask p {
   background: none; padding: 0; border-radius: 0; font-weight: 400; max-width: none;
 }
+
+/* Over the moves, so a switch and the moves it changes are in one view. */
+#wayout-versions { margin: 18px 0 14px; scroll-margin-top: 90px; }
+#wayout-versions .wayout__versionnote { margin-top: 10px; }

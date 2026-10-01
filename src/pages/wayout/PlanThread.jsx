@@ -59,7 +59,6 @@ export default function PlanThread({
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
   const versions  = threadVersions(thread)
-  const plans     = versionList(thread)
   const showing   = showingVersion(thread, liveMap)
   const quiet     = busy || rebuilding
 
@@ -90,7 +89,7 @@ export default function PlanThread({
           v={versions.at[i]}
           about={versionAbout(thread, i)}
           showing={showing === versions.at[i]?.version}
-          onSwitch={onSwitch && m.map && !quiet ? () => onSwitch(versions.at[i].version) : null}
+          onSwitch={onSwitch && m.map && !quiet ? () => { onSwitch(versions.at[i].version); toPlan() } : null}
         />
       ) : (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
@@ -119,35 +118,6 @@ export default function PlanThread({
         </div>
       )}
       {error && !pending && <p className="wayout__error">{error}</p>}
-
-      {/* ⭐⭐ WHICH PLAN IS SHOWING, AND EVERY OTHER ONE A CLICK AWAY. Daniel:
-          "you cant switch between the options or go back to original idea."
-          Read from the plan itself, so it cannot claim a version is showing
-          when it is not. Switching regenerates nothing. */}
-      {plans.length > 1 && (
-        <div className="wayout__versions" role="group" aria-label="Which plan is showing">
-          <p className="wayout__versionshead">Showing on your plan</p>
-          <div className="wayout__versionsrow">
-            {plans.map(v => (
-              <button
-                key={v.version}
-                type="button"
-                className={`wayout__versionchip${showing === v.version ? ' is-on' : ''}`}
-                aria-pressed={showing === v.version}
-                disabled={!onSwitch || quiet || showing === v.version}
-                onClick={() => onSwitch(v.version)}
-              >
-                {v.label}
-              </button>
-            ))}
-          </div>
-          {showing == null && (
-            <p className="wayout__versionnote">
-              Your plan was rebuilt since — none of these is showing.
-            </p>
-          )}
-        </div>
-      )}
 
       {busy && <p className="wayout__threadreply wayout__askwait">Reading that.</p>}
 
@@ -244,6 +214,53 @@ export default function PlanThread({
         </div>
       )}
     </section>
+  )
+}
+
+/** After switching from down here, take them to where the plan changed. */
+function toPlan() {
+  document.getElementById('wayout-versions')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/**
+ * ⭐⭐ WHICH PLAN IS SHOWING, ON THE PLAN. Daniel: "the switching between them
+ * should switch it up top here" — it lived at the foot of the thread, so the
+ * moves changed somewhere off-screen above the button that changed them.
+ * It sits over the moves now, so the click and its effect are in one view.
+ * ⚠️ Read from the plan itself (`showingVersion`), so it cannot claim a version
+ * is showing when it is not. Switching regenerates nothing.
+ */
+export function VersionSwitch({ thread = [], liveMap = null, onSwitch, disabled = false }) {
+  const plans = versionList(thread)
+  if (plans.length < 2) return null
+  const showing = showingVersion(thread, liveMap)
+  const on = plans.find(v => v.version === showing)
+  const about = on && on.index > -1 ? versionAbout(thread, on.index) : null
+  return (
+    <div className="wayout__versions" id="wayout-versions" role="group" aria-label="Which version of your plan is showing">
+      <p className="wayout__versionshead">Version showing</p>
+      <div className="wayout__versionsrow">
+        {plans.map(v => (
+          <button
+            key={v.version}
+            type="button"
+            className={`wayout__versionchip${showing === v.version ? ' is-on' : ''}`}
+            aria-pressed={showing === v.version}
+            disabled={!onSwitch || disabled || showing === v.version}
+            onClick={() => onSwitch(v.version)}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+      <p className="wayout__versionnote">
+        {showing == null
+          ? 'Your plan was rebuilt from your answers since — none of these is showing.'
+          : showing === 1
+            ? 'The plan from your answers, before anything you said below.'
+            : about ? `Rewritten around “${about}”.` : null}
+      </p>
+    </div>
   )
 }
 

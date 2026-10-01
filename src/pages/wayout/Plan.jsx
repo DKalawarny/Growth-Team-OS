@@ -10,7 +10,7 @@ import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/b
 import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
-import PlanThread from './PlanThread'
+import PlanThread, { VersionSwitch } from './PlanThread'
 import { threadVersions, planChanges, showingVersion, versionList, dropIdea, samePlan } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
@@ -1079,6 +1079,9 @@ export function Map({
           Notes keep the board's character; the string keeps the ORDER, which is
           the product. See wayout.css for why the string is a fixed-height svg
           and why the grid gaps are percentages. */}
+      {!past && (
+        <VersionSwitch thread={thread} liveMap={liveMap} onSwitch={onSwitchVersion ?? undefined} disabled={rebuilding} />
+      )}
       <div className="wayout__string wayout__r" style={at(2.6)}>
         <svg className="wayout__twine" viewBox="0 0 900 74" preserveAspectRatio="none" aria-hidden="true">
           <path className="slack" pathLength="100" d="M98 48 Q 274 72 450 48 Q 626 72 802 48" />
