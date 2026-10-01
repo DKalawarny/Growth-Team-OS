@@ -2960,3 +2960,8 @@ h1.wayout__heroline {
 .wayout__arcopen { margin: 0 0 12px; font-size: 13.5px; }
 .wayout__arcopen a { color: var(--green); font-weight: 700; text-decoration: none; }
 .wayout__arcopen a:hover { text-decoration: underline; }
+
+/* The rebuild in progress, on the thread entry that asked for it. The dots are
+   the same "working" mark the first build uses, so it reads as the same act. */
+.wayout__threadbuilding p { margin: 0; }
+.wayout__threadbuilding .wayout__working { margin-top: 12px; }

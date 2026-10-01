@@ -1256,6 +1256,7 @@ export function Map({
           thread={thread}
           onSay={onSay}
           busy={asking}
+          rebuilding={rebuilding}
           onRedo={onRedoFromThread ?? undefined}
           onUndo={onUndoSaid ?? undefined}
           onRestore={onRestore ?? undefined}

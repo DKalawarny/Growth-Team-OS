@@ -25,7 +25,7 @@ import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
  * says so. Same spine as the twelve-ask cap on a move: the next real answer is
  * on the other side of trying it.
  */
-export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onRestore, busy = false }) {
+export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onRestore, busy = false, rebuilding = false }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
 
@@ -59,10 +59,21 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
   const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
+  /**
+   * 🔴 THE THREAD SAID "REWRITTEN AROUND THAT." WHILE NOTHING HAD BEEN REWRITTEN.
+   * The marker is written the instant the button is pressed, and the new plan
+   * takes up to a minute — so for that minute the card announced a finished
+   * job over the OLD plan, with no sign anything was happening. Daniel: "there
+   * was no loading … so it looks stale."
+   * ⭐ Until the build lands, the newest rebuild entry says what is true — it is
+   * being rewritten — and every control on the card waits with it.
+   */
+  const pending   = rebuilding && rebuiltAt > -1
+  const quiet     = busy || rebuilding
 
   async function send() {
     const said = text.trim()
-    if (!said || busy) return
+    if (!said || quiet) return
     setErr(''); setText('')
     try { await onSay(said) } catch (e) { setErr(e.message) }
   }
@@ -86,12 +97,19 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
           history. */}
       {thread.map((m, i) => (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
-          <p>{m.content}</p>
+          {pending && i === rebuiltAt ? (
+            <div className="wayout__threadbuilding" role="status">
+              <p>Rewriting the plan around that. Up to a minute.</p>
+              <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
+            </div>
+          ) : (
+            <p>{m.content}</p>
+          )}
           {/* ⚠️ INSIDE THE BUBBLE'S BLOCK AND ALIGNED TO IT. Sitting between the
               two speakers it read as a heading on the reply rather than a
               control on the thing said above it — Daniel: "this is a bit
               confusing how its set up." */}
-          {onUndo && canUndo && m.role === 'user' && i === lastMine && !busy && (
+          {onUndo && canUndo && m.role === 'user' && i === lastMine && !quiet && (
             <button type="button" className="wayout__threadundo" onClick={onUndo}>
               Take that back
             </button>
@@ -103,7 +121,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
               this one on the entry that says the plan was rewritten.
               ⚠️ It disappears once used, because `mapBefore` is stripped as it
               is spent. A plan should not ping-pong between two versions. */}
-          {onRestore && m.rebuilt && !busy && (
+          {onRestore && m.rebuilt && !quiet && (
             <button type="button" className="wayout__threadundo" onClick={onRestore}>
               Put the plan back
             </button>
@@ -125,7 +143,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
           ⭐ Requiring the handler makes the failure impossible rather than
           unlikely — the same posture as passing no write functions at all on a
           past chapter instead of disabling them in the UI. */}
-      {!busy && onRedo && moved && (
+      {!quiet && onRedo && moved && (
         <div className="wayout__threadmoved">
           <b>{moved.whatChanged ?? 'That changes the order.'}</b>
           <button type="button" className="wayout__btn wayout__btn--sun" onClick={onRedo}>
@@ -158,7 +176,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
           input so it read as a label for the box. Quiet ink, its own space, and
           the recommended route stated plainly rather than competing with the
           override beside it. */}
-      {!busy && onRedo && !moved && lastMine > -1 && last && (
+      {!quiet && onRedo && !moved && lastMine > -1 && rebuiltAt < lastMine && last && (
         <p className="wayout__threadinsist">
           Answer that and it will tell you what moves.{' '}
           <button type="button" className="wayout__threadundo" onClick={onRedo}>
@@ -199,7 +217,7 @@ export default function PlanThread({ thread = [], onSay, onRedo, onUndo, onResto
             placeholder="The buyer pulled out. I got offered a job. The rental has been empty two months."
             onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send() }}
           />
-          <button className="wayout__btn" onClick={send} disabled={busy || !text.trim()}>
+          <button className="wayout__btn" onClick={send} disabled={quiet || !text.trim()}>
             {busy ? 'Reading…' : 'Tell it'}
           </button>
           {err && <p className="wayout__error">{err}</p>}
