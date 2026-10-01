@@ -122,3 +122,18 @@ describe('no trade shorthand', () => {
     expect(BLOCKS.WAYOUT_VOICE).toContain('A currency code on a figure')
   })
 })
+
+/**
+ * ⭐ Returns as a typical percentage, never dollars on their money — Daniel,
+ * 1 Oct: "give a percent return which is typical but depends on many factors."
+ * In WAYOUT_MONEY so every prompt has it, and the choose prompt defers to it.
+ */
+describe('returns', () => {
+  it('WAYOUT_MONEY allows a typical percentage and forbids a forecast on their money', () => {
+    expect(BLOCKS.WAYOUT_MONEY).toContain('RETURNS: A TYPICAL PERCENTAGE, NEVER A FORECAST ON THEIR MONEY.')
+    expect(BLOCKS.WAYOUT_MONEY).toContain('it depends on many factors')
+  })
+  it('the choose prompt defers to it rather than contradicting it', () => {
+    expect(BLOCKS.WAYOUT_CHOOSE_PROMPT).toContain('A typical yearly percentage for a kind of investment')
+  })
+})
