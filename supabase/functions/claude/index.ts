@@ -486,12 +486,27 @@ Deno.serve(async (req) => {
     }
 
     const admin    = serviceClient()
-    const toolId   = body.toolId ?? 'untagged'
-    const kind     = body.kind   ?? 'generate'
+    /**
+     * 🔴 THE CAP KEY USED TO BE WHATEVER THE CLIENT SAID IT WAS. "Help me
+     * choose" is capped at two a day on `wayout:choose` — and a caller could send
+     * the same promptKey with kind 'thread' and walk straight past it. Where the
+     * prompt decides what the call IS, the server decides the label.
+     */
+    const PINNED: Record<string, { toolId: string; kind: string }> = {
+      WAYOUT_CHOOSE_PROMPT: { toolId: 'wayout', kind: 'choose' },
+    }
+    const pinned   = body.promptKey ? PINNED[body.promptKey] : undefined
+    const toolId   = pinned?.toolId ?? body.toolId ?? 'untagged'
+    const kind     = pinned?.kind   ?? body.kind   ?? 'generate'
     // Clamped. An unbounded max_tokens makes any single request arbitrarily
     // expensive, which defeats a spend cap that can only measure after the fact.
     const maxTok   = Math.min(Math.max(1, body.maxTokens ?? 1024), MAX_TOKENS_CEILING)
-    const model    = body.model     ?? 'claude-sonnet-4-6'
+    // ⚠️ Unstuck Map's prompts only ever run on Sonnet or Haiku. A caller asking
+    // for anything else on them gets Sonnet — the model is not the client's to
+    // escalate on somebody else's spend cap.
+    const WAYOUT_MODELS = new Set(['claude-sonnet-4-6', 'claude-haiku-4-5'])
+    const asked    = body.model ?? 'claude-sonnet-4-6'
+    const model    = body.promptKey?.startsWith('WAYOUT_') && !WAYOUT_MODELS.has(asked) ? 'claude-sonnet-4-6' : asked
 
     // Authoritative cap check. The browser does its own optimistic check for
     // fast UX; this one is the real thing, and it runs on EVERY request.
@@ -569,7 +584,13 @@ Deno.serve(async (req) => {
       const text = await upstream.text().catch(() => '')
       console.error('[claude] upstream error', upstream.status, text.slice(0, 500))
       return json(
-        { error: `Anthropic error ${upstream.status}: ${text.slice(0, 200)}` },
+        // 🔴 The raw provider error used to reach the person verbatim
+        // ("Anthropic error 529: {json}"). It is logged above; they get a
+        // sentence they can act on.
+        { error: upstream.status === 529 || upstream.status === 503
+            ? 'That is busy right now. Try again in a minute.'
+            : 'That did not come back. Try again in a moment.',
+          code: `upstream_${upstream.status}` },
         502,
       )
     }
