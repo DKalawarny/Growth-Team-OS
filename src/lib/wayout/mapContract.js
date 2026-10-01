@@ -4,12 +4,7 @@
  * ⚠️ SPLIT OUT OF session.js SO IT CAN BE TESTED. This is the logic that
  * decides whether the seen card is allowed to render, which is the one thing in
  * this product that cannot be wrong — and it was sitting in a module that
- * // ⚠️ The .js extension is required, not stylistic. Vite resolves extensionless
-// imports; plain Node does not — and scripts/wayout-audit.mjs runs this module
-// under Node so the audit can use the very same guards the product uses,
-// rather than a copy that can drift from them.
-import { WAYOUT_READING } from '../../content/wayoutReading.js'
-imports the Supabase client, so it could not be loaded in a unit test at all.
+ * imports the Supabase client, so it could not be loaded in a unit test at all.
  * Pure in, pure out, no I/O.
  */
 
@@ -18,6 +13,7 @@ imports the Supabase client, so it could not be loaded in a unit test at all.
 // under Node so the audit can use the very same guards the product uses,
 // rather than a copy that can drift from them.
 import { WAYOUT_READING } from '../../content/wayoutReading.js'
+import { WAYOUT_SCREENS, WAYOUT_OPEN } from '../../content/wayoutIntake.js'
 
 /**
  * ⭐⭐ THE SEEN CARD IS THE ONE THING IN THIS PRODUCT THAT CANNOT BE WRONG.
@@ -36,6 +32,22 @@ import { WAYOUT_READING } from '../../content/wayoutReading.js'
  * words, and quoting it back as if they had said it is the same lie in a
  * smaller font.
  */
+/**
+ * ⭐⭐ WHICH ANSWERS ARE THEIR WORDS — DERIVED FROM THE INTAKE, NOT LISTED.
+ * This was a hand-kept list, and its own comment named the weakness: a free-text
+ * field left off it makes every quote from it unverifiable, so the seen card is
+ * dropped for being honest. On 1 Oct it was missing enough, coming, debt, refuse
+ * and alreadyTried — and two audit plans lost their most personal card ("enough
+ * to stop nights", "far less than I think") that way.
+ * Every `kind: 'text'` question counts, plus the open door, plus the few that
+ * live outside WAYOUT_SCREENS.
+ */
+const THEIR_WORDS_KEYS = [...new Set([
+  ...WAYOUT_SCREENS.flatMap(sc => sc.fields ?? []).filter(f => f.kind === 'text').map(f => f.key),
+  WAYOUT_OPEN?.field?.key,
+  'out', 'seasonNote', 'worstVersion', 'fromToward',
+].filter(Boolean))]
+
 export function enforceMapContract(map, answers) {
   const out = { ...map }
 
@@ -44,22 +56,10 @@ export function enforceMapContract(map, answers) {
   const allowed = allowedFigures(answers ?? {})
 
   const freeText = [
-    answers.out,
-    answers.immovablesNote,
-    answers.peopleNote,
-    answers.askedFor,
-    answers.paidFor,
-    answers.fiveYearTest,
-    answers.seasonNote,
-    answers.worstVersion,
-    answers.tuesday,
-    answers.fromToward,
+    ...THEIR_WORDS_KEYS.map(k => answers[k]),
     // ⚠️ ADDED AFTER THE PLAN, AND IT COUNTS AS THEIR WORDS LIKE ANY OTHER.
-    // This list is hand-maintained, which is its weakness: a new free-text
-    // field that is not added here silently makes every quote from it
-    // unverifiable, and the seen card gets dropped for being honest.
     ...(Array.isArray(answers.added) ? answers.added : []),
-  ].filter(Boolean).join('\n').toLowerCase()
+  ].filter(v => typeof v === 'string' && v).join('\n').toLowerCase()
 
   if (out.seen?.quote) {
     const quote = String(out.seen.quote).toLowerCase().trim()
@@ -998,12 +998,36 @@ const OFFERS_A_CHOICE = [
  * paraphrased, it is only stopped — and a sentence that made a false claim
  * about their money is better absent than repaired by a machine.
  */
+/**
+ * Split prose into sentences WITH their trailing whitespace, so joining the
+ * pieces back gives the original text exactly.
+ *
+ * 🔴🔴 THE OLD SPLITTER ATE EVERYTHING BEFORE A DECIMAL POINT. It matched
+ * /[^.!?]+[.!?]+/ — so "You would need 8.4 percent a year" became the sentence
+ * "4 percent a year", and a plan told somebody 4% where it had written 8.4%:
+ * a returns claim reversed by punctuation. It also dropped any closing text
+ * without a full stop, and cut "U.S." down to "S.".
+ * ⭐ A sentence ends at . ! or ? FOLLOWED BY WHITESPACE — a decimal point never
+ * is — and not after an initialism ("U.S.") or a common abbreviation.
+ */
+export function sentencesOf(text) {
+  const src = String(text ?? '')
+  if (!src.trim()) return []
+  const parts = src.split(/(?<=[.!?])(?<!\b[A-Z]\.[A-Z]\.)(?<!\b(?:[Ee]\.g|[Ii]\.e|vs|Mr|Mrs|Ms|Dr|St)\.)(\s+)/)
+  const out = []
+  for (let i = 0; i < parts.length; i += 2) {
+    const piece = parts[i] + (parts[i + 1] ?? '')
+    if (piece.trim()) out.push(piece)
+  }
+  return out
+}
+
 export function scrubFigures(text, answers = {}) {
   const src = String(text ?? '').trim()
   if (!src) return src
   const allowed = allowedFigures(answers ?? {})
 
-  const kept = (src.match(/[^.!?]+[.!?]+(?:\s|$)/g) ?? [src]).filter(sentence => {
+  const kept = (sentencesOf(src).length ? sentencesOf(src) : [src]).filter(sentence => {
     const figures = figuresIn(sentence)
     if (figures.some(f => !traceable(f, allowed))) return false
     if (speculativeProblem(sentence, figures.filter(f => traceable(f, allowed)), answers)) return false
@@ -1022,7 +1046,8 @@ function trimDetail(detail, allowed = null, answers = null, allowEmpty = false) 
   const text = String(detail ?? '').trim()
   if (!text) return text
 
-  const sentences = text.match(/[^.!?]+[.!?]+(?:\s|$)/g) ?? [text]
+  const split = sentencesOf(text)
+  const sentences = split.length ? split : [text]
   const kept = []
   for (const sentence of sentences) {
     // An instruction is dropped wherever it sits, not just past the limit.
@@ -1178,6 +1203,33 @@ const FIELD_IN_WORDS = {
   locationText: 'where you live',
 }
 
+/**
+ * ⭐ CHIP VALUES ARE OUR LABELS TOO. An audit plan said "at 58 with a cannot-fail
+ * constraint" and "which is what cannot-fail actually means" — the KEY of the
+ * chip they picked ("It can't fail — there's no cushion"), printed as if it were
+ * a word. FIELD_NAMES only knew field keys.
+ * ⚠️ Same discipline as FIELD_NAMES: only HYPHENATED compounds of letters, which
+ * cannot occur in a sentence by accident. "0-4" is an age range people write;
+ * "money" is a word. Read from the intake, so a new chip is covered on arrival.
+ */
+const CHIP_IN_WORDS = {
+  'cannot-fail': 'no room to fail',
+  'kids-home': 'kids at home',
+  'partner-job': 'your partner\u2019s job',
+  'family-proximity': 'being near family',
+}
+const CHIP_KEYS = [...new Set(
+  WAYOUT_SCREENS.flatMap(sc => sc.fields ?? []).flatMap(f => f.options ?? [])
+    .map(o => o?.key).filter(k => typeof k === 'string' && /^[a-z]+(-[a-z]+)+$/.test(k)),
+)]
+const chipRe = k => new RegExp(`(?<![\\w-])${k}(?![\\w-])`, 'g')
+
+/** Chip keys that reached prose. Reported by the audit harness; repaired by deJargon. */
+export function chipKeysLeaked(map) {
+  const text = JSON.stringify(map ?? {})
+  return CHIP_KEYS.filter(k => chipRe(k).test(text))
+}
+
 export function fieldNamesLeaked(map) {
   const text = JSON.stringify(map ?? {})
   return FIELD_NAMES.filter(name => new RegExp(`\\b${name}\\b`).test(text))
@@ -1192,9 +1244,13 @@ export function fieldNamesLeaked(map) {
  */
 function deJargon(value) {
   if (typeof value === 'string') {
-    return Object.entries(FIELD_IN_WORDS).reduce(
+    const fields = Object.entries(FIELD_IN_WORDS).reduce(
       (out, [key, words]) => out.replace(new RegExp(`\\b${key}\\b`, 'g'), words),
       value,
+    )
+    return CHIP_KEYS.reduce(
+      (out, key) => out.replace(chipRe(key), CHIP_IN_WORDS[key] ?? key.replace(/-/g, ' ')),
+      fields,
     )
   }
   if (Array.isArray(value)) return value.map(deJargon)

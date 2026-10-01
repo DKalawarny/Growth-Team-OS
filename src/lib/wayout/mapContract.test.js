@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { floorWithoutHousing, deriveStats, readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked } from './mapContract'
+import { floorWithoutHousing, deriveStats, readingIsReal, mapStyleNotes, inventedFigures, statIsFounded, enforceMapContract, mapProblems, looksColdClimate, relocationIsBlocked, scrubFigures, sentencesOf, chipKeysLeaked } from './mapContract'
 import { choosePath } from '../../content/wayoutDiagnostic'
 
 /**
@@ -1044,5 +1044,64 @@ describe('a stat labelled for one quantity, showing another', () => {
     expect(statIsFounded({ label: 'How long your savings cover', value: 4 }, ray)).toBe(false)
     expect(statIsFounded({ label: 'How long your savings cover', value: 4 }, { ...ray, savings: 4 }))
       .toBe(true)
+  })
+})
+
+/**
+ * 🔴🔴 THE SPLITTER ATE EVERYTHING BEFORE A DECIMAL POINT. "You would need 8.4
+ * percent a year" was shown as "4 percent a year" — a returns claim reversed by
+ * punctuation, found in a real audit plan on 1 Oct. These fail against the old
+ * /[^.!?]+[.!?]+/ splitter and pass against sentencesOf.
+ */
+describe('sentence splitting keeps decimals and initialisms', () => {
+  const answers = { mustPay: '4200', takeHome: '3800' }
+  it('8.4 percent stays 8.4 percent', () => {
+    const out = scrubFigures('To clear $4,200 a month it would need 8.4 percent a year. That is above typical.', answers)
+    expect(out).toBe('To clear $4,200 a month it would need 8.4 percent a year. That is above typical.')
+  })
+  it('$1.5M and U.S. do not split a sentence', () => {
+    const out = scrubFigures('A buyer in the U.S. might pay more. Your $4,200 stays the number to beat.', answers)
+    expect(out).toContain('A buyer in the U.S. might pay more.')
+    expect(out).toContain('Your $4,200 stays the number to beat.')
+  })
+  it('$1.5M, e.g. and U.S. are not sentence ends; joining gives the text back', () => {
+    const t = 'It sold for $1.5M in the U.S. last year. E.g. a flip. Then stop'
+    expect(sentencesOf(t)).toEqual(['It sold for $1.5M in the U.S. last year. ', 'E.g. a flip. ', 'Then stop'])
+    expect(sentencesOf(t).join('')).toBe(t)
+  })
+  it('closing text without a full stop is kept', () => {
+    expect(scrubFigures('Your $3,800 covers it. Nothing else to add', answers)).toBe('Your $3,800 covers it. Nothing else to add')
+  })
+  it('a sentence with a figure that is not theirs still goes, whole', () => {
+    expect(scrubFigures('Your $3,800 is what comes in. A room runs $1,450 a month.', answers)).toBe('Your $3,800 is what comes in.')
+  })
+})
+
+/**
+ * ⭐ A chip's KEY is our label, not a word — an audit plan said "at 58 with a
+ * cannot-fail constraint". Validated both ways: the keys are caught, and the
+ * strings around them that are ordinary English are not.
+ */
+describe('chip keys leaking into prose', () => {
+  it('catches a chip key printed as a word', () => {
+    expect(chipKeysLeaked({ headline: 'At 58 with a cannot-fail constraint' })).toEqual(['cannot-fail'])
+  })
+  it('leaves age ranges, ordinary hyphenation and near-misses alone', () => {
+    expect(chipKeysLeaked({ headline: 'Kids 0-4 and 5-11; a must-have, a co-op, money that cannot fail to arrive, non-cannot-fail' })).toEqual([])
+  })
+  it('the contract repairs it, so the person never sees the key', () => {
+    const out = enforceMapContract({ headline: 'At 58 with a cannot-fail plan', moves: [] }, {})
+    expect(out.headline).toBe('At 58 with a no room to fail plan')
+    expect(chipKeysLeaked(out)).toEqual([])
+  })
+})
+
+describe('the seen card counts every free-text answer as their words', () => {
+  const m = { headline: 'h', seen: { quote: 'enough to stop nights', point: 'p' }, moves: [] }
+  it('⭐ a quote from "enough" (missing from the old hand-kept list) is kept', () => {
+    expect(enforceMapContract(m, { enough: 'Enough to stop nights and see the kids.' }).seen.quote).toBe('enough to stop nights')
+  })
+  it('a quote that is not in their words is still dropped', () => {
+    expect(enforceMapContract(m, { enough: 'about 6000' }).seen?.quote).toBeFalsy()
   })
 })

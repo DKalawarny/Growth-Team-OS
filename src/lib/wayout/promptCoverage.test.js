@@ -148,3 +148,39 @@ describe('second person', () => {
     expect(BLOCKS.WAYOUT_VOICE).toContain('WRITE TO THEM. "YOU", ALWAYS. NEVER ABOUT THEM.')
   })
 })
+
+/**
+ * ⭐ The 1 Oct AI-writing audit. Each rule below was broken in real output and
+ * lives in a shared block so every prompt gets it; these pin that it is still
+ * there and still in the block that reaches every prompt.
+ */
+describe('1 Oct audit rules', () => {
+  it('money: spare is not short, and ending work ends its pay', () => {
+    expect(BLOCKS.WAYOUT_MONEY).toContain('SPARE IS NOT SHORT.')
+    expect(BLOCKS.WAYOUT_MONEY).toContain('A MOVE THAT ENDS WORK ENDS THE PAY FROM IT.')
+    expect(BLOCKS.WAYOUT_MONEY).toContain('needs about 8.4% a year, every year')
+  })
+  it('safety: unknown parts of a sum are named, not estimated; crisis replies carry no guilt', () => {
+    expect(BLOCKS.WAYOUT_SAFETY).toContain('IF ONE PART OF A SUM IS A NUMBER THEY DID NOT GIVE YOU')
+    expect(BLOCKS.WAYOUT_SAFETY).toContain('HOW A CRISIS REPLY SPEAKS.')
+    expect(BLOCKS.WAYOUT_SAFETY).not.toContain('A transition house takes\n    women')
+  })
+  it('method: a thing they named is a fact everywhere, and a town is not a market', () => {
+    expect(BLOCKS.WAYOUT_METHOD).toContain('A thing they NAMED is a fact. Everything about it is not:')
+    expect(BLOCKS.WAYOUT_METHOD).toContain('Never state a local price, wage or timing as fact')
+    expect(BLOCKS.WAYOUT_METHOD).toContain('THIS IS THE ONE PLACE THE RULE ON NAMING WHO TO ASK LIVES.')
+  })
+  it('voice: no "I", no chip labels, no telling them how to feel, planner jargon written out', () => {
+    expect(BLOCKS.WAYOUT_VOICE).toContain('never "I"')
+    expect(BLOCKS.WAYOUT_VOICE).toContain('A CHIP THEY TAPPED IS OUR LABEL')
+    expect(BLOCKS.WAYOUT_VOICE).toContain('NEVER TELL THEM HOW TO FEEL')
+    expect(BLOCKS.WAYOUT_VOICE).toContain('sequence risk, drawdown, risk tolerance')
+  })
+  it('thread: no one-line go-ahead for an irreversible step', () => {
+    expect(BLOCKS.WAYOUT_THREAD_PROMPT).toContain('NEVER GREENLIGHT AN IRREVERSIBLE STEP IN ONE LINE.')
+  })
+  it('🔴 names do not cross products: no wayout prompt calls itself Solomon', () => {
+    for (const name of CONSUMERS) expect(BLOCKS[name], name).not.toContain('Solomon')
+    for (const name of SHARED) expect(BLOCKS[name], name).not.toContain('Solomon')
+  })
+})
