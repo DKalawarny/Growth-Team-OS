@@ -137,3 +137,14 @@ describe('returns', () => {
     expect(BLOCKS.WAYOUT_CHOOSE_PROMPT).toContain('A typical yearly percentage for a kind of investment')
   })
 })
+
+/**
+ * ⭐ Written TO them — Daniel, 1 Oct: "what danny said thats me why worded like
+ * that." The rule had lived only inside the crisis section of WAYOUT_SAFETY,
+ * where it read as crisis-only. It belongs to the voice of everything.
+ */
+describe('second person', () => {
+  it('WAYOUT_VOICE carries it for every prompt', () => {
+    expect(BLOCKS.WAYOUT_VOICE).toContain('WRITE TO THEM. "YOU", ALWAYS. NEVER ABOUT THEM.')
+  })
+})

@@ -899,12 +899,17 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
  */
 export async function chooseBetween({ session, versions }) {
   const answers = session?.answers ?? {}
+  // 🔴 THE NAME WAS THE INVITATION. A comparison is the most report-shaped thing
+  // this product writes, and with "name": "Danny" in front of it the model wrote
+  // "Danny said he wanted…" — about him, to him. It does not need the name to
+  // compare plans, so it does not get it. Structural, not just a rule.
+  const { name: _name, ...unnamed } = answers
   const raw = await callClaude({
     promptKey: 'WAYOUT_CHOOSE_PROMPT',
     messages: [{
       role: 'user',
       content: JSON.stringify({
-        answers,
+        answers: unnamed,
         versions: versions.map(v => ({
           n: v.n,
           name: v.label,
