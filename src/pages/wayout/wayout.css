@@ -2969,8 +2969,7 @@ h1.wayout__heroline {
   margin: 4px 0 18px; padding: 14px 16px 16px;
   border: 1px solid var(--line); border-radius: 12px; background: var(--paper, transparent);
 }
-.wayout__version--undone { opacity: .62; }
-.wayout__version--undone .wayout__versionchanges b { text-decoration: line-through; }
+.wayout__version.is-on { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green); }
 .wayout__versionhead {
   margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green);
 }
@@ -2986,6 +2985,31 @@ h1.wayout__heroline {
 .wayout__versionlook {
   display: inline-block; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--green);
 }
-.wayout__versionask { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 12px; }
-.wayout__versionask .wayout__threadundo { margin: 0; font-size: 14px; }
+.wayout__versionuse { margin-top: 12px; font-size: 13.5px; }
+.wayout__versionbadge {
+  margin-left: 10px; padding: 2px 8px; border-radius: 99px; background: var(--green); color: #fff;
+  font-size: 10.5px; letter-spacing: .06em; vertical-align: 1px;
+}
+
+/* The switcher: every plan the thread holds, the one showing filled in. */
+.wayout__versions { margin: 6px 0 4px; }
+.wayout__versionshead { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.wayout__versionsrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.wayout__versionchip {
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  padding: 8px 14px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--ink);
+}
+.wayout__versionchip:hover:not(:disabled) { border-color: var(--ink); }
+.wayout__versionchip.is-on { background: var(--green); border-color: var(--green); color: #fff; cursor: default; }
+.wayout__versionchip:disabled:not(.is-on) { opacity: .5; cursor: default; }
+
+/* Dropping an idea states what it will do before it does it. */
+.wayout__dropask { margin: 10px 0 0 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.wayout__dropask p { flex-basis: 100%; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.wayout__dropask .wayout__threadundo { margin: 0; font-size: 14px; }
 .wayout__version--pending .wayout__working { margin-top: 12px; }
+/* ⚠️ The drop question sits inside their bubble's block and would otherwise
+   inherit the bubble — it is our question, not their words. */
+.wayout__threadmine .wayout__dropask p {
+  background: none; padding: 0; border-radius: 0; font-weight: 400; max-width: none;
+}

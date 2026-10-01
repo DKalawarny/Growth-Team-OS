@@ -11,7 +11,7 @@ import { editDestination } from '../../lib/wayout/sessionHome'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread from './PlanThread'
-import { threadVersions, planChanges, canGoBack } from '../../lib/wayout/planVersions'
+import { threadVersions, planChanges, showingVersion, versionList, dropIdea, samePlan } from '../../lib/wayout/planVersions'
 import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
@@ -318,8 +318,8 @@ export default function Plan() {
      */
     const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
     const about = lastMine > -1 ? thread[lastMine].content : null
-    const versions = threadVersions(thread)
-    const pending = { about, version: versions.next, from: versions.current }
+    const showing = showingVersion(thread, session.map)
+    const pending = { about, version: threadVersions(thread).next, from: showing ?? 1 }
     setThreadBuild(pending)
     setThreadErr('')
     const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
@@ -331,15 +331,18 @@ export default function Plan() {
       return
     }
     /**
-     * ⚠️ THE PREVIOUS MAP IS NOT STORED ON THE ENTRY. It lives in `map_history`,
-     * tagged with this entry's id, so the thread — which reaches the model as
-     * `so_far` — never carries a map, and "go back" can prove the plan it
-     * would restore is the one this entry replaced.
+     * ⭐⭐ THE VERSION CARRIES ITS OWN PLAN, and the first one carries the
+     * original as `base` — so any of them can be put back later, in any order,
+     * without a model call. See planVersions.js for why a map on a thread entry
+     * can never reach a prompt.
      */
+    const first = !versionList(thread).length
     const marked = [...thread, {
       role: 'assistant', rebuilt: true, id, at: new Date().toISOString(),
       version: pending.version, from: pending.from, about,
       changes: planChanges(before, after),
+      map: after,
+      ...(first && before ? { base: before } : {}),
       content: 'Rewritten around that.',
     }]
     setThread(marked)
@@ -348,38 +351,49 @@ export default function Plan() {
   }
 
   /**
-   * ⭐⭐ KEEP IT. Nothing is written to the plan — it is already the plan. What
-   * it settles is the QUESTION: the version stops offering a way back, and the
-   * thread says it was chosen rather than leaving two live buttons per rewrite.
+   * ⭐⭐ PUT ANY VERSION ON THE PLAN — the original included. Daniel: "you cant
+   * switch between the options or go back to original idea." The previous
+   * design undid one step at a time and then forgot; every version now holds
+   * its own plan, so switching is a write of something already stored: no
+   * model call, no cost, nothing regenerated, and it can be switched back.
+   * ⚠️ Through saveMapKeepingLast, so the "put the previous plan back" control
+   * under the plan still undoes the switch like any other change.
    */
-  function keepRebuild(i) {
-    if (!session) return
-    const next = thread.map((m, j) => (j === i ? { ...m, kept: true } : m))
-    setThread(next)
-    savePlanThread(session.id, next)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  async function switchVersion(version) {
+    if (!session || building) return
+    const target = versionList(thread).find(v => v.version === version)
+    if (!target || samePlan(target.map, session.map)) return
+    setThreadErr('')
+    try {
+      const kept = await saveMapKeepingLast(session.id, target.map, session.map ?? null, session.map_history ?? [], `switch:${version}`)
+      setSession(c => (c ? { ...c, map: target.map, map_history: kept } : c))
+      setMap(enforceMapContract(target.map, session.answers))
+    } catch (err) {
+      setThreadErr(err.message)
+    }
   }
 
   /**
-   * ⭐⭐ GO BACK — TO THE PLAN THIS VERSION REPLACED, AND ONLY THAT ONE.
-   * 🔴🔴 Every "Put the plan back" in the thread used to pop the same shared
-   * stack, so the button on the FIRST rewrite undid the LAST one, and none of
-   * them disappeared. Each one now proves the newest saved plan is the one it
-   * replaced (`why === thread:<id>`) or it is not offered at all.
+   * ⭐⭐ GET RID OF THE IDEA. Daniel: "there is no way to just get rid of the
+   * idea." Taking a sentence back only worked before a rebuild — after one, the
+   * idea was in the plan for good. Now dropping it removes the sentence, its
+   * reply and every version built from it, and puts back the plan that was
+   * there before it was said. The rules (and why "everything after it" goes
+   * too) are in planVersions.dropIdea.
    */
-  async function undoRebuild(i) {
-    if (!session || building) return
-    const history = session.map_history ?? []
-    if (!canGoBack(thread, i, history)) return
+  async function dropIdeaAt(i) {
+    if (!session || building || asking) return
+    const out = dropIdea(thread, i)
+    if (!out) return
+    setThreadErr('')
     try {
-      const out = await restorePreviousMap(session.id, history)
-      if (!out) return
-      setMap(enforceMapContract(out.map, session.answers))
-      setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
-      const next = thread.map((m, j) => (j === i ? { ...m, undone: true } : m))
-      setThread(next)
-      savePlanThread(session.id, next)
-        .catch(err => console.warn('[wayout] thread not saved:', err.message))
+      if (out.restore && !samePlan(out.restore, session.map)) {
+        const kept = await saveMapKeepingLast(session.id, out.restore, session.map ?? null, session.map_history ?? [], 'drop')
+        setSession(c => (c ? { ...c, map: out.restore, map_history: kept } : c))
+        setMap(enforceMapContract(out.restore, session.answers))
+      }
+      setThread(out.thread)
+      await savePlanThread(session.id, out.thread)
     } catch (err) {
       setThreadErr(err.message)
     }
@@ -625,47 +639,16 @@ export default function Plan() {
       if (!out) return
       setMap(enforceMapContract(out.map, session.answers))
       setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
-      // ⚠️ If the plan it put back was replaced by a thread version, THAT
-      // version is what was undone — say so on it, not in a new line that
-      // leaves the version above still offering to go back.
-      const tag = String(history[0]?.why ?? '')
-      const at = tag.startsWith('thread:') ? thread.findIndex(m => m.id === tag.slice(7)) : -1
-      const note = at > -1
-        ? thread.map((m, j) => (j === at ? { ...m, undone: true } : m))
-        : [...thread, {
-          role: 'assistant', at: new Date().toISOString(),
-          content: 'Put back the way it was.',
-        }]
+      const note = [...thread, {
+        role: 'assistant', at: new Date().toISOString(),
+        content: 'Put back the way it was.',
+      }]
       setThread(note)
       savePlanThread(session.id, note)
         .catch(err => console.warn('[wayout] thread not saved:', err.message))
     } catch (err) {
       setError(err.message)
     }
-  }
-
-  async function undoLastSaid() {
-    if (!session || asking) return
-    const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
-    if (lastMine < 0) return
-    /**
-     * 🔴🔴 THIS TRUNCATED TO THE END AND COULD TAKE A REBUILD MARKER WITH IT —
-     * which is the ONLY route back to a previous plan. Daniel, after using it:
-     * "nothing there to bring it back." Undoing a sentence must never be able
-     * to destroy the record of a plan being rewritten; those are different
-     * objects and one of them holds the way home.
-     * ⚠️ Belt and braces with the guard in PlanThread, which does not offer the
-     * control at all once a rebuild has happened. A control that cannot be
-     * pressed and a function that refuses are two different protections, and
-     * this one is cheap.
-     */
-    const next = [
-      ...thread.slice(0, lastMine),
-      ...thread.slice(lastMine).filter(m => m.rebuilt === true),
-    ]
-    setThread(next)
-    savePlanThread(session.id, next)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
   }
 
   async function sayToPlan(said) {
@@ -710,10 +693,9 @@ export default function Plan() {
        * answers-rebuild has nothing to do with whether their life changed.
        */
       onRedoFromThread={past ? null : redoFromThread}
-      onUndoSaid={past ? null : undoLastSaid}
-      onKeepVersion={past ? null : keepRebuild}
-      onUndoVersion={past ? null : undoRebuild}
-      mapHistory={session?.map_history ?? []}
+      onDropIdea={past ? null : dropIdeaAt}
+      onSwitchVersion={past ? null : switchVersion}
+      liveMap={session?.map ?? null}
       threadBuild={threadBuild}
       threadErr={threadErr}
       onRestore={past || !(session?.map_history ?? []).length ? null : restorePlan}
@@ -850,7 +832,7 @@ function WorthAsk({ onSave }) {
  * that cannot work would be worse than not offering one.
  */
 export function Map({
-  map, onRebuild, onRedoFromThread, onUndoSaid, onRestore, onKeepVersion, onUndoVersion, mapHistory = [], threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
+  map, onRebuild, onRedoFromThread, onDropIdea, onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
@@ -1324,11 +1306,10 @@ export function Map({
           rebuilding={rebuilding}
           pending={threadBuild}
           error={threadErr}
-          history={mapHistory}
+          liveMap={liveMap}
           onRedo={onRedoFromThread ?? undefined}
-          onUndo={onUndoSaid ?? undefined}
-          onKeep={onKeepVersion ?? undefined}
-          onGoBack={onUndoVersion ?? undefined}
+          onDrop={onDropIdea ?? undefined}
+          onSwitch={onSwitchVersion ?? undefined}
         />
       )}
       {Array.isArray(map.cut) && map.cut.length > 0 && (

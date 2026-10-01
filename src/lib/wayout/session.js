@@ -936,7 +936,9 @@ export async function restorePreviousMap(sessionId, history = []) {
 export async function savePlanThread(sessionId, thread) {
   const { error } = await supabase
     .from('wayout_sessions')
-    .update({ plan_thread: thread.slice(-WAYOUT_MAX_PLAN_ASKS * 2) })
+    // ⚠️ VERSIONS ARE NEVER TRIMMED. They hold the plans — the first one holds
+    // the original — so cutting the oldest turns must not cut a way back.
+    .update({ plan_thread: thread.filter((m, i) => m?.rebuilt || i >= thread.length - WAYOUT_MAX_PLAN_ASKS * 2) })
     .eq('id', sessionId)
   if (error) throw new Error(error.message)
 }

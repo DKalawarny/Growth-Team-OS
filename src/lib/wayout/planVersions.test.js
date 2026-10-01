@@ -1,74 +1,87 @@
 import { describe, it, expect } from 'vitest'
-import { threadVersions, planChanges, canGoBack, versionAbout } from './planVersions'
+import {
+  threadVersions, versionList, showingVersion, samePlan, dropIdea, planChanges, versionAbout,
+} from './planVersions'
 
 const said = c => ({ role: 'user', content: c })
 const reply = c => ({ role: 'assistant', content: c })
 const map = (...t) => ({ moves: t.map(title => ({ title })) })
+const V1 = map('Kissimmee'), V2 = map('Three markets'), V3 = map('Monthly number')
+
+// The shape of Daniel's thread on 30 Sep: one idea, two rewrites around it.
+const daniel = () => [
+  said('flip instead'), reply('That changes move one.'),
+  { role: 'assistant', rebuilt: true, version: 2, from: 1, base: V1, map: V2 },
+  { role: 'assistant', rebuilt: true, version: 3, from: 2, map: V3 },
+]
 
 describe('threadVersions', () => {
-  it('numbers rewrites from 2, each built on the one before', () => {
-    const t = [said('a'), reply('r'), { rebuilt: true }, said('b'), { rebuilt: true }]
-    const v = threadVersions(t)
-    expect(v.at[2]).toEqual({ version: 2, from: 1 })
-    expect(v.at[4]).toEqual({ version: 3, from: 2 })
-    expect(v.current).toBe(3)
+  it('numbers rewrites from 2, legacy entries in order', () => {
+    const v = threadVersions([said('a'), { rebuilt: true }, { rebuilt: true }])
+    expect(v.at[1].version).toBe(2)
+    expect(v.at[2].version).toBe(3)
     expect(v.next).toBe(4)
   })
+})
 
-  it('an undone version hands current back to the one it replaced', () => {
-    const t = [{ rebuilt: true, version: 2, from: 1, undone: true }]
-    expect(threadVersions(t).current).toBe(1)
-    expect(threadVersions(t).next).toBe(3)
+describe('versionList', () => {
+  it('the original first, then every version that kept its map', () => {
+    expect(versionList(daniel()).map(v => v.label)).toEqual(['Original', 'Version 2', 'Version 3'])
   })
+  it('nothing to switch between with no rewrites', () => {
+    expect(versionList([said('a'), reply('b')])).toEqual([])
+  })
+})
 
-  it('an empty thread is version 1', () => {
-    expect(threadVersions([])).toEqual({ at: {}, current: 1, next: 2 })
+describe('showingVersion', () => {
+  it('reads which version is on the plan from the plan itself', () => {
+    expect(showingVersion(daniel(), V3)).toBe(3)
+    expect(showingVersion(daniel(), V1)).toBe(1)
+    expect(showingVersion(daniel(), map('rebuilt from the answers'))).toBe(null)
+  })
+  it('jsonb reorders keys and that is still the same plan', () => {
+    expect(samePlan({ a: 1, b: { c: 2, d: 3 } }, { b: { d: 3, c: 2 }, a: 1 })).toBe(true)
+    expect(samePlan({ a: 1 }, { a: 2 })).toBe(false)
+  })
+})
+
+describe('dropIdea', () => {
+  it('⭐ drops the idea and its versions and puts the ORIGINAL back', () => {
+    const out = dropIdea(daniel(), 0)
+    expect(out.thread).toEqual([])
+    expect(out.restore).toEqual(V1)
+    expect(out.to).toBe('Original')
+  })
+  it('a later idea goes back to the version before it, not the original', () => {
+    const t = [...daniel(), said('buyer pulled out'), reply('r'),
+      { role: 'assistant', rebuilt: true, version: 4, from: 3, map: map('Relist') }]
+    const out = dropIdea(t, 4)
+    expect(out.thread).toHaveLength(4)
+    expect(out.restore).toEqual(V3)
+    expect(out.to).toBe('Version 3')
+  })
+  it('an idea nothing was built from leaves the plan alone', () => {
+    const out = dropIdea([...daniel(), said('typo'), reply('r')], 4)
+    expect(out.thread).toHaveLength(4)
+    expect(out.restore).toBe(null)
+  })
+  it('only something they said can be dropped', () => {
+    expect(dropIdea(daniel(), 1)).toBe(null)
   })
 })
 
 describe('planChanges', () => {
-  it('names each move whose title changed', () => {
-    expect(planChanges(map('Kissimmee', 'Apps'), map('Texas flip', 'Apps')))
-      .toEqual([{ order: 1, before: 'Kissimmee', after: 'Texas flip' }])
-  })
-  it('an added or dropped move counts', () => {
-    expect(planChanges(map('A'), map('A', 'B'))).toEqual([{ order: 2, before: null, after: 'B' }])
-  })
-  it('identical moves are no change', () => {
-    expect(planChanges(map('A', 'B'), map('A', 'B'))).toEqual([])
-  })
-})
-
-describe('canGoBack', () => {
-  const v = (extra = {}) => ({ rebuilt: true, id: 'x1', ...extra })
-  const hist = why => [{ map: map('old'), why }]
-
-  it('the newest version may go back to the plan it replaced', () => {
-    expect(canGoBack([said('a'), v()], 1, hist('thread:x1'))).toBe(true)
-  })
-  it('🔴 an older version may not — the button on the first rewrite used to undo the last', () => {
-    const t = [v({ id: 'x0' }), said('b'), v()]
-    expect(canGoBack(t, 0, hist('thread:x1'))).toBe(false)
-  })
-  it('not once the plan was rewritten by something else since', () => {
-    expect(canGoBack([v()], 0, hist('rebuild'))).toBe(false)
-  })
-  it('not once kept or undone, and not with nothing saved', () => {
-    expect(canGoBack([v({ kept: true })], 0, hist('thread:x1'))).toBe(false)
-    expect(canGoBack([v({ undone: true })], 0, hist('thread:x1'))).toBe(false)
-    expect(canGoBack([v()], 0, [])).toBe(false)
-  })
-  it('a legacy entry with no id may go back over an untagged rebuild', () => {
-    expect(canGoBack([{ rebuilt: true }], 0, [{ map: map('old') }])).toBe(true)
-  })
-  it('a message is never a version', () => {
-    expect(canGoBack([said('a')], 0, hist('rebuild'))).toBe(false)
+  it('names each move whose title changed, including added and dropped', () => {
+    expect(planChanges(map('A', 'B'), map('X', 'B', 'C'))).toEqual([
+      { order: 1, before: 'A', after: 'X' }, { order: 3, before: null, after: 'C' },
+    ])
+    expect(planChanges(map('A'), map('A'))).toEqual([])
   })
 })
 
 describe('versionAbout', () => {
   it('uses the stored sentence, else the last thing they said before it', () => {
     expect(versionAbout([{ rebuilt: true, about: 'x' }], 0)).toBe('x')
-    expect(versionAbout([said('flip instead'), reply('r'), { rebuilt: true }], 2)).toBe('flip instead')
+    expect(versionAbout(daniel(), 3)).toBe('flip instead')
   })
 })

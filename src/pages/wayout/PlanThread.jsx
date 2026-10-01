@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
-import { threadVersions, canGoBack, versionAbout } from '../../lib/wayout/planVersions'
+import { threadVersions, versionList, showingVersion, dropIdea, versionAbout } from '../../lib/wayout/planVersions'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -27,11 +27,14 @@ import { threadVersions, canGoBack, versionAbout } from '../../lib/wayout/planVe
  * on the other side of trying it.
  */
 export default function PlanThread({
-  thread = [], onSay, onRedo, onUndo, onKeep, onGoBack, busy = false, rebuilding = false,
-  pending = null, error = '', history = [],
+  thread = [], onSay, onRedo, onDrop, onSwitch, busy = false, rebuilding = false,
+  pending = null, error = '', liveMap = null,
 }) {
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
+  // ⚠️ Dropping removes what they said, so it asks once, inline — never a
+  // browser dialog.
+  const [confirmAt, setConfirmAt] = useState(-1)
 
   const mine  = thread.filter(m => m.role === 'user').length
   const spent = mine >= WAYOUT_MAX_PLAN_ASKS
@@ -52,18 +55,12 @@ export default function PlanThread({
    * actually happening — which writes its own entry below.
    */
   const lastMine  = thread.map(m => m.role === 'user').lastIndexOf(true)
-  /**
-   * ⚠️ ONCE THE PLAN HAS BEEN REWRITTEN AROUND SOMETHING, IT CANNOT BE TAKEN
-   * BACK. The plan in front of them is built on it, so withdrawing the sentence
-   * would leave a plan standing on a message that no longer exists — and would
-   * delete the only entry that can put the old plan back.
-   */
-  const canUndo   = !thread.slice(thread.map(m => m.role === 'user').lastIndexOf(true))
-    .some(m => m.rebuilt === true)
   const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
   const versions  = threadVersions(thread)
+  const plans     = versionList(thread)
+  const showing   = showingVersion(thread, liveMap)
   const quiet     = busy || rebuilding
 
   async function send() {
@@ -81,37 +78,33 @@ export default function PlanThread({
         being true, say so here and it will tell you what it moves.
       </p>
 
-      {/* ⭐⭐ A WAY BACK OUT OF SOMETHING YOU JUST SAID. There was none — every
-          message was permanent the moment it sent, so a typo, a duplicate or a
-          sentence that came out wrong sat in the plan's history forever and
-          went into the next rebuild as if it were meant. Daniel: "no way to
-          delete it or go back."
-          ⚠️ THE LAST EXCHANGE ONLY, and only their own. Editing further back
-          would rewrite a conversation the plan was already built on; taking
-          back the thing you just said is a different act from revising
-          history. */}
+      {/* ⭐⭐ ANY IDEA CAN BE DROPPED, NOT ONLY THE LAST ONE BEFORE A REBUILD.
+          "Take that back" vanished the moment a rebuild happened, which left
+          an idea in the plan for good. Daniel: "there is no way to just get rid
+          of the idea." Dropping now takes the sentence, its reply and every
+          version built from it, and says first exactly what it will do. */}
       {thread.map((m, i) => m.rebuilt ? (
         <Version
           key={i}
           m={m}
           v={versions.at[i]}
           about={versionAbout(thread, i)}
-          later={Object.entries(versions.at).find(([j]) => Number(j) > i)?.[1]?.version}
-          live={!quiet && canGoBack(thread, i, history)}
-          onKeep={onKeep ? () => onKeep(i) : null}
-          onGoBack={onGoBack ? () => onGoBack(i) : null}
+          showing={showing === versions.at[i]?.version}
+          onSwitch={onSwitch && m.map && !quiet ? () => onSwitch(versions.at[i].version) : null}
         />
       ) : (
         <div key={i} className={m.role === 'user' ? 'wayout__threadmine' : 'wayout__threadreply'}>
           <p>{m.content}</p>
-          {/* ⚠️ INSIDE THE BUBBLE'S BLOCK AND ALIGNED TO IT. Sitting between the
-              two speakers it read as a heading on the reply rather than a
-              control on the thing said above it — Daniel: "this is a bit
-              confusing how its set up." */}
-          {onUndo && canUndo && m.role === 'user' && i === lastMine && !quiet && (
-            <button type="button" className="wayout__threadundo" onClick={onUndo}>
-              Take that back
-            </button>
+          {/* ⚠️ INSIDE THE BUBBLE'S BLOCK AND ALIGNED TO IT — a control sits on
+              the thing it acts on. */}
+          {onDrop && m.role === 'user' && !quiet && (
+            <Drop
+              thread={thread} i={i}
+              asking={confirmAt === i}
+              onAsk={() => setConfirmAt(i)}
+              onCancel={() => setConfirmAt(-1)}
+              onDrop={() => { setConfirmAt(-1); onDrop(i) }}
+            />
           )}
         </div>
       ))}
@@ -122,10 +115,39 @@ export default function PlanThread({
           <p className="wayout__versionhead">Version {pending.version}</p>
           {pending.about && <p className="wayout__versionabout">Rewriting the plan around “{pending.about}”</p>}
           <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
-          <p className="wayout__versionnote">Up to a minute. Version {pending.from} stays until this one is ready.</p>
+          <p className="wayout__versionnote">Up to a minute. Your plan stays on {nameOf(pending.from)} until this one is ready.</p>
         </div>
       )}
       {error && !pending && <p className="wayout__error">{error}</p>}
+
+      {/* ⭐⭐ WHICH PLAN IS SHOWING, AND EVERY OTHER ONE A CLICK AWAY. Daniel:
+          "you cant switch between the options or go back to original idea."
+          Read from the plan itself, so it cannot claim a version is showing
+          when it is not. Switching regenerates nothing. */}
+      {plans.length > 1 && (
+        <div className="wayout__versions" role="group" aria-label="Which plan is showing">
+          <p className="wayout__versionshead">Showing on your plan</p>
+          <div className="wayout__versionsrow">
+            {plans.map(v => (
+              <button
+                key={v.version}
+                type="button"
+                className={`wayout__versionchip${showing === v.version ? ' is-on' : ''}`}
+                aria-pressed={showing === v.version}
+                disabled={!onSwitch || quiet || showing === v.version}
+                onClick={() => onSwitch(v.version)}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+          {showing == null && (
+            <p className="wayout__versionnote">
+              Your plan was rebuilt since — none of these is showing.
+            </p>
+          )}
+        </div>
+      )}
 
       {busy && <p className="wayout__threadreply wayout__askwait">Reading that.</p>}
 
@@ -225,28 +247,53 @@ export default function PlanThread({
   )
 }
 
+function nameOf(version) {
+  return version === 1 ? 'the original plan' : `version ${version}`
+}
+
 /**
- * ⭐⭐ ONE REWRITE OF THE PLAN, AS A THING YOU CAN DECIDE ABOUT.
- *
- * Daniel's flow, in his words: "write something, see the change, change it if
- * liked or not and change back." So a version says which number it is, what it
- * was built around, what it moved and where to look — and then asks one
- * question with two answers. Once answered, the question goes and the answer
- * stays, so a thread with three rewrites reads as three decisions rather than
- * three identical lines each with a live button.
- *
- * ⚠️ ONLY THE NEWEST VERSION ASKS. An older one has been built on since; going
- * back from it would skip the plans in between, which is not what anybody
- * means by "change back". `live` is computed by `canGoBack`, which also
- * proves the plan it would restore is the one this version replaced.
+ * "Drop this idea", with the consequence stated before it happens.
+ * ⚠️ Everything after it goes too — see planVersions.dropIdea for why.
  */
-function Version({ m, v, about, later, live, onKeep, onGoBack }) {
+function Drop({ thread, i, asking, onAsk, onCancel, onDrop }) {
+  const out = dropIdea(thread, i)
+  if (!out) return null
+  const more = thread.slice(i + 1).some(m => m?.role === 'user')
+  const back = out.restore ? (out.to === 'Original' ? 'the original plan' : out.to.toLowerCase()) : null
+  if (!asking) {
+    return (
+      <button type="button" className="wayout__threadundo" onClick={onAsk}>
+        Drop this idea
+      </button>
+    )
+  }
+  return (
+    <div className="wayout__dropask">
+      <p>
+        {more ? 'This and everything said after it goes' : 'This and the reply to it go'}
+        {back ? `, and your plan goes back to ${back}.` : '. Your plan does not change.'}
+      </p>
+      <button type="button" className="wayout__btn" onClick={onDrop}>Drop it</button>
+      <button type="button" className="wayout__threadundo" onClick={onCancel}>Keep it</button>
+    </div>
+  )
+}
+
+/**
+ * ⭐⭐ ONE REWRITE OF THE PLAN — numbered, saying what it was built around and
+ * what it moved, and saying whether it is the one on the plan right now. Any
+ * version can be switched to from here or from the row below; nothing about
+ * an older version is locked because a newer one exists.
+ */
+function Version({ m, v, about, showing, onSwitch }) {
   const version = v?.version ?? 2
-  const from = v?.from ?? 1
   const changes = Array.isArray(m.changes) ? m.changes : null
   return (
-    <div className={`wayout__version${m.undone ? ' wayout__version--undone' : ''}`}>
-      <p className="wayout__versionhead">Version {version}</p>
+    <div className={`wayout__version${showing ? ' is-on' : ''}`}>
+      <p className="wayout__versionhead">
+        Version {version}
+        {showing && <span className="wayout__versionbadge">On your plan now</span>}
+      </p>
       {about && <p className="wayout__versionabout">Rewritten around “{about}”</p>}
 
       {changes && changes.length > 0 && (
@@ -264,28 +311,12 @@ function Version({ m, v, about, later, live, onKeep, onGoBack }) {
         <p className="wayout__versionnote">Same moves in the same order — the detail under them changed.</p>
       )}
 
-      {m.undone ? (
-        <p className="wayout__versionstate">Undone — you are back on version {from}.</p>
-      ) : live ? (
-        <>
-          <a className="wayout__versionlook" href="#wayout-moves">See it on the plan ↑</a>
-          <div className="wayout__versionask">
-            {onKeep && (
-              <button type="button" className="wayout__btn wayout__btn--sun" onClick={onKeep}>
-                Keep version {version}
-              </button>
-            )}
-            {onGoBack && (
-              <button type="button" className="wayout__threadundo" onClick={onGoBack}>
-                Go back to version {from}
-              </button>
-            )}
-          </div>
-        </>
-      ) : m.kept ? (
-        <p className="wayout__versionstate">Kept.</p>
-      ) : later ? (
-        <p className="wayout__versionstate">Replaced by version {later}.</p>
+      {showing ? (
+        <a className="wayout__versionlook" href="#wayout-moves">See it on the plan ↑</a>
+      ) : onSwitch ? (
+        <button type="button" className="wayout__threadundo wayout__versionuse" onClick={onSwitch}>
+          Put version {version} on the plan
+        </button>
       ) : null}
     </div>
   )
