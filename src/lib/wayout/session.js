@@ -483,26 +483,6 @@ const NARRATES_A_PLANNING_VERDICT = new RegExp([
   'safe to (plan|proceed with a plan)',
 ].join('|'), 'i')
 
-/**
- * Does this tail actually contain a map? Parses rather than pattern-matches —
- * the word "moves" in a sentence is not a map, and this is the check that
- * decides whether somebody sees their plan.
- */
-function carriesAMap(tail) {
-  const body = tail.replace(/^```(?:json)?/i, '').replace(/```\s*$/, '').trim()
-  const start = body.search(/\{\s*"/)
-  if (start < 0) return false
-  const candidate = body.slice(start)
-  // ⚠️ Trailing prose after the JSON is common, so retry on shrinking suffixes
-  // at each closing brace rather than giving up on the first parse failure.
-  for (let end = candidate.lastIndexOf('}'); end > 0; end = candidate.lastIndexOf('}', end - 1)) {
-    try {
-      const o = JSON.parse(candidate.slice(0, end + 1))
-      return Array.isArray(o?.moves) && o.moves.length > 0
-    } catch { /* keep shrinking */ }
-  }
-  return false
-}
 
 /**
  * ⭐⭐ CHAPTER TWO GOES THROUGH HERE, NOT BESIDE IT. `history` switches the prompt
@@ -515,6 +495,31 @@ function carriesAMap(tail) {
  * @param history null for a first plan, or
  *   { previousAnswers, previousMap, ticked, outcome, outcomeNote, chapter }
  */
+/**
+ * ⭐⭐ THE ANSWERS A PLAN IS CHECKED AGAINST — one definition, used when it is
+ * generated AND when it is shown.
+ * 🔴 The load path used to check a stored plan against the bare answers, while
+ * generation checked it against the answers PLUS what they said in the thread,
+ * their move notes and a previous chapter's answers. A plan citing "$85,000"
+ * from "I got offered a job at $85,000" passed at generation, then failed on
+ * reload as an invented figure — so every reload silently regenerated it,
+ * spent a call, and replaced the version they had picked.
+ * ⚠️ The previous MAP never goes in here — see the note below.
+ */
+export function enrichAnswers(answers, moveNotes = null, history = null) {
+  let out = moveNotes && Object.keys(moveNotes).length
+    ? { ...answers, theirNotesOnMoves: moveNotes }
+    : answers
+  if (history) {
+    out = {
+      ...out,
+      theirPreviousAnswers: history.previousAnswers ?? null,
+      whatTheySaidHappened: history.outcomeNote || null,
+    }
+  }
+  return out
+}
+
 export async function generateMap(answers, onProgress = () => {}, moveNotes = null, history = null) {
   // ⭐⭐ THEIR NOTES ON MOVES RIDE IN AS FREE TEXT, AND THAT IS DELIBERATE.
   // A figure someone types into "what did we get wrong about move 2" is a
@@ -523,10 +528,7 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
   // means provenance works with no new rule — the alternative was a second
   // channel the guards did not know about, which is how the playbook ended up
   // with no figure checks at all.
-  const withNotes = moveNotes && Object.keys(moveNotes).length
-    ? { ...answers, theirNotesOnMoves: moveNotes }
-    : answers
-  answers = withNotes
+  answers = enrichAnswers(answers, moveNotes, null)
 
   /**
    * 🔴🔴 THE PREVIOUS ANSWERS COUNT AS THEIRS. THE PREVIOUS PLAN DOES NOT.
@@ -544,13 +546,7 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
    * never merged here. The guards stay exactly as strict as they were on a first
    * plan.
    */
-  if (history) {
-    answers = {
-      ...answers,
-      theirPreviousAnswers: history.previousAnswers ?? null,
-      whatTheySaidHappened: history.outcomeNote || null,
-    }
-  }
+  if (history) answers = enrichAnswers(answers, null, history)
   // ⭐⭐ IT GETS TWO GOES, AND THE SECOND ONE IS TOLD WHAT IT DID WRONG.
   //
   // 🔴 Daniel's first real map invented "$120,000 cash in hand at sale" from a
@@ -854,7 +850,8 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
         earlier_chapters: history
           .filter(h => h.id !== session?.id)
           .map(h => ({ chapter: h.chapter, they_wanted: h.answers?.out ?? null, outcome: h.outcome })),
-        so_far: thread.slice(-8).map(m => ({ role: m.role, content: m.content })),
+        // ⚠️ Entries with no words (a version holder) are not turns.
+        so_far: thread.filter(m => m?.content).slice(-8).map(m => ({ role: m.role, content: m.content })),
         they_said: asked,
       }, null, 2),
     }],

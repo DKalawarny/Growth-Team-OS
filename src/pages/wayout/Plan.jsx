@@ -4,7 +4,7 @@ import WayoutShell from './WayoutShell'
 import {
   loadOrCreateSession, loadSessionById, generateMap, countRebuild, insistOn, wantPlaybook, loadProgress,
   askAboutPlan, chooseBetween, savePlanThread, saveAnswers, chapterChain, saveMapKeepingLast, restorePreviousMap,
-  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor,
+  markMoveDone, saveMoveNote, WAYOUT_MAX_REBUILDS, enforceMapContract, mapProblems, historyFor, enrichAnswers,
 } from '../../lib/wayout/session'
 import { WAYOUT_MAP_LABEL, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 import { editDestination } from '../../lib/wayout/sessionHome'
@@ -12,8 +12,8 @@ import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import Working from './Working'
 import PlanThread, { VersionSwitch } from './PlanThread'
 import { correctableAnswers, correctionSentence } from '../../lib/wayout/correctable'
-import { planChanges, versionList, liveVersions, removeVersion, dropDraft, samePlan, crossOffOthers, bringBack, storeChoice } from '../../lib/wayout/planVersions'
-import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine, priceShort } from '../../lib/wayout/pricing'
+import { versionList, liveVersions, removeVersion, dropDraft, openFrom, samePlan, crossOffOthers, bringBack, storeChoice, rebuildTurns } from '../../lib/wayout/planVersions'
+import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../lib/wayout/pricing'
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
 import { Marked } from '../../lib/wayout/marked.jsx'
@@ -41,6 +41,12 @@ export default function Plan() {
   const [threadErr, setThreadErr] = useState('')
   const [choosing, setChoosing] = useState(false)
   const [chooseErr, setChooseErr] = useState('')
+  const [switching, setSwitching] = useState(false)
+  // 🔴 A crisis answer from the model used to be SAVED AS THE PLAN — an empty
+  // board with no help on it, regenerated on every reload. It is shown, never
+  // stored. See build().
+  const [crisis, setCrisis] = useState(null)
+  const [chapterHistory, setChapterHistory] = useState(null)
   // Which go this is. 1 is the first; anything higher means the first one had
   // something in it that was not theirs and is being written again.
   const [pass, setPass] = useState(1)
@@ -61,6 +67,47 @@ export default function Plan() {
   // ⚠️ A ref, not state — state would not have settled before the second call
   // went out, which is precisely the window this has to close.
   const buildingRef = useRef(false)
+  /**
+   * 🔴🔴 EVERY HANDLER WROTE BACK A STALE COPY OF THE THREAD. Each one took
+   * `thread` from the render it started in and, after an await, saved
+   * `[...thatThread, …]` — so "Help me choose" landing after a reply erased the
+   * reply and their sentence, from the screen AND the database. The thread now
+   * lives in a ref that is always current, every change is a function of the
+   * latest copy, and saves go out one at a time in order.
+   */
+  const threadRef = useRef([])
+  const crisisShown = useRef(false)
+  const sessionRef = useRef(null)
+  const saveQueue = useRef(Promise.resolve())
+  useEffect(() => { sessionRef.current = session }, [session])
+  function localThread(fn) {
+    const next = fn(threadRef.current)
+    threadRef.current = next
+    setThread(next)
+    return next
+  }
+  function commitThread(fn) {
+    const next = localThread(fn)
+    const id = sessionRef.current?.id
+    if (id) {
+      saveQueue.current = saveQueue.current
+        .then(() => savePlanThread(id, next))
+        .catch(err => {
+          console.warn('[wayout] thread not saved:', err.message)
+          setThreadErr('That change did not save. Check your connection and try it again.')
+        })
+    }
+    return next
+  }
+  // ⭐ ONE LOCK FOR EVERYTHING THAT CHANGES THE PLAN OR THE THREAD. Choosing,
+  // switching, replying and building each used to lock only themselves, so any
+  // two could interleave and the last write won.
+  const locked = building || asking || choosing || switching
+
+  function patchSession(patch) {
+    sessionRef.current = sessionRef.current ? { ...sessionRef.current, ...patch } : sessionRef.current
+    setSession(c => (c ? { ...c, ...patch } : c))
+  }
   const [refused, setRefused] = useState(false)
   const [error, setError]       = useState('')
   /**
@@ -76,15 +123,17 @@ export default function Plan() {
   useEffect(() => {
     let cancelled = false
     ;(past ? loadSessionById(past) : loadOrCreateSession())
-      .then(s => {
+      .then(async s => {
         if (cancelled) return
         if (!s) { setError('That plan is not there any more.'); return }
+        sessionRef.current = s
         setSession(s)
         // ⚠️ A past chapter is shown exactly as it was left: its stored map, its
         // ticks, and nothing that could change either.
         if (past) {
           loadProgress(s.id).then(pr => { if (!cancelled) setProgress(pr) }).catch(() => {})
-          if (s.map) setMap(enforceMapContract(s.map, s.answers))
+          if (s.map?.crisis) setCrisis(s.map.message)
+          else if (s.map) setMap(enforceMapContract(s.map, guardFor(s, s.plan_thread, null)))
           else setError('That chapter never got a plan.')
           return
         }
@@ -137,28 +186,36 @@ export default function Plan() {
          * floor is a written answer either way — which is the same price the
          * questions charge.
          */
+        // ⚠️ The chapter history is part of what a plan is checked against, so
+        // it is read BEFORE the stored plan is judged.
+        const hist = await historyFor(s).catch(() => null)
+        if (cancelled) return
+        setChapterHistory(hist)
+        const guard = guardFor(s, s.plan_thread, hist)
         const rebuildAsked = params.get('rebuild')
         if (s.map && rebuildAsked) {
           navigate(`${WAYOUT_BASE}/plan`, { replace: true })
-          const fromThread = rebuildAsked === 'thread'
-          if (!fromThread && !import.meta.env.DEV && (s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
-            setMap(enforceMapContract(s.map, s.answers))
+          if (!import.meta.env.DEV && (s.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) {
+            setMap(enforceMapContract(s.map, guard))
             setRefused(true)
             return
           }
-          // ⚠️ Only the answers path spends the answers budget.
-          if (!fromThread) {
-            countRebuild(s.id, s.rebuilds).then(n => setSession(c => ({ ...c, rebuilds: n })))
-          }
+          countRebuild(s.id, s.rebuilds)
+            .then(n => setSession(c => ({ ...c, rebuilds: n })))
+            .catch(() => {})
           build(s)
           return
         }
         loadProgress(s.id).then(p => { if (!cancelled) setProgress(p) }).catch(() => {})
-        setThread(Array.isArray(s.plan_thread) ? s.plan_thread : [])
+        threadRef.current = Array.isArray(s.plan_thread) ? s.plan_thread : []
+        setThread(threadRef.current)
         chapterChain(s).then(c => { if (!cancelled) setChain(c) }).catch(() => {})
-        if (s.map) {
-          const clean = enforceMapContract(s.map, s.answers)
-          const problems = mapProblems(clean, s.answers)
+        if (s.map?.crisis) {
+          // A crisis answer stored before this was fixed: show it, never rebuild over it.
+          setCrisis(s.map.message)
+        } else if (s.map) {
+          const clean = enforceMapContract(s.map, guard)
+          const problems = mapProblems(clean, guard)
           if (problems.length) {
             console.warn('[wayout] stored map fails the contract, rewriting:', problems)
             build(s)
@@ -220,9 +277,9 @@ export default function Plan() {
        * `freeText(answers)` finds it, so a figure they typed in the thread counts
        * as theirs to the invention guards. Same mechanism as theirNotesOnMoves.
        */
-      const saidSince = (Array.isArray(s.plan_thread) ? s.plan_thread : [])
-        .filter(m => m?.role === 'user' && m.content)
-        .map(m => String(m.content))
+      // ⚠️ Not every sentence ever said: an idea whose versions were all
+      // crossed off stops steering the plan (planVersions.rebuildTurns).
+      const saidSince = rebuildTurns(Array.isArray(s.plan_thread) ? s.plan_thread : [])
       const generated = await generateMap(
         {
           ...s.answers,
@@ -237,8 +294,17 @@ export default function Plan() {
        * ⚠️ Only when there WAS a plan. A first generation has nothing to keep,
        * and an empty entry would offer a control that restores nothing.
        */
+      // 🔴🔴 A CRISIS ANSWER IS NOT A PLAN. generateMap returns { crisis, message }
+      // when somebody is in danger, and this used to save it as the map — an
+      // empty board with no help on it, rebuilt on every reload. It is shown,
+      // never stored; the plan they had stays exactly as it was.
+      if (generated?.crisis) {
+        crisisShown.current = true
+        setCrisis(generated.message)
+        return null
+      }
       const kept = await saveMapKeepingLast(s.id, generated, s.map ?? null, s.map_history ?? [], why)
-      setSession(c => (c ? { ...c, map: generated, map_history: kept } : c))
+      patchSession({ map: generated, map_history: kept })
       setMap(generated)
       return generated
     } catch (err) {
@@ -251,85 +317,39 @@ export default function Plan() {
   }
 
   /**
-   * ⭐⭐ THE ONE THING A PLAN MUST LET YOU DO: ASK FOR IT AGAIN.
-   *
-   * 🔴 There was no way to. Daniel changed the prompt, reloaded, and saw the
-   * same plan — because a stored map that passes the contract is handed
-   * straight to the screen, and nothing in the product could ask for another
-   * one. That is not a testing inconvenience: a plan is written about a life
-   * that moves. Someone whose partner changed their mind, whose job went, or
-   * who reads the assumptions and finds one wrong, is currently stuck with a
-   * plan built for a person they are no longer.
-   */
-  /**
-   * ⭐⭐ A PLAN CHANGES WHEN THE LIFE CHANGES. NOT ON A BUTTON.
-   *
-   * 🔴 The first version of this re-rolled the model on the SAME answers, and
-   * Daniel spotted the commercial half — "might be a way of someone taking
-   * advantage for free". The deeper problem is trust: identical answers
-   * producing a different plan says neither plan meant very much, and the whole
-   * product rests on the order being right rather than merely plausible.
-   *
-   * ⭐ Routing it through the questions fixes both at once. Someone whose
-   * partner changed their mind, or who read the assumptions and found one
-   * wrong, edits the thing that is actually wrong and gets a plan that answers
-   * it. Someone farming free plans has to re-answer thirty questions to get a
-   * different one — which is not a loophole, it is the product.
-   */
-  /**
-   * 🔴🔴 AND IT SENT EVERYBODY TO CHAPTER ONE'S QUESTIONS, INCLUDING PEOPLE ON
-   * CHAPTER TWO. A chapter-two session's answers do not live in the intake —
-   * they live on the chapter door, which is the screen built to replace those
-   * thirty questions. So "Rebuild the plan around it" went to /questions, the
-   * intake bounced it to /chapter because the chapter is not 1, and the person
-   * landed on a door they had already walked through. Daniel: "still pops up
-   * like this after i click this."
-   *
-   * ⚠️ IT SURVIVED ONLY BECAUSE TWO BUGS CANCELLED. The intake's redirect made
-   * the wrong destination land on the right screen — until the chapter door
-   * learned to close on a finished chapter, and then the accident stopped
-   * working. A route that depends on another screen's redirect is not a route.
-   */
-  /**
-   * 🔴🔴 "REBUILD THE PLAN AROUND IT" HANDED THEM A FORM. It shared a handler
-   * with the buttons that mean "one of my answers is wrong", which route back
-   * through the questions on purpose — a plan changes when the life changes,
-   * not on a button. But this control is different in the one way that matters:
-   * THEY HAVE ALREADY SAID WHAT CHANGED. They typed it, the reply read it and
-   * agreed it moves the plan, and then the product asked them to go and type it
-   * again somewhere else. Daniel, three times: "still pops up like this."
-   *
-   * ⭐ So this regenerates, and it does it through `?rebuild=1` — the existing
-   * instruction, already capped by WAYOUT_MAX_REBUILDS and already stripped from
-   * the URL on arrival, so a reload cannot spend money twice. The free-re-roll
-   * worry that shaped `rebuild()` does not apply here: this path costs a person
-   * a written answer, which is the same price the questions charge.
+   * ⭐⭐ "MAKE IT V#" — rebuild the plan around what they said in the thread.
+   * ⚠️ A plan changes when the life changes, never on a bare button: this
+   * path costs a written sentence (or a correction), the same price the
+   * questions charge. Going back through the questions is `rebuild()` below.
    */
   async function redoFromThread() {
-    if (!session || building || threadBuild) return
+    if (!session || locked || threadBuild) return
     /**
      * 🔴🔴 THE MARKER WAS WRITTEN BEFORE THE PLAN. "Rewritten around that." went
      * into the thread the instant the button was pressed and the rebuild ran
      * afterwards — so a failure, or a refresh mid-build, left a thread saying
      * the plan had been rewritten over a plan that never was. It is written
      * now from the result, and only when there is one.
-     *
-     * ⭐⭐ AND IT BUILDS HERE, NOT BY NAVIGATING TO `?rebuild=thread`. The round
-     * trip through the URL re-read the session from the database while the
-     * thread save was still in flight, so the rebuild could miss the very
-     * sentence it was meant to be about.
      */
-    const lastMine = thread.map(m => m.role === 'user').lastIndexOf(true)
-    const about = lastMine > -1 ? thread[lastMine].content : null
-    const pending = { about, n: (versionList(thread).length || 1) + 1 }
-    setThreadBuild(pending)
+    const t = threadRef.current
+    const s = sessionRef.current
+    const lastMine = t.map(m => m.role === 'user').lastIndexOf(true)
+    const about = lastMine > -1 ? t[lastMine].content : null
+    setThreadBuild({ about, n: (versionList(t).length || 1) + 1 })
     setThreadErr('')
     const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
-    const before = session.map
-    const after = await build({ ...session, plan_thread: thread }, `thread:${id}`)
+    const before = s.map
+    const after = await build({ ...s, plan_thread: t }, `thread:${id}`)
     setThreadBuild(null)
     if (!after) {
-      setThreadErr('That did not rewrite. Your plan has not changed — try it again.')
+      if (!crisisShown.current) setThreadErr('That did not rewrite. Your plan has not changed — try it again.')
+      return
+    }
+    // ⚠️ The same plan twice is not a new version — two identical chips made
+    // switching and deleting ambiguous.
+    const same = versionList(threadRef.current).find(v => samePlan(v.map, after))
+    if (same) {
+      setThreadErr(`That came out the same as ${same.label === 'Original' ? 'your original plan' : same.label}.`)
       return
     }
     /**
@@ -338,18 +358,13 @@ export default function Plan() {
      * without a model call. See planVersions.js for why a map on a thread entry
      * can never reach a prompt.
      */
-    const first = !versionList(thread).length
-    const marked = [...thread, {
+    commitThread(prev => [...prev, {
       role: 'assistant', rebuilt: true, id, at: new Date().toISOString(),
       about,
-      changes: planChanges(before, after),
       map: after,
-      ...(first && before ? { base: before } : {}),
+      ...(!versionList(prev).length && before ? { base: before } : {}),
       content: 'Rewritten around that.',
-    }]
-    setThread(marked)
-    savePlanThread(session.id, marked)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    }])
   }
 
   /**
@@ -362,15 +377,39 @@ export default function Plan() {
    * under the plan still undoes the switch like any other change.
    */
   async function switchVersion(key) {
-    if (!session || building) return
-    const target = versionList(thread).find(v => v.key === key)
-    if (!target || samePlan(target.map, session.map)) return
+    if (!session || locked) return
+    const target = versionList(threadRef.current).find(v => v.key === key)
+    if (!target || samePlan(target.map, sessionRef.current?.map)) return
     setThreadErr('')
+    setSwitching(true)
     try {
       await putOnPlan(target.map, `switch:${target.n}`)
     } catch (err) {
       setThreadErr(err.message)
+    } finally {
+      setSwitching(false)
     }
+  }
+
+  /**
+   * 🔴 A CORRECTION THAT IS TAKEN AWAY IS UNDONE. Saving a correction writes the
+   * answer at once, so dropping the idea or deleting its version used to remove
+   * the sentence and leave the changed answer feeding every later plan.
+   * ⚠️ Only reverted if the answer is still what the correction set — a later
+   * correction to the same answer wins.
+   */
+  async function revertCorrections(removed) {
+    const fixes = removed.filter(m => m?.correction)
+    if (!fixes.length) return
+    const s = sessionRef.current
+    const answers = { ...(s.answers ?? {}) }
+    let changed = false
+    for (const { correction: c } of fixes) {
+      if (String(answers[c.key] ?? '') === String(c.to ?? '')) { answers[c.key] = c.from ?? ''; changed = true }
+    }
+    if (!changed) return
+    await saveAnswers(s.id, answers)
+    patchSession({ answers })
   }
 
   /**
@@ -378,18 +417,26 @@ export default function Plan() {
    * make sense i was thinking to get rid of new ideas … just having an x".
    * Deletes that version — never the original — and the idea with its last
    * version. The rules are in planVersions.removeVersion.
+   * ⚠️ Its plan is also taken out of the undo history — the dialog promised it
+   * "cannot be brought back", and the undo used to bring it back.
    */
   async function removeVersionAt(key) {
-    if (!session || building || asking) return
-    const out = removeVersion(thread, key, session.map)
+    if (!session || locked) return
+    const before = threadRef.current
+    const doomed = before[key]?.map
+    const out = removeVersion(before, key, sessionRef.current?.map)
     if (!out) return
     setThreadErr('')
+    setSwitching(true)
     try {
-      if (out.restore) await putOnPlan(out.restore, 'remove-version')
-      setThread(out.thread)
-      await savePlanThread(session.id, out.thread)
+      await putOnPlan(out.restore ?? sessionRef.current.map, 'remove-version', doomed, !out.restore)
+      const kept = new Set(out.thread)
+      await revertCorrections(before.filter(m => !kept.has(m)))
+      commitThread(() => out.thread)
     } catch (err) {
       setThreadErr(err.message)
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -399,22 +446,20 @@ export default function Plan() {
    * The answer is kept on the thread so a reload does not spend another.
    */
   async function chooseNow() {
-    if (!session || choosing || building) return
-    const versions = liveVersions(thread)
+    if (!session || locked) return
+    const versions = liveVersions(threadRef.current)
     if (versions.length < 2) return
     setChoosing(true)
     setChooseErr('')
     try {
-      const out = await chooseBetween({ session, versions })
+      const out = await chooseBetween({ session: sessionRef.current, versions })
       const byN = Object.fromEntries(versions.map(v => [v.n, v.key]))
-      const next = storeChoice(thread, {
+      commitThread(prev => storeChoice(prev, {
         pick: byN[out.pick],
         why: out.why,
         checkWith: out.checkWith,
         versions: out.versions.map(v => ({ key: byN[v.n], fits: v.fits, costs: v.costs })),
-      })
-      setThread(next)
-      await savePlanThread(session.id, next)
+      }))
     } catch (err) {
       setChooseErr(err.message)
     } finally {
@@ -427,54 +472,53 @@ export default function Plan() {
    * with the reason the comparison gave for each — or a plain one.
    */
   async function goWith(key, reasons = {}) {
-    if (!session || building) return
-    const target = versionList(thread).find(v => v.key === key)
+    if (!session || locked) return
+    const target = versionList(threadRef.current).find(v => v.key === key)
     if (!target) return
     setThreadErr('')
+    setSwitching(true)
     try {
-      if (!samePlan(target.map, session.map)) await putOnPlan(target.map, `choose:${target.n}`)
-      const next = crossOffOthers(thread, key, reasons)
-      setThread(next)
-      await savePlanThread(session.id, next)
+      if (!samePlan(target.map, sessionRef.current.map)) await putOnPlan(target.map, `choose:${target.n}`)
+      commitThread(prev => crossOffOthers(prev, key, reasons))
     } catch (err) {
       setThreadErr(err.message)
+    } finally {
+      setSwitching(false)
     }
   }
 
-  async function bringBackAt(key) {
-    if (!session) return
-    const next = bringBack(thread, key)
-    setThread(next)
-    savePlanThread(session.id, next)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+  function bringBackAt(key) {
+    if (!session || locked) return
+    commitThread(prev => bringBack(prev, key))
   }
 
   /**
    * ⭐⭐ CORRECT ONE ANSWER. Daniel: "no way of going back in here and change
    * things that could be wrong." The answer is saved, and a sentence saying so
    * goes into the thread as THEIR turn — so it shows as the idea in progress,
-   * "Make it V5" rebuilds around it (the rebuild reads the saved answers AND
-   * every sentence they said), and it can be dropped like any other idea.
+   * "Make it V5" rebuilds around it, and dropping it undoes it.
    * ⚠️ Not counted against the one trip back through the questions: that
    * limit is about re-rolling a whole form, and this is one fact.
+   * 🔴 A figure is cleaned the way the intake cleans it — "$5,000" stored as
+   * typed made every derived stat silently disappear.
    */
   async function correctAnswer(key, value) {
-    if (!session || building || asking) return
-    const field = correctableAnswers(session.answers).find(f => f.key === key)
-    const to = String(value ?? '').trim()
-    if (!field || to === field.value.trim()) return
+    if (!session || locked) return
+    const s = sessionRef.current
+    const field = correctableAnswers(s.answers).find(f => f.key === key)
+    let to = String(value ?? '').trim()
+    if (field?.kind === 'number') to = to.replace(/[^0-9.]/g, '')
+    if (!field || !to || to === field.value.trim()) return
     setThreadErr('')
     try {
-      const answers = { ...(session.answers ?? {}), [key]: to }
-      await saveAnswers(session.id, answers)
-      setSession(c => (c ? { ...c, answers } : c))
-      const next = [...thread, {
+      const answers = { ...(s.answers ?? {}), [key]: to }
+      await saveAnswers(s.id, answers)
+      patchSession({ answers })
+      commitThread(prev => [...prev, {
         role: 'user', at: new Date().toISOString(),
         correction: { key, from: field.value, to },
         content: correctionSentence(field, field.value, to),
-      }]
-      setThread(next)
-      await savePlanThread(session.id, next)
+      }])
     } catch (err) {
       setThreadErr(err.message)
     }
@@ -482,21 +526,30 @@ export default function Plan() {
 
   /** Drop the idea in progress — everything said since the newest version. The plan never moved. */
   async function dropDraftNow() {
-    if (!session || asking || building) return
-    const next = dropDraft(thread)
-    setThread(next)
-    savePlanThread(session.id, next)
-      .catch(err => console.warn('[wayout] thread not saved:', err.message))
+    if (!session || locked) return
+    const removed = threadRef.current.slice(openFrom(threadRef.current))
+    try {
+      await revertCorrections(removed)
+      commitThread(prev => dropDraft(prev))
+    } catch (err) {
+      setThreadErr(err.message)
+    }
   }
 
   /**
    * ⚠️ Through saveMapKeepingLast, so the "put the previous plan back" control
-   * under the plan still undoes a switch like any other change.
+   * under the plan still undoes a change. 🔴 But switching between VERSIONS no
+   * longer pushes onto that three-deep history: every version is already kept,
+   * and three switches used to push out the only copy of a plan that was not a
+   * version. `drop` takes a deleted version's plan out of the history too.
    */
-  async function putOnPlan(next, why) {
-    const kept = await saveMapKeepingLast(session.id, next, session.map ?? null, session.map_history ?? [], why)
-    setSession(c => (c ? { ...c, map: next, map_history: kept } : c))
-    setMap(enforceMapContract(next, session.answers))
+  async function putOnPlan(next, why, drop = null, unchanged = false) {
+    const s = sessionRef.current
+    const outgoingKept = unchanged || versionList(threadRef.current).some(v => samePlan(v.map, s.map))
+    const history = (s.map_history ?? []).filter(h => !drop || !samePlan(h.map, drop))
+    const kept = await saveMapKeepingLast(s.id, next, outgoingKept ? null : (s.map ?? null), history, why)
+    patchSession({ map: next, map_history: kept })
+    setMap(enforceMapContract(next, guardFor(sessionRef.current, threadRef.current, chapterHistory)))
   }
 
   function rebuild() {
@@ -526,21 +579,6 @@ export default function Plan() {
     if (session) { setMap(null); build(session) }
   }
 
-  /**
-   * Into the play-by-play for move one.
-   *
-   * ⚠️ Still records that they wanted it. The waiting-list column was the only
-   * measure of whether the gap is felt strongly enough to click, and that is
-   * the number that decides whether this is the right business — it is worth
-   * more now that clicking leads somewhere than it was when it led to a list.
-   */
-  /**
-   * ⭐ They read why we crossed something off, and want it anyway.
-   *
-   * ⚠️ Rebuilt immediately, and NOT counted against the rebuild cap — the cap
-   * stops somebody fishing for a different answer to the same question, and
-   * this is a different question. They changed the input.
-   */
   /**
    * ⭐⭐ Their note against one move. Saved either way; only `redo` rebuilds.
    *
@@ -575,6 +613,7 @@ export default function Plan() {
       if (!import.meta.env.DEV && (updated.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS) return
       countRebuild(updated.id, updated.rebuilds)
         .then(n => setSession(c => ({ ...c, rebuilds: n })))
+        .catch(() => {})
       setMap(null)
       await build(updated)
     } catch (err) { setError(err.message) }
@@ -618,14 +657,22 @@ export default function Plan() {
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
 
+  if (crisis) {
+    return <CrisisNote message={crisis} onBack={map ? () => { crisisShown.current = false; setCrisis(null) } : null} />
+  }
+
   if (error && !map) {
     return (
       <WayoutShell title="Your plan">
         <p className="wayout__q">That didn’t come through.</p>
         <p className="wayout__lead">{error}</p>
-        <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
-          {building ? 'Building…' : 'Try again'}
-        </button>
+        {/* 🔴 Not on a finished chapter — "Try again" there wrote a new plan
+            onto a chapter that is meant to be read-only. */}
+        {!past && session && (
+          <button className="wayout__btn" onClick={() => build(session)} disabled={building}>
+            {building ? 'Building…' : 'Try again'}
+          </button>
+        )}
       </WayoutShell>
     )
   }
@@ -701,70 +748,51 @@ export default function Plan() {
   const spent = !import.meta.env.DEV && (session?.rebuilds ?? 0) >= WAYOUT_MAX_REBUILDS
 
   /**
-   * ⭐⭐ ONE TURN OF THE RUNNING THREAD. The reply is stored with its flags, so a
-   * reload still knows whether the last thing said moved the plan — otherwise
-   * the rebuild button would vanish the moment somebody refreshed to think
-   * about it, which is exactly when they would.
-   */
-  /**
-   * ⭐⭐ TAKE BACK THE LAST THING YOU SAID. Every message used to be permanent
-   * the moment it sent — so a duplicate, a typo or a sentence that came out
-   * wrong stayed in the plan's history and rode into the next rebuild as if it
-   * had been meant. Daniel, stuck with the same sentence twice: "no way to
-   * delete it or go back."
-   *
-   * ⚠️ IT DROPS THE PAIR, NOT THE MESSAGE. A reply with nothing above it reads
-   * as the product talking to itself, and the reply is only about the thing
-   * they took back.
-   * ⚠️ AND ONLY THE LAST ONE. Editing further back would rewrite a
-   * conversation the current plan was already built from.
-   */
-  /**
-   * ⭐⭐ PUT THE PLAN BACK. The previous map was parked on the rebuild's own
-   * thread entry, so undoing is a write of something we already hold rather
-   * than another generation — no model call, no cost, and the result is
-   * byte-identical to what they had rather than a fresh attempt at it.
-   *
-   * ⚠️ ONE USE. `mapBefore` is stripped as it is spent, so the control cannot
-   * ping-pong a plan between two versions — and the entry stays in the thread
-   * saying what happened, because a plan that silently reverts is the same
-   * fault as one that silently changes.
+   * ⭐ PUT THE PREVIOUS PLAN BACK — from `map_history`, so it is a write of
+   * something already held: no model call, byte-identical to what they had.
    */
   async function restorePlan() {
-    if (!session || building) return
-    const history = session.map_history ?? []
+    if (!session || locked) return
+    const s = sessionRef.current
+    const history = s.map_history ?? []
     if (!history.length) return
     try {
-      const out = await restorePreviousMap(session.id, history)
+      const out = await restorePreviousMap(s.id, history)
       if (!out) return
-      setMap(enforceMapContract(out.map, session.answers))
-      setSession(c => (c ? { ...c, map: out.map, map_history: out.history } : c))
-      const note = [...thread, {
+      setMap(enforceMapContract(out.map, guardFor(s, threadRef.current, chapterHistory)))
+      patchSession({ map: out.map, map_history: out.history })
+      commitThread(prev => [...prev, {
         role: 'assistant', at: new Date().toISOString(),
         content: 'Put back the way it was.',
-      }]
-      setThread(note)
-      savePlanThread(session.id, note)
-        .catch(err => console.warn('[wayout] thread not saved:', err.message))
+      }])
     } catch (err) {
       setError(err.message)
     }
   }
 
+  /**
+   * ⭐⭐ ONE TURN OF THE RUNNING THREAD. The reply is stored with its flags, so a
+   * reload still knows whether the last thing said moved the plan.
+   * 🔴 It had no catch: a failed reply left their sentence on screen, unsaved,
+   * to be persisted later as an orphan turn with no answer. Now it comes back
+   * off the screen and the failure is said.
+   */
   async function sayToPlan(said) {
-    if (!session || asking) return
+    if (!session || locked) return
     setAsking(true)
+    setThreadErr('')
+    const before = threadRef.current
     const mine = { role: 'user', content: said, at: new Date().toISOString() }
-    const next = [...thread, mine]
-    setThread(next)
+    localThread(prev => [...prev, mine])
     try {
-      const out = await askAboutPlan({ session, progress, history: chain, thread, question: said })
-      const full = [...next, {
+      const out = await askAboutPlan({ session: sessionRef.current, progress, history: chain, thread: before, question: said })
+      commitThread(prev => [...prev, {
         role: 'assistant', content: out.reply, at: new Date().toISOString(),
         changesPlan: out.changesPlan, whatChanged: out.whatChanged, stalling: out.stalling,
-      }]
-      setThread(full)
-      savePlanThread(session.id, full).catch(err => console.warn('[wayout] thread not saved:', err.message))
+      }])
+    } catch (err) {
+      localThread(prev => prev.filter(m => m !== mine))
+      throw err  // shown beside the box, with their words put back in it
     } finally {
       setAsking(false)
     }
@@ -817,40 +845,11 @@ export default function Plan() {
       chapter={session?.chapter ?? 1}
       progress={progress}
       rebuilding={building}
+      locked={locked}
+      error={error}
+      onDismissError={() => setError('')}
       spent={spent}
     />
-  )
-}
-
-// ── Paywall ─────────────────────────────────────────────────────────────────
-
-/**
- * ⚠️ THIS SCREEN TELLS THE TRUTH ABOUT ITS OWN STATE.
- * While `WAYOUT_PAYMENTS_LIVE` is false there is no Stripe price behind the
- * figure, so the button does not pretend. A pay button that silently fails is
- * the worst version of this screen — the person has just spent fifteen minutes
- * answering questions about their marriage and their money.
- */
-function Paywall() {
-  return (
-    <WayoutShell title="Your plan">
-      <h2>That’s everything.</h2>
-      <p className="wayout__lead">
-        Your answers are saved. The plan reads them back and turns them into
-        three moves in the order they actually work, with what got crossed off
-        and why.
-      </p>
-
-      {/* ⭐⭐ NO PAYMENT HERE, EVER. The map is free under the settled model, so
-          this screen has no checkout on it in either state. It used to read
-          "Price when it opens: $39, once. Not a subscription." — which was the
-          old one-time model and is now wrong twice over. */}
-      <p className="wayout__hint">
-        {priceShort()} {WAYOUT_PAYMENTS_LIVE
-          ? `The step-by-step for doing the moves is ${WAYOUT_PRICE_FULL}, and only if you want it.`
-          : 'Nothing is being charged for anything yet.'}
-      </p>
-    </WayoutShell>
   )
 }
 
@@ -941,7 +940,7 @@ function WorthAsk({ onSave }) {
  */
 export function Map({
   map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onChoose, onGoWith, onBringBack, onCorrect, answers = {}, choosing = false, chooseErr = '', onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
-  moveNotes = {}, progress, rebuilding = false, spent = false, chapter = 1,
+  moveNotes = {}, progress, rebuilding = false, locked = false, error = '', onDismissError = null, spent = false, chapter = 1,
   thread = [], onSay = null, asking = false, past = false,
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
@@ -1003,7 +1002,8 @@ export function Map({
    * build only type-free-compiles, and the prerender cannot reach /plan because
    * it needs a session. ⭐ Same TDZ trap that is documented for prompts.ts — it
    * simply moved from the prompt layer to the component layer, where there was
-   * no guard. `Map.smoke.test.jsx` is that guard now.
+   * no guard. ⚠️ There is still no test that renders Map with a plan — keep
+   * every derived value declared above its first use.
    */
   const finishRef = useRef(null)
   const [justFinished, setJustFinished] = useState(false)
@@ -1038,6 +1038,17 @@ export function Map({
 
   return (
     <WayoutShell title="Your plan" wide>
+      {/* 🔴 ERRORS WERE INVISIBLE WHENEVER A PLAN WAS ON SCREEN. Only the empty
+          state rendered them, so a failed tick, note, restore or "I want this
+          one anyway" did nothing visible and quietly reverted on reload. */}
+      {error && (
+        <div className="wayout__alert" role="alert">
+          <p>{error}</p>
+          {onDismissError && (
+            <button type="button" className="wayout__threadundo" onClick={onDismissError}>Dismiss</button>
+          )}
+        </div>
+      )}
       {/* The brand mark on this screen reads "your plan", not the product name.
           The map belongs to them. */}
       {/* ⭐ Two halves, and only on a wide screen. The left is what the plan SAYS
@@ -1189,7 +1200,7 @@ export function Map({
           and why the grid gaps are percentages. */}
       {!past && (
         <VersionSwitch
-          thread={thread} liveMap={liveMap} disabled={rebuilding}
+          thread={thread} liveMap={liveMap} disabled={rebuilding || locked}
           onSwitch={onSwitchVersion ?? undefined} onRemove={onRemoveVersion ?? undefined}
           onChoose={onChoose ?? undefined} onGoWith={onGoWith ?? undefined}
           choosing={choosing} chooseErr={chooseErr}
@@ -1420,6 +1431,7 @@ export function Map({
           onSay={onSay}
           busy={asking}
           rebuilding={rebuilding}
+          locked={locked}
           pending={threadBuild}
           error={threadErr}
           liveMap={liveMap}
@@ -1778,7 +1790,25 @@ function Spent() {
  * four seconds. Making somebody watch a message about their safety fade in on
  * a schedule is the kind of detail that tells them a machine wrote it.
  */
-function CrisisNote({ message }) {
+/**
+ * What a session's plan is checked against: their answers plus everything else
+ * that counts as their words — what they insisted on, what they said in the
+ * thread, their move notes, a previous chapter's answers. The same object
+ * generation checks against (session.enrichAnswers), so a plan that passed
+ * when it was written passes when it is shown.
+ */
+function guardFor(s, thread, hist) {
+  if (!s) return {}
+  const said = (Array.isArray(thread) ? thread : [])
+    .filter(m => m?.role === 'user' && m.content)
+    .map(m => String(m.content))
+  return enrichAnswers(
+    { ...(s.answers ?? {}), insisted: s.insisted ?? [], ...(said.length ? { theyAlsoSaidSince: said } : {}) },
+    s.move_notes, hist,
+  )
+}
+
+function CrisisNote({ message, onBack = null }) {
   // The model writes markdown bold around the numbers it wants seen. Rendering
   // the asterisks would be worse than losing the emphasis, so they are stripped
   // and the paragraph breaks kept.
@@ -1795,6 +1825,11 @@ function CrisisNote({ message }) {
           <p key={i} className={i === 0 ? 'wayout__q' : 'wayout__lead'}>{p}</p>
         ))}
       </div>
+      {/* ⚠️ Only when a plan already exists — and quiet, because this page is
+          about right now, not about the plan. */}
+      {onBack && (
+        <button type="button" className="wayout__again" onClick={onBack}>Back to your plan</button>
+      )}
     </WayoutShell>
   )
 }

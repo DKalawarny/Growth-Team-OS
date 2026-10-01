@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
 import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
@@ -28,7 +28,7 @@ import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
  * on the other side of trying it.
  */
 export default function PlanThread({
-  thread = [], onSay, onRedo, onDropDraft, onBringBack, onCorrect, answers = {}, onSwitch, busy = false, rebuilding = false,
+  thread = [], onSay, onRedo, onDropDraft, onBringBack, onCorrect, answers = {}, onSwitch, busy = false, rebuilding = false, locked = false,
   pending = null, error = '', liveMap = null,
 }) {
   const [text, setText] = useState('')
@@ -58,8 +58,10 @@ export default function PlanThread({
   const rebuiltAt = thread.map(m => m.rebuilt === true).lastIndexOf(true)
   const movedAt   = thread.map(m => m.role === 'assistant' && m.changesPlan === true).lastIndexOf(true)
   const moved     = movedAt > -1 && movedAt > rebuiltAt ? thread[movedAt] : null
-  const plans     = versionList(thread)
-  const showing   = showingKey(thread, liveMap)
+  // ⚠️ Memoised: showingKey serialises every version's plan, and this
+  // component re-renders on every keystroke in the box below.
+  const plans     = useMemo(() => versionList(thread), [thread])
+  const showing   = useMemo(() => showingKey(thread, liveMap), [thread, liveMap])
   const open      = openFrom(thread)
   const draft     = thread.slice(open)
   const drafting  = draft.some(m => m.role === 'user') || Boolean(pending)
@@ -71,13 +73,14 @@ export default function PlanThread({
   // ⚠️ "Answer that" is only true when the reply ASKED something. It was
   // printed under every reply, including ones with no question in them.
   const asked     = /\?/.test(lastReply?.content ?? '')
-  const quiet     = busy || rebuilding
+  const quiet     = busy || rebuilding || locked
 
   async function send() {
     const said = text.trim()
     if (!said || quiet) return
     setErr(''); setText('')
-    try { await onSay(said) } catch (e) { setErr(e.message) }
+    // ⚠️ On failure their words go back in the box rather than vanishing.
+    try { await onSay(said) } catch (e) { setErr(e.message); setText(said) }
   }
 
   return (
@@ -252,7 +255,9 @@ export default function PlanThread({
 
 /** After switching from down here, take them to where the plan changed. */
 function toPlan() {
-  document.getElementById('wayout-versions')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  // ⚠️ The switcher only exists with two or more versions in play.
+  const el = document.getElementById('wayout-versions') ?? document.getElementById('wayout-moves')
+  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 /**

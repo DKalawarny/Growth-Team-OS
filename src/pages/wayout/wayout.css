@@ -136,13 +136,6 @@
   /* The intake's left panel. Quieter than the question beside it on purpose —
      it is context, and the moment it competes for attention it has become the
      second question on a one-question screen. */
-  .wayout__aside {
-    border-right: 1px solid var(--line);
-    padding-right: 36px;
-    align-self: stretch;
-  }
-  .wayout__aside .wayout__reflect { margin: 22px 0 0; }
-  .wayout__asidefine { text-align: left; margin-top: 26px; }
   .wayout__frame--wide .wayout__spread {
     display: grid;
     /* The plan side is slightly narrower — the moves carry longer lines and a
@@ -348,12 +341,6 @@
 
 /* ⭐ Used EXACTLY ONCE in the whole product (S0 fine print). A second one and
    neither means anything. */
-.wayout__hand {
-  font-family: Caveat, ui-rounded, cursive;
-  font-weight: 700;
-  font-size: 17px;
-  color: var(--green);
-}
 
 /* ── Buttons ────────────────────────────────────────────────────────────── */
 .wayout__btn {
@@ -566,16 +553,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 
 /* ── Reflection card ────────────────────────────────────────────────────── */
-.wayout__reflect {
-  background: var(--tint);
-  border-radius: 16px;
-  padding: 15px 17px;
-  font-size: 15.5px;
-  line-height: 1.45;
-  margin-bottom: 22px;
-  color: var(--ink);
-}
-.wayout__reflect b { font-weight: 700; }
 
 /* ── Score ──────────────────────────────────────────────────────────────── */
 .wayout__scores { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
@@ -700,7 +677,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
    ideas — "when side income beats your paycheque by half, three months
    running" is the thing no course and no chatbot gives anyone. It was buried
    in grey body text. Now it is the connective tissue, which is what it is. */
-.wayout__moves { margin-top: 6px; position: relative; }
 
 .wayout__move {
   display: flex;
@@ -748,18 +724,11 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* Move one is lit in the accent — the single place the sun is allowed to mean
    "this is the one you start". */
 .wayout__move--now .wayout__chk { background: var(--sun); border-color: var(--sun); }
-.wayout__move--done .wayout__chk { background: var(--green); border-color: var(--green); transform: scale(1.08); }
-.wayout__move--now .wayout__chk svg,
-.wayout__move--done .wayout__chk svg { opacity: 1; }
+.wayout__move--now .wayout__chk svg { opacity: 1; }
 
 /* ⚠️ A ticked move has to LOOK done. Without this the only thing that changed
    on tap was inside a 26px box, so completing move one — the entire point of
    the screen — registered as almost nothing. */
-.wayout__move--done p {
-  color: var(--soft);
-  text-decoration: line-through;
-  text-decoration-color: #B9B29E;
-}
 .wayout__move p { margin: 0; font-size: 17px; line-height: 1.3; font-weight: 700; }
 .wayout__move small {
   display: block;
@@ -833,30 +802,11 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 /* The section explainer in the aside. Quieter than the question it sits beside
    — it is context, and the moment it competes it has become a second question. */
-.wayout__section { margin-top: 26px; }
-.wayout__sectiontitle {
-  font-size: 20px;
-  line-height: 1.2;
-  letter-spacing: -.02em;
-  font-weight: 800;
-  margin: 0 0 8px;
-}
-.wayout__sectionwhy { font-size: 15px; line-height: 1.5; color: var(--soft); margin: 0; max-width: 34ch; }
 
 /* ── Progress ────────────────────────────────────────────────────────────
    ⚠️ Shown only on the wide layout, in the aside. On a phone the "3 of 6" in
    the brand mark already says it, and a second progress indicator on a 390px
    screen is spending the scarcest thing the design has. */
-.wayout__step { font-size: 14px; font-weight: 600; color: var(--soft); margin: 6px 0 10px; }
-.wayout__pips { display: flex; gap: 6px; }
-.wayout__pip {
-  height: 4px;
-  flex: 1;
-  border-radius: 999px;
-  background: var(--line);
-}
-.wayout__pip--done { background: var(--green); }
-.wayout__pip--now  { background: var(--sun); }
 
 /* ── Its own front door ─────────────────────────────────────────────────── */
 .wayout__pw { position: relative; }
@@ -998,7 +948,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
   margin: 14px 0 0; font-size: 14px; line-height: 1.5;
   color: rgba(243, 239, 226, .6);
 }
-.wayout__offerdone { color: var(--sun); font-weight: 600; }
 /* Sits between the questions and the button, so it reads as the answer to
    them rather than as small print under the offer. */
 .wayout__offernote { margin: 0 0 18px; color: rgba(243, 239, 226, .78); font-size: 15px; }
@@ -1025,7 +974,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 /* A move that has not happened yet. Deliberately quiet — it is a promise about
    sequencing, not a teaser, and it must not look like a locked door. */
-.wayout__later { font-style: normal; color: var(--soft); opacity: .8; }
 
 /* A safety message. Slightly wider measure and more air than the plan, because
    it will be read once, quickly, possibly on a phone under pressure. Nothing
@@ -1308,10 +1256,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 /* The override. Sits below the reply, in the soft ink — it is a choice against
    advice, so it must not look like the recommended path. */
-.wayout__threadinsist {
-  margin: 12px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft);
-  padding-left: 19px;
-}
 
 /* 🔴 THREE ACTIONS ON ONE CARD WITH NOTHING SAYING WHICH BELONGED TO WHAT —
    take a message back, overrule the answer, say something new. Daniel: "this is
@@ -1325,7 +1269,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
 
 /* ⚠️ The undo belongs to the bubble above it, so it is indented to the bubble's
    own edge rather than floating at the card's margin between two speakers. */
-.wayout__threadmine .wayout__threadundo { margin-left: 16px; }
 .wayout__threadreply .wayout__threadundo { margin-left: 19px; }
 
 /* "Take that back" — quiet, and only ever on the last thing they said. It must
@@ -2757,12 +2700,7 @@ h1.wayout__heroline {
   font-size: 14.5px; line-height: 1.55; color: var(--soft);
   margin: 0 0 20px; max-width: 54ch;
 }
-.wayout__threadmine, .wayout__threadreply { margin-bottom: 14px; }
-.wayout__threadmine p {
-  margin: 0; font-size: 15px; line-height: 1.55; font-weight: 600; color: var(--ink);
-  background: var(--tint); border-radius: 14px 14px 14px 4px; padding: 13px 16px;
-  max-width: 46ch;
-}
+.wayout__threadreply { margin-bottom: 14px; }
 .wayout__threadreply p {
   margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink);
   border-left: 3px solid var(--line); padding: 2px 0 2px 16px; max-width: 58ch;
@@ -2771,18 +2709,6 @@ h1.wayout__heroline {
 /* ⭐⭐ THE PAYOFF. Only when the model said the plan actually moved — offering a
    rebuild after every message would make the plan feel provisional, which is
    the opposite of what it is for. */
-.wayout__threadmoved {
-  margin: 18px 0 20px; padding: 18px 20px;
-  background: #FFF8E8; border: 1px solid #F0DFB4; border-left: 3px solid var(--sun);
-  border-radius: 14px;
-}
-.wayout__threadmoved b {
-  display: block; font-size: 15px; line-height: 1.5; color: var(--ink); margin-bottom: 14px;
-  max-width: 52ch;
-}
-.wayout__threadmoved .wayout__btn {
-  display: inline-block; width: auto; margin-top: 0; padding-inline: 32px;
-}
 .wayout__thread .wayout__btn { display: inline-block; width: auto; padding-inline: 34px; }
 
 /* ⭐⭐ THE HAND-OFF INTO THE NEXT CHAPTER — the payoff of the whole page.
@@ -2965,31 +2891,10 @@ h1.wayout__heroline {
 /* ⭐⭐ A VERSION OF THE PLAN — its own block in the thread, not another reply.
    Daniel: "if its more then one change it gets lost there is nothing
    differentiating between them." Numbered, boxed, and stating what it moved. */
-.wayout__version {
-  margin: 4px 0 18px; padding: 14px 16px 16px;
-  border: 1px solid var(--line); border-radius: 12px; background: var(--paper, transparent);
-}
-.wayout__version.is-on { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green); }
 .wayout__versionhead {
   margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green);
 }
-.wayout__versionabout { margin: 6px 0 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
 .wayout__versionnote { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
-.wayout__versionstate { margin: 10px 0 0; font-size: 13.5px; font-weight: 600; color: var(--soft); }
-.wayout__versionchanges { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
-.wayout__versionchanges li { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 14px; line-height: 1.45; }
-.wayout__versionchanges span { font-weight: 700; color: var(--soft); min-width: 4.5em; }
-.wayout__versionchanges s { color: var(--soft); }
-.wayout__versionchanges s + b::before { content: '→ '; font-weight: 400; color: var(--soft); }
-.wayout__versionchanges em { color: var(--soft); }
-.wayout__versionlook {
-  display: inline-block; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--green);
-}
-.wayout__versionuse { margin-top: 12px; font-size: 13.5px; }
-.wayout__versionbadge {
-  margin-left: 10px; padding: 2px 8px; border-radius: 99px; background: var(--green); color: #fff;
-  font-size: 10.5px; letter-spacing: .06em; vertical-align: 1px;
-}
 
 /* The switcher: every plan the thread holds, the one showing filled in. */
 .wayout__versions { margin: 6px 0 4px; }
@@ -3042,15 +2947,8 @@ h1.wayout__heroline {
 .wayout__versionrow.is-on { border-color: var(--green); cursor: default; }
 
 /* Dropping an idea states what it will do before it does it. */
-.wayout__dropask { margin: 10px 0 0 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.wayout__dropask p { flex-basis: 100%; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
-.wayout__dropask .wayout__threadundo { margin: 0; font-size: 14px; }
-.wayout__version--pending .wayout__working { margin-top: 12px; }
 /* ⚠️ The drop question sits inside their bubble's block and would otherwise
    inherit the bubble — it is our question, not their words. */
-.wayout__threadmine .wayout__dropask p {
-  background: none; padding: 0; border-radius: 0; font-weight: 400; max-width: none;
-}
 
 /* Over the moves, so a switch and the moves it changes are in one view. */
 #wayout-versions { margin: 18px 0 14px; scroll-margin-top: 90px; }
@@ -3126,3 +3024,11 @@ h1.wayout__heroline {
 }
 .wayout__fixedit .wayout__btn { width: auto; margin: 0; padding: 9px 18px; font-size: 15px; }
 .wayout__fixedit .wayout__threadundo { margin: 0; }
+
+/* An error while the plan is on screen — said where it will be seen. */
+.wayout__alert {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
+  margin: 0 0 18px; padding: 12px 16px; border-radius: 12px;
+  background: #FBEDEA; border: 1px solid #E8C4BC; color: #6E2A1F; font-size: 15px; line-height: 1.5;
+}
+.wayout__alert p { margin: 0; flex: 1 1 240px; }

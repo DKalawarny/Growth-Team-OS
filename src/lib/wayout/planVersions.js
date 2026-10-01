@@ -13,7 +13,9 @@
  *
  * ⭐ A version is identified by its INDEX in the thread (`key`); the original
  * is key -1. Display numbers are positional — Version 1 is always the original
- * and the rest count up with no gaps, so deleting one never leaves "1, 3".
+ * and the rest count up, so deleting one closes the gap. ⚠️ A crossed-off
+ * version keeps its number (it is still listed, under "Crossed off"), so the
+ * live chips can skip one; that is honest rather than a gap.
  *
  * ⚠️ MAPS ON THREAD ENTRIES NEVER REACH A PROMPT. The thread goes to the model
  * as `so_far: thread.slice(-8).map(m => ({ role, content }))` and the rebuild
@@ -143,26 +145,71 @@ export function removeVersion(thread = [], key, currentMap) {
   if (key < 0 || !entry?.rebuilt || !entry.map) return null
   const list = versionList(t)
   const at = list.findIndex(v => v.key === key)
-  const restore = samePlan(entry.map, currentMap) ? list[at - 1]?.map ?? null : null
 
-  let next = t.filter((_, i) => i !== key)
-  if (entry.base) {
-    const heir = next.findIndex(m => m?.rebuilt && m.map)
-    if (heir > -1) next = next.map((m, i) => (i === heir ? { ...m, base: entry.base } : m))
-  }
+  // 🔴 STEP BACK TO A VERSION STILL IN PLAY, judged by what is SHOWING rather
+  // than by comparing maps — two versions can be identical, and stepping back
+  // onto a crossed-off one left no chip lit and an empty note. The original is
+  // never crossed off, so there is always somewhere to land.
+  const restore = showingKey(t, currentMap) === key
+    ? (list.slice(0, at).filter(v => !v.crossed).pop() ?? list[0])?.map ?? null
+    : null
 
-  // The idea this version came from: the last thing they said before it.
-  let idea = -1
-  for (let j = key - 1; j >= 0; j--) if (t[j]?.role === 'user') { idea = j; break }
-  if (idea > -1) {
-    let end = idea + 1
-    while (end < next.length && next[end]?.role !== 'user') end++
-    const stillBuilt = next.slice(idea + 1, end).some(m => m?.rebuilt && m.map)
-    if (!stillBuilt) {
-      next = [...next.slice(0, idea), ...next.slice(idea + 1, end).filter(m => m?.rebuilt), ...next.slice(end)]
-    }
+  // 🔴 THE ORIGINAL MUST OUTLIVE THE ENTRY THAT CARRIED IT. Deleting the only
+  // version used to take `base` with it. If no version is left to inherit it,
+  // the entry stays as a holder with no plan of its own.
+  const heir = entry.base
+    ? t.findIndex((m, i) => i !== key && m?.rebuilt && m.map)
+    : -1
+  let next = t.map((m, i) => {
+    if (i === heir) return { ...m, base: entry.base }
+    if (i === key && entry.base && heir < 0) return { role: 'assistant', rebuilt: true, holder: true, base: entry.base, at: entry.at }
+    return m
+  })
+  if (!(entry.base && heir < 0)) next = next.filter((_, i) => i !== key)
+
+  // 🔴 THE WHOLE IDEA, NOT ITS LAST LINE. An idea can take several turns
+  // ("sell the house" … "about 400k" … "ok"), and deleting its version used to
+  // remove only the last thing they said, so the rest came back as a new idea
+  // and fed the next rebuild. Its turns are everything between the version
+  // before it and this one — unless a later version was built from the same
+  // turns (nothing they said in between), in which case the idea stays.
+  let start = key - 1
+  while (start >= 0 && !t[start]?.rebuilt) start--
+  let end = key + 1
+  while (end < t.length && t[end]?.role !== 'user') end++
+  const stillBuilt = t.slice(key + 1, end).some(m => m?.rebuilt && m.map)
+  if (!stillBuilt) {
+    const turns = new Set(t.slice(start + 1, key).filter(m => !m?.rebuilt))
+    next = next.filter(m => !turns.has(m))
   }
   return { thread: next, restore }
+}
+
+/**
+ * The turns a rebuild should read: everything they said, EXCEPT the turns of
+ * an idea whose every version they crossed off. 🔴 A crossed-off idea kept
+ * steering new versions, because the rebuild took every sentence ever said —
+ * which contradicted "crossed off" outright.
+ */
+export function rebuildTurns(thread = []) {
+  const t = thread ?? []
+  const out = []
+  let segment = []
+  const flush = owners => {
+    if (!owners.length || owners.some(m => !m.crossed)) out.push(...segment)
+    segment = []
+  }
+  let owners = []
+  t.forEach(m => {
+    if (m?.role === 'user') {
+      if (owners.length) { flush(owners); owners = [] }
+      segment.push(m)
+    } else if (m?.rebuilt && m.map) {
+      owners.push(m)
+    }
+  })
+  flush(owners)
+  return out.filter(m => m.content).map(m => String(m.content))
 }
 
 /**

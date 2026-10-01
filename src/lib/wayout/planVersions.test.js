@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  versionList, liveVersions, crossOffOthers, bringBack, storeChoice, currentChoice, showingKey, samePlan, removeVersion, dropDraft, openFrom, planChanges, versionAbout,
+  versionList, liveVersions, rebuildTurns, crossOffOthers, bringBack, storeChoice, currentChoice, showingKey, samePlan, removeVersion, dropDraft, openFrom, planChanges, versionAbout,
 } from './planVersions'
 
 const said = c => ({ role: 'user', content: c })
@@ -62,8 +62,10 @@ describe('removeVersion', () => {
     const one = removeVersion(daniel(), 3, V2)
     expect(one.thread[0]).toEqual(said('flip instead'))
     const both = removeVersion(one.thread, 2, V2)
-    expect(both.thread).toEqual([])
+    expect(both.thread.filter(m => m.role === 'user')).toEqual([])
     expect(both.restore).toEqual(V1)
+    // ⭐ and the original is still there to switch back to later
+    expect(versionList(both.thread).map(v => v.label)).toEqual(['Original'])
   })
   it('a later idea is untouched by deleting an earlier one', () => {
     const t = [...daniel(), said('buyer pulled out'), reply('r'), { role: 'assistant', rebuilt: true, map: V4 }]
@@ -129,5 +131,38 @@ describe('storeChoice / currentChoice', () => {
     const t = storeChoice(daniel(), { pick: 2 })
     expect(currentChoice([...t, said('new'), { role: 'assistant', rebuilt: true, map: V4 }])).toBe(null)
     expect(currentChoice(crossOffOthers(t, 2))).toBe(null)
+  })
+})
+
+describe('removeVersion — audit cases', () => {
+  it('🔴 3a: a multi-turn idea goes with its only version', () => {
+    const t = [said('sell house'), reply('How much?'), said('about 400k'), reply('ok'),
+      { role: 'assistant', rebuilt: true, base: V1, map: V2 }]
+    const out = removeVersion(t, 4, V1)
+    expect(out.thread.filter(m => m.role === 'user')).toEqual([])
+  })
+  it('🔴 3b: deleting the only version keeps the original', () => {
+    const t = [said('a'), { role: 'assistant', rebuilt: true, base: V1, map: V2 }]
+    const out = removeVersion(t, 1, map('rebuilt from answers'))
+    expect(versionList(out.thread)[0]?.map).toEqual(V1)
+  })
+  it('🔴 3c: steps back past a crossed-off version to one in play', () => {
+    const t = [...daniel(), said('b'), { role: 'assistant', rebuilt: true, map: V4 }]
+    const crossed = t.map((m, i) => (i === 3 ? { ...m, crossed: { why: 'x' } } : m))
+    expect(removeVersion(crossed, 5, V4).restore).toEqual(V2)
+  })
+  it('🔴 3d: deleting an identical older version does not move the plan', () => {
+    const t = [said('a'), { role: 'assistant', rebuilt: true, base: V1, map: V2 }, { role: 'assistant', rebuilt: true, map: V2 }]
+    expect(removeVersion(t, 1, V2).restore).toBe(null)
+  })
+})
+
+describe('rebuildTurns', () => {
+  it('reads every idea in play and the one in progress', () => {
+    expect(rebuildTurns([...daniel(), said('new')])).toEqual(['flip instead', 'new'])
+  })
+  it('🔴 drops an idea whose every version was crossed off', () => {
+    const t = daniel().map(m => (m.rebuilt ? { ...m, crossed: { why: 'x' } } : m))
+    expect(rebuildTurns([...t, said('new')])).toEqual(['new'])
   })
 })
