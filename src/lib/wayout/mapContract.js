@@ -529,8 +529,11 @@ const SPECULATIVE = [
  * cannot be "be careful"; it has to be a full stop.
  */
 function firstSentence(text) {
-  const m = String(text ?? '').match(/^[^.!?]*[.!?]/)
-  let out = (m ? m[0] : String(text ?? '')).trim()
+  // 🔴 This cut at the first full stop anywhere, so "I have assumed your St.
+  // Joseph's placement…" reached the page as "I have assumed your St." — the
+  // same bug the sentence splitter had with decimals. sentencesOf knows about
+  // abbreviations, initialisms and decimals.
+  let out = (sentencesOf(text)[0] ?? String(text ?? '')).trim()
 
   // A trailing clause joined by a dash is the same fault with different
   // punctuation — "I have assumed X — you have already learned..."
@@ -1023,7 +1026,9 @@ export function sentencesOf(text) {
 }
 
 export function scrubFigures(text, answers = {}) {
-  const src = String(text ?? '').trim()
+  // ⭐ Every reply, comparison and answer passes through here, so the word
+  // rules (no "Tuesday", no chip keys) ride along with the figure rules.
+  const src = deJargon(String(text ?? '').trim())
   if (!src) return src
   const allowed = allowedFigures(answers ?? {})
 
@@ -1242,8 +1247,26 @@ export function fieldNamesLeaked(map) {
  * equivalent stays, gets reported by `mapProblems`, and the map is rewritten —
  * substituting a guess would replace a visible fault with an invisible one.
  */
+/**
+ * 🔴🔴 "TUESDAY" NEVER REACHES A READER. The weekday is OUR device for getting a
+ * specific answer out of them; in output it is a private reference to a day
+ * that does not exist. The prompt bans it as a word and it still came back —
+ * "a step toward your Tuesday" in a walkthrough question on 1 Oct — so it is
+ * enforced here, on everything a person reads.
+ * ⚠️ Validated both ways in the tests: "your Tuesday" / "that Tuesday" become
+ * the aim, "on Tuesday" becomes "this week", and a plain "Tuesday" goes too.
+ */
+export function noTuesday(text) {
+  if (typeof text !== 'string' || !/tuesday/i.test(text)) return text
+  return text
+    .replace(/\b(?:your|their|that|the|a|my|this)\s+(?:ordinary\s+)?tuesdays?\b/gi, 'the life you are aiming for')
+    .replace(/\b(?:on|by|next|this|every)\s+tuesdays?\b/gi, 'this week')
+    .replace(/\btuesdays?\b/gi, 'the day')
+}
+
 function deJargon(value) {
   if (typeof value === 'string') {
+    value = noTuesday(value)
     const fields = Object.entries(FIELD_IN_WORDS).reduce(
       (out, [key, words]) => out.replace(new RegExp(`\\b${key}\\b`, 'g'), words),
       value,
@@ -1338,7 +1361,8 @@ export function enforcePlaybookContract(play, answers = {}) {
   out.disclaimer = out.disclaimer
     || 'This is a plan, not financial, legal or tax advice. Check the numbers before you act.'
 
-  return out
+  // ⭐ The same word rules as the map — the walkthrough is read just as closely.
+  return deJargon(out)
 }
 
 /**
