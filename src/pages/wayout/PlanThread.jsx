@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
 import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
@@ -36,7 +37,17 @@ export default function PlanThread({
   const [text, setText] = useState('')
   const [err, setErr]   = useState('')
   const [dropping, setDropping] = useState(false)
-  const [fixing, setFixing] = useState(false)
+  // ⭐ "Correct an answer" in the menu lands here (#correct) with the panel open
+  // — read from the ROUTE, because the menu is used on this page too, where the
+  // component is already mounted and an initial-state check would never re-run.
+  const location = useLocation()
+  const routerNav = useNavigate()
+  const viaMenu = location.hash === '#correct'
+  const [fixingOwn, setFixing] = useState(false)
+  const fixing = fixingOwn || viaMenu
+  useEffect(() => {
+    if (viaMenu) requestAnimationFrame(() => document.querySelector('.wayout__fix')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [viaMenu])
 
   const mine  = thread.filter(m => m.role === 'user').length
   const spent = mine >= WAYOUT_MAX_PLAN_ASKS
@@ -128,7 +139,9 @@ export default function PlanThread({
           same idiom as the plan's own cut list. Not deleted: they can come back. */}
       {plans.some(v => v.crossed) && (
         <div className="wayout__versioncut">
-          <p className="wayout__versionshead">Crossed off</p>
+          {/* ⚠️ Not "Crossed off" — the plan's own list a scroll below has that
+              name, and two lists with one name read as one. */}
+          <p className="wayout__versionshead">Versions you set aside</p>
           {plans.filter(v => v.crossed).map(v => (
             <div key={v.key} className="wayout__versioncutrow">
               <s>V{v.n} “{v.about ?? 'Rewritten'}”</s>
@@ -236,7 +249,14 @@ export default function PlanThread({
       {/* ⭐⭐ CORRECT AN ANSWER. Daniel: "no way of going back in here and change
           things that could be wrong." One fact at a time, in place. */}
       {onCorrect && !quiet && (
-        <Corrections answers={answers} open={fixing} onOpen={() => setFixing(!fixing)} onCorrect={onCorrect} />
+        <Corrections
+          answers={answers}
+          open={fixing}
+          onOpen={() => {
+            if (fixing) { setFixing(false); if (viaMenu) routerNav({ hash: '' }, { replace: true }) } else setFixing(true)
+          }}
+          onCorrect={onCorrect}
+        />
       )}
 
       {!spent && (

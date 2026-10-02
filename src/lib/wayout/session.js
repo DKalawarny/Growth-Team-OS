@@ -1141,11 +1141,14 @@ export async function loadProgress(sessionId) {
   if (error) throw new Error(error.message)
   const done = new Set()
   const started = new Set()
+  // ⭐ The dates are kept: the plan shows WHEN each move was done (evidence,
+  // never a streak or a score).
+  const doneAt = {}
   ;(data ?? []).forEach(r => {
     started.add(r.move_order)
-    if (r.done_at) done.add(r.move_order)
+    if (r.done_at) { done.add(r.move_order); doneAt[r.move_order] = r.done_at }
   })
-  return { done, started }
+  return { done, started, doneAt }
 }
 
 /**

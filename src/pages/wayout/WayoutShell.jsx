@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { clearDraft } from '../../lib/wayout/draft'
+import { OPERATOR_CONTACT } from '../../lib/terms'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, WAYOUT_HOME, canonicalUrl } from '../../lib/wayout/brand'
 import './wayout.css'
 
@@ -150,19 +151,10 @@ export default function WayoutShell({
               ⚠️ It clears the DRAFT as well as the session. Signing out while
               leaving an anonymous draft in localStorage would leave the next
               person answering into your half-finished form. */}
-          {signedIn && (
-            <button
-              type="button"
-              className="wayout__signout"
-              onClick={async () => {
-                clearDraft()
-                await supabase.auth.signOut()
-                window.location.assign(WAYOUT_BASE || '/')
-              }}
-            >
-              Sign out
-            </button>
-          )}
+          {/* ⭐⭐ A MENU, LIKE ANY OTHER PLATFORM. Daniel, 2 Oct: "there should be
+              a setting button or something that shows how to nav, terms etc."
+              The only control here was Sign out. */}
+          {signedIn && <AccountMenu />}
         </div>
         {children}
         {/* ⭐⭐ ON EVERY PAGE, SAID ONCE AND PLAINLY. Daniel, 1 Oct: "making sure
@@ -226,5 +218,59 @@ export function WayoutFooter() {
         <Link to={`${WAYOUT_BASE}/privacy`}>Privacy</Link>
       </nav>
     </footer>
+  )
+}
+
+/**
+ * The signed-in menu: where everything is, in one place. Closes on a choice,
+ * on Escape, or on a tap outside.
+ * ⚠️ Sign out still clears the anonymous DRAFT as well as the session — see the
+ * note this replaced in the shell: a shared laptop must not hand the next
+ * person a half-finished form.
+ */
+function AccountMenu() {
+  const [open, setOpen] = useState(false)
+  const box = useRef(null)
+  useEffect(() => {
+    if (!open) return undefined
+    const away = e => { if (box.current && !box.current.contains(e.target)) setOpen(false) }
+    const key = e => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('pointerdown', away)
+    document.addEventListener('keydown', key)
+    return () => { document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', key) }
+  }, [open])
+  const close = () => setOpen(false)
+  return (
+    <div className="wayout__menu" ref={box}>
+      <button type="button" className="wayout__menubtn" aria-expanded={open} aria-haspopup="true" onClick={() => setOpen(o => !o)}>
+        <span aria-hidden="true">☰</span> Menu
+      </button>
+      {open && (
+        <nav className="wayout__menupanel" aria-label="Account">
+          <p className="wayout__menuhead">Your plan</p>
+          <Link to={`${WAYOUT_BASE}/plan`} onClick={close}>Your plan</Link>
+          <Link to={`${WAYOUT_BASE}/history`} onClick={close}>Your progress</Link>
+          <Link to={`${WAYOUT_BASE}/plan#correct`} onClick={close}>Correct an answer</Link>
+          <p className="wayout__menuhead">Help</p>
+          <Link to={`${WAYOUT_BASE}/terms`} onClick={close}>Terms of use</Link>
+          <Link to={`${WAYOUT_BASE}/privacy`} onClick={close}>Privacy</Link>
+          <a href={`mailto:${OPERATOR_CONTACT}`} onClick={close}>Contact us</a>
+          <a href={`mailto:${OPERATOR_CONTACT}?subject=${encodeURIComponent('Delete my Unstuck Map account')}`} onClick={close}>
+            Delete my account
+          </a>
+          <button
+            type="button"
+            className="wayout__menusignout"
+            onClick={async () => {
+              clearDraft()
+              await supabase.auth.signOut()
+              window.location.assign(WAYOUT_BASE || '/')
+            }}
+          >
+            Sign out
+          </button>
+        </nav>
+      )}
+    </div>
   )
 }

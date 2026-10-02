@@ -655,8 +655,9 @@ export default function Plan() {
   async function setMoveDone(order, isDone) {
     setProgress(p => {
       const next = new Set(p?.done ?? [])
-      if (isDone) next.add(order); else next.delete(order)
-      return { ...(p ?? { started: new Set() }), done: next }
+      const doneAt = { ...(p?.doneAt ?? {}) }
+      if (isDone) { next.add(order); doneAt[order] = new Date().toISOString() } else { next.delete(order); delete doneAt[order] }
+      return { ...(p ?? { started: new Set() }), done: next, doneAt }
     })
     try { await markMoveDone(session.id, order, isDone) } catch (err) { setError(err.message) }
   }
@@ -1187,12 +1188,12 @@ export function Map({
           <Link to={`${WAYOUT_BASE}/history`}>The whole way here →</Link>
         </div>
       )}
-      {/* 🔴 1 Oct audit: /history was only reachable from a second chapter, so
-          a first plan with moves ticked off had a record nobody could find. */}
-      {!past && chapter === 1 && ticked.size > 0 && (
-        <p className="wayout__rebuild wayout__r" style={at(2.3)}>
-          <Link to={`${WAYOUT_BASE}/history`}>See your record so far →</Link>
-        </p>
+      {/* ⭐⭐ WHERE THEY ARE, AT A GLANCE. Daniel, 2 Oct: "showing the milestones
+          on each person's page — something that shows their progress." Evidence,
+          never praise: what is done and when, which gate is passed, what is next.
+          ⚠️ No percentages, rings, badges or streaks — ever. */}
+      {!past && Array.isArray(map.moves) && map.moves.length > 0 && (
+        <Progress moves={map.moves} ticked={ticked} doneAt={progress?.doneAt ?? {}} style={at(2.3)} />
       )}
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
@@ -1737,7 +1738,8 @@ export function Map({
         </p>
       )}
 
-      <p className="wayout__disclaimer wayout__r" style={at(4.1)}>{map.disclaimer}</p>
+      {/* ⚠️ The not-advice line now lives in the footer of every page; said here
+          as well it read twice within a scroll on a phone. */}
     </WayoutShell>
   )
 }
@@ -1825,6 +1827,47 @@ function Spent() {
  * generation checks against (session.enrichAnswers), so a plan that passed
  * when it was written passes when it is shown.
  */
+/**
+ * The progress strip: each move with its state and, once done, the date. The
+ * gate between two moves shows as passed when the move before it is done.
+ */
+function Progress({ moves, ticked, doneAt = {}, style }) {
+  const when = iso => {
+    try { return new Date(iso).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) } catch { return '' }
+  }
+  const doneCount = moves.filter((_, i) => ticked.has(i + 1)).length
+  const nowIdx = moves.findIndex((_, i) => !ticked.has(i + 1))
+  return (
+    <section className="wayout__progress wayout__r" style={style} aria-label="Your progress">
+      <p className="wayout__progresshead">
+        <span>Your progress</span>
+        <span>{doneCount === moves.length ? 'Every move done' : `${doneCount} of ${moves.length} moves done`}</span>
+      </p>
+      <ol>
+        {moves.map((m, i) => {
+          const order = i + 1
+          const done = ticked.has(order)
+          const now = i === nowIdx
+          return (
+            <li key={order} className={done ? 'is-done' : now ? 'is-now' : 'is-later'}>
+              <b aria-hidden="true">{done ? '✓' : order}</b>
+              <span className="wayout__progressmove">{m.title}</span>
+              <em>
+                {done
+                  ? `Done${doneAt[order] ? ` ${when(doneAt[order])}` : ''}${i < moves.length - 1 ? ` · gate ${order} passed` : ''}`
+                  : now ? 'You are here' : `Opens after gate ${i}`}
+              </em>
+            </li>
+          )
+        })}
+      </ol>
+      {doneCount > 0 && (
+        <Link className="wayout__progresslink" to={`${WAYOUT_BASE}/history`}>See your full record →</Link>
+      )}
+    </section>
+  )
+}
+
 function guardFor(s, thread, hist) {
   if (!s) return {}
   const said = (Array.isArray(thread) ? thread : [])
@@ -1892,5 +1935,7 @@ function CountUp({ value, prefix = '', suffix = '' }) {
     return () => cancelAnimationFrame(raf)
   }, [value])
 
-  return <>{prefix}{n.toLocaleString()}{suffix}</>
+  // ⚠️ The unit is smaller and kept with the number — "/mo" broke onto its own
+  // line on a phone ("$7,400/m" … "o").
+  return <span className="wayout__statnum">{prefix}{n.toLocaleString()}{suffix && <small>{suffix}</small>}</span>
 }

@@ -74,7 +74,7 @@ function Section({ label, onSection }) {
  * something has gone wrong. Collapsing it removed about a fifth of the height
  * without touching the feel. Not applied — his call.
  */
-export default function Playbook({ play, index = 1, children, onSection }) {
+export default function Playbook({ play, index = 1, children, onSection, notice = null }) {
   if (!play) return null
 
   return (
@@ -90,6 +90,9 @@ export default function Playbook({ play, index = 1, children, onSection }) {
       <p className="wayout__crumb">
         <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
       </p>
+      {/* ⚠️ Inside the page, under the way back — it used to render above the
+          site header, detached from everything. */}
+      {notice}
       <p className="wayout__who">Move {index} · how to actually do it</p>
       {/* ⭐⭐ THE YELLOW STROKE BELONGS HERE TOO. Daniel, on getting the old
           design back: "no yellow highlight of the title back". He was right and

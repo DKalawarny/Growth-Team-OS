@@ -663,7 +663,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
   display: block;
   /* 🔴 "$2,600/mo" at 28px ran 5px past its card at 375 and 33px at 320. */
   font-size: clamp(21px, 6.4vw, 28px);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-top: 2px;
@@ -3144,3 +3144,72 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 /* The record page: prose at a reading measure, not ~170 characters a line. */
 .wayout__frame--wide:has(> .wayout__crumb) .wayout__lead,
 .wayout__frame--wide:has(> .wayout__crumb) p:not(.wayout__crumb) { max-width: 68ch; }
+
+/* ⭐⭐ Your progress — what is done and when, which gate is passed, what is
+   next. Evidence, not a score: no rings, no percentages. */
+.wayout__progress {
+  margin: 8px 0 26px; padding: 16px 18px; border-radius: 14px;
+  background: var(--paper); border: 1px solid var(--line);
+}
+.wayout__progresshead {
+  display: flex; justify-content: space-between; gap: 12px; margin: 0 0 10px;
+  font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--soft);
+}
+.wayout__progresshead span:last-child { letter-spacing: .02em; text-transform: none; font-weight: 700; color: var(--ink); }
+.wayout__progress ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.wayout__progress li { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; align-items: start; }
+.wayout__progress li b {
+  grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 13px; border: 1.5px solid var(--line); color: var(--soft); background: var(--paper);
+}
+.wayout__progress li.is-done b { background: var(--green); border-color: var(--green); color: #fff; }
+.wayout__progress li.is-now b { border-color: var(--sun); background: #FFF3DA; color: var(--ink); }
+.wayout__progressmove { font-size: 15px; font-weight: 700; line-height: 1.35; color: var(--ink); }
+.wayout__progress li.is-later .wayout__progressmove { color: var(--soft); font-weight: 600; }
+.wayout__progress li em { font-style: normal; font-size: 13px; color: var(--soft); }
+.wayout__progress li.is-done em { color: var(--green); font-weight: 600; }
+.wayout__progress li.is-now em { color: var(--sun-ink); font-weight: 700; }
+.wayout__progresslink { display: inline-flex; min-height: 44px; align-items: center; margin-top: 4px; font-size: 14px; font-weight: 700; color: var(--green); }
+@media (min-width: 860px) {
+  .wayout__progress ol { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}
+
+/* The stat number and its unit travel together; the unit is smaller. */
+.wayout__statnum { white-space: nowrap; }
+.wayout__statnum small { font-size: .55em; font-weight: 700; margin-left: 1px; color: var(--soft); }
+
+/* Phone: the version chips stay on one row and scroll sideways, and "Help me
+   choose" is a quiet link-sized button — they sat above the moves and pushed
+   the plan itself a screen down. */
+@media (max-width: 600px) {
+  .wayout__versionsrow { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
+  .wayout__versionsrow::-webkit-scrollbar { display: none; }
+  .wayout__versionchip { flex: none; }
+  .wayout__choose .wayout__btn { padding: 8px 16px; font-size: 14px; }
+  .wayout__choosenote { flex-basis: 100%; }
+}
+
+/* ⭐⭐ The account menu. */
+.wayout__menu { position: relative; margin-left: auto; }
+.wayout__menubtn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--paper);
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer;
+}
+.wayout__menubtn:hover { border-color: var(--ink); }
+.wayout__menupanel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; width: min(280px, calc(100vw - 32px));
+  display: grid; padding: 10px; border-radius: 14px; background: var(--paper);
+  border: 1px solid var(--line); box-shadow: 0 18px 40px rgba(35, 48, 31, .18);
+}
+.wayout__menuhead { margin: 8px 10px 4px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.wayout__menupanel a, .wayout__menupanel button {
+  display: flex; align-items: center; min-height: 44px; padding: 0 10px; border-radius: 10px;
+  font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: none;
+  background: none; border: 0; text-align: left; cursor: pointer;
+}
+.wayout__menupanel a:hover, .wayout__menupanel button:hover { background: var(--tint); }
+.wayout__menusignout { margin-top: 6px; border-top: 1px solid var(--line) !important; border-radius: 0 0 10px 10px !important; color: var(--soft) !important; }
+/* ⚠️ `.wayout__stat span` styles the caption (13px, soft) and was catching the
+   number's own wrapper, shrinking "$7,400" to caption size. */
+.wayout__stat b .wayout__statnum { display: inline; font-size: inherit; color: inherit; }

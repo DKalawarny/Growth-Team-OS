@@ -527,7 +527,18 @@ function PlayMove({ order }) {
           describes is not the move they are on. Said plainly rather than
           silently regenerating — the week they have already spent on it is
           theirs, and we do not get to decide it was wasted. */}
-      {stale && (
+      {/* ⚠️ Everything below now renders INSIDE the playbook's own shell. As
+          siblings they fell outside the card — invisible button, unstyled
+          block. See the note on Playbook. */}
+      {/* ⚠️ MARKED, NOT JUST ANNOUNCED. The notice above sat over a play that
+          rendered at full strength — same weight, same authority — so somebody
+          could read the whole thing and act on it without registering that it
+          describes a move their plan no longer contains. Daniel: "shouldn't it
+          auto update?" Auto-regenerating would spend a generation every time
+          the page is opened and rewrite instructions somebody may be halfway
+          through following. Making the state visible costs neither. */}
+      <div className={stale ? 'wayout__superseded' : undefined}>
+      <Playbook play={play} index={order} notice={stale ? (
         <div className="wayout__stale">
           <p>
             Your plan changed after this was written, so this is the play for the
@@ -549,19 +560,7 @@ function PlayMove({ order }) {
             </button>
           </p>
         </div>
-      )}
-      {/* ⚠️ Everything below now renders INSIDE the playbook's own shell. As
-          siblings they fell outside the card — invisible button, unstyled
-          block. See the note on Playbook. */}
-      {/* ⚠️ MARKED, NOT JUST ANNOUNCED. The notice above sat over a play that
-          rendered at full strength — same weight, same authority — so somebody
-          could read the whole thing and act on it without registering that it
-          describes a move their plan no longer contains. Daniel: "shouldn't it
-          auto update?" Auto-regenerating would spend a generation every time
-          the page is opened and rewrite instructions somebody may be halfway
-          through following. Making the state visible costs neither. */}
-      <div className={stale ? 'wayout__superseded' : undefined}>
-      <Playbook play={play} index={order} onSection={label => {
+      ) : null} onSection={label => {
         // ⚠️ A space on the end so the cursor lands after the colon, and a
         // unique suffix is not needed — clicking the SAME section twice should
         // not wipe what they have started typing about it.
