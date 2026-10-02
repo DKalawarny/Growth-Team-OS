@@ -516,6 +516,10 @@ export default function Plan() {
       const answers = { ...(s.answers ?? {}), [key]: to }
       await saveAnswers(s.id, answers)
       patchSession({ answers })
+      // ⚠️ The country only decides which help lines are shown — it does not
+      // move the plan, so it is saved quietly rather than becoming an idea to
+      // rebuild around.
+      if (key === 'region') return
       commitThread(prev => [...prev, {
         role: 'user', at: new Date().toISOString(),
         correction: { key, from: field.value, to },

@@ -482,20 +482,27 @@ function Corrections({ answers, open, onOpen, onCorrect }) {
                   className="wayout__fixedit"
                   onSubmit={e => { e.preventDefault(); setEditing(null); onCorrect(f.key, value) }}
                 >
-                  <input
-                    className="wayout__fixinput"
-                    autoFocus
-                    inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                    value={value}
-                    onChange={e => setValue(e.target.value)}
-                    aria-label={f.label}
-                  />
+                  {f.options ? (
+                    <select className="wayout__fixinput" autoFocus value={value} onChange={e => setValue(e.target.value)} aria-label={f.label}>
+                      <option value="" disabled>Choose…</option>
+                      {f.options.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                    </select>
+                  ) : (
+                    <input
+                      className="wayout__fixinput"
+                      autoFocus
+                      inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                      value={value}
+                      onChange={e => setValue(e.target.value)}
+                      aria-label={f.label}
+                    />
+                  )}
                   <button type="submit" className="wayout__btn" disabled={!value.trim() || value.trim() === f.value.trim()}>Save</button>
                   <button type="button" className="wayout__threadundo" onClick={() => setEditing(null)}>Cancel</button>
                 </form>
               ) : (
                 <span className="wayout__fixrow">
-                  <b>{showAnswer(f.kind, f.value)}</b>
+                  <b>{showAnswer(f.kind, f.value, f.options)}</b>
                   <button type="button" className="wayout__threadundo" onClick={() => { setEditing(f.key); setValue(f.value) }}>
                     Change
                   </button>

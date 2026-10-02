@@ -16,6 +16,9 @@ import { WAYOUT_SCREENS } from '../../content/wayoutIntake'
  * Labels come from the intake itself, so a reworded question rewords this too.
  */
 const KEYS = [
+  // ⭐ First: the country decides which crisis lines are shown, and anybody who
+  // finished before 1 Oct was never asked it.
+  'region',
   'takeHome', 'householdTakeHome', 'mustPay', 'housingCost', 'savings',
   'debt', 'enough', 'coming', 'refuse',
 ]
@@ -31,14 +34,16 @@ export function correctableAnswers(answers = {}) {
       key: k,
       label: FIELDS[k].label,
       kind: FIELDS[k].kind,
+      options: FIELDS[k].options ?? null,
       value: typeof answers?.[k] === 'string' || typeof answers?.[k] === 'number' ? String(answers[k]) : '',
     }))
 }
 
 /** How an answer reads back: a figure gets its dollar sign, an empty one says so. */
-export function showAnswer(kind, value) {
+export function showAnswer(kind, value, options = null) {
   const v = String(value ?? '').trim()
   if (!v) return 'Not answered'
+  if (options) return options.find(o => o.key === v)?.label ?? v
   // A bare figure is money on this form, whichever kind of box it was typed in.
   if (/^\$?\d[\d,]*(\.\d+)?$/.test(v)) return `$${Number(v.replace(/[$,]/g, '')).toLocaleString('en-US')}`
   return v
@@ -51,6 +56,6 @@ export function showAnswer(kind, value) {
  */
 export function correctionSentence(field, from, to) {
   const was = String(from ?? '').trim()
-  return `Correction to my answers — ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to)}`
-    + (was ? ` (I had put ${showAnswer(field.kind, was)}).` : '.')
+  return `Correction to my answers — ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to, field.options)}`
+    + (was ? ` (I had put ${showAnswer(field.kind, was, field.options)}).` : '.')
 }
