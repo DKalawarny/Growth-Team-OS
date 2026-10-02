@@ -502,7 +502,7 @@ function Corrections({ answers, open, onOpen, onCorrect }) {
                 </form>
               ) : (
                 <span className="wayout__fixrow">
-                  <b>{showAnswer(f.kind, f.value, f.options)}</b>
+                  <b>{showAnswer(f.kind, f.value, f.options, f.symbol)}</b>
                   <button type="button" className="wayout__threadundo" onClick={() => { setEditing(f.key); setValue(f.value) }}>
                     Change
                   </button>

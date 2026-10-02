@@ -1,4 +1,5 @@
 import { WAYOUT_SCREENS } from '../../content/wayoutIntake'
+import { currencyFor } from './currency'
 
 /**
  * ⭐⭐ THE ANSWERS A PERSON CAN CORRECT FROM THE PLAN.
@@ -35,17 +36,18 @@ export function correctableAnswers(answers = {}) {
       label: FIELDS[k].label,
       kind: FIELDS[k].kind,
       options: FIELDS[k].options ?? null,
+      symbol: currencyFor(answers?.region).symbol,
       value: typeof answers?.[k] === 'string' || typeof answers?.[k] === 'number' ? String(answers[k]) : '',
     }))
 }
 
 /** How an answer reads back: a figure gets its dollar sign, an empty one says so. */
-export function showAnswer(kind, value, options = null) {
+export function showAnswer(kind, value, options = null, symbol = '$') {
   const v = String(value ?? '').trim()
   if (!v) return 'Not answered'
   if (options) return options.find(o => o.key === v)?.label ?? v
   // A bare figure is money on this form, whichever kind of box it was typed in.
-  if (/^\$?\d[\d,]*(\.\d+)?$/.test(v)) return `$${Number(v.replace(/[$,]/g, '')).toLocaleString('en-US')}`
+  if (/^[$£€]?\d[\d,]*(\.\d+)?$/.test(v)) return `${symbol}${Number(v.replace(/[$£€,]/g, '')).toLocaleString('en-US')}`
   return v
 }
 
@@ -56,6 +58,6 @@ export function showAnswer(kind, value, options = null) {
  */
 export function correctionSentence(field, from, to) {
   const was = String(from ?? '').trim()
-  return `Correction to my answers — ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to, field.options)}`
-    + (was ? ` (I had put ${showAnswer(field.kind, was, field.options)}).` : '.')
+  return `Correction to my answers — ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to, field.options, field.symbol)}`
+    + (was ? ` (I had put ${showAnswer(field.kind, was, field.options, field.symbol)}).` : '.')
 }

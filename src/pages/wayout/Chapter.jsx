@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field } from './fields'
+import { currencyFor } from '../../lib/wayout/currency'
 import { isAnswered } from '../../lib/wayout/validate'
 import { sessionHome } from '../../lib/wayout/sessionHome'
 import { visibleChapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
@@ -163,6 +164,7 @@ export default function Chapter() {
               {f.label && <label className="wayout__label">{f.label}</label>}
               <Field
                 field={f}
+                currency={currencyFor(answers.region).symbol}
                 value={answers[f.key]}
                 onChange={v => {
                   setAnswers(a => ({ ...a, [f.key]: v }))

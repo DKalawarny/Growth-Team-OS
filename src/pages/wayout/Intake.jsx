@@ -6,6 +6,7 @@ import { isAnswered } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
 import { saveDraft, loadDraft, draftBelongsToSomeoneElse, markHandoff } from '../../lib/wayout/draft'
+import { currencyFor } from '../../lib/wayout/currency'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceShort } from '../../lib/wayout/pricing'
@@ -470,7 +471,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
             {visibleFields(screen, answers).map(f => (
               <div key={f.key}>
                 {f.label && <label className="wayout__label">{f.label}</label>}
-                <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} />
+                <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} currency={currencyFor(answers.region).symbol} />
                 {f.hint && <p className="wayout__hint">{f.hint}</p>}
                 {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
               </div>

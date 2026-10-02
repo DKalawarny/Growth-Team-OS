@@ -252,10 +252,10 @@ export function Score({ field, value, onChange }) {
  * person types, and reports an empty string for "1,200" — which would read as
  * "they earn nothing" rather than "they used a comma".
  */
-export function Money({ value, onChange }) {
+export function Money({ value, onChange, currency = '$' }) {
   return (
     <div className="wayout__money">
-      <span>$</span>
+      <span>{currency}</span>
       <input
         className="wayout__input"
         inputMode="decimal"
@@ -389,7 +389,7 @@ export function ShortText({ field, value, onChange }) {
 
 // ── Dispatch ────────────────────────────────────────────────────────────────
 
-export function Field({ field, value, onChange }) {
+export function Field({ field, value, onChange, currency = '$' }) {
   const Cmp = {
     chips:     Chips,
     choice:    Choice,
@@ -404,5 +404,5 @@ export function Field({ field, value, onChange }) {
     console.warn('[wayout] unknown field kind:', field.kind)
     return null
   }
-  return <Cmp field={field} value={value} onChange={onChange} />
+  return <Cmp field={field} value={value} onChange={onChange} currency={currency} />
 }

@@ -184,3 +184,18 @@ describe('1 Oct audit rules', () => {
     for (const name of SHARED) expect(BLOCKS[name], name).not.toContain('Solomon')
   })
 })
+
+/**
+ * ⭐ Every English-speaking country gets its own institutions — Daniel, 2 Oct:
+ * "401k, health insurance etc — it should know this now." In WAYOUT_METHOD, so
+ * every prompt has it; this pins the parts that would hurt someone if lost.
+ */
+describe('country knowledge', () => {
+  it('WAYOUT_METHOD carries each country, and US health insurance', () => {
+    for (const t of ['CANADA (ca)', 'UNITED STATES (us)', 'UNITED KINGDOM (uk)', 'IRELAND (ie)', 'AUSTRALIA (au)', 'NEW ZEALAND (nz)', 'SOMEWHERE ELSE (other)', 'HEALTH INSURANCE IS USUALLY TIED TO THE JOB', 'COBRA'])
+      expect(BLOCKS.WAYOUT_METHOD).toContain(t)
+  })
+  it('never states amounts or eligibility as fact', () => {
+    expect(BLOCKS.WAYOUT_METHOD).toContain('WHAT YOU MAY STATE AS FACT IS THE NAME OF THE INSTITUTION')
+  })
+})

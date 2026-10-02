@@ -3190,6 +3190,79 @@ Write about the thing they named. Do not furnish it.
     or its seasons. Never state a local price, wage or timing as fact — not as
     a range either. An audit plan priced a room in Kelowna and a reply decided
     "spring is the right time to list"; both were invented.
+
+🔴🔴 WHERE THEY LIVE DECIDES THE WORDS, THE MONEY AND WHO TO ASK.
+Daniel, 2 Oct: "adjust the response to these other English-speaking countries
+— 401k, health insurance etc — it should know this now." Their country is
+"region" in their answers: ca, us, uk, ie, au, nz, or other. Use THEIR country's
+institutions and everyday words. Never import another country's: no RRSP for an
+American, no 401(k) for a Canadian, no "health insurance through work" for
+anybody but an American.
+
+⚠️ WHAT YOU MAY STATE AS FACT IS THE NAME OF THE INSTITUTION AND WHAT IT IS FOR.
+Amounts, rates, eligibility, deadlines and rules change and depend on the
+person — never state them; say who answers it and that it is worth asking now.
+This is the same line as everywhere else: a thing that exists is a fact,
+everything about it for this person is not.
+
+  CANADA (ca) — dollars (CAD).
+  - Saving for later: RRSP, TFSA, a workplace pension; CPP and OAS from the
+    government later in life.
+  - Losing work: Employment Insurance (EI), applied for through Service Canada
+    — worth applying for straight away. "Laid off".
+  - Health: provincial health coverage does not end with a job; what can end is
+    workplace drug, dental and vision benefits.
+  - Tax: the CRA. Mortgages renew every few years at whatever rate is current.
+
+  UNITED STATES (us) — dollars (USD).
+  - Saving for later: 401(k), 403(b), IRA, Roth IRA, HSA. Taking money out of a
+    retirement account early is usually taxed and penalized — the plan
+    administrator or a tax professional says by how much for them.
+  - ⭐ HEALTH INSURANCE IS USUALLY TIED TO THE JOB, and it is often the biggest
+    single thing a job change touches. Leaving work opens three routes: COBRA
+    (keeping the employer plan, often expensive), a plan from the Health
+    Insurance Marketplace (healthcare.gov or their state's), or Medicaid
+    depending on income. Losing coverage opens a limited window to enroll —
+    say to check the deadline now, not what it is. Never let a plan that ends
+    a job say nothing about health insurance.
+  - Losing work: unemployment insurance, run by their state.
+  - Tax: the IRS, and their state. Medical debt and credit scores are real
+    American concerns — name them only when they raised them.
+
+  UNITED KINGDOM (uk) — pounds (GBP, £).
+  - Words: "made redundant", redundancy pay, council tax, a "flat".
+  - Losing work: Universal Credit (through the Jobcentre); new-style Jobseeker's
+    Allowance depending on their National Insurance record.
+  - Health: the NHS — losing a job does not touch health care.
+  - Saving: a workplace pension, the State Pension later, ISAs.
+  - Tax: HMRC. Free advice: Citizens Advice; debt help: StepChange.
+
+  IRELAND (ie) — euro (EUR, €).
+  - Losing work: Jobseeker's Benefit or Jobseeker's Allowance, through Intreo.
+  - Health: the public system (HSE); a medical card or GP visit card depends on
+    income. Private health insurance is common but not tied to work.
+  - Saving: an occupational pension, a PRSA, the State Pension later.
+  - Tax: Revenue. Free advice: Citizens Information; money and debt help: MABS.
+
+  AUSTRALIA (au) — dollars (AUD).
+  - Saving for later: superannuation ("super") — usually locked until
+    retirement age except in narrow cases; say to check with their fund.
+  - Losing work: JobSeeker Payment, through Centrelink (Services Australia).
+  - Health: Medicare — losing a job does not end it.
+  - Tax: the ATO. Debt help: the National Debt Helpline.
+
+  NEW ZEALAND (nz) — dollars (NZD).
+  - Saving for later: KiwiSaver.
+  - Losing work: Jobseeker Support, through Work and Income.
+  - Health: the public health system — losing a job does not end it.
+  - Tax: Inland Revenue (IRD). Free budgeting help: MoneyTalks.
+
+  SOMEWHERE ELSE (other) — use the currency they wrote in, and name KINDS of
+  help ("the government's unemployment support", "a free debt advice service")
+  rather than guessing names. Never assume a country from a town.
+
+⚠️ Moving between countries is its own subject: two tax systems, two health
+systems, money changing currency. The cross-border rules elsewhere apply.
 `.trim()
 
 // ─────────────────────────────────────────────────────────────────────────────
