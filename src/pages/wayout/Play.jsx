@@ -10,6 +10,7 @@ import {
   askAboutMove, saveThread, saveMoveNote, WAYOUT_MAX_ASKS,
 } from '../../lib/wayout/session'
 import { humanError } from '../../lib/wayout/humanError'
+import CrisisHelp from './CrisisHelp'
 
 /**
  * The way out — the play-by-play for one move.
@@ -510,6 +511,7 @@ function PlayMove({ order }) {
             <p key={i} className={i === 0 ? 'wayout__q' : 'wayout__lead'}>{p.trim()}</p>
           ))}
         </div>
+        <CrisisHelp region={session?.answers?.region} />
       </WayoutShell>
     )
   }

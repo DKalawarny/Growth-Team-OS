@@ -65,6 +65,8 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 // ⭐⭐ The only INDEXABLE pages in this product. Everything else is noindex and
 // behind a session — see the note in Situations.jsx.
 const WayoutStuck      = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationIndex })))
+const UnstuckTermsPage   = lazy(() => import('./pages/wayout/Legal').then(m => ({ default: m.UnstuckTerms })))
+const UnstuckPrivacyPage = lazy(() => import('./pages/wayout/Legal').then(m => ({ default: m.UnstuckPrivacy })))
 const WayoutNotFoundPage = lazy(() => import('./pages/wayout/NotFound'))
 const WayoutStuckPage  = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationPage })))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
@@ -314,8 +316,12 @@ export default function App() {
         <Route path="/answers"       element={<LazyRoute><AnswerIndex /></LazyRoute>} />
         <Route path="/answers/:slug" element={<LazyRoute><AnswerPage /></LazyRoute>} />
         <Route path="/security" element={<LazyRoute><Security /></LazyRoute>} />
-        <Route path="/privacy"  element={<LazyRoute><Privacy /></LazyRoute>} />
-        <Route path="/terms"    element={<LazyRoute><Terms /></LazyRoute>} />
+        {/* ⚠️ Host-aware: getunstuckmap.com has its own terms and privacy,
+            written for a person, not for a business owner. */}
+        <Route path="/privacy"  element={<LazyRoute>{onOwnDomain() ? <UnstuckPrivacyPage /> : <Privacy />}</LazyRoute>} />
+        <Route path="/terms"    element={<LazyRoute>{onOwnDomain() ? <UnstuckTermsPage /> : <Terms />}</LazyRoute>} />
+        <Route path="/wayout/privacy" element={<LazyRoute><UnstuckPrivacyPage /></LazyRoute>} />
+        <Route path="/wayout/terms"   element={<LazyRoute><UnstuckTermsPage /></LazyRoute>} />
         <Route path="/demo"     element={<LazyRoute><Demo /></LazyRoute>} />
 
         {/* Comparison pages — same component, slug-driven */}

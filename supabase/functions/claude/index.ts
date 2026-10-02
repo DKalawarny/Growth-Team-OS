@@ -239,6 +239,59 @@ async function assertCapsServerSide(
  * clicks inside the same second could both pass. The spend caps still stand
  * behind it, and that is an acceptable edge for a two-a-day courtesy limit.
  */
+/**
+ * ⭐⭐ ONE CEILING FOR UNSTUCK MAP ACROSS EVERY ACCOUNT.
+ * 🔴 1 Oct audit: each account has its own $10 cap, signup needs no email
+ * confirmation, so many accounts meant many caps — total spend had no limit.
+ * This sums the whole product's last 24 hours. WAYOUT_DAILY_CEILING_USD sets it
+ * (default $25/day); raise it as real use grows.
+ */
+async function assertWayoutCeiling(admin: ReturnType<typeof serviceClient>, toolId: string) {
+  if (toolId !== 'wayout') return
+  const ceiling = Number(Deno.env.get('WAYOUT_DAILY_CEILING_USD') ?? '25')
+  if (!Number.isFinite(ceiling) || ceiling <= 0) return
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const { data, error } = await admin
+    .from('usage_events')
+    .select('cost_usd')
+    .eq('tool_id', 'wayout')
+    .gte('created_at', since)
+  if (error) {
+    const err = new Error('Could not check today\'s limit — try again in a moment.')
+    ;(err as Error & { code?: string }).code = 'cap_check_failed'
+    throw err
+  }
+  const spent = (data ?? []).reduce((t: number, r: { cost_usd: number | null }) => t + Number(r.cost_usd || 0), 0)
+  if (spent >= ceiling) {
+    console.error('[claude] wayout daily ceiling reached', spent.toFixed(2), '>=', ceiling)
+    const err = new Error('Unstuck Map is very busy right now. Your plan is safe — try again in a few hours.')
+    ;(err as Error & { code?: string }).code = 'wayout_ceiling'
+    throw err
+  }
+}
+
+/**
+ * ⭐ THE PAID WALKTHROUGH, GATED WHERE THE MONEY IS SPENT — ready, and OFF.
+ * The playbook prompt could be called by any signed-in account; the database
+ * only refused to SAVE it. When payments go live, set
+ * WAYOUT_PLAYBOOK_REQUIRES_PAID=true and only a paid session can generate one.
+ * ⚠️ Off by default, because today the walkthrough is free for everybody.
+ */
+async function assertPlaybookPaid(admin: ReturnType<typeof serviceClient>, user: { userId: string }, promptKey?: string) {
+  if (!promptKey?.startsWith('WAYOUT_PLAYBOOK')) return
+  if (Deno.env.get('WAYOUT_PLAYBOOK_REQUIRES_PAID') !== 'true') return
+  const { count } = await admin
+    .from('wayout_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.userId)
+    .eq('status', 'paid')
+  if (!count) {
+    const err = new Error('The step-by-step is part of the subscription.')
+    ;(err as Error & { code?: string }).code = 'playbook_unpaid'
+    throw err
+  }
+}
+
 const KIND_DAILY_CAP: Record<string, number> = {
   'wayout:choose': 2,
 }
@@ -519,6 +572,8 @@ Deno.serve(async (req) => {
     try {
       await assertCapsServerSide(admin, user.companyId, toolId)
       await assertKindDailyCap(admin, user.companyId, toolId, kind)
+      await assertWayoutCeiling(admin, toolId)
+      await assertPlaybookPaid(admin, user, body.promptKey)
     } catch (err) {
       const code = (err as Error & { code?: string }).code
       return json(

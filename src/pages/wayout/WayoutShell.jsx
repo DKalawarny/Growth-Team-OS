@@ -165,6 +165,11 @@ export default function WayoutShell({
           )}
         </div>
         {children}
+        {/* ⭐⭐ ON EVERY PAGE, SAID ONCE AND PLAINLY. Daniel, 1 Oct: "making sure
+            that it is clear this isn't legal or financial advice, this is the
+            user's choice." Not a wall of small print — one true sentence and
+            the two documents behind it. */}
+        <WayoutFooter />
       </div>
     </div>
   )
@@ -209,4 +214,17 @@ function useUnstuckHead() {
       for (const el of hidden) el.setAttribute('type', 'application/ld+json')
     }
   }, [])
+}
+
+/** The footer on every Unstuck Map page — the shell's, and the landing's. */
+export function WayoutFooter() {
+  return (
+    <footer className="wayout__footer">
+      <p>{WAYOUT_NAME} is a planning tool, not legal, financial or tax advice. Every choice is yours.</p>
+      <nav aria-label="Legal">
+        <Link to={`${WAYOUT_BASE}/terms`}>Terms</Link>
+        <Link to={`${WAYOUT_BASE}/privacy`}>Privacy</Link>
+      </nav>
+    </footer>
+  )
 }

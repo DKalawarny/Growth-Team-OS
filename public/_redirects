@@ -148,6 +148,16 @@ http://getunstuckmap.com/apple-touch-icon-precomposed.png  /apple-touch-icon-uns
 # ⚠️ ONLY VISIBLE ON A HARD REFRESH, which is why it lasted: with the bundle
 # cached React takes over within a frame.
 #
+# ⭐ Unstuck Map's own terms and privacy (src/pages/wayout/Legal.jsx). FORCED,
+# because Eliv8's /terms and /privacy are prerendered files and the unforced
+# fallback below would serve them on this host.
+https://getunstuckmap.com/terms      /unstuck-shell.html   200!
+https://getunstuckmap.com/terms/     /unstuck-shell.html   200!
+https://getunstuckmap.com/privacy    /unstuck-shell.html   200!
+https://getunstuckmap.com/privacy/   /unstuck-shell.html   200!
+http://getunstuckmap.com/terms       /unstuck-shell.html   200!
+http://getunstuckmap.com/privacy     /unstuck-shell.html   200!
+
 # ⭐ unstuck-shell.html is the same built document with an empty root and this
 # product's name — these routes are all authenticated and cannot be prerendered,
 # so the honest fallback is an empty one rather than somebody else's page.

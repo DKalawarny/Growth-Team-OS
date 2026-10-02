@@ -3,6 +3,7 @@ import { WAYOUT_MAX_PLAN_ASKS } from '../../lib/wayout/session'
 import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '../../lib/wayout/planVersions'
 import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
 import { humanError } from '../../lib/wayout/humanError'
+import CrisisHelp from './CrisisHelp'
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -165,7 +166,14 @@ export default function PlanThread({
           {draft.map((m, i) => (
             m.role === 'user'
               ? <p key={i} className="wayout__draftsaid">“{m.content}”</p>
-              : !m.rebuilt && <p key={i} className="wayout__draftreply">{m.content}</p>
+              : !m.rebuilt && (
+                <div key={i}>
+                  <p className="wayout__draftreply">{m.content}</p>
+                  {/* ⭐⭐ The right lines for their country, from a fixed table,
+                      under any reply that read danger in what they wrote. */}
+                  {m.crisis && <CrisisHelp region={answers?.region} />}
+                </div>
+              )
           ))}
           {busy && (
             <div className="wayout__draftwait"><div className="wayout__working" aria-hidden="true"><i /><i /><i /></div><span>Reading that.</span></div>
@@ -175,7 +183,7 @@ export default function PlanThread({
               <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
               <span>Building V{nextN}. Up to a minute — your plan stays as it is until it is ready.</span>
             </div>
-          ) : !quiet && onRedo && (lastReply || corrected) && (
+          ) : !quiet && onRedo && (lastReply || corrected) && !lastReply?.crisis && (
             <div className="wayout__draftact">
               {moved && <p className="wayout__draftmoved">{moved.whatChanged ?? 'That changes the order.'}</p>}
               {!moved && asked && (

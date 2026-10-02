@@ -124,6 +124,15 @@ export default function Diagnostic() {
     ]
     if (goals.length) carried.goalType = goals
     if (all.horizon) carried.horizon = all.horizon
+    // ⭐ A typed timeline ("2 years", "18 months") becomes the nearest option the
+    // intake offers, so it is not asked again with nothing chosen.
+    else if (all.horizonOther) {
+      const m = String(all.horizonOther).match(/(\d+(?:\.\d+)?)\s*(year|yr|month|mo)/i)
+      if (m) {
+        const months = Number(m[1]) * (/^y/i.test(m[2]) ? 12 : 1)
+        carried.horizon = months <= 6 ? '6m' : months <= 12 ? '1y' : months <= 36 ? '3y' : '5y'
+      }
+    }
     const IMM = {
       kids:    { key: 'kids-home',   label: 'Kids at home' },
       partner: { key: 'partner-job', label: 'Partner’s job' },

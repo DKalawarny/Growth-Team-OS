@@ -16,7 +16,7 @@
  * assistant could find to a specific predicament, not to rank for a phrase.
  *
  * 🔴 THE TEST, AND IT IS STRICT: could somebody who will never pay a cent read
- * this and be genuinely better off? If not, cut it. That is precisely what an
+ * this and be better off? If not, cut it. That is precisely what an
  * assistant is choosing between, and a page that withholds the useful part to
  * drive a signup reads as withholding — which loses the citation AND the trust.
  *
@@ -51,11 +51,11 @@ export const SITUATIONS = [
       { h: 'The order matters more than the amount',
         p: 'Most people in this position already know the options. What they don’t know is which one is first, and that’s the whole difficulty. Clearing high-rate debt comes first for an unglamorous reason: it’s the only move in the list with a guaranteed return. Paying off a balance at 21% is a certain 21%, every year, forever. No property and no investment promises that, and anything claiming to is selling you something.' },
       { h: 'Find out what it actually clears before you plan around a number',
-        p: 'The figure in your head is almost always the sale price, and that isn’t what arrives. Agent commission, any mortgage still on the property, a payout penalty for breaking that mortgage early, legal fees, and whatever the place needs before it can be listed all come off the top. A realtor will produce a net sheet — an estimate of what you would actually walk away with — free, in one conversation, before you list anything. That’s the person to ask. It doesn’t need a lawyer and it doesn’t need to wait.' },
+        p: 'The figure in your head is usually the sale price, and that isn’t what arrives. Agent commission, any mortgage still on the property, a payout penalty for breaking that mortgage early, legal fees, and whatever the place needs before it can be listed all come off the top. A realtor will produce a net sheet — an estimate of what you would actually walk away with — free, in one conversation, before you list anything. That’s the person to ask. It doesn’t need a lawyer and it doesn’t need to wait.' },
       { h: 'You don’t need the exact number to start',
         p: 'A plan that only works if the figure is exactly right is a plan that hasn’t been tested. Take what you think it clears and ask what happens if it comes in about a tenth lower. If the plan still holds, the precise number was never the thing blocking you. If it doesn’t hold at the lower figure, that’s worth knowing now rather than after the sale — and it’s the argument for clearing the debt first, because that part works at any sale price.' },
       { h: 'What the rest could do, without anyone deciding for you',
-        p: 'Three shapes, and they’re genuinely different. Owning somewhere outright removes a housing payment permanently, which lowers what you need every month for the rest of your life — the quietest option and often the strongest. Buying something that produces income replaces a wage, but only if it clears its costs with somebody else running it. Holding it buys time and options but loses ground to inflation. Which is right depends on things a page can’t know: whether you have people depending on you, how much certainty you need, and whether you would actually enjoy managing a property.' },
+        p: 'Three shapes, and they’re different. Owning somewhere outright removes a housing payment permanently, which lowers what you need every month for the rest of your life — the quietest option and often the strongest. Buying something that produces income replaces a wage, but only if it clears its costs with somebody else running it. Holding it buys time and options but loses ground to inflation. Which is right depends on things a page can’t know: whether you have people depending on you, how much certainty you need, and whether you would actually enjoy managing a property.' },
       { h: 'The thing people get wrong about what they need afterwards',
         p: 'If the house you sell is the house you live in, or if it carries a mortgage, the amount you need each month afterwards is smaller than the amount you need now. The mortgage, the property tax and the utilities leave with it. People routinely plan to replace their current income when they only need to replace what’s left after those costs disappear — and the difference is often the whole reason the plan looked impossible.' },
       { h: 'Where an inheritance is different from ordinary money',
@@ -63,13 +63,13 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'Should I pay off the mortgage or the credit cards first?',
-        a: 'The credit cards, almost always. Mortgage rates are typically a fraction of card rates, so the same dollar does far more work against the cards. The exception is if clearing the mortgage removes a payment that makes your monthly position impossible — sometimes the certainty is worth more than the arithmetic.' },
+        a: 'The credit cards, usually. Mortgage rates are typically a fraction of card rates, so the same dollar does far more work against the cards. The exception is if clearing the mortgage removes a payment that makes your monthly position impossible — sometimes the certainty is worth more than the arithmetic.' },
       { q: 'Do I need a lawyer to find out what the house would sell for?',
         a: 'No. A realtor will give you a net sheet at no cost, usually in one conversation, before you list. A lawyer is for the closing. Asking the most expensive professional first is a common and expensive habit.' },
       { q: 'Is it a mistake to just hold the house?',
-        a: 'Not automatically, but it’s a decision rather than a neutral default. A held property still costs money every month in tax, insurance and upkeep, and if it sits empty it earns nothing against that. Holding is right when you need time or the market genuinely favours waiting; it’s wrong when it’s really a way of not deciding.' },
+        a: 'Not automatically, but it’s a decision rather than a neutral default. A held property still costs money every month in tax, insurance and upkeep, and if it sits empty it earns nothing against that. Holding is right when you need time or the market favours waiting; it’s wrong when it’s really a way of not deciding.' },
       { q: 'How long does this usually take?',
-        a: 'A sale typically runs a few months from listing to money in hand, and that’s the part you don’t control. What you do control is having the plan ready for the day it lands, so the money isn’t sitting in an account while you work out what it’s for.' },
+        a: 'A sale typically runs a few months from listing to money in hand, and that’s the part you don’t control. What you do control is having the plan ready for the day it lands, so the money isn’t sitting in an account while you work out what it is for.' },
     ],
   },
 
@@ -96,7 +96,7 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'How do I know what my monthly costs will be after I sell?',
-        a: 'Take your current must-pay list and remove every line tied to the property: mortgage, property tax, home insurance, and the utilities you wouldn’t carry into a smaller place. Then add the realistic cost of wherever you would live. The difference between that total and what you bring in is the actual gap.' },
+        a: 'Take your list of what has to be paid every month and remove every line tied to the property: mortgage, property tax, home insurance, and the utilities you wouldn’t carry into a smaller place. Then add the realistic cost of wherever you would live. The difference between that total and what you bring in is the actual gap.' },
       { q: 'Is it worth selling if I only clear a modest amount?',
         a: 'It depends on whether removing the payment matters more than the lump. A smaller place owned outright can lower what you need every month for the rest of your life, and that’s worth more to some people than a larger sum that still leaves a mortgage. It’s a real choice, not an obvious one.' },
       { q: 'What if my partner isn’t on board?',
@@ -121,7 +121,7 @@ export const SITUATIONS = [
       { h: 'The part the rate comparison misses',
         p: 'A loan isn’t only a rate, it’s a monthly obligation. Clearing it removes a payment from the list of things that must go out every month, and that lowers the floor your income has to clear — permanently, for as long as you would have been paying it. If your situation is tight, or if you’re trying to reduce the hours you work, that reduction can matter more than a percentage point or two. If money is comfortable and the rate is low, it usually doesn’t.' },
       { h: 'What to do if the answers are full of worry',
-        p: 'When somebody is anxious about money, the lower floor is usually worth more than the better spread. Not because worry should decide financial questions, but because a smaller monthly obligation genuinely reduces how exposed you’re to a bad month — fewer hours, an illness, a slow season. That’s a real reduction in risk, not a feeling, and it deserves to be counted on the same side of the ledger as the return.' },
+        p: 'When somebody is anxious about money, the lower floor is usually worth more than the better spread. Not because worry should decide financial questions, but because a smaller monthly obligation reduces how exposed you are to a bad month — fewer hours, an illness, a slow season. That’s a real reduction in risk, not a feeling, and it deserves to be counted on the same side of the ledger as the return.' },
       { h: 'Don’t empty the account to do it',
         p: 'Clearing a loan with the last of your savings swaps a manageable payment for having nothing between you and the next surprise — and the surprise usually arrives on a card at a much worse rate. Whatever you decide, keep something back. How much is a personal question, but zero is the wrong answer regardless of the arithmetic.' },
       { h: 'One question that settles it faster than a spreadsheet',
@@ -148,7 +148,7 @@ export const SITUATIONS = [
       'You probably don’t have a spending problem. You have a number nobody has ever made you work out: what actually has to go out each month, separate from what you choose to spend. Almost nobody knows theirs. Until you do, every plan is a guess — including the ones telling you to cut back.',
     body: [
       { h: 'The number nobody has',
-        p: 'Ask most people what they must pay every month and you get an estimate that’s wrong in both directions. Things they forgot are missing, and things they could stop are included. That number — what genuinely has to leave, every month, or something breaks — is the one the rest of the plan is measured against, and working it out takes an evening with a bank statement and costs nothing.' },
+        p: 'Ask most people what they must pay every month and you get an estimate that’s wrong in both directions. Things they forgot are missing, and things they could stop are included. That number — what has to leave, every month, or something breaks — is the one the rest of the plan is measured against, and working it out takes an evening with a bank statement and costs nothing.' },
       { h: 'Separate the must from the choose',
         p: 'Two columns. Rent or mortgage, utilities, insurance, minimum debt payments, transport to work, food, anything keeping a child fed or a licence valid — those are must. Subscriptions, the second vehicle, eating out, the storage unit you stopped visiting — those are choose. The point isn’t to feel bad about column two. It’s that column one is the real target and column two is the part you control this week.' },
       { h: 'Where the money usually is, and it’s rarely where people look',
@@ -162,12 +162,12 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'How far back should I look at my bank statements?',
-        a: 'Three months catches most of it. Twelve catches the annual charges — insurance, memberships, domain renewals, licence fees — which are the ones people miss, because they only appear once and never feel like a monthly cost even though they’re one.' },
+        a: 'Three months catches most of it. Twelve catches the annual charges — insurance, memberships, domain renewals, licence fees — which are the ones people miss, because they only appear once and never feel like a monthly cost even though they are one.' },
       { q: 'Should I use a budgeting app?',
-        a: 'It can help, but the categorising isn’t the hard part. The hard part is deciding what’s genuinely must-pay, and no app can make that call for you. A sheet of paper works. The number matters more than the tool.' },
+        a: 'It can help, but the categorising isn’t the hard part. The hard part is deciding what truly has to be paid, and no app can make that call for you. A sheet of paper works. The number matters more than the tool.' },
       { q: 'Is it worth cutting something small?',
         a: 'Only if it repeats. Forty dollars a month is nearly five hundred a year and keeps working without you. A forty-dollar one-off is a rounding error. Judge a cut by whether it recurs, not by how it feels to give up.' },
-      { q: 'What if I can’t cover the must-pay at all?',
+      { q: 'What if I can’t cover what has to be paid at all?',
         a: 'Then the priority is which obligations have the worst consequences for missing them, and that’s a different exercise from budgeting. Housing, anything that stops you getting to work, and anything with a licence or a lien attached come first. A non-profit credit counselling service will help with this at no cost, and they’re not a lender.' },
     ],
   },
@@ -201,7 +201,7 @@ export const SITUATIONS = [
       { q: 'How much do I actually need?',
         a: 'It depends entirely on what your life will cost, which is why generic percentages mislead. Work out what must go out each month in the version of your life you’re heading toward — with the mortgage gone, if it will be — and that’s the real target.' },
       { q: 'Should I see a financial planner?',
-        a: 'A fee-only one, meaning paid for their time rather than by commission on what they sell you, can be genuinely useful here. The distinction matters: somebody paid by the product has a reason to prefer certain answers.' },
+        a: 'A fee-only one, meaning paid for their time rather than by commission on what they sell you, can be useful here. The distinction matters: somebody paid by the product has a reason to prefer certain answers.' },
     ],
   },
 
@@ -220,7 +220,7 @@ export const SITUATIONS = [
       { h: 'Where it doesn’t help, said plainly',
         p: 'If the equity clears the debt but leaves nothing toward somewhere to live, you have exchanged a debt for a rent payment and lost the asset. If the debt would rebuild because the monthly position hasn’t changed, the sale buys a year and costs you the house. Both outcomes are common and both are foreseeable with the arithmetic done beforehand.' },
       { h: 'The options between keeping and selling',
-        p: 'It’s rarely a binary. Renting out a room changes a monthly position without selling anything. Refinancing or a secured consolidation may lower the rate on the debt without the house moving — at the cost of turning short debt into long debt, which is a real cost and not always the wrong one. Selling and buying something smaller keeps the asset and lowers the floor. These have genuinely different outcomes and the right one depends on things a page can’t know about your life.' },
+        p: 'It’s rarely a binary. Renting out a room changes a monthly position without selling anything. Refinancing or a secured consolidation may lower the rate on the debt without the house moving — at the cost of turning short debt into long debt, which is a real cost and not always the wrong one. Selling and buying something smaller keeps the asset and lowers the floor. These have different outcomes and the right one depends on things a page can’t know about your life.' },
       { h: 'What to find out, and who to ask',
         p: 'What the property would realistically clear after commission, any mortgage payout penalty and closing costs — a realtor produces that free, in one conversation, before you list. What the debt actually costs you per month and at what rate, which is on the statement. And a realistic monthly cost for where you would live instead. Three numbers, none of them expensive, and together they answer the question.' },
       { h: 'Before you sell anything, talk to somebody free',
@@ -230,7 +230,7 @@ export const SITUATIONS = [
       { q: 'Will selling my house hurt my credit?',
         a: 'Selling itself doesn’t. Paying off debt generally helps over time. What hurts is missing payments while you decide, so keep the minimums going through the process even if it means the decision takes longer.' },
       { q: 'Is a consolidation loan better than selling?',
-        a: 'It can be, if it genuinely lowers the rate and you don’t rebuild the balance. The risk is that it converts unsecured debt into debt secured against your home — which lowers the payment and raises the stakes. Read what it’s secured against before anything else.' },
+        a: 'It can be, if it lowers the rate and you don’t rebuild the balance. The risk is that it converts unsecured debt into debt secured against your home — which lowers the payment and raises the stakes. Read what it’s secured against before anything else.' },
       { q: 'What if my partner doesn’t want to sell?',
         a: 'Then that’s the first constraint rather than an obstacle to overcome. Disagreements about selling a home are usually about security rather than numbers, and doing the arithmetic together gives the conversation something concrete to be about.' },
       { q: 'How long does it take?',
@@ -244,7 +244,7 @@ export const SITUATIONS = [
     intro: 'Stuck in work you want out of',
     updated: '2026-09-27',
     answer:
-      'Usually one number, not your whole situation. Work out what must go out each month, then what the new thing would have to produce to cover it. The gap is almost always smaller than it feels, because people compare against their current salary rather than against what they actually need.',
+      'Usually one number, not your whole situation. Work out what must go out each month, then what the new thing would have to produce to cover it. The gap is usually smaller than it feels, because people compare against their current salary rather than against what they actually need.',
     body: [
       { h: 'You’re comparing against the wrong number',
         p: 'The instinctive sum is: I earn this, so the new thing has to earn this. That’s rarely the real bar. What it has to cover is what must go out — and if leaving also removes costs, those come off the target too. Commuting, a second vehicle, the childcare that exists because of your hours, the work clothes. People routinely discover the target is thousands lower than the salary they were trying to match.' },
@@ -261,9 +261,9 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'How much should I have saved before leaving?',
-        a: 'The usual answer is three to six months of must-pay, but the honest one depends on who relies on you and how quickly the new income starts. What matters more than the multiple is knowing your monthly floor, because "six months of savings" means nothing until you know six months of what.' },
+        a: 'The usual answer is three to six months of what has to go out, but the honest one depends on who relies on you and how quickly the new income starts. What matters more than the multiple is knowing your monthly floor, because "six months of savings" means nothing until you know six months of what.' },
       { q: 'Should I tell my employer I am planning to leave?',
-        a: 'Generally not until you have decided, and that’s about your position rather than theirs. The exception is where fewer hours would genuinely help, in which case asking is a reasonable conversation and the worst outcome is usually no.' },
+        a: 'Generally not until you have decided, and that’s about your position rather than theirs. The exception is where fewer hours would help, in which case asking is a reasonable conversation and the worst outcome is usually no.' },
       { q: 'Is it better to find another job or work for myself?',
         a: 'They’re different problems. Another job changes the conditions quickly and keeps the income certain. Working for yourself changes who decides, and takes longer to produce reliable money. Many people who think they want the second actually want the first, and the way to find out is to be specific about which part of the current job is the problem.' },
       { q: 'What if I hate the job and can’t wait?',
@@ -277,16 +277,16 @@ export const SITUATIONS = [
     intro: 'A one-off amount, and a lot of opinions about it',
     updated: '2026-09-27',
     answer:
-      'Do nothing with it for a few weeks. Money that arrives all at once attracts decisions, and the ones made in the first fortnight are the ones people regret. The only move that can’t be wrong is clearing the most expensive debt — it’s a guaranteed return, so it’s the safe thing to do while you think.',
+      'Do nothing with it for a few weeks. Money that arrives all at once attracts decisions, and the ones made in the first two weeks are the ones people regret. The only move that can’t be wrong is clearing the most expensive debt — it’s a guaranteed return, so it’s the safe thing to do while you think.',
     body: [
       { h: 'The first decision is to not decide yet',
-        p: 'A severance payment, an inheritance, a settlement or a sale arrives with pressure attached — from people with opinions, from your own sense that it should be doing something, and sometimes from whatever caused it. Parking it somewhere boring for a few weeks costs you almost nothing in interest and prevents the category of decision that gets regretted. Nothing about this money expires in a fortnight.' },
+        p: 'A severance payment, an inheritance, a settlement or a sale arrives with pressure attached — from people with opinions, from your own sense that it should be doing something, and sometimes from whatever caused it. Parking it somewhere boring for a few weeks costs you almost nothing in interest and prevents the category of decision that gets regretted. Nothing about this money expires in a two weeks.' },
       { h: 'Clear the expensive debt, because it’s the only certain return',
         p: 'A balance at card rates costs you that much every year, guaranteed. Paying it off earns you exactly that, also guaranteed, with no risk. Nothing available to an ordinary person reliably beats it, and anything claiming to is taking risk it isn’t describing. Order by rate, highest first, and ignore the size of the balances — a small balance at 21% costs more each month than a large one at 4%.' },
       { h: 'Keep a real buffer before anything clever',
         p: 'Whatever else happens, some of it stays accessible. The purpose isn’t returns, it’s that the next unexpected cost doesn’t go back onto a card at the rate you just cleared. How much depends on your situation — how stable the income is, who depends on you — but committing all of it and leaving nothing is the most common and most expensive mistake with money like this.' },
       { h: 'Then the real question: what’s it for?',
-        p: 'After the expensive debt and the buffer, the remainder has genuinely different uses and no universally right answer. Lowering your monthly floor permanently — clearing a mortgage, buying somewhere outright — reduces what you need for the rest of your life. Producing income replaces a wage, if it clears its costs with somebody else running it. Holding it keeps every option open and loses ground to inflation. Which is right depends on whether you need certainty, freedom or time, and those aren’t the same thing.' },
+        p: 'After the expensive debt and the buffer, the remainder has different uses and no universally right answer. Lowering your monthly floor permanently — clearing a mortgage, buying somewhere outright — reduces what you need for the rest of your life. Producing income replaces a wage, if it clears its costs with somebody else running it. Holding it keeps every option open and loses ground to inflation. Which is right depends on whether you need certainty, freedom or time, and those aren’t the same thing.' },
       { h: 'Where the money came from changes the arithmetic',
         p: 'Severance may be taxable in the year you receive it. An inheritance may have already been taxed at the estate, or may not. A settlement may be treated differently again. This varies by where you live and by the source, and it decides how much you actually have — which is worth one conversation with an accountant before anything is committed, though not a reason to delay working out what you want.' },
       { h: 'A note on the people who appear',
@@ -310,14 +310,14 @@ export const SITUATIONS = [
     intro: 'Space you already have, and whether it changes anything',
     updated: '2026-09-27',
     answer:
-      'The money is almost always real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it is what you give up — your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
+      'The money is usually real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it is what you give up — your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
     body: [
       { h: 'Why it works when other things don’t',
         p: 'Most ways of improving a monthly position need something you may not have — money to start, customers to find, time you’re not working. A spare room needs none of those. The asset already exists, the cost of using it is close to zero, and the income starts within weeks rather than months. For somebody with no slack, that combination is rare and worth taking seriously even if it isn’t appealing.' },
       { h: 'What it’s actually worth, and how to find out',
-        p: 'Don’t guess. Search what comparable rooms in your area are currently listed at — not what you hope, and not what somebody told you. Then subtract what an extra person genuinely costs in utilities and wear. What’s left is the real monthly figure, and it’s the one to compare against your gap. This takes twenty minutes and it’s the difference between a plan and a hope.' },
+        p: 'Don’t guess. Search what comparable rooms in your area are currently listed at — not what you hope, and not what somebody told you. Then subtract what an extra person costs in utilities and wear. What’s left is the real monthly figure, and it’s the one to compare against your gap. This takes twenty minutes and it’s the difference between a plan and a hope.' },
       { h: 'Who you rent to changes what it is',
-        p: 'A long-term tenant is predictable income that arrives whether or not you did anything that week. A travelling professional or somebody on a rotation is often less present and pays more, and is harder to find. Short-stay guests can pay considerably more per night and are a job rather than an arrangement — cleaning, messaging, turnover. These are genuinely different choices and the money isn’t the only difference between them.' },
+        p: 'A long-term tenant is predictable income that arrives whether or not you did anything that week. A travelling professional or somebody on a rotation is often less present and pays more, and is harder to find. Short-stay guests can pay considerably more per night and are a job rather than an arrangement — cleaning, messaging, turnover. These are different choices and the money isn’t the only difference between them.' },
       { h: 'The cost that doesn’t appear in the arithmetic',
         p: 'Someone else is in your home. That affects everyone who lives there, and it’s a real cost even when the money is good. It matters more where there are children, where somebody works shifts and sleeps during the day, or where the household is already under strain. This isn’t a reason not to do it. It’s a reason to make the decision with the people it affects rather than presenting it to them.' },
       { h: 'The practical things people find out late',
@@ -331,11 +331,11 @@ export const SITUATIONS = [
       { q: 'Do I have to declare the income?',
         a: 'In most places yes, and some expenses may be deductible against it. The rules vary by country and sometimes by region, and some jurisdictions have specific allowances for renting a room in your own home. Worth checking for where you live before the first payment rather than after.' },
       { q: 'What if it doesn’t work out with the person?',
-        a: 'This is why the agreement matters more than it feels like it should. Put the notice period in writing before anyone moves in, and understand what rights a lodger has where you live — they differ substantially from a tenant in a separate property.' },
+        a: 'This is why the agreement matters more than it feels like it should. Put the notice period in writing before anyone moves in, and understand what rights someone renting a room in your home has where you live — they differ substantially from a tenant in a separate property.' },
       { q: 'Is short-stay letting better money?',
         a: 'Usually more per night and much more work, with the income varying by season and occupancy rather than arriving as a fixed amount. It’s a job. A long-term arrangement pays less and is predictable. Which is better depends on whether you need reliability or maximum income.' },
       { q: 'How do I find somebody reliable?',
-        a: 'References, and actually contacting them. Ask how long the last arrangement lasted and why it ended. People are generally who they appear to be, and the small number who aren’t almost always have a history that a phone call finds.' },
+        a: 'References, and actually contacting them. Ask how long the last arrangement lasted and why it ended. People are generally who they appear to be, and the small number who aren’t usually have a history that a phone call finds.' },
     ],
   },
 
@@ -345,14 +345,14 @@ export const SITUATIONS = [
     intro: 'A job, and no fixed address',
     updated: '2026-09-27',
     answer:
-      'The wall is almost always the deposit, not the rent. Being without a stable address costs more per week than being housed — nightly rooms, eating without a kitchen, laundromats, storage — so the money that would become a deposit gets eaten by the cost of not having one. Attack the deposit directly, because that’s the actual obstacle.',
+      'The wall is usually the deposit, not the rent. Being without a stable address costs more per week than being housed — nightly rooms, eating without a kitchen, laundromats, storage — so the money that would become a deposit gets eaten by the cost of not having one. Attack the deposit directly, because that’s the actual obstacle.',
     body: [
       { h: 'This costs more than being housed, and that’s the trap',
         p: 'A room by the night costs more per month than most rents. No kitchen means buying food already made. No laundry means a laundromat. Storage for what you couldn’t carry is another monthly bill. Somebody working and unhoused is frequently paying more per week than the flat they can’t get into — which is why saving toward a deposit out of what’s left over usually fails. It isn’t a discipline problem. The arithmetic is against you.' },
       { h: 'The deposit is the wall, so treat it as the target',
         p: 'First month, last month or a damage deposit, sometimes all three, is a lump that has to exist at one moment. That’s a different problem from affording the rent, and people who could comfortably pay the rent stay out because of it. Naming it as the specific obstacle changes what you’re looking for: not a better job, not a cheaper flat, but a way to assemble one lump once.' },
       { h: 'Where deposit money actually comes from',
-        p: 'More sources exist than most people are told about. Many regions run rent-bank or deposit-assistance programmes that lend or grant exactly this, and they’re not widely advertised. Some employers will advance wages against work already done, and it costs nothing to ask a payroll manager. A room in a shared house is usually a fraction of the deposit of a whole flat and is available faster. And a landlord will sometimes take a larger first payment instead of last-month, if asked directly — that’s a conversation, not a policy.' },
+        p: 'More sources exist than most people are told about. Many regions run rent-bank or deposit-assistance programs that lend or grant exactly this, and they’re not widely advertised. Some employers will advance wages against work already done, and it costs nothing to ask a payroll manager. A room in a shared house is usually a fraction of the deposit of a whole flat and is available faster. And a landlord will sometimes take a larger first payment instead of last-month, if asked directly — that’s a conversation, not a policy.' },
       { h: 'The address problem, which blocks everything else',
         p: 'No address means difficulty with a bank account, with benefits, with job applications, with a driving licence. It’s the thing that quietly stops other things working. A shelter or a drop-in centre will usually receive post, some employers will, and in many countries the post office offers general delivery. It’s worth solving early even though it isn’t the thing that feels urgent, because a surprising number of doors are shut behind it.' },
       { h: 'What to protect while you’re in it',
@@ -360,7 +360,7 @@ export const SITUATIONS = [
       { h: 'The shared room is usually faster than the flat',
         p: 'A room in somebody else house, a room-share, a lodging arrangement — these have smaller deposits, quicker turnarounds and fewer checks than a tenancy. They’re not what most people picture as the goal, and they’re frequently the step that gets somebody off the nightly-rate treadmill, at which point saving actually starts working. Getting the weekly cost down is what turns the maths around.' },
       { h: 'Where to ask, and it’s free',
-        p: 'In Canada and the US, dialling 211 reaches a service that knows what exists locally — housing help, deposit programmes, emergency funds — and it costs nothing. A housing worker at a drop-in or shelter usually knows which landlords take people without a rental history, which is knowledge you can’t search for. Asking isn’t a last resort and it isn’t the same as needing rescue.' },
+        p: 'In Canada and the US, dialling 211 reaches a service that knows what exists locally — housing help, deposit programs, emergency funds — and it costs nothing. A housing worker at a drop-in or shelter usually knows which landlords take people without a rental history, which is knowledge you can’t search for. Asking isn’t a last resort and it isn’t the same as needing rescue.' },
     ],
     faqs: [
       { q: 'Can I get a bank account without a fixed address?',
@@ -413,7 +413,7 @@ export const SITUATIONS = [
     intro: 'Severance in hand, and no plan yet',
     updated: '2026-09-27',
     answer:
-      'Work out how many months of must-pay you can cover, before deciding anything else. That number is your actual runway, and it turns an open-ended panic into a deadline you can plan against. File for benefits in the same week — they often take time to start, and waiting costs you weeks at the end.',
+      'Work out how many months of what has to go out you can cover, before deciding anything else. That number is your actual runway, and it turns an open-ended panic into a deadline you can plan against. File for benefits in the same week — they often take time to start, and waiting costs you weeks at the end.',
     body: [
       { h: 'Runway is the first number, and almost nobody has it',
         p: 'Take what has to go out every month, then divide what you have — severance, savings, anything liquid — by it. That’s how many months you have. It sounds obvious and most people skip it, which is why the fear is open-ended. A number gives you a date to plan toward, and it’s usually longer than the feeling suggests once you subtract the costs that leave with the job: commuting, childcare tied to your hours, the second vehicle.' },
@@ -430,7 +430,7 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'Should I take the first job I am offered?',
-        a: 'It depends on the runway. With months of it, waiting for the right thing is a real option. With weeks, income now beats income later and you can keep looking from inside a job. The number tells you which situation you’re in.' },
+        a: 'It depends on the runway. With months of it, waiting for the right thing is a real option. With weeks, income now beats income later and you can keep looking from inside a job. The number tells you which situation you are in.' },
       { q: 'Should I use severance to pay off debt?',
         a: 'Expensive debt, yes, if it leaves enough runway. The order matters: work out the months first, then decide what paying down the debt costs you in months. Paying off a card and having nothing to live on is a trade, not a saving.' },
       { q: 'Can I claim benefits if I got severance?',
@@ -450,13 +450,13 @@ export const SITUATIONS = [
     body: [
       { h: 'The arithmetic changed, not your ability to manage',
         p: 'A separation splits one set of fixed costs into two. Rent or mortgage, utilities, internet, insurance — most of them don’t halve, they duplicate. People frequently read the resulting shortfall as having mismanaged something, when the same income is simply covering a structurally more expensive arrangement. Naming that correctly matters, because it points at the housing decision rather than at spending.' },
-      { h: 'Your own must-pay number comes before any negotiation',
+      { h: 'What you have to pay each month comes before any negotiation',
         p: 'Before agreeing to anything about who pays what, work out what you alone must cover each month in the arrangement you’re heading into. Without it you’re negotiating in the dark, and agreements made that way tend to be the ones revisited painfully later. It takes an evening and it’s the single most useful thing you can do in the first weeks.' },
       { h: 'The house is usually the decision everything else waits on',
         p: 'Whether it’s sold, whether one of you stays, whether it’s rented — that decision sets the floor for both households, and most other questions are downstream of it. It’s also the hardest, because it carries more than money, particularly where children are involved. But leaving it open keeps everything else provisional, and provisional is expensive.' },
       { h: 'Separate the money mechanics early',
         p: 'Joint accounts, shared cards, direct debits coming out of one account for both lives, and anything either of you can borrow against jointly. This is unglamorous administration and it prevents the specific category of problem where one person unknowingly becomes liable for the other. Doing it early isn’t an act of hostility and is much easier than doing it after something goes wrong.' },
-      { h: 'Where this genuinely needs a professional, and where it doesn’t',
+      { h: 'Where this needs a professional, and where it doesn’t',
         p: 'How assets, pensions and support are treated varies enormously by jurisdiction and by circumstance, and getting that wrong is expensive in a way that lasts years. That’s a real question for a family lawyer, and many offer a fixed-fee first consultation. Mediation is usually far cheaper than two lawyers negotiating and works when both people can be in a room. What does NOT need a professional is working out what your own life costs — that’s yours, and it makes every professional conversation shorter.' },
       { h: 'One thing worth protecting deliberately',
         p: 'Where one person has managed the money, the other frequently leaves without a credit history, an account or a clear picture of what exists. Opening an account in your own name and knowing what’s held where is worth doing early, quietly and without drama. It isn’t an aggressive act. It’s the difference between having options and discovering you don’t.' },
@@ -484,7 +484,7 @@ export const SITUATIONS = [
       { h: 'Find out the real timeline, because the fear runs ahead of it',
         p: 'Eviction is a legal process with steps and dates, and it varies by jurisdiction. The gap between falling behind and having to leave is usually measured in weeks or months rather than days, and knowing the actual sequence turns panic into a period you can plan inside. A tenant advice service, a legal clinic or a housing worker will tell you the process where you live, free.' },
       { h: 'The landlord conversation is worth more than it feels',
-        p: 'A landlord facing an empty unit, a re-letting cost and a legal process often prefers an arrangement to an eviction, and many will accept a written payment plan. Going first, before the arrears grow, is a much stronger position than being chased. It’s an uncomfortable conversation and it’s frequently the one that changes the outcome.' },
+        p: 'A landlord facing an empty unit, a cost of finding a new tenant and a legal process often prefers an arrangement to an eviction, and many will accept a written payment plan. Going first, before the arrears grow, is a much stronger position than being chased. It’s an uncomfortable conversation and it’s frequently the one that changes the outcome.' },
       { h: 'Emergency help exists and isn’t advertised',
         p: 'Many regions run rent banks, arrears grants or one-off emergency funds specifically to stop an eviction, because preventing one is far cheaper than housing somebody afterwards. These are rarely visible unless you know they exist. In Canada and the US, 211 connects to somebody who knows what’s available locally; a housing worker at any drop-in will know the same. Asking early matters, because most of these are for preventing a loss rather than responding to one.' },
       { h: 'What to prioritise if there isn’t enough to go round',
@@ -496,7 +496,7 @@ export const SITUATIONS = [
     ],
     faqs: [
       { q: 'How long does an eviction actually take?',
-        a: 'It varies widely by jurisdiction and on the reason, and it’s almost always a process with notice periods and a hearing rather than an immediate removal. A tenant advice service or legal clinic will tell you the sequence where you live, free, and that’s the first call worth making.' },
+        a: 'It varies widely by jurisdiction and on the reason, and it’s usually a process with notice periods and a hearing rather than an immediate removal. A tenant advice service or legal clinic will tell you the sequence where you live, free, and that’s the first call worth making.' },
       { q: 'Will this affect my ability to rent again?',
         a: 'It can, which is one reason an agreement with a landlord is worth more than a judgment. Where a formal record exists, being able to show a payment plan you kept matters to the next landlord.' },
       { q: 'Should I pay rent or my credit card?',
@@ -551,7 +551,7 @@ export const SITUATIONS = [
     /**
      * ⭐⭐ THE SECOND GAP: the shameful one nobody writes honestly. Two decent
      * incomes and nothing at the end of the month is extremely common, heavily
-     * searched, and almost always answered with "cut out the coffee" — which is
+     * searched, and usually answered with "cut out the coffee" — which is
      * both wrong and insulting, and is why the people it happens to stop reading.
      */
     slug: 'we-earn-good-money-and-have-nothing',
@@ -570,7 +570,7 @@ export const SITUATIONS = [
       { h: 'Why earning more stopped working',
         p: 'If the floor rises with income, a raise changes the numbers on both sides of the page and the gap stays the same. That’s why the last increase didn’t feel like anything, and why the next one won’t either. Nothing is wrong with either of you. The mechanism simply doesn’t produce slack, and it won’t, however much the top line moves.' },
       { h: 'Two cuts beat twenty',
-        p: 'Because the problem is fixed costs, the fix is fixed costs — and there are usually only two or three that matter. Housing and vehicles are almost always the whole conversation. One decision on either does more than a year of small economies, and it does it permanently, which is the part that matters when the problem is a floor rather than a month. It’s also the harder conversation, which is why the small ones get suggested instead.' },
+        p: 'Because the problem is fixed costs, the fix is fixed costs — and there are usually only two or three that matter. Housing and vehicles are usually the whole conversation. One decision on either does more than a year of small economies, and it does it permanently, which is the part that matters when the problem is a floor rather than a month. It’s also the harder conversation, which is why the small ones get suggested instead.' },
       { h: 'What changes when you know the floor',
         p: 'Knowing the number does two things at once. It tells you how much either of you could actually afford to lose, which is the question under most of the stress in a household like this. And it converts an argument about character — who is bad with money — into arithmetic that neither of you chose. Couples who do this often stop having the same fight, because it turns out nobody was doing anything wrong.' },
     ],

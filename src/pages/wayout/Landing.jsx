@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE, WAYOUT_SITE_URL, canonicalUrl } from '../../lib/wayout/brand'
 import { priceLine, WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, walksWithYouLine } from '../../lib/wayout/pricing'
 import { SITUATIONS } from '../../content/unstuckSituations'
+import { WayoutFooter } from './WayoutShell'
 import './wayout.css'
 
 /**
@@ -546,6 +547,7 @@ export default function Landing() {
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>
         </section>
+        <WayoutFooter />
       </div>
     </div>
   )

@@ -874,7 +874,7 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
     // ⚠️ A thread reply is prose with a flag on it. If the JSON is malformed the
     // prose is still worth having — losing the whole turn over a bracket would
     // be the parser blaming the person.
-    out = { reply: String(raw ?? '').trim(), changes_plan: false, what_changed: null, stalling: false }
+    out = { reply: String(raw ?? '').trim(), changes_plan: false, what_changed: null, stalling: false, crisis: false }
   }
 
   const reply = scrubFigures(String(out.reply ?? '').trim(), answers)
@@ -884,6 +884,7 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
     changesPlan: out.changes_plan === true,
     whatChanged: out.what_changed ? String(out.what_changed).trim() : null,
     stalling: out.stalling === true,
+    crisis: out.crisis === true,
   }
 }
 

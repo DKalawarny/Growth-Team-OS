@@ -32,7 +32,7 @@ export function SituationIndex() {
         />
       </Helmet>
 
-      <h2 className="wayout__r">Situations, answered straight</h2>
+      <h1 className="wayout__r wayout__pageh1">Situations, answered straight</h1>
       <p className="wayout__lead wayout__r">
         Not advice, and not a lecture on budgeting. What the decision actually
         turns on, what the number really is, and what order things go in.
@@ -43,7 +43,9 @@ export function SituationIndex() {
           <Link key={s.slug} to={`${WAYOUT_BASE}/stuck/${s.slug}`} className="wayout__card wayout__situationcard">
             <b>{s.intro}</b>
             <h3>{s.question}</h3>
-            <p>{s.answer.slice(0, 130)}…</p>
+            {/* 🔴 Cut at 130 characters, mid-word ("without cap…"). Now the first
+                sentence, or the last whole word inside the limit. */}
+            <p>{excerpt(s.answer)}</p>
           </Link>
         ))}
       </div>
@@ -88,7 +90,9 @@ export function SituationPage() {
       </Helmet>
 
       <p className="wayout__who wayout__r">{s.intro}</p>
-      <h2 className="wayout__r">{s.question}</h2>
+      {/* ⚠️ The question IS the page's subject, so it is the H1 — there was
+          no H1 on any situation page. */}
+      <h1 className="wayout__r wayout__pageh1">{s.question}</h1>
 
       {/* ⭐ The 40–60 word block an assistant lifts. First, self-contained, and
           it answers the question rather than teasing it. */}
@@ -147,3 +151,12 @@ export function SituationPage() {
 }
 
 export default SituationIndex
+
+/** The first sentence if it is short enough, else the last whole word within the limit. */
+function excerpt(text, max = 150) {
+  const t = String(text ?? '').trim()
+  const first = t.match(/^.+?[.!?](?=\s|$)/)?.[0]
+  if (first && first.length <= max) return first
+  const cut = t.slice(0, max)
+  return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:—–-]+$/, '')}…`
+}

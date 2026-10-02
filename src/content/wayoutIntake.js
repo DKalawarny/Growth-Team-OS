@@ -71,6 +71,33 @@ export const WAYOUT_SCREENS = [
     reflectAfter: true,
     fields: [
       {
+        /**
+         * 🔴🔴 THE COUNTRY WAS NEVER ASKED HERE. It only arrived if somebody had
+         * tapped it on the free check's last screen — two of the first four
+         * finished plans had none, so a crisis reply for them could only say
+         * "findahelpline.com". Daniel, 1 Oct: "make sure any numbers are given to
+         * their area or at least country — that's why it's important to get that
+         * info at the start." So it is the first thing asked, and required.
+         * ⚠️ Keys must match crisisLines.js — a test fails if an option here has
+         * no entry there (other than "other").
+         */
+        key: 'region',
+        kind: 'choice',
+        label: 'Which country do you live in?',
+        hint: 'It decides which numbers and services we point you to — including the ones that matter most if things get hard.',
+        required: true,
+        emptyMessage: 'Pick the closest one.',
+        options: [
+          { key: 'ca', label: 'Canada' },
+          { key: 'us', label: 'United States' },
+          { key: 'uk', label: 'United Kingdom' },
+          { key: 'ie', label: 'Ireland' },
+          { key: 'au', label: 'Australia' },
+          { key: 'nz', label: 'New Zealand' },
+          { key: 'other', label: 'Somewhere else' },
+        ],
+      },
+      {
         key: 'immovables',
         kind: 'chips',
         allowCustom: true,

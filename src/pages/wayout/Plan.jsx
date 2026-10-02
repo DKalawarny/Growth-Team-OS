@@ -18,6 +18,7 @@ import { WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, guaranteeLine } from '../../li
 import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
 import { Marked } from '../../lib/wayout/marked.jsx'
+import CrisisHelp from './CrisisHelp'
 
 /**
  * The way out — S7, the reveal.
@@ -659,7 +660,7 @@ export default function Plan() {
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
 
   if (crisis) {
-    return <CrisisNote message={crisis} onBack={map ? () => { crisisShown.current = false; setCrisis(null) } : null} />
+    return <CrisisNote message={crisis} region={session?.answers?.region} onBack={map ? () => { crisisShown.current = false; setCrisis(null) } : null} />
   }
 
   if (error && !map) {
@@ -791,7 +792,8 @@ export default function Plan() {
       const out = await askAboutPlan({ session: sessionRef.current, progress, history: chain, thread: before, question: said })
       commitThread(prev => [...prev, {
         role: 'assistant', content: out.reply, at: new Date().toISOString(),
-        changesPlan: out.changesPlan, whatChanged: out.whatChanged, stalling: out.stalling,
+        changesPlan: out.crisis ? false : out.changesPlan, whatChanged: out.whatChanged,
+        stalling: out.stalling, crisis: out.crisis,
       }])
     } catch (err) {
       localThread(prev => prev.filter(m => m !== mine))
@@ -1830,7 +1832,7 @@ function guardFor(s, thread, hist) {
   )
 }
 
-function CrisisNote({ message, onBack = null }) {
+function CrisisNote({ message, region = null, onBack = null }) {
   // The model writes markdown bold around the numbers it wants seen. Rendering
   // the asterisks would be worse than losing the emphasis, so they are stripped
   // and the paragraph breaks kept.
@@ -1847,6 +1849,7 @@ function CrisisNote({ message, onBack = null }) {
           <p key={i} className={i === 0 ? 'wayout__q' : 'wayout__lead'}>{p}</p>
         ))}
       </div>
+      <CrisisHelp region={region} />
       {/* ⚠️ Only when a plan already exists — and quiet, because this page is
           about right now, not about the plan. */}
       {onBack && (

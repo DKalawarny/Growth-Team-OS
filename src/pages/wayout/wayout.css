@@ -458,7 +458,7 @@
   background: var(--tint);
   border-radius: 12px;
   padding: 12px 14px;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.45;
   margin: 16px 0 0;
   color: var(--ink);
@@ -475,7 +475,7 @@
 /* Group heading. Quiet — it is a signpost, not a question, and the moment it
    competes with the question above it the screen has two of them. */
 .wayout__group {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -564,7 +564,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* ── Score ──────────────────────────────────────────────────────────────── */
 .wayout__scores { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
 .wayout__scorerow { display: flex; flex-direction: column; gap: 7px; }
-.wayout__scorelabel { font-size: 15.5px; font-weight: 600; line-height: 1.3; }
+.wayout__scorelabel { font-size: 16px; font-weight: 600; line-height: 1.3; }
 /* ⚠️ A 10-wide row must not force a sideways scroll on a 390px screen, so the
    buttons flex down rather than holding a fixed width. */
 .wayout__scale { display: flex; gap: 4px; }
@@ -756,7 +756,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
   align-items: flex-start;
   gap: 14px;
   padding: 2px 0 6px;
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 1.4;
   color: var(--soft);
 }
@@ -791,7 +791,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
   gap: 10px;
   flex-wrap: wrap;
 }
-.wayout__cutrow s { font-size: 15.5px; font-weight: 600; color: var(--soft); text-decoration-color: #B9B29E; }
+.wayout__cutrow s { font-size: 16px; font-weight: 600; color: var(--soft); text-decoration-color: #B9B29E; }
 .wayout__cutrow em {
   margin-left: auto;
   font-style: normal;
@@ -801,13 +801,13 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__cutwhy {
   flex-basis: 100%;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--soft);
   margin-top: 8px;
 }
 
-.wayout__disclaimer { margin-top: 22px; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
+.wayout__disclaimer { margin-top: 22px; font-size: 13px; line-height: 1.5; color: var(--soft); }
 
 /* The section explainer in the aside. Quieter than the question it sits beside
    — it is context, and the moment it competes it has become a second question. */
@@ -866,7 +866,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__twocol { display: grid; gap: 4px 28px; }
 /* ⚠️ Same reason as the 7fr/5fr note above — a long item must wrap, not push. */
 @media (min-width: 560px) { .wayout__twocol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-.wayout__list { margin: 10px 0 0; padding-left: 18px; font-size: 15.5px; line-height: 1.6; }
+.wayout__list { margin: 10px 0 0; padding-left: 18px; font-size: 16px; line-height: 1.6; }
 .wayout__list li { margin-bottom: 4px; }
 .wayout__list--skip { color: var(--soft); }
 .wayout__list--skip li::marker { color: var(--line); }
@@ -910,7 +910,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 }
 .wayout__offerkick {
   display: block;
-  font-size: 12.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   color: var(--sun);
   margin-bottom: 12px;
 }
@@ -927,7 +927,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__offerlist li {
   position: relative;
   padding: 9px 0 9px 28px;
-  font-size: 15.5px; line-height: 1.45;
+  font-size: 16px; line-height: 1.45;
   color: #F3EFE2;
   border-top: 1px solid rgba(243, 239, 226, .13);
 }
@@ -945,7 +945,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* The questions version. A tick beside a question reads as "answered", which is
    the opposite of the point — these are the things they do NOT have answers to,
    so the marker is a question mark and the type carries a little more weight. */
-.wayout__offerlist--q li { font-size: 16.5px; padding: 12px 0 12px 30px; }
+.wayout__offerlist--q li { font-size: 17px; padding: 12px 0 12px 30px; }
 .wayout__offerlist--q li::before {
   content: '?';
   border: 0; transform: none;
@@ -989,7 +989,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
    moves and nothing is decorated. */
 .wayout__crisis { max-width: 34rem; }
 .wayout__crisis .wayout__q { font-size: 24px; line-height: 1.3; margin-bottom: 18px; }
-.wayout__crisis .wayout__lead { font-size: 17.5px; line-height: 1.65; margin-bottom: 16px; }
+.wayout__crisis .wayout__lead { font-size: 18px; line-height: 1.65; margin-bottom: 16px; }
 
 /* The record of what they did. Their moves, not our summary — so the type is
    the same weight as the plan's, not shrunk into a receipt. */
@@ -997,7 +997,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__ledger li {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 13px 0; border-bottom: 1px solid var(--line);
-  font-size: 16.5px; line-height: 1.4; color: var(--soft);
+  font-size: 17px; line-height: 1.4; color: var(--soft);
 }
 .wayout__ledger li span { color: var(--line); font-weight: 700; flex: none; width: 14px; }
 .wayout__ledger li.is-done { color: var(--ink); }
@@ -1006,7 +1006,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 /* One book. Quiet on purpose — it sits beside the plan and must never compete
    with the move they are supposed to start on Saturday. */
 .wayout__read { margin-top: 30px; }
-.wayout__readtitle { margin: 0; font-size: 16.5px; line-height: 1.45; }
+.wayout__readtitle { margin: 0; font-size: 17px; line-height: 1.45; }
 .wayout__read .wayout__hint { margin-top: 6px; }
 
 /* What to hold lightly about the book. Set apart from our recommendation
@@ -1014,7 +1014,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__hold {
   margin: 10px 0 0; padding-left: 14px;
   border-left: 2px solid var(--line);
-  font-size: 14.5px; line-height: 1.5; color: var(--soft);
+  font-size: 15px; line-height: 1.5; color: var(--soft);
 }
 
 /* One question before the week gets written. Spaced like a question being
@@ -1037,7 +1037,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
    rather than a warning about it. */
 .wayout__suggested {
   margin: -4px 0 18px;
-  font-size: 14.5px; line-height: 1.5; color: var(--soft);
+  font-size: 15px; line-height: 1.5; color: var(--soft);
 }
 
 /* Taking a crossed-off option back. Deliberately plain — it is a choice being
@@ -1077,13 +1077,13 @@ div:first-child > .wayout__group { margin-top: 14px; }
   padding-top: 26px; border-top: 1px solid var(--line);
 }
 .wayout__askmine {
-  margin: 18px 0 0; font-size: 16.5px; line-height: 1.5;
+  margin: 18px 0 0; font-size: 17px; line-height: 1.5;
   color: var(--ink); font-weight: 600;
 }
 .wayout__askreply {
   margin: 10px 0 0; padding-left: 16px;
   border-left: 3px solid var(--sun);
-  font-size: 16.5px; line-height: 1.6; color: var(--soft);
+  font-size: 17px; line-height: 1.6; color: var(--soft);
   white-space: pre-wrap;
 }
 .wayout__askwait { color: var(--line); }
@@ -1284,7 +1284,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
    not read as a second action beside the answer; it is an escape hatch. */
 .wayout__threadundo {
   background: none; border: 0; padding: 0; margin-top: 8px; cursor: pointer;
-  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--soft);
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--soft);
   text-decoration: underline; text-underline-offset: 3px;
 }
 .wayout__threadundo:hover { color: var(--ink); }
@@ -1324,7 +1324,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
    how the product works, not a reassurance being pressed. */
 .wayout__unique {
   margin: 22px 0 0; max-width: 62ch;
-  font-size: 15.5px; line-height: 1.6; color: var(--soft);
+  font-size: 16px; line-height: 1.6; color: var(--soft);
   border-left: 3px solid var(--sun); padding-left: 16px;
 }
 
@@ -1542,7 +1542,7 @@ h1.wayout__heroline {
 .wayout__heroplan .wayout__stats { margin-top: 18px; }
 .wayout__heroplan .wayout__stat b { font-size: 23px; }
 .wayout__heroplan .wayout__move { padding: 8px 0; cursor: default; }
-.wayout__heroplan .wayout__move p { font-size: 14.5px; }
+.wayout__heroplan .wayout__move p { font-size: 15px; }
 /* 🔴 THIS WAS ILLEGIBLE, AND IT IS THE DIFFERENTIATOR. Struck-through phrases
    ran straight into ordinary prose on one cramped line at the card's bottom
    edge, so "crossed off, with the reason" — the one thing this product does that
@@ -1553,13 +1553,13 @@ h1.wayout__heroline {
   margin: 18px 0 0;
   padding-top: 14px;
   border-top: 1px dashed var(--line);
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--soft);
 }
 .wayout__herocut b {
   display: block;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1649,21 +1649,21 @@ h1.wayout__heroline {
 
 .wayout__here {
   position: absolute; top: -12px; left: calc(50% + 20px); z-index: 3;
-  background: var(--ink); color: var(--paper); font-size: 10.5px; font-weight: 800;
+  background: var(--ink); color: var(--paper); font-size: 11px; font-weight: 800;
   letter-spacing: .11em; text-transform: uppercase; padding: 4px 8px;
   border-radius: 3px; white-space: nowrap; pointer-events: none;
 }
 
 .wayout__note > b {
-  display: block; font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
+  display: block; font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
   color: var(--soft); font-weight: 800; margin-bottom: 7px;
 }
-.wayout__note h4 { margin: 0 0 10px; font-size: 16.5px; font-weight: 700; line-height: 1.28; letter-spacing: -.01em; }
+.wayout__note h4 { margin: 0 0 10px; font-size: 17px; font-weight: 700; line-height: 1.28; letter-spacing: -.01em; }
 /* ⚠️ 14.5px and 1.6, not 13/1.47. "its hard to read" — and it was: a move
    detail can run 450 characters, and at 13px in a narrow column that is forty
    lines of five words. The extra width above does most of the work; this does
    the rest. */
-.wayout__note > p { margin: 0; font-size: 14.5px; line-height: 1.6; color: #414D3C; }
+.wayout__note > p { margin: 0; font-size: 15px; line-height: 1.6; color: #414D3C; }
 
 /* ⚠️ NOT absolutely positioned over the note. It was, and it landed squarely on
    top of "+ Add or change something here" the moment a move was ticked —
@@ -1700,12 +1700,12 @@ h1.wayout__heroline {
 }
 .wayout__acts .wayout__go[disabled] {
   background: transparent; color: var(--soft); border: 2px dashed #C4BCA4;
-  padding: 10px 18px; font-size: 12.5px; cursor: not-allowed; box-shadow: none;
+  padding: 10px 18px; font-size: 13px; cursor: not-allowed; box-shadow: none;
 }
 .wayout__mark {
   display: inline-flex; align-items: center; gap: 7px;
   border: 2px solid #C9C2AC; background: transparent; font: inherit;
-  font-size: 11.5px; font-weight: 700; color: var(--soft);
+  font-size: 12px; font-weight: 700; color: var(--soft);
   padding: 7px 13px 7px 9px; border-radius: 999px; cursor: pointer; transition: all .18s;
 }
 .wayout__mark:hover { border-color: var(--green); color: var(--green); }
@@ -1727,10 +1727,10 @@ h1.wayout__heroline {
   width: 6px; height: 14px; background: #B3AC96; border-radius: 2px;
 }
 .wayout__gatetag b {
-  display: block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: #4A6B63; font-weight: 800; margin-bottom: 3px;
 }
-.wayout__gatetag span { display: block; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
+.wayout__gatetag span { display: block; font-size: 13px; line-height: 1.5; color: var(--soft); }
 .wayout__gatetag--passed { border-style: solid; border-color: var(--green); }
 .wayout__gatetag--passed b { color: var(--green); }
 
@@ -1742,7 +1742,7 @@ h1.wayout__heroline {
 .wayout__addstrip {
   display: block; width: 100%; margin-top: 13px; padding: 9px 12px;
   border: 2px dashed #C4BCA4; border-radius: 9px; background: transparent;
-  font: inherit; font-size: 11.5px; font-weight: 700; color: var(--soft);
+  font: inherit; font-size: 12px; font-weight: 700; color: var(--soft);
   cursor: pointer; text-align: left; transition: all .18s;
 }
 .wayout__addstrip:hover { border-color: var(--green); color: var(--green); border-style: solid; }
@@ -1755,7 +1755,7 @@ h1.wayout__heroline {
 }
 .wayout__addbox textarea:focus { outline: none; border-color: var(--green); }
 .wayout__addrow { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
-.wayout__addrow button { border: 0; font: inherit; font-size: 11.5px; font-weight: 700; padding: 8px 13px; border-radius: 999px; cursor: pointer; }
+.wayout__addrow button { border: 0; font: inherit; font-size: 12px; font-weight: 700; padding: 8px 13px; border-radius: 999px; cursor: pointer; }
 .wayout__addrow .keep { background: var(--ink); color: var(--paper); }
 .wayout__addrow .redo { background: transparent; color: var(--green); border: 2px solid var(--green); padding: 6px 11px; }
 .wayout__addrow .drop { background: transparent; color: var(--soft); }
@@ -1774,12 +1774,12 @@ h1.wayout__heroline {
   transform: rotate(14deg);
 }
 .wayout__yours b {
-  display: block; font-size: 9px; letter-spacing: .13em; text-transform: uppercase;
+  display: block; font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
   color: #7E8A93; font-weight: 800; margin: 0 0 4px 22px;
 }
-.wayout__yours p { margin: 0; font-size: 12.5px; line-height: 22px; color: #2B3A44; }
+.wayout__yours p { margin: 0; font-size: 13px; line-height: 22px; color: #2B3A44; }
 .wayout__yours button {
-  border: 0; background: transparent; font: inherit; font-size: 11.5px; font-weight: 700;
+  border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 700;
   color: #7E8A93; cursor: pointer; padding: 5px 0 0; text-decoration: underline;
 }
 
@@ -1846,8 +1846,8 @@ h1.wayout__heroline {
   margin-top: 26px; padding: 20px 22px;
   border: 2px dashed var(--line); border-radius: 16px; background: transparent;
 }
-.wayout__worth > b { display: block; font-size: 14.5px; font-weight: 800; margin-bottom: 4px; }
-.wayout__worth > p { margin: 0 0 14px; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.wayout__worth > b { display: block; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.wayout__worth > p { margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: var(--soft); }
 .wayout__worthrow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .wayout__worthbtn {
   border: 2px solid #DCD6C6; background: #fff; font: inherit; font-size: 13px; font-weight: 700;
@@ -1858,7 +1858,7 @@ h1.wayout__heroline {
 .wayout__worthnote {
   width: 100%; box-sizing: border-box; min-height: 74px; resize: vertical;
   border: 2px solid #DCD6C6; border-radius: 10px; background: #fff;
-  font: inherit; font-size: 13.5px; line-height: 1.45; color: var(--ink); padding: 10px 12px;
+  font: inherit; font-size: 14px; line-height: 1.45; color: var(--ink); padding: 10px 12px;
 }
 .wayout__worthnote:focus { outline: none; border-color: var(--green); }
 .wayout__worthquote {
@@ -2075,23 +2075,23 @@ h1.wayout__heroline {
   font-size: 20px; font-weight: 800; letter-spacing: -.012em;
   margin: 0 0 9px; line-height: 1.28; text-wrap: balance;
 }
-.wayout__situationbody p { margin: 0; font-size: 16.5px; line-height: 1.68; color: #3C4A38; }
+.wayout__situationbody p { margin: 0; font-size: 17px; line-height: 1.68; color: #3C4A38; }
 
 .wayout__situationfaq { max-width: 68ch; }
 .wayout__situationfaq section { padding: 16px 0; border-top: 1px solid var(--line); }
 .wayout__situationfaq h4 { margin: 0 0 6px; font-size: 16px; font-weight: 700; line-height: 1.35; }
-.wayout__situationfaq p { margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--soft); }
+.wayout__situationfaq p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--soft); }
 
 /* The index cards reuse the board's paper, so the findable pages look like the
    product rather than like a blog bolted on. */
 .wayout__situationcard { display: block; text-decoration: none; color: inherit; transition: transform .18s, box-shadow .18s; }
 .wayout__situationcard:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(35,48,31,.15); }
 .wayout__situationcard b {
-  display: block; font-size: 11.5px; letter-spacing: .13em; text-transform: uppercase;
+  display: block; font-size: 12px; letter-spacing: .13em; text-transform: uppercase;
   color: var(--soft); font-weight: 800; margin-bottom: 8px;
 }
 .wayout__situationcard h3 { margin: 0 0 9px; font-size: 17px; font-weight: 700; line-height: 1.3; }
-.wayout__situationcard p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.wayout__situationcard p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--soft); }
 
 
 
@@ -2222,7 +2222,7 @@ h1.wayout__heroline {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 42px;
 }
 .wayout__sofar em {
-  font-style: normal; font-size: 11.5px; font-weight: 800; letter-spacing: .1em;
+  font-style: normal; font-size: 12px; font-weight: 800; letter-spacing: .1em;
   text-transform: uppercase; color: var(--label); margin-right: 2px;
 }
 @keyframes wayoutPop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
@@ -2236,7 +2236,7 @@ h1.wayout__heroline {
 /* ── The four, held in view ─────────────────────────────────────────────── */
 .wayout__rail { margin-top: 18px; }
 .wayout__raill {
-  font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
   color: var(--label); margin: 0 0 11px;
 }
 .wayout__rails { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -2246,7 +2246,7 @@ h1.wayout__heroline {
   transition: opacity .5s, border-color .5s, box-shadow .5s, transform .5s;
 }
 .wayout__p b { display: block; font-size: 14px; margin-bottom: 3px; }
-.wayout__p s { font-size: 12.5px; color: var(--soft); text-decoration: none; line-height: 1.42; display: block; }
+.wayout__p s { font-size: 13px; color: var(--soft); text-decoration: none; line-height: 1.42; display: block; }
 .wayout__p.is-out { opacity: .38; border-left-color: #C9C2AC; }
 .wayout__p.is-out b { text-decoration: line-through; text-decoration-color: #B9B29E; }
 .wayout__p.is-win {
@@ -2255,7 +2255,7 @@ h1.wayout__heroline {
 }
 .wayout__p.is-win b { color: var(--green); }
 .wayout__ptag {
-  display: inline-block; font-size: 9.5px; font-weight: 800; letter-spacing: .1em;
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .1em;
   text-transform: uppercase; color: var(--green); margin-top: 7px;
 }
 
@@ -2335,14 +2335,14 @@ h1.wayout__heroline {
    so it sits beside the wordmark in the same weight as the step counter. */
 .wayout__signin {
   margin-left: auto;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--soft);
   text-decoration: none;
   border-bottom: 1px solid transparent;
 }
 .wayout__signin:hover { color: var(--green); border-bottom-color: currentColor; }
-@media (max-width: 560px) { .wayout__signin { font-size: 11.5px; } }
+@media (max-width: 560px) { .wayout__signin { font-size: 12px; } }
 
 /* ── Say it instead of typing it ────────────────────────────────────────────
    ⚠️ The button sits UNDER the box, not inside it. Floating it in the corner of
@@ -2352,7 +2352,7 @@ h1.wayout__heroline {
 .wayout__mic {
   display: inline-flex; align-items: center; gap: 7px;
   border: 1.5px solid var(--line); background: transparent; border-radius: 999px;
-  padding: 7px 14px 7px 11px; font: inherit; font-size: 12.5px; font-weight: 600;
+  padding: 7px 14px 7px 11px; font: inherit; font-size: 13px; font-weight: 600;
   color: var(--soft); cursor: pointer; transition: border-color .16s, color .16s, background .16s;
 }
 .wayout__mic svg { width: 14px; height: 14px; flex: none; }
@@ -2380,7 +2380,7 @@ h1.wayout__heroline {
    long, which on the densest page in the product is the same as no link.
    ⚠️ Quiet on purpose. It is an exit, not an action — competing with the thing
    the page is asking somebody to do would be the opposite fix. */
-.wayout__crumb { margin: 0 0 18px; font-size: 13.5px; }
+.wayout__crumb { margin: 0 0 18px; font-size: 14px; }
 .wayout__crumb a {
   color: var(--soft); text-decoration: none; font-weight: 600;
   padding: 7px 13px 7px 10px; margin-left: -10px; border-radius: 999px;
@@ -2420,7 +2420,7 @@ h1.wayout__heroline {
   display: block; font-size: clamp(24px, 2.4vw, 31px); line-height: 1.12;
   letter-spacing: -.02em; margin-bottom: 10px; color: var(--ink);
 }
-.wayout__allthree p { margin: 0 0 22px; color: var(--soft); font-size: 15.5px; line-height: 1.6; max-width: 52ch; }
+.wayout__allthree p { margin: 0 0 22px; color: var(--soft); font-size: 16px; line-height: 1.6; max-width: 52ch; }
 .wayout__allthree .wayout__btn {
   display: inline-block; width: auto; margin-top: 0;
   padding-inline: 38px; text-decoration: none; text-align: center;
@@ -2510,7 +2510,7 @@ h1.wayout__heroline {
 @keyframes wayoutDraw { to { stroke-dashoffset: 0; } }
 
 .wayout__finishedkick {
-  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
   color: var(--green); margin: 0 0 10px;
   animation: wayoutRise .5s cubic-bezier(.22, 1, .36, 1) .18s both;
 }
@@ -2597,7 +2597,7 @@ h1.wayout__heroline {
 }
 
 .wayout__chapterkick {
-  font-size: 11.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
   color: var(--sun); margin: 0 0 16px;
 }
 .wayout__chapterh {
@@ -2605,7 +2605,7 @@ h1.wayout__heroline {
   font-weight: 800; margin: 0 0 16px; color: #FBF9F1; max-width: 18ch; text-wrap: balance;
 }
 .wayout__chapterlead {
-  font-size: 17.5px; line-height: 1.55; color: #BFC9BE; margin: 0 0 30px; max-width: 52ch;
+  font-size: 18px; line-height: 1.55; color: #BFC9BE; margin: 0 0 30px; max-width: 52ch;
 }
 
 /* ⭐⭐ THEIR OWN FIRST SENTENCE. The only form of credit the voice rules allow —
@@ -2623,7 +2623,7 @@ h1.wayout__heroline {
   line-height: 1.35; color: #F2EFE4;
 }
 .wayout__originlink {
-  display: inline-block; margin-top: 14px; font-size: 13.5px; font-weight: 700;
+  display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 700;
   color: var(--sun); text-decoration: none;
 }
 .wayout__originlink:hover { text-decoration: underline; }
@@ -2636,7 +2636,7 @@ h1.wayout__heroline {
 }
 .wayout__chapter .wayout__btn--sun { display: inline-block; width: auto; padding-inline: 44px; }
 .wayout__chapterfine {
-  font-size: 13.5px; color: #9DA99C; margin: 16px 0 0; max-width: 54ch; line-height: 1.55;
+  font-size: 14px; color: #9DA99C; margin: 16px 0 0; max-width: 54ch; line-height: 1.55;
 }
 
 /* ═══ THE ARC ════════════════════════════════════════════════════════════ */
@@ -2693,12 +2693,12 @@ h1.wayout__heroline {
   border: 1px solid rgba(214, 150, 40, .35);
 }
 .wayout__chapterband b {
-  font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
   color: #9A6B10;
 }
-.wayout__chapterband span { font-size: 13.5px; color: var(--soft); }
+.wayout__chapterband span { font-size: 14px; color: var(--soft); }
 .wayout__chapterband a {
-  margin-left: auto; font-size: 13.5px; font-weight: 700;
+  margin-left: auto; font-size: 14px; font-weight: 700;
   color: #9A6B10; text-decoration: none; white-space: nowrap;
 }
 .wayout__chapterband a:hover { text-decoration: underline; }
@@ -2713,7 +2713,7 @@ h1.wayout__heroline {
    the difference is the whole feature. */
 .wayout__thread .wayout__label { margin-bottom: 8px; }
 .wayout__threadlead {
-  font-size: 14.5px; line-height: 1.55; color: var(--soft);
+  font-size: 15px; line-height: 1.55; color: var(--soft);
   margin: 0 0 20px; max-width: 54ch;
 }
 .wayout__threadreply { margin-bottom: 14px; }
@@ -2764,7 +2764,7 @@ h1.wayout__heroline {
 /* ⭐ Confirmation, in place of the control. A button that stays pressable after
    it has succeeded is a button somebody presses again. */
 .wayout__sent {
-  margin: 22px 0 0; font-size: 14.5px; font-weight: 600; color: var(--green);
+  margin: 22px 0 0; font-size: 15px; font-weight: 600; color: var(--green);
 }
 
 /* ⚠️ THE ONLY WAY BETWEEN CREATE AND SIGN IN, AND IT WAS A HINT — the smallest,
@@ -2872,7 +2872,7 @@ h1.wayout__heroline {
 /* ⚠️ The one other thing allowed on the wait screen: the honest duration. Small
    and quiet, below the line, so the design still has exactly one loud element. */
 .wayout__waitfoot {
-  margin: 2.5vh 0 0; font-size: 14.5px; color: var(--soft);
+  margin: 2.5vh 0 0; font-size: 15px; color: var(--soft);
 }
 
 /* ⭐⭐ A FINISHED CHAPTER, OPENED FOR READING. The only difference from the live
@@ -2884,12 +2884,12 @@ h1.wayout__heroline {
   background: var(--tint); border: 1px solid var(--line);
 }
 .wayout__pastband b {
-  font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
   color: var(--label);
 }
-.wayout__pastband span { font-size: 13.5px; color: var(--soft); }
+.wayout__pastband span { font-size: 14px; color: var(--soft); }
 .wayout__pastband a {
-  margin-left: auto; font-size: 13.5px; font-weight: 700;
+  margin-left: auto; font-size: 14px; font-weight: 700;
   color: var(--green); text-decoration: none; white-space: nowrap;
 }
 .wayout__pastband a:hover { text-decoration: underline; }
@@ -2899,7 +2899,7 @@ h1.wayout__heroline {
 }
 
 /* The way in, from the arc. */
-.wayout__arcopen { margin: 0 0 12px; font-size: 13.5px; }
+.wayout__arcopen { margin: 0 0 12px; font-size: 14px; }
 .wayout__arcopen a { color: var(--green); font-weight: 700; text-decoration: none; }
 .wayout__arcopen a:hover { text-decoration: underline; }
 
@@ -2910,7 +2910,7 @@ h1.wayout__heroline {
 .wayout__versionhead {
   margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green);
 }
-.wayout__versionnote { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.wayout__versionnote { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--soft); }
 
 /* The switcher: every plan the thread holds, the one showing filled in. */
 .wayout__versions { margin: 6px 0 4px; }
@@ -2942,7 +2942,7 @@ h1.wayout__heroline {
 .wayout__dialogbody p { margin: 0 0 8px; font-size: 15px; line-height: 1.55; }
 .wayout__dialogabout { color: var(--soft); }
 .wayout__dialogactions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 18px; }
-.wayout__dialogactions .wayout__threadundo { margin: 0; font-size: 14.5px; }
+.wayout__dialogactions .wayout__threadundo { margin: 0; font-size: 15px; }
 .wayout__btn--danger { background: #A33A2B; color: #fff; }
 .wayout__btn--danger:hover { background: #8A2F22; }
 
@@ -2989,12 +2989,12 @@ h1.wayout__heroline {
   color: var(--soft); padding: 2px 4px;
 }
 .wayout__drafthead .wayout__versionx:hover { color: var(--ink); }
-.wayout__draftsaid { margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; font-weight: 600; color: var(--ink); }
+.wayout__draftsaid { margin: 8px 0 0; font-size: 16px; line-height: 1.5; font-weight: 600; color: var(--ink); }
 .wayout__draftreply { margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
 .wayout__draftwait { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 14px; color: var(--soft); }
 .wayout__draftwait .wayout__working { margin: 0; }
 .wayout__draftact { margin-top: 14px; }
-.wayout__draftmoved { margin: 0 0 10px; font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.wayout__draftmoved { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--ink); }
 .wayout__draftnote { margin: 0 0 10px; font-size: 14px; line-height: 1.5; color: var(--soft); }
 .wayout__draftact .wayout__btn { width: auto; margin: 0; padding: 12px 24px; font-size: 16px; }
 .wayout__btn--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
@@ -3010,14 +3010,14 @@ h1.wayout__heroline {
 .wayout__choicelist { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
 .wayout__choicelist li {
   display: grid; gap: 4px; padding: 12px 14px; border-radius: 10px; background: var(--paper);
-  border: 1px solid var(--line); font-size: 14.5px; line-height: 1.5;
+  border: 1px solid var(--line); font-size: 15px; line-height: 1.5;
 }
 .wayout__choicelist li.is-pick { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green); }
 .wayout__choicelist b { font-size: 13px; letter-spacing: .04em; color: var(--green); }
 .wayout__choicecost { color: var(--soft); }
-.wayout__choicelist .wayout__btn { justify-self: start; width: auto; margin: 6px 0 0; padding: 9px 18px; font-size: 14.5px; }
-.wayout__choicecheck { margin: 14px 0 0; font-size: 14.5px; line-height: 1.55; }
-.wayout__choicefine { margin: 12px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
+.wayout__choicelist .wayout__btn { justify-self: start; width: auto; margin: 6px 0 0; padding: 9px 18px; font-size: 15px; }
+.wayout__choicecheck { margin: 14px 0 0; font-size: 15px; line-height: 1.55; }
+.wayout__choicefine { margin: 12px 0 0; font-size: 13px; line-height: 1.5; color: var(--soft); }
 
 /* Crossed off, on purpose — versions not chosen, kept with why. */
 .wayout__versioncut { margin: 0 0 18px; }
@@ -3030,12 +3030,12 @@ h1.wayout__heroline {
 .wayout__fix { margin: 18px 0 4px; }
 .wayout__fixlist { list-style: none; margin: 12px 0 0; padding: 0; display: grid; }
 .wayout__fixlist li { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); }
-.wayout__fixlabel { font-size: 13.5px; color: var(--soft); }
-.wayout__fixrow { display: flex; align-items: baseline; gap: 14px; font-size: 15.5px; }
+.wayout__fixlabel { font-size: 14px; color: var(--soft); }
+.wayout__fixrow { display: flex; align-items: baseline; gap: 14px; font-size: 16px; }
 .wayout__fixrow .wayout__threadundo { margin: 0; }
 .wayout__fixedit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .wayout__fixinput {
-  flex: 1 1 180px; min-width: 0; font: inherit; font-size: 15.5px; color: var(--ink);
+  flex: 1 1 180px; min-width: 0; font: inherit; font-size: 16px; color: var(--ink);
   padding: 9px 12px; border: 1.5px solid var(--ink); border-radius: 10px; background: var(--paper);
 }
 .wayout__fixedit .wayout__btn { width: auto; margin: 0; padding: 9px 18px; font-size: 15px; }
@@ -3048,6 +3048,12 @@ h1.wayout__heroline {
   background: #FBEDEA; border: 1px solid #E8C4BC; color: #6E2A1F; font-size: 15px; line-height: 1.5;
 }
 .wayout__alert p { margin: 0; flex: 1 1 240px; }
+
+/* ⭐ THE TYPE SCALE (1 Oct audit): 11 · 12 · 13 · 14 · 15 · 16 · 17 · 18, then
+   the display sizes. The plan page had 39 size/weight combinations, many half a
+   pixel apart; every half size was folded to its neighbour, and the 9–10px
+   uppercase labels became 11 — they were the least readable text on the board.
+   Add a size only if none of these will do. */
 
 /* ═══ 1 OCT AUDIT ═══════════════════════════════════════════════════════════ */
 
@@ -3090,3 +3096,51 @@ h1.wayout__heroline {
    screen, which also fixes the grey that shows when iOS overscrolls. */
 .wayout { display: flow-root; }
 html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
+
+/* ⭐⭐ Help where they are — fixed numbers under every crisis answer. Quiet,
+   solid, unmissable: a card of its own, not a footnote. */
+.wayout__crisishelp {
+  margin: 18px 0 6px; padding: 16px 18px; border-radius: 12px;
+  background: #EEF4EF; border: 1px solid #C9DDCF; color: var(--ink);
+}
+.wayout__crisishead { margin: 0 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--green); }
+.wayout__crisishelp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 16px; line-height: 1.5; }
+.wayout__crisishelp a { color: var(--green); font-weight: 700; }
+
+/* ⭐⭐ The footer on every page: one true sentence, two documents. */
+.wayout__footer {
+  margin-top: auto; padding: 28px 0 8px; border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px;
+  font-size: 13px; line-height: 1.5; color: var(--soft);
+}
+.wayout__footer p { margin: 0; max-width: 60ch; }
+.wayout__footer nav { display: flex; gap: 18px; }
+.wayout__footer a { color: var(--soft); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.wayout__footer a:hover { color: var(--ink); }
+@media (pointer: coarse), (max-width: 600px) {
+  .wayout__footer a { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
+/* The legal pages: a readable measure, not the full card width. */
+.wayout__legal { max-width: 720px; }
+.wayout__legal h1 { font-size: clamp(30px, 5vw, 40px); line-height: 1.1; letter-spacing: -0.02em; margin: 6px 0 10px; }
+.wayout__legal h2 { font-size: 18px; margin: 0 0 8px; }
+.wayout__legal p, .wayout__legal li { font-size: 16px; line-height: 1.65; }
+.wayout__legal ul { padding-left: 20px; margin: 8px 0; }
+.wayout__legalsec { margin-top: 26px; }
+.wayout__legalkey { margin: 20px 0 6px; padding: 16px 20px; border-radius: 12px; background: var(--tint); }
+.wayout__legalkey p { margin: 0 0 6px; }
+.wayout__legal a { color: var(--green); }
+
+/* Situation pages: the question is the H1, sized as the old H2 was. */
+.wayout .wayout__pageh1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; letter-spacing: -0.02em; margin: 6px 0 0; }
+/* 🔴 The gold answer box ran the full 1132px card while the text beside it
+   was ~700px — half the card empty. Everything on an article now shares the
+   reading measure. */
+.wayout__seen:has(+ .wayout__situationbody) { max-width: 68ch; }
+/* The index: room above the columns so the top pins are not clipped. */
+.wayout__board:has(> .wayout__situationcard) { padding-top: 10px; }
+
+/* The record page: prose at a reading measure, not ~170 characters a line. */
+.wayout__frame--wide:has(> .wayout__crumb) .wayout__lead,
+.wayout__frame--wide:has(> .wayout__crumb) p:not(.wayout__crumb) { max-width: 68ch; }

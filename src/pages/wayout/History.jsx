@@ -54,7 +54,9 @@ export default function History() {
     return () => { cancelled = true }
   }, [])
 
-  if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
+  // ⚠️ wide, like the page it becomes — a narrow loading frame made the whole
+  // page jump sideways when it arrived (layout shift 0.66).
+  if (loading) return <WayoutShell wide><p className="wayout__lead">One moment.</p></WayoutShell>
   if (error)   return <WayoutShell><p className="wayout__lead">{humanError(error)}</p></WayoutShell>
 
   const first = chain[0]

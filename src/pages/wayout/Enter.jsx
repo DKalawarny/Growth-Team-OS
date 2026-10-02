@@ -324,7 +324,8 @@ export default function Enter() {
                     that at least makes the consent real. */}
                 <span>
                   I’m over 18 and I agree to the{' '}
-                  <a href="/terms" target="_blank" rel="noopener noreferrer">terms</a>.
+                  <a href={`${WAYOUT_BASE}/terms`} target="_blank" rel="noopener noreferrer">terms</a>{' '}
+                  — including that this is not legal or financial advice and every choice is mine.
                 </span>
               </label>
             )}
