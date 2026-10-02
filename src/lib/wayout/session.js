@@ -4,6 +4,7 @@ import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { readingForPrompt } from '../../content/wayoutReading'
 import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes, noTuesday } from './mapContract'
 import { parseModelJson } from './parseModelJson'
+import { readReplyJson, soundsLikeCrisis } from './replyJson'
 import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse, takeHandoff } from './draft'
 import { historyForPrompt, chapterAnswers } from './chapterHistory'
 
@@ -867,16 +868,10 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
     kind: 'thread',
   })
 
-  let out
-  try {
-    out = JSON.parse(String(raw ?? '').replace(/^```json\s*|```$/g, '').trim())
-  } catch {
-    // ⚠️ A thread reply is prose with a flag on it. If the JSON is malformed the
-    // prose is still worth having — losing the whole turn over a bracket would
-    // be the parser blaming the person.
-    out = { reply: String(raw ?? '').trim(), changes_plan: false, what_changed: null, stalling: false, crisis: false }
-  }
-
+  // 🔴 2 Oct, live: the model sometimes writes prose AND THEN the JSON. The old
+  // reader showed the person the raw text with every flag false — so a crisis
+  // reply lost its help lines. readReplyJson finds the JSON wherever it is.
+  const out = readReplyJson(raw)
   const reply = scrubFigures(String(out.reply ?? '').trim(), answers)
   if (!reply) throw new Error('That did not come back. Say it again.')
   return {
@@ -884,7 +879,8 @@ export async function askAboutPlan({ session, progress, history = [], thread = [
     changesPlan: out.changes_plan === true,
     whatChanged: out.what_changed ? String(out.what_changed).trim() : null,
     stalling: out.stalling === true,
-    crisis: out.crisis === true,
+    // ⭐⭐ The model's judgement OR their own words — either one shows the help.
+    crisis: out.crisis === true || soundsLikeCrisis(asked),
   }
 }
 

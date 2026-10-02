@@ -11,6 +11,7 @@ import {
 } from '../../lib/wayout/session'
 import { humanError } from '../../lib/wayout/humanError'
 import CrisisHelp from './CrisisHelp'
+import { soundsLikeCrisis } from '../../lib/wayout/replyJson'
 
 /**
  * The way out — the play-by-play for one move.
@@ -164,7 +165,7 @@ function Asking({ move, questions, busy, onSubmit }) {
   )
 }
 
-function AskBox({ thread, onAsk, onPin, pinned, seed }) {
+function AskBox({ thread, onAsk, onPin, pinned, seed, region = null }) {
   const [q, setQ] = useState('')
 
   // ⚠️ ADJUSTED DURING RENDER, NOT IN AN EFFECT. React's own pattern for "reset
@@ -211,6 +212,10 @@ function AskBox({ thread, onAsk, onPin, pinned, seed }) {
       {thread.map((m, i) => (
         <div key={i} className={m.role === 'user' ? 'wayout__askmine' : 'wayout__askreply'}>
           <p>{m.content}</p>
+          {/* ⭐⭐ The same safety net as the plan's thread: if what they asked
+              reads as danger, the help lines for their country sit under the
+              answer, whatever the answer said. */}
+          {m.role !== 'user' && i > 0 && soundsLikeCrisis(thread[i - 1]?.content) && <CrisisHelp region={region} />}
           {m.role !== 'user' && onPin && (
             <button
               type="button"
@@ -566,6 +571,7 @@ function PlayMove({ order }) {
 
       {/* ⭐⭐ THE THING THAT STOPS THIS BEING A GATED ANSWER PLATFORM. */}
       <AskBox
+        region={session?.answers?.region}
         seed={seed}
         thread={thread}
         onAsk={async question => {
