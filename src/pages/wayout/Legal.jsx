@@ -110,7 +110,7 @@ export function UnstuckPrivacy() {
         </Section>
 
         <Section title="What it is used for">
-          <p>To write and keep your plan, to answer you when you tell us something changed, and to keep the service working and safe (including limits that stop it being misused). We do not sell your information, we do not use it for advertising, and we do not use it to train AI models.</p>
+          <p>To write and keep your plan, to answer you when you tell us something changed, and to keep the service working and safe (including limits that stop it being misused). We never sell your information, we never share what you tell us with advertisers unless you have said yes, and we do not use it to train AI models. (We do advertise Unstuck Map itself — that never involves your answers.)</p>
         </Section>
 
         <Section title="Who handles it for us">
