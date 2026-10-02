@@ -121,6 +121,19 @@ http://getunstuckmap.com/robots.txt     /robots-unstuckmap.txt     200!
 http://getunstuckmap.com/sitemap.xml    /sitemap-unstuckmap.xml    200!
 http://getunstuckmap.com/llms.txt       /llms-unstuckmap.txt       200!
 http://getunstuckmap.com/favicon.svg    /favicon-unstuckmap.svg    200!
+# 🔴 AND THE HOME-SCREEN IDENTITY. "Add to Home Screen" read /manifest.json and
+# the touch icon from the same paths as Eliv8 — so an install was named "Eliv8 OS",
+# opened Eliv8's /dashboard, and wore Eliv8's dark tile. iOS also ignores an SVG
+# touch icon, so the PNG is the only one that ever shows; it asks for
+# /apple-touch-icon.png by default even with no <link> at all.
+https://getunstuckmap.com/manifest.json                    /manifest-unstuckmap.json          200!
+https://getunstuckmap.com/apple-touch-icon.svg             /apple-touch-icon-unstuckmap.png   200!
+https://getunstuckmap.com/apple-touch-icon.png             /apple-touch-icon-unstuckmap.png   200!
+https://getunstuckmap.com/apple-touch-icon-precomposed.png /apple-touch-icon-unstuckmap.png   200!
+http://getunstuckmap.com/manifest.json                     /manifest-unstuckmap.json          200!
+http://getunstuckmap.com/apple-touch-icon.svg              /apple-touch-icon-unstuckmap.png   200!
+http://getunstuckmap.com/apple-touch-icon.png              /apple-touch-icon-unstuckmap.png   200!
+http://getunstuckmap.com/apple-touch-icon-precomposed.png  /apple-touch-icon-unstuckmap.png   200!
 
 # 🔴🔴 THE SPA FALLBACK ON THIS HOST MUST NOT BE ELIV8'S LANDING.
 #

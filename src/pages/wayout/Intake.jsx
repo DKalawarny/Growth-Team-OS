@@ -5,7 +5,7 @@ import { Field, Dictate } from './fields'
 import { isAnswered } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
-import { saveDraft, loadDraft, draftBelongsToSomeoneElse } from '../../lib/wayout/draft'
+import { saveDraft, loadDraft, draftBelongsToSomeoneElse, markHandoff } from '../../lib/wayout/draft'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceShort } from '../../lib/wayout/pricing'
@@ -227,6 +227,9 @@ export default function Intake({ preview = false, previewReflections = null }) {
       return
     }
 
+    // ⚠️ Reflections need an account — the function refuses an anonymous call,
+    // and every screen of the signed-out path was firing one into a 401.
+    if (!session) return
     reflect(screenAnswers)
       .then(text => { if (text) setReflections(r => ({ ...r, [fromScreen.id]: text })) })
       .catch(() => { /* reflect() already swallows; nothing to show either way */ })
@@ -278,6 +281,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
     if (!session) {
       if (step > WAYOUT_TOTAL_SCREENS) {
         saveDraft(answers, step)
+        markHandoff()
         navigate(`${WAYOUT_BASE}/enter?next=${encodeURIComponent(`${WAYOUT_BASE}/plan`)}`)
         return
       }

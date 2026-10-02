@@ -9,6 +9,7 @@ import {
   playbookIsStale, loadProgress, markMoveDone, moveIsOpen,
   askAboutMove, saveThread, saveMoveNote, WAYOUT_MAX_ASKS,
 } from '../../lib/wayout/session'
+import { humanError } from '../../lib/wayout/humanError'
 
 /**
  * The way out — the play-by-play for one move.
@@ -212,7 +213,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed }) {
           {m.role !== 'user' && onPin && (
             <button
               type="button"
-              className="wayout__pin"
+              className="wayout__pinreply"
               onClick={() => onPin(m.content)}
               disabled={pinned === m.content}
             >
@@ -246,7 +247,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed }) {
           <button className="wayout__btn" onClick={send} disabled={busy || !q.trim()}>
             {busy ? 'Thinking…' : 'Ask'}
           </button>
-          {err && <p className="wayout__hint">{err}</p>}
+          {err && <p className="wayout__hint">{humanError(err)}</p>}
         </>
       )}
     </div>
@@ -441,7 +442,7 @@ function PlayMove({ order }) {
     return (
       <WayoutShell title="This week">
         <p className="wayout__q">That didn’t come through.</p>
-        <p className="wayout__lead">{error}</p>
+        <p className="wayout__lead">{humanError(error)}</p>
         <button className="wayout__btn" onClick={() => navigate(0)}>Try again</button>
       </WayoutShell>
     )

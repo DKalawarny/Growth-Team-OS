@@ -98,3 +98,31 @@ export function draftHasAnswers() {
   const d = loadDraft()
   return !!d && Object.keys(d.answers ?? {}).length > 0
 }
+
+/**
+ * ⭐⭐ THE HAND-OFF: "I just finished the questions in this tab and was sent to
+ * make an account." Set by the intake at that exact moment, in sessionStorage —
+ * so it belongs to this one tab and dies with it.
+ *
+ * 🔴 Why it exists: sign-in used to clear every draft (rightly — on a shared
+ * laptop a draft in the browser may be somebody else's), which meant a
+ * returning person who answered all six screens and then SIGNED IN lost twenty
+ * minutes of answers and landed on question one. The hand-off is the evidence
+ * that this draft is theirs: it was written in this tab, seconds ago, and they
+ * were sent here to keep it.
+ */
+const HANDOFF = 'wayout:handoff'
+export function markHandoff() {
+  try { sessionStorage.setItem(HANDOFF, String(Date.now())) } catch { /* private mode */ }
+}
+export function takeHandoff() {
+  try {
+    const at = Number(sessionStorage.getItem(HANDOFF))
+    sessionStorage.removeItem(HANDOFF)
+    // Fresh within the hour, or it is not the same sitting.
+    return Number.isFinite(at) && at > 0 && Date.now() - at < 60 * 60 * 1000
+  } catch { return false }
+}
+export function hasHandoff() {
+  try { return Boolean(sessionStorage.getItem(HANDOFF)) } catch { return false }
+}

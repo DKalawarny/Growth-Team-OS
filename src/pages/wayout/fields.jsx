@@ -19,7 +19,14 @@ import { useState, useRef, useEffect } from 'react'
  * with `custom: true` carried only so the model knows it was not on our list —
  * which is a reason to take it MORE seriously, not less. It renders identically.
  */
-export function Chips({ field, value = [], onChange }) {
+export function Chips({ field, value: raw = [], onChange }) {
+  // ⚠️ Older drafts carried diagnostic goals as bare keys (["time"]). Read them
+  // as the chips they are, so they show selected and are rewritten in shape the
+  // first time anything changes — instead of a mixed array of both.
+  const all = (field.groups ?? [{ options: field.options ?? [] }]).flatMap(g => g.options)
+  const value = (Array.isArray(raw) ? raw : []).map(t => (typeof t === 'string'
+    ? { key: t, label: all.find(o => o.key === t)?.label ?? t, custom: false }
+    : t))
   const [adding, setAdding] = useState(false)
   const [draft, setDraft]   = useState('')
 

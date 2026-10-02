@@ -83,7 +83,9 @@ export function priceLine() {
   // play-by-play — how to actually do the move you are standing on.
   return WAYOUT_PAYMENTS_LIVE
     ? `Your plan is free. ${WAYOUT_PRICE_FULL} later, only if you want the step-by-step for actually doing it — and only for as long as you are doing it.`
-    : 'Your plan is free. Nothing to pay, at the end or anywhere else.'
+    // ⚠️ True while payments are off: nothing is charged anywhere. It must not
+    // promise "anywhere else" — the step-by-step is meant to be paid later.
+    : 'Your plan is free. There is nothing to pay.'
 }
 
 /** The short version, for a corner of the screen while they answer. */

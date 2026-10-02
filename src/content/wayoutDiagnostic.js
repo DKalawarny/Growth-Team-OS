@@ -159,7 +159,9 @@ export const DIAGNOSTIC_OPENING = {
   // are not, which is the sentence a person braced for a bait-and-switch is
   // scanning for. Say the entire arrangement in one breath, before a single
   // tap, and there is nothing left to dread.
-  fine: 'No account, no card. The questions are free and so is the plan. The only paid part is a step-by-step guide for actually doing one of the moves.',
+  // ⚠️ Kept true to what happens: these six taps need no account; the plan
+  // needs one at the end, to keep it; nothing is charged while payments are off.
+  fine: 'No card. These questions need no account; you make one at the end to keep your plan. Nothing is charged.',
 }
 
 export const DIAGNOSTIC_QUESTIONS = [
@@ -350,23 +352,34 @@ export const DIAGNOSTIC_REGION = {
   ],
 }
 
+/**
+ * ⚠️ `gist` is what the rail shows WHILE they answer — a neutral description of
+ * the path, true of anybody. `lead`/`body` are the defaults for the RESULT, and
+ * pathCopy() below replaces them with lines that only claim what they said.
+ * 🔴 1 Oct audit: the rail showed each path's `lead` under every question, so
+ * after "Kids or custody" it still read "Nothing is holding you in place".
+ */
 export const PATHS = {
   'side-income': {
+    gist: 'Earn from something you already have, before changing anything else.',
     name: 'The side-income ladder',
     lead: 'You own something that can earn before you change anything else.',
     body: 'The first rung pays inside a week, and each one buys the next. Nothing here asks you to quit, move, or borrow.',
   },
   'cut-delegate': {
+    gist: 'Keep more of what already comes in.',
     name: 'Cut and delegate',
     lead: 'The fastest money you have is money you’re already earning and not keeping.',
     body: 'Adding income costs hours you said you don’t have. Subtracting costs none, needs no customer, and starts this week.',
   },
   'asset-play': {
+    gist: 'Put savings, space or a property to work.',
     name: 'The asset play',
     lead: 'You’re sitting on the thing most people spend three years trying to build.',
     body: 'Space, equity or a ticket someone else is short of. It earns without asking for your evenings.',
   },
   'relocate-or-stay': {
+    gist: 'Move somewhere it is easier — or decide for good not to.',
     name: 'Relocate, or decide not to',
     lead: 'Nothing is holding you in place, which makes location the biggest lever you have — and the one you’ve been avoiding deciding.',
     body: 'Either moving is the plan or it isn’t. Half-deciding costs more than either answer.',
@@ -470,4 +483,38 @@ export function whyNot(chosen, a) {
   return Object.entries(reasons)
     .filter(([key]) => key !== chosen)
     .map(([key, why]) => ({ name: PATHS[key].name, why }))
+}
+
+/**
+ * ⭐⭐ THE RESULT, IN SENTENCES THEIR ANSWERS JUSTIFY.
+ * 🔴 1 Oct audit: the copy was fixed per path, so everyone sent to "Cut and
+ * delegate" read "Adding income costs hours you said you don't have" — whether
+ * or not they had said a word about hours — and someone with savings read
+ * "Space, equity or a ticket". Each line here is chosen by the answer that
+ * makes it true; the defaults in PATHS only claim what is true of anybody.
+ */
+export function pathCopy(key, a = {}) {
+  const base = PATHS[key]
+  if (key === 'cut-delegate') {
+    if (a.money === 'negative') return { lead: 'Nothing is left at the end of the month, so the first money is money already coming in.', body: 'Cutting needs no customer, no float and nobody’s permission, and it starts this week.' }
+    if (a.money === 'plenty') return { lead: 'Money is not what is missing, so earning more is not the answer.', body: 'What is missing is room — and room comes from taking things off, not adding them.' }
+    if (wants(a, 'time')) return { lead: base.lead, body: 'Adding income costs hours, and time is what you said you want back. Subtracting costs none, needs no customer, and starts this week.' }
+    return { lead: base.lead, body: 'Subtracting needs no customer and no float, and it starts this week.' }
+  }
+  if (key === 'asset-play') {
+    const what = has(a, 'asset', 'property') ? 'a property you could sell'
+      : has(a, 'asset', 'cash') ? 'savings'
+      : 'space'
+    return { lead: `You already have ${what} — the thing most people spend years trying to build.`, body: 'It can earn, or buy you time, without asking for your evenings.' }
+  }
+  if (key === 'side-income') {
+    const what = has(a, 'asset', 'vehicle') ? 'a vehicle or tools'
+      : has(a, 'asset', 'skill') ? 'a skill, a trade or free evenings'
+      : has(a, 'asset', 'business') ? 'a business already'
+      : null
+    return what
+      ? { lead: `You have ${what}, and that can earn before you change anything else.`, body: base.body }
+      : { lead: 'The fastest start is a small first earner, before you change anything else.', body: base.body }
+  }
+  return { lead: base.lead, body: base.body }
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { loadDraft, saveDraft } from '../../lib/wayout/draft'
-import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot } from '../../content/wayoutDiagnostic'
+import { DIAGNOSTIC_OPENING, DIAGNOSTIC_QUESTIONS, PATHS, choosePath, whyNot, pathCopy } from '../../content/wayoutDiagnostic'
 import { WAYOUT_HOME, WAYOUT_INTAKE, timeLine } from '../../lib/wayout/brand'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
@@ -107,10 +107,22 @@ export default function Diagnostic() {
     // result screen shows it back.
     const written = DIAGNOSTIC_QUESTIONS
       .map(q => all[`${q.key}Other`]).filter(Boolean).join(' · ')
+    // A custom chip, in the shape the intake's Chips writes.
+    const custom = text => ({ key: `custom-${text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`, label: text, custom: true })
+    const labelled = (qKey, keys) => {
+      const opts = DIAGNOSTIC_QUESTIONS.find(q => q.key === qKey)?.options ?? []
+      return keys.map(k => opts.find(o => o.key === k)).filter(Boolean).map(o => ({ key: o.key, label: o.label, custom: false }))
+    }
     setDone(true)
     const path = choosePath(all)
     const carried = {}
-    if (Array.isArray(all.goalType) && all.goalType.length) carried.goalType = all.goalType
+    // 🔴 Carried as bare keys, the intake's chips could not see them — "More
+    // time" showed unselected, and tapping it stored a mixed array.
+    const goals = [
+      ...labelled('goalType', Array.isArray(all.goalType) ? all.goalType : []),
+      ...(all.goalTypeOther ? [custom(all.goalTypeOther)] : []),
+    ]
+    if (goals.length) carried.goalType = goals
     if (all.horizon) carried.horizon = all.horizon
     const IMM = {
       kids:    { key: 'kids-home',   label: 'Kids at home' },
@@ -120,10 +132,18 @@ export default function Diagnostic() {
     }
     const imm = (Array.isArray(all.immovable) ? all.immovable : [all.immovable])
       .map(k => IMM[k]).filter(Boolean).map(o => ({ ...o, custom: false }))
+    if (all.immovableOther) imm.push(custom(all.immovableOther))
     if (imm.length) carried.immovables = imm
-    // ⭐ What they wrote here is the best sentence on the free side — carry it
-    // into the intake's open box rather than losing it at the paywall.
-    if (written?.trim()) carried.story = written.trim()
+    // 🔴 THE OTHER BOXES WENT INTO THE WRONG QUESTION. Everything typed into any
+    // "Other…" was joined into `story`, so "2 years" typed for the timeline came
+    // back as the answer to "What else should I know about your situation?" —
+    // and satisfied its minimum. Each now goes to the question it answered, as a
+    // custom chip; the ones with no matching field (timeline, money, country)
+    // are asked properly in the intake and are not carried.
+    // ⚠️ Only the typed one: the intake's asset chips use different keys
+    // (truck, trailer, tools…), and a tapped diagnostic key carried over would be
+    // stored but invisible on the screen meant to show it.
+    if (all.assetOther) carried.assets = [custom(all.assetOther)]
     // ⭐ Carried like the rest, so somebody who goes on to the full version is
     // not asked the same thing twice thirty seconds apart.
     if (where) carried.region = where
@@ -221,6 +241,8 @@ export default function Diagnostic() {
   return (
     <WayoutShell
       wide
+      // ⚠️ Its own title — it reused the home page's exactly.
+      title="Which way out fits you"
       noindex={!first}
       canonicalPath={first ? '/wayout/start' : ''}
       signIn={first}
@@ -292,6 +314,17 @@ export default function Diagnostic() {
                 <span className={`wayout__count2${OTHER_MAX - otherLen <= 8 ? ' is-near' : ''}`}>
                   {OTHER_MAX - otherLen}
                 </span>
+                {/* 🔴 A single-answer "Other…" had no way on but Enter or tapping
+                    away. ⚠️ onMouseDown prevents the input's blur, which would
+                    otherwise commit (and advance) once on blur and again on click. */}
+                <button
+                  type="button"
+                  className="wayout__otherok"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={e => commitOther(e.currentTarget.parentElement.querySelector('input')?.value ?? '')}
+                >
+                  OK
+                </button>
               </span>
             ) : (
               <button
@@ -307,15 +340,6 @@ export default function Diagnostic() {
           {q.hint && <p className="wayout__hint wayout__rise wayout__r7">{q.hint}</p>}
 
 
-          {q.multi && (
-            <button
-              className="wayout__btn wayout__rise wayout__r7"
-              disabled={!answered}
-              onClick={() => setStep(step + 1)}
-            >
-              Next
-            </button>
-          )}
 
           {/* ⭐ WHAT IT COSTS AND HOW LONG IT TAKES, on the screen where somebody
               decides whether to start — which is now the first question rather
@@ -336,7 +360,7 @@ export default function Diagnostic() {
           <em>So far</em>
           {said.length
             ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
-            : <span className="wayout__soempty">nothing yet — six taps and it has enough</span>}
+            : <span className="wayout__soempty">nothing yet — six taps is enough to start</span>}
         </div>
 
         {/* ⚠️ NEUTRAL THE WHOLE WAY THROUGH, and the label says so. The rules are
@@ -349,7 +373,7 @@ export default function Diagnostic() {
             {Object.entries(PATHS).map(([k, p]) => (
               <div className="wayout__p" key={k}>
                 <b>{p.name}</b>
-                <s>{p.lead}</s>
+                <s>{p.gist}</s>
               </div>
             ))}
           </div>
@@ -358,10 +382,23 @@ export default function Diagnostic() {
         {/* ⚠️ ON STEP 0 THERE IS NOWHERE BACK INSIDE THIS PAGE any more, so the
             arrow leaves it. Left as a button that steps to -1 it would render a
             screen that no longer exists. */}
+        {/* 🔴 THE STICKY BAR HELD ONLY THE BACK ARROW AND SAT ON TOP OF NEXT. At
+            768 it covered most of the button; at 375 Next was below the fold
+            while the bar covered an answer. Next now lives IN the bar beside ←,
+            the same as the intake, so the way on is always on screen. */}
         <div className="wayout__nav">
           {first
             ? <Link className="wayout__back" to={WAYOUT_HOME} aria-label="Back">←</Link>
             : <button className="wayout__back" onClick={() => setStep(step - 1)} aria-label="Back">←</button>}
+          {q.multi && (
+            <button
+              className="wayout__btn"
+              disabled={!answered}
+              onClick={() => setStep(step + 1)}
+            >
+              Next
+            </button>
+          )}
         </div>
       </div>
     </WayoutShell>
@@ -370,7 +407,7 @@ export default function Diagnostic() {
 
 function Result({ answers, note }) {
   const key  = choosePath(answers)
-  const path = PATHS[key]
+  const path = { ...PATHS[key], ...pathCopy(key, answers) }
   const others = whyNot(key, answers)
 
   /**
@@ -470,7 +507,7 @@ function Result({ answers, note }) {
             reason. Showing them for the first time HERE would make this a result
             screen; having watched them for six questions makes it a conclusion. */}
         <div className="wayout__rail" style={{ marginTop: 26 }}>
-          <p className="wayout__raill">Why not the other three</p>
+          <p className="wayout__raill">Yours, and why not the other three</p>
           <div className="wayout__rails">
             {Object.entries(PATHS).map(([k, p], i) => {
               const out = k !== key
@@ -478,7 +515,7 @@ function Result({ answers, note }) {
               return (
                 <div className={`wayout__p wayout__rise wayout__r${Math.min(i + 3, 7)} ${out ? 'is-out' : 'is-win'}`} key={k}>
                   <b>{p.name}</b>
-                  <s>{out ? why : p.lead}</s>
+                  <s>{out ? why : path.lead}</s>
                   {!out && <span className="wayout__ptag">Yours</span>}
                 </div>
               )

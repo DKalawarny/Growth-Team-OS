@@ -117,7 +117,7 @@ export const SITUATIONS = [
       { h: 'The sentence that decides most of these',
         p: 'Paying down a debt earns you its interest rate, guaranteed, with no risk and no tax complication. Investing might earn more, and might not, and you don’t find out for years. So the comparison isn’t "4% versus 7%" — it’s a certain 4% against an uncertain average that includes the years it goes backwards. If you can’t name the rate on the loan, that’s the first thing to find out, and it’s on the statement.' },
       { h: 'Where the arithmetic clearly points one way',
-        p: 'At credit card rates — typically high teens or low twenties — there’s very little to discuss. Almost nothing reliably beats that, and anything that claims to is either taking risk it isn’t describing or isn’t what it says it’s. At low single digits on a vehicle or a mortgage, the argument for investing is real and reasonable people take it. The awkward middle is where it comes down to what you need rather than what the numbers say.' },
+        p: 'At credit card rates — typically high teens or low twenties — there’s very little to discuss. Almost nothing reliably beats that, and anything that claims to is either taking risk it isn’t describing or isn’t what it says it is. At low single digits on a vehicle or a mortgage, the argument for investing is real and reasonable people take it. The awkward middle is where it comes down to what you need rather than what the numbers say.' },
       { h: 'The part the rate comparison misses',
         p: 'A loan isn’t only a rate, it’s a monthly obligation. Clearing it removes a payment from the list of things that must go out every month, and that lowers the floor your income has to clear — permanently, for as long as you would have been paying it. If your situation is tight, or if you’re trying to reduce the hours you work, that reduction can matter more than a percentage point or two. If money is comfortable and the rate is low, it usually doesn’t.' },
       { h: 'What to do if the answers are full of worry',
@@ -310,13 +310,13 @@ export const SITUATIONS = [
     intro: 'Space you already have, and whether it changes anything',
     updated: '2026-09-27',
     answer:
-      'The money is almost always real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it’s what you give up — your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
+      'The money is almost always real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it is what you give up — your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
     body: [
       { h: 'Why it works when other things don’t',
-        p: 'Most ways of improving a monthly position need something you may not have — money to start, customers to find, time you’re not working. A spare room needs none of those. The asset already exists, the cost of using it’s close to zero, and the income starts within weeks rather than months. For somebody with no slack, that combination is rare and worth taking seriously even if it isn’t appealing.' },
+        p: 'Most ways of improving a monthly position need something you may not have — money to start, customers to find, time you’re not working. A spare room needs none of those. The asset already exists, the cost of using it is close to zero, and the income starts within weeks rather than months. For somebody with no slack, that combination is rare and worth taking seriously even if it isn’t appealing.' },
       { h: 'What it’s actually worth, and how to find out',
         p: 'Don’t guess. Search what comparable rooms in your area are currently listed at — not what you hope, and not what somebody told you. Then subtract what an extra person genuinely costs in utilities and wear. What’s left is the real monthly figure, and it’s the one to compare against your gap. This takes twenty minutes and it’s the difference between a plan and a hope.' },
-      { h: 'Who you rent to changes what it’s',
+      { h: 'Who you rent to changes what it is',
         p: 'A long-term tenant is predictable income that arrives whether or not you did anything that week. A travelling professional or somebody on a rotation is often less present and pays more, and is harder to find. Short-stay guests can pay considerably more per night and are a job rather than an arrangement — cleaning, messaging, turnover. These are genuinely different choices and the money isn’t the only difference between them.' },
       { h: 'The cost that doesn’t appear in the arithmetic',
         p: 'Someone else is in your home. That affects everyone who lives there, and it’s a real cost even when the money is good. It matters more where there are children, where somebody works shifts and sleeps during the day, or where the household is already under strain. This isn’t a reason not to do it. It’s a reason to make the decision with the people it affects rather than presenting it to them.' },
@@ -436,7 +436,7 @@ export const SITUATIONS = [
       { q: 'Can I claim benefits if I got severance?',
         a: 'Usually yes, though severance can delay when payments start depending on where you live. That’s a reason to file early and find out, not a reason to wait.' },
       { q: 'Is it worth retraining?',
-        a: 'Sometimes, and it’s worth being specific about which door it opens. A qualification bought because a named employer or licence requires it’s an investment. One bought to feel like progress is an expense during the months you can least afford one.' },
+        a: 'Sometimes, and it’s worth being specific about which door it opens. A qualification bought because a named employer or licence requires it is an investment. One bought to feel like progress is an expense during the months you can least afford one.' },
     ],
   },
 
@@ -521,7 +521,7 @@ export const SITUATIONS = [
     intro: 'Turning over well, and nothing left at the end of it',
     updated: '2026-09-27',
     answer:
-      'Almost nobody in this position has a sales problem. You’re either underpriced, owed money, or paying yourself last — and from the bank balance all three look exactly the same. Which one it’s decides what you do next, and you can work it out in an evening with a list of last month’s jobs.',
+      'Almost nobody in this position has a sales problem. You’re either underpriced, owed money, or paying yourself last — and from the bank balance all three look exactly the same. Which one it is decides what you do next, and you can work it out in an evening with a list of last month’s jobs.',
     body: [
       { h: 'Three things it can be, and they look identical from the outside',
         p: 'Money comes in, money goes out, nothing stays. That single symptom has three completely different causes, and the treatments contradict each other. Underpriced means every new job makes it worse. Owed means the work is done and the money exists but is sitting with somebody else. Paying yourself last means the business is solvent and you’re not. Chasing more work fixes none of them, and makes the first two worse — which is exactly why working harder hasn’t moved this.' },

@@ -65,6 +65,7 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 // ⭐⭐ The only INDEXABLE pages in this product. Everything else is noindex and
 // behind a session — see the note in Situations.jsx.
 const WayoutStuck      = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationIndex })))
+const WayoutNotFoundPage = lazy(() => import('./pages/wayout/NotFound'))
 const WayoutStuckPage  = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationPage })))
 const WayoutIntake     = lazy(() => import('./pages/wayout/Intake'))
 const WayoutPlan       = lazy(() => import('./pages/wayout/Plan'))
@@ -475,7 +476,9 @@ export default function App() {
         <Route path="/admin/backfill" element={<LazyRoute><RequireAuth><AdminBackfill /></RequireAuth></LazyRoute>} />
         <Route path="/admin/review"   element={<LazyRoute><RequireSession><AdminReview /></RequireSession></LazyRoute>} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* ⚠️ Host-aware: Unstuck Map's own domain gets a real not-found page;
+            Eliv8 keeps sending unknown addresses home, as it always has. */}
+        <Route path="*" element={onOwnDomain() ? <LazyRoute><WayoutNotFoundPage /></LazyRoute> : <Navigate to="/" replace />} />
       </Routes>
       </ErrorBoundary>
       </AuthProvider>

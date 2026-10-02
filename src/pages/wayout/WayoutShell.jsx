@@ -38,6 +38,7 @@ export default function WayoutShell({
    * context, which this product deliberately does not mount.
    */
   const [signedIn, setSignedIn] = useState(false)
+  useUnstuckHead()
   useEffect(() => {
     let cancelled = false
     supabase.auth.getSession().then(({ data }) => {
@@ -167,4 +168,45 @@ export default function WayoutShell({
       </div>
     </div>
   )
+}
+
+/**
+ * 🔴 THE HEAD HELMET DOES NOT OWN STILL SAID ELIV8 OS. index.html is shared with
+ * the other product, and Helmet only manages the tags it declares — so on every
+ * client-rendered page (/enter, /plan, /history…) the FIRST description in the
+ * head was Eliv8's, the iOS home-screen title and author were "Eliv8 OS", the
+ * browser bar was tinted near-black over a paper page, and an Organization
+ * JSON-LD named the wrong company. This swaps those static tags for the time a
+ * person is in this product and puts them back on the way out, so Eliv8's own
+ * pages are untouched. The prerendered pages get the same swap at build time
+ * (scripts/lib/unstuckHead.mjs).
+ */
+const STATIC_SWAPS = [
+  ['meta[name="description"]:not([data-rh])', 'content', WAYOUT_TAGLINE],
+  ['meta[name="author"]', 'content', 'Unstuck Map'],
+  ['meta[name="apple-mobile-web-app-title"]', 'content', 'Unstuck Map'],
+  ['meta[name="apple-mobile-web-app-status-bar-style"]', 'content', 'default'],
+  ['meta[name="theme-color"]', 'content', '#F5F1E6'],
+  ['link[rel="apple-touch-icon"]', 'href', '/apple-touch-icon-unstuckmap.png'],
+]
+function useUnstuckHead() {
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined
+    const undo = []
+    for (const [sel, attr, value] of STATIC_SWAPS) {
+      for (const el of document.head.querySelectorAll(sel)) {
+        undo.push([el, attr, el.getAttribute(attr)])
+        el.setAttribute(attr, value)
+      }
+    }
+    const hidden = [...document.head.querySelectorAll('script[type="application/ld+json"]')]
+      .filter(el => /Eliv8/i.test(el.textContent))
+    for (const el of hidden) el.setAttribute('type', 'application/x-eliv8-ld+json')
+    return () => {
+      for (const [el, attr, was] of undo) {
+        if (was == null) el.removeAttribute(attr); else el.setAttribute(attr, was)
+      }
+      for (const el of hidden) el.setAttribute('type', 'application/ld+json')
+    }
+  }, [])
 }

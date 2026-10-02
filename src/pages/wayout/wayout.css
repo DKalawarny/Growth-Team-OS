@@ -22,7 +22,9 @@
   --paper: #FFFDF8;
   --tint:  #F5F1E6;
   --ink:   #23301F;
-  --soft:  #6B7561;
+  /* 🔴 #6B7561 measured 4.29:1 on --tint — under 4.5 for the small text it
+     sets everywhere. 5.1:1 on tint, 5.7:1 on paper. */
+  --soft:  #5F6956;
   --green: #2F7D4F;
   --sun:   #FFB43A;
   /* ⚠️ THE SAME ACCENT, AT A VALUE THAT CAN BE READ. Sun is for FILLS, where the
@@ -430,7 +432,12 @@
    three-line field tells someone to be brief, whatever the label says. */
 .wayout__textarea--tall { min-height: 220px; }
 .wayout__input:focus,
-.wayout__textarea:focus { outline: none; border-bottom-color: var(--green); }
+.wayout__textarea:focus {
+  outline: none; border-bottom-color: var(--green);
+  /* 🔴 The app-wide input:focus in index.css drew Eliv8's teal glow box and a
+     cool tint around these underline fields. */
+  box-shadow: none; background-color: transparent;
+}
 .wayout__input::placeholder,
 .wayout__textarea::placeholder { color: #A9AE9C; }
 
@@ -654,7 +661,9 @@ div:first-child > .wayout__group { margin-top: 14px; }
 .wayout__stat span { display: block; font-size: 13px; color: var(--soft); }
 .wayout__stat b {
   display: block;
-  font-size: 28px;
+  /* 🔴 "$2,600/mo" at 28px ran 5px past its card at 375 and 33px at 320. */
+  font-size: clamp(21px, 6.4vw, 28px);
+  overflow-wrap: anywhere;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-top: 2px;
@@ -1557,7 +1566,7 @@ h1.wayout__heroline {
   color: var(--label);
   margin-bottom: 6px;
 }
-.wayout__herocut span { display: block; color: #8E8878; }
+.wayout__herocut span { display: block; color: #6F6A5C; }
 .wayout__herocut span + span { margin-top: 3px; }
 .wayout__herocut s { text-decoration-color: #C6BFA9; }
 
@@ -1640,7 +1649,7 @@ h1.wayout__heroline {
 
 .wayout__here {
   position: absolute; top: -12px; left: calc(50% + 20px); z-index: 3;
-  background: var(--ink); color: var(--paper); font-size: 9px; font-weight: 800;
+  background: var(--ink); color: var(--paper); font-size: 10.5px; font-weight: 800;
   letter-spacing: .11em; text-transform: uppercase; padding: 4px 8px;
   border-radius: 3px; white-space: nowrap; pointer-events: none;
 }
@@ -1895,6 +1904,13 @@ h1.wayout__heroline {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
   margin-bottom: 22px;
+  /* 🔴 1 Oct audit: a card moved to the top of the next column left its pin
+     behind — the pin sits ABOVE the card's box (top: -9px), so the fragment
+     holding it stayed at the foot of the previous column as a thumbtack on
+     nothing. An inline-block cannot be fragmented, so the pin travels with it. */
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
 }
 
 .wayout__card {
@@ -2446,14 +2462,14 @@ h1.wayout__heroline {
    down a conversation would compete with the reading. */
 .wayout__askreply { position: relative; }
 .wayout__askreply p { margin: 0; }
-.wayout__pin {
+.wayout__pinreply {
   margin-top: 10px; border: 1.5px solid var(--line); background: var(--paper);
   font: inherit; font-size: 12px; font-weight: 700; color: var(--soft);
   padding: 7px 14px; border-radius: 999px; cursor: pointer;
   transition: border-color .15s, color .15s, background .15s;
 }
-.wayout__pin:hover:not([disabled]) { border-color: var(--green); color: var(--green); background: #EDF3EE; }
-.wayout__pin[disabled] { border-color: var(--green); color: var(--green); background: #EAF3ED; cursor: default; }
+.wayout__pinreply:hover:not([disabled]) { border-color: var(--green); color: var(--green); background: #EDF3EE; }
+.wayout__pinreply[disabled] { border-color: var(--green); color: var(--green); background: #EAF3ED; cursor: default; }
 
 
 /* ═══ FINISHING ══════════════════════════════════════════════════════════
@@ -3032,3 +3048,45 @@ h1.wayout__heroline {
   background: #FBEDEA; border: 1px solid #E8C4BC; color: #6E2A1F; font-size: 15px; line-height: 1.5;
 }
 .wayout__alert p { margin: 0; flex: 1 1 240px; }
+
+/* ═══ 1 OCT AUDIT ═══════════════════════════════════════════════════════════ */
+
+/* 🔴 Every confirm dialog rendered pinned to the top-left corner: a global
+   reset zeroes the browser's centring margin on <dialog>. */
+.wayout__dialog { margin: auto; }
+
+/* One focus ring for the whole product, in its own green. Links and buttons
+   had fallen back to the browser's blue while the chips had a designed ring. */
+.wayout :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.wayout .wayout__input:focus-visible,
+.wayout .wayout__textarea:focus-visible { outline: none; }
+
+/* Phone tap targets: every control a thumb has to hit is at least 44px. The
+   quiet text links keep their look; the hit area grows around them. */
+@media (pointer: coarse), (max-width: 600px) {
+  .wayout .wayout__versionx,
+  .wayout .wayout__drafthead .wayout__versionx {
+    min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .wayout .wayout__threadundo,
+  .wayout .wayout__again,
+  .wayout .wayout__signin {
+    min-height: 44px; display: inline-flex; align-items: center;
+  }
+  .wayout .wayout__scorebtn { min-width: 44px; min-height: 44px; }
+}
+
+/* The OK beside an open "Other…" box — the way on, without Enter. */
+.wayout__otherok {
+  margin-left: 6px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 0;
+  background: var(--green); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+@media (pointer: coarse), (max-width: 600px) { .wayout__otherok { min-height: 44px; } }
+
+/* 🔴 A GREY BAND AND A JUMP AT THE TOP OF EVERY CARDED PAGE (768+). The frame's
+   top margin collapsed through .wayout, so the body showed above the tan ground
+   — in Eliv8's body colour — and the page shifted as it settled. flow-root
+   contains the margin; the body takes this product's ground while it is on
+   screen, which also fixes the grey that shows when iOS overscrolls. */
+.wayout { display: flow-root; }
+html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }

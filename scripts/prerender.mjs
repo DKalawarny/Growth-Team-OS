@@ -29,6 +29,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { setTimeout as sleep } from 'node:timers/promises'
 import puppeteer from 'puppeteer'
+import { unstuckHead, isUnstuckRoute, UNSTUCK_DESCRIPTION } from './lib/unstuckHead.mjs'
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url))
 const PROJECT    = path.resolve(__dirname, '..')
@@ -333,7 +334,10 @@ async function main() {
         }
       })
 
-      const html = await page.content()
+      // ⚠️ Unstuck Map pages are built from Eliv8's index.html; the parts of the
+      // head Helmet does not manage are swapped here (scripts/lib/unstuckHead.mjs).
+      const raw = await page.content()
+      const html = isUnstuckRoute(route) ? unstuckHead(raw) : raw
 
       const outDir = route === '/' ? DIST : path.join(DIST, route.replace(/^\//, ''))
       await mkdir(outDir, { recursive: true })
@@ -375,7 +379,7 @@ async function main() {
       .replace(/<meta property="og:[^"]*"[^>]*>/g, '')
       .replace(/<meta name="twitter:[^"]*"[^>]*>/g, '')
       .replace('</head>', '  <meta name="robots" content="noindex, nofollow">\n  </head>')
-    await writeFile(path.join(DIST, 'unstuck-shell.html'), shell, 'utf8')
+    await writeFile(path.join(DIST, 'unstuck-shell.html'), unstuckHead(shell, { description: UNSTUCK_DESCRIPTION }), 'utf8')
     console.log('[prerender]   → dist/unstuck-shell.html (neutral SPA fallback for getunstuckmap.com)')
   } finally {
     if (browser) await browser.close()

@@ -8,6 +8,7 @@ import { visibleChapterFields, CHAPTER_LEAD } from '../../content/wayoutChapter'
 import { loadOrCreateSession, saveAnswers, markComplete, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
+import { humanError } from '../../lib/wayout/humanError'
 
 /**
  * The way out — the door into a new chapter.
@@ -121,7 +122,7 @@ export default function Chapter() {
   }
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
-  if (error)   return <WayoutShell><p className="wayout__lead">{error}</p></WayoutShell>
+  if (error)   return <WayoutShell><p className="wayout__lead">{humanError(error)}</p></WayoutShell>
 
   return (
     <WayoutShell title={`Chapter ${chapter}`} wide>

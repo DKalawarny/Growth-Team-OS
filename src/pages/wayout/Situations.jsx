@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
-import { Link, useParams, Navigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import WayoutNotFound from './NotFound'
 import WayoutShell from './WayoutShell'
 import { SITUATIONS, SITUATION_BY_SLUG } from '../../content/unstuckSituations'
 import { WAYOUT_BASE, WAYOUT_NAME_TITLE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
@@ -53,7 +54,7 @@ export function SituationIndex() {
 export function SituationPage() {
   const { slug } = useParams()
   const s = SITUATION_BY_SLUG[slug]
-  if (!s) return <Navigate to={`${WAYOUT_BASE}/stuck`} replace />
+  if (!s) return <WayoutNotFound what="situation" />
 
   const url = `${WAYOUT_SITE_URL}${WAYOUT_BASE}/stuck/${s.slug}`
 

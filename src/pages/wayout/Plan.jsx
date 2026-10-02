@@ -725,7 +725,7 @@ export default function Plan() {
             foot={`Another minute at most${pass > 2 ? ' — last go' : ''}.`}
             lines={[
               'That version had a number you never gave us.',
-              'It is not allowed to guess about your life.',
+              'We do not guess about your life.',
               'Writing it again.',
             ]}
           />
@@ -1180,6 +1180,13 @@ export function Map({
           <span>Built from what actually happened last time.</span>
           <Link to={`${WAYOUT_BASE}/history`}>The whole way here →</Link>
         </div>
+      )}
+      {/* 🔴 1 Oct audit: /history was only reachable from a second chapter, so
+          a first plan with moves ticked off had a record nobody could find. */}
+      {!past && chapter === 1 && ticked.size > 0 && (
+        <p className="wayout__rebuild wayout__r" style={at(2.3)}>
+          <Link to={`${WAYOUT_BASE}/history`}>See your record so far →</Link>
+        </p>
       )}
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so

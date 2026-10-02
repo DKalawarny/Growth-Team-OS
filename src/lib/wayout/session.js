@@ -4,7 +4,7 @@ import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { readingForPrompt } from '../../content/wayoutReading'
 import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes, noTuesday } from './mapContract'
 import { parseModelJson } from './parseModelJson'
-import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse } from './draft'
+import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse, takeHandoff } from './draft'
 import { historyForPrompt, chapterAnswers } from './chapterHistory'
 
 export { enforceMapContract, mapProblems } from './mapContract'
@@ -156,8 +156,12 @@ export async function adoptDraftInto(session) {
   // else's half-finished form left in this browser — see draft.js.
   if (draftBelongsToSomeoneElse(session.user_id)) { clearDraft(); return session }
   const existing = Object.keys(session.answers ?? {}).length
-  // ⚠️ Never overwrite real answers with a stray draft. Theirs wins.
-  if (existing > 0) { clearDraft(); return session }
+  // ⚠️ Never overwrite real answers with a stray draft. Theirs wins — UNLESS
+  // they just finished the questions in this tab (the hand-off) and the answers
+  // on the server are an unfinished draft: then the complete set they just gave
+  // is the newer truth. A session that already has a plan is never overwritten.
+  const handoff = takeHandoff()
+  if (existing > 0 && !(handoff && session.status === 'draft' && !session.map)) { clearDraft(); return session }
 
   const { data, error } = await supabase
     .from('wayout_sessions')

@@ -184,7 +184,9 @@ export default function Landing() {
                 times are stated now, because the honest version is also the
                 better funnel: a small first step with the real one named. */}
             <p className="wayout__fine">
-              No account, no card. About twenty minutes, start to finish. {priceLine()}
+              {/* 🔴 1 Oct audit: "No account" four times on this page, then "Your plan
+                  needs an account" at the end of the questions. Said plainly now. */}
+              No card. You make an account at the end, to keep your plan. About twenty minutes, start to finish. {priceLine()}
             </p>
           </div>
         </div>
@@ -461,7 +463,7 @@ export default function Landing() {
 
           <div className="wayout__deal">
             <div>
-              <span className="wayout__dealtag">Free — no account</span>
+              <span className="wayout__dealtag">Free — no card</span>
               <h3>The questions, then your plan</h3>
               <p>
                 Your direction first, then the questions that turn it into a plan —
@@ -537,9 +539,8 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            Answer the questions, read what comes back, keep it. No account and no
-            card, your answers stay yours, and the whole plan is on the screen
-            before anything is ever asked of you. Then you will know what Saturday
+            Answer the questions, make an account to keep what comes back, read it.
+            No card, and your answers stay yours. Then you will know what Saturday
             morning is for.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>

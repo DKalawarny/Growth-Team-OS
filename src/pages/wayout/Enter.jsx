@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { supabase } from '../../lib/supabase'
 import { parkPendingAcceptance } from '../../lib/terms'
-import { clearDraft } from '../../lib/wayout/draft'
+import { clearDraft, hasHandoff } from '../../lib/wayout/draft'
 import { WAYOUT_BASE, WAYOUT_INTAKE, WAYOUT_NAME_TITLE, WAYOUT_TOTAL_TIME} from '../../lib/wayout/brand'
+import { humanError } from '../../lib/wayout/humanError'
 
 /**
  * The way out — its own front door.
@@ -190,7 +191,11 @@ export default function Enter() {
          * ⚠️ Sign-in is also the one moment we can be certain a different person
          * may be at the keyboard, which is exactly when a shared laptop leaks.
          */
-        clearDraft()
+        // ⭐⭐ EXCEPT the answers this tab just finished. The hand-off proves the
+        // draft was written here, moments ago, by the person now signing in —
+        // see draft.markHandoff. Without it, a returning person who answered
+        // every question and then signed in lost all of it.
+        if (!hasHandoff()) clearDraft()
         navigate(next, { replace: true })
       }
     } catch (err) {
@@ -230,7 +235,7 @@ export default function Enter() {
   }
 
   return (
-    <WayoutShell title={mode === 'new' ? 'Start' : 'Sign in'}>
+    <WayoutShell title={mode === 'new' ? 'Create your account' : 'Sign in'}>
       <div className="wayout__spread">
         <div className="wayout__col">
           {/* ⚠️ The copy follows where they were HEADED. Someone bounced here on
@@ -325,7 +330,7 @@ export default function Enter() {
             )}
 
             {notice && <p className="wayout__notice">{notice}</p>}
-            {error && <p className="wayout__error">{error}</p>}
+            {error && <p className="wayout__error">{humanError(error)}</p>}
             {resetSent && (
               <p className="wayout__notice">
                 Sent. Open the link in that email and you’ll come straight back here.
@@ -337,7 +342,7 @@ export default function Enter() {
               type="submit"
               disabled={busy || (mode === 'new' && !agreed)}
             >
-              {busy ? 'One moment…' : mode === 'new' ? 'Create it' : 'Sign in'}
+              {busy ? 'One moment…' : mode === 'new' ? 'Create my account' : 'Sign in'}
             </button>
           </form>
 

@@ -5,6 +5,7 @@ import { loadOrCreateSession, chapterChain } from '../../lib/wayout/session'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
 import { distance, doneMoves } from '../../lib/wayout/distance'
+import { humanError } from '../../lib/wayout/humanError'
 
 /**
  * The way out — the whole way here.
@@ -54,7 +55,7 @@ export default function History() {
   }, [])
 
   if (loading) return <WayoutShell><p className="wayout__lead">One moment.</p></WayoutShell>
-  if (error)   return <WayoutShell><p className="wayout__lead">{error}</p></WayoutShell>
+  if (error)   return <WayoutShell><p className="wayout__lead">{humanError(error)}</p></WayoutShell>
 
   const first = chain[0]
   const latest = chain[chain.length - 1]

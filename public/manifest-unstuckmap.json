@@ -1,0 +1,14 @@
+{
+  "name": "Unstuck Map",
+  "short_name": "Unstuck Map",
+  "description": "You know your situation. Let’s sort out the order.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F1E6",
+  "theme_color": "#F5F1E6",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon-unstuckmap.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon-unstuckmap.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
