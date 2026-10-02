@@ -180,7 +180,19 @@ async function assertCapsServerSide(
   ])
 
   const company  = (companyRes.data ?? {}) as CompanyCapRow
-  const spendCap = company.monthly_spend_cap ?? DEFAULT_SPEND_CAP_USD
+  /**
+   * ⭐ UNSTUCK MAP'S OWN MONTHLY CAP: $5 (WAYOUT_MONTHLY_CAP_USD). A whole plan's
+   * lifetime costs about $1–1.50, so $5 is 3–5× genuine use and the worst case
+   * per paying user is $5 of $29. Daniel, 2 Oct: no top-ups.
+   * ⚠️ Every company row stores the column default of $10, so the $5 applies
+   * unless the account was deliberately RAISED above $10 — which is how one
+   * person's cap is lifted by hand: set their company's monthly_spend_cap to 20.
+   */
+  const wayoutCap = Number(Deno.env.get('WAYOUT_MONTHLY_CAP_USD') ?? '5')
+  const stored    = company.monthly_spend_cap ?? DEFAULT_SPEND_CAP_USD
+  const spendCap  = toolId === 'wayout' && stored <= DEFAULT_SPEND_CAP_USD && Number.isFinite(wayoutCap) && wayoutCap > 0
+    ? wayoutCap
+    : stored
   const toolCap  = company.monthly_tool_cap  ?? DEFAULT_TOOL_CAP
 
   // ⚠️ FAIL CLOSED. This used to proceed when the usage read errored, with the
@@ -290,6 +302,56 @@ async function assertPlaybookPaid(admin: ReturnType<typeof serviceClient>, user:
     ;(err as Error & { code?: string }).code = 'playbook_unpaid'
     throw err
   }
+}
+
+/** What a person reads at their allowance. Their plan is untouched either way. */
+function wayoutAllowanceMessage(code: string): string {
+  if (code === 'daily_limit_exceeded') {
+    return 'You have used today’s allowance for new versions and replies. Your plan and everything in it stays exactly as it is — this opens again within 24 hours.'
+  }
+  const d = new Date()
+  const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1))
+  const when = next.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', timeZone: 'UTC' })
+  return `You have used this month’s allowance for new versions and replies. Your plan and everything in it stays exactly as it is — it opens again on ${when}. If something is not working, tell us and we will look.`
+}
+
+/**
+ * ⭐ ONE EMAIL TO DANIEL PER ACCOUNT PER DAY when an Unstuck Map account hits its
+ * cap. A genuine user should never get here, so each case deserves a person:
+ * a real paying user gets their cap lifted by hand; anything else is a bug or
+ * abuse worth knowing about. Deduped by wayout_cap_alerts (migration 070).
+ * ⚠️ Never blocks or changes the response — it is fired and forgotten.
+ */
+async function alertCapReached(admin: ReturnType<typeof serviceClient>, user: { userId: string; companyId: string }, code: string) {
+  const { error: dupe } = await admin.from('wayout_cap_alerts').insert({ company_id: user.companyId, kind: code })
+  if (dupe) return // already alerted today (primary key), or the table is unavailable
+  const key  = Deno.env.get('RESEND_API_KEY')
+  const from = Deno.env.get('RESEND_FROM')
+  const to   = Deno.env.get('WAYOUT_ALERT_EMAIL') ?? 'dkalawarny@hotmail.com'
+  if (!key || !from) return
+  const since = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString()
+  const { data } = await admin.from('usage_events').select('cost_usd').eq('company_id', user.companyId).gte('created_at', since)
+  const spent = (data ?? []).reduce((t: number, r: { cost_usd: number | null }) => t + Number(r.cost_usd || 0), 0)
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from, to,
+      subject: `Unstuck Map: an account hit its ${code === 'daily_limit_exceeded' ? 'daily' : 'monthly'} allowance`,
+      text: [
+        `An Unstuck Map account reached its ${code === 'daily_limit_exceeded' ? 'daily' : 'monthly'} allowance.`,
+        ``,
+        `Spent this month: $${spent.toFixed(2)}`,
+        `User id: ${user.userId}`,
+        `Company id: ${user.companyId}`,
+        ``,
+        `If this is a real person who needs more, raise their cap (SQL):`,
+        `update companies set monthly_spend_cap = 20 where id = '${user.companyId}';`,
+        ``,
+        `If it looks like abuse or a loop, leave it — it resets on the 1st.`,
+      ].join('\n'),
+    }),
+  })
 }
 
 const KIND_DAILY_CAP: Record<string, number> = {
@@ -576,6 +638,13 @@ Deno.serve(async (req) => {
       await assertPlaybookPaid(admin, user, body.promptKey)
     } catch (err) {
       const code = (err as Error & { code?: string }).code
+      // ⭐ UNSTUCK MAP, AT ITS ALLOWANCE: a sentence a person can live with, and
+      // an email to Daniel. The default message ("Monthly spend cap of $5.00
+      // reached ($5.02 used)") showed our costs and read like a bill.
+      if (toolId === 'wayout' && (code === 'spend_cap_exceeded' || code === 'daily_limit_exceeded')) {
+        alertCapReached(admin, user, code).catch(e => console.error('[claude] cap alert failed', e))
+        return json({ error: wayoutAllowanceMessage(code), code }, 429)
+      }
       return json(
         { error: (err as Error).message, code },
         429,
