@@ -3213,3 +3213,18 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 /* ⚠️ `.wayout__stat span` styles the caption (13px, soft) and was catching the
    number's own wrapper, shrinking "$7,400" to caption size. */
 .wayout__stat b .wayout__statnum { display: inline; font-size: inherit; color: inherit; }
+
+/* Earlier chapters, above this plan's moves in the progress strip. */
+.wayout__progressbefore { margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.wayout__progresschapter p { margin: 0 0 6px; font-size: 15px; color: var(--ink); }
+.wayout__progresschapter p b { font-weight: 800; }
+.wayout__progresschapter ul { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.wayout__progresschapter li { font-size: 14px; line-height: 1.45; color: var(--ink); }
+.wayout__progresschapter li span { color: var(--green); font-weight: 800; margin-right: 4px; }
+.wayout__progresschapter li em { font-style: normal; color: var(--green); font-weight: 600; margin-left: 4px; font-size: 13px; }
+/* ⚠️ The strip is now done-only: plain lines, not the old three-step grid,
+   whose `.wayout__progress li` rule was laying these out as a 28px column. */
+.wayout__progress .wayout__progresschapter ul { display: grid; gap: 6px; }
+.wayout__progress .wayout__progresschapter li { display: block; padding-left: 22px; text-indent: -22px; }
+.wayout__progress .wayout__progresschapter li span { display: inline-block; width: 22px; text-indent: 0; }
+.wayout__progress .wayout__progresschapter li em { display: inline; white-space: nowrap; }

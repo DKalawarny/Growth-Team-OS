@@ -815,6 +815,7 @@ export default function Plan() {
          not passed at all, so there is nothing to enable by accident. */
       thread={past ? [] : thread}
       onSay={past ? null : sayToPlan}
+      earlier={past ? [] : chain.filter(c => c.id !== session?.id)}
       asking={asking}
       past={Boolean(past)}
       onRebuild={past || spent ? null : rebuild}
@@ -951,7 +952,7 @@ function WorthAsk({ onSave }) {
 export function Map({
   map, onRebuild, onRedoFromThread, onDropDraft, onRemoveVersion, onChoose, onGoWith, onBringBack, onCorrect, answers = {}, choosing = false, chooseErr = '', onRestore, onSwitchVersion, liveMap = null, threadBuild = null, threadErr = '', refused = false, onOpenPlaybook, onRegenerate, onMove, onInsist, onNote,
   moveNotes = {}, progress, rebuilding = false, locked = false, error = '', onDismissError = null, spent = false, chapter = 1,
-  thread = [], onSay = null, asking = false, past = false,
+  thread = [], onSay = null, asking = false, past = false, earlier = [],
 }) {
   // 🔴 THIS USED TO BE LOCAL STATE AND IT WAS A LIE. A tick vanished on reload,
   // nothing read it, and the gate under every move — "move 2 starts when…" —
@@ -1193,7 +1194,7 @@ export function Map({
           never praise: what is done and when, which gate is passed, what is next.
           ⚠️ No percentages, rings, badges or streaks — ever. */}
       {!past && Array.isArray(map.moves) && map.moves.length > 0 && (
-        <Progress moves={map.moves} ticked={ticked} doneAt={progress?.doneAt ?? {}} style={at(2.3)} />
+        <Progress moves={map.moves} ticked={ticked} doneAt={progress?.doneAt ?? {}} earlier={earlier} style={at(2.3)} />
       )}
       <h3 className="wayout__label wayout__r" style={at(2.4)}>Three moves. This order.</h3>
       {/* ⭐⭐ SAID AT THE TOP, WHERE PEOPLE READ. Daniel: "maybe we market it so
@@ -1831,39 +1832,64 @@ function Spent() {
  * The progress strip: each move with its state and, once done, the date. The
  * gate between two moves shows as passed when the move before it is done.
  */
-function Progress({ moves, ticked, doneAt = {}, style }) {
+const OUTCOME_SAID = {
+  landed: 'You got there',
+  partly: 'Part of the way',
+  no: 'It did not land',
+  changed: 'Your life changed course',
+}
+
+export function Progress({ moves, ticked, doneAt = {}, earlier = [], style }) {
+  /**
+   * ⭐⭐ WHAT THEY HAVE ALREADY DONE — only that. Daniel, 2 Oct: "I meant what's
+   * already completed, like first goals, steps, whatever — not steps coming up;
+   * the pin board shows that." So: every finished move, earlier chapters first,
+   * with its date and the gate it opened. Nothing upcoming, no counts of what is
+   * left, and when nothing is done yet the strip is simply not there (a missing
+   * answer shows nothing — the record page's rule).
+   */
   const when = iso => {
     try { return new Date(iso).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) } catch { return '' }
   }
-  const doneCount = moves.filter((_, i) => ticked.has(i + 1)).length
-  const nowIdx = moves.findIndex((_, i) => !ticked.has(i + 1))
+  const chapters = earlier
+    .map(c => ({ chapter: c.chapter, outcome: c.outcome, done: (c.moves ?? []).filter(m => m.doneAt) }))
+    .filter(c => c.done.length)
+  const current = moves
+    .map((m, i) => ({ title: m.title, order: i + 1, doneAt: doneAt[i + 1] }))
+    .filter(m => ticked.has(m.order))
+  if (!chapters.length && !current.length) return null
+  const total = chapters.reduce((t, c) => t + c.done.length, 0) + current.length
   return (
-    <section className="wayout__progress wayout__r" style={style} aria-label="Your progress">
+    <section className="wayout__progress wayout__r" style={style} aria-label="What you have done">
       <p className="wayout__progresshead">
-        <span>Your progress</span>
-        <span>{doneCount === moves.length ? 'Every move done' : `${doneCount} of ${moves.length} moves done`}</span>
+        <span>What you have done</span>
+        <span>{total === 1 ? '1 move done' : `${total} moves done`}</span>
       </p>
-      <ol>
-        {moves.map((m, i) => {
-          const order = i + 1
-          const done = ticked.has(order)
-          const now = i === nowIdx
-          return (
-            <li key={order} className={done ? 'is-done' : now ? 'is-now' : 'is-later'}>
-              <b aria-hidden="true">{done ? '✓' : order}</b>
-              <span className="wayout__progressmove">{m.title}</span>
-              <em>
-                {done
-                  ? `Done${doneAt[order] ? ` ${when(doneAt[order])}` : ''}${i < moves.length - 1 ? ` · gate ${order} passed` : ''}`
-                  : now ? 'You are here' : `Opens after gate ${i}`}
-              </em>
-            </li>
-          )
-        })}
-      </ol>
-      {doneCount > 0 && (
-        <Link className="wayout__progresslink" to={`${WAYOUT_BASE}/history`}>See your full record →</Link>
+      {chapters.map(c => (
+        <div key={`c${c.chapter}`} className="wayout__progresschapter">
+          <p>
+            <b>Chapter {c.chapter}</b>
+            {c.outcome && OUTCOME_SAID[c.outcome] ? ` · ${OUTCOME_SAID[c.outcome]}` : ''}
+          </p>
+          <ul>
+            {c.done.map((m, i) => <li key={i}><span aria-hidden="true">✓</span> {m.title} <em>{when(m.doneAt)}</em></li>)}
+          </ul>
+        </div>
+      ))}
+      {current.length > 0 && (
+        <div className="wayout__progresschapter">
+          {chapters.length > 0 && <p><b>This plan</b></p>}
+          <ul>
+            {current.map(m => (
+              <li key={m.order}>
+                <span aria-hidden="true">✓</span> {m.title}
+                <em>{m.doneAt ? when(m.doneAt) : 'done'}{m.order < moves.length ? ` · gate ${m.order} passed` : ''}</em>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
+      <Link className="wayout__progresslink" to={`${WAYOUT_BASE}/history`}>See your full record →</Link>
     </section>
   )
 }
