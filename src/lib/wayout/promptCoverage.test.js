@@ -199,3 +199,15 @@ describe('country knowledge', () => {
     expect(BLOCKS.WAYOUT_METHOD).toContain('WHAT YOU MAY STATE AS FACT IS THE NAME OF THE INSTITUTION')
   })
 })
+
+/** ⭐ Slang — Daniel, 2 Oct: "slang so it can pick up on it." Crisis slang above all. */
+describe('slang', () => {
+  it('crisis slang is in WAYOUT_SAFETY, which every prompt carries', () => {
+    for (const t of ['kms', 'unalive', 'better off without me', 'A joke-shaped line is not a joke here'])
+      expect(BLOCKS.WAYOUT_SAFETY).toContain(t)
+  })
+  it('everyday slang is understood in WAYOUT_METHOD', () => {
+    expect(BLOCKS.WAYOUT_METHOD).toContain('UNDERSTAND THE WAY THEY TALK; ANSWER IN PLAIN WORDS.')
+    expect(BLOCKS.WAYOUT_METHOD).toContain('pogey')
+  })
+})
