@@ -113,14 +113,23 @@ export function UnstuckPrivacy() {
           <p>To write and keep your plan, to answer you when you tell us something changed, and to keep the service working and safe (including limits that stop it being misused). We never sell your information, we never share what you tell us with advertisers unless you have said yes, and we do not use it to train AI models. (We do advertise Unstuck Map itself — that never involves your answers.)</p>
         </Section>
 
+        {/* ⚠️ Described by KIND, not by brand. Daniel, 2 Oct: listing vendor names
+            "makes it seem less legit". PIPEDA and GDPR ask for the categories of
+            who processes data and whether it leaves the country, not names — and
+            the list stays true if a provider changes. The current names are
+            given to anyone who asks.
+            🔴 Never claim the AI provider "keeps nothing": providers hold requests
+            briefly for abuse monitoring. What is true, and what is said, is that
+            it is not used to train their models. */}
         <Section title="Who handles it for us">
+          <p>A small number of trusted service providers do this work for us, under contract:</p>
           <ul>
-            <li><b>Supabase</b> — stores your account and plan.</li>
-            <li><b>Anthropic</b> — the AI that writes your plan and replies. It receives what is needed to write them, at the moment they are written.</li>
-            <li><b>Netlify</b> — serves the website.</li>
-            <li><b>Resend</b> — sends any email we send you.</li>
+            <li>A secure cloud database stores your account and your plan.</li>
+            <li>An AI provider writes your plan and replies. It receives only what is needed to write them, when they are written, and does not use it to train its models.</li>
+            <li>A web hosting provider serves the website.</li>
+            <li>An email provider sends any email we send you.</li>
           </ul>
-          <p>Some of these providers store or process data outside Canada, including in the United States.</p>
+          <p>Some of these store or process information outside Canada, including in the United States. You can ask us for the current list of providers at any time.</p>
         </Section>
 
         <Section title="Who can see it">
