@@ -8,6 +8,7 @@ import { WAYOUT_HOME, WAYOUT_INTAKE, timeLine } from '../../lib/wayout/brand'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 import { Marked } from '../../lib/wayout/marked.jsx'
+import { readSource } from '../../lib/wayout/source'
 
 /**
  * 🔴 CAPPED, AND THE CAP IS THE POINT. Daniel asked for an Other box on every
@@ -162,7 +163,7 @@ export default function Diagnostic() {
     }
     // ⚠️ `all` now carries `climate`; `region` is the COUNTRY and nothing else.
     // Before the rename this line destroyed the climate answer on every insert.
-    supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null, region: where || null }, path })
+    supabase.from('wayout_diagnostics').insert({ answers: { ...all, note: written || null, region: where || null }, path, source: readSource() })
       .then(({ error }) => { if (error) console.warn('[wayout] diagnostic not recorded:', error.message) })
   }
 

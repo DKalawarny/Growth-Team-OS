@@ -106,6 +106,7 @@ export function UnstuckPrivacy() {
             <li><b>What we write for you:</b> your plan, its versions, what you say under “Something changed?”, your notes and what you tick off.</li>
             <li><b>The free check:</b> your six taps are recorded without your name, to see which situations people arrive with.</li>
             <li><b>In your browser:</b> answers you give before you have an account are kept in your own browser until you make one, so nothing is lost.</li>
+            <li><b>How you found us:</b> on your first visit, the website, search or ad that brought you here (for example "google" or a campaign name) — never who you are. It tells us which places actually help people, and it is never shared with advertisers.</li>
           </ul>
         </Section>
 

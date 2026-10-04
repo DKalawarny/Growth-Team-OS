@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { clearDraft } from '../../lib/wayout/draft'
 import { OPERATOR_CONTACT } from '../../lib/terms'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, WAYOUT_HOME, canonicalUrl } from '../../lib/wayout/brand'
+import { captureSource } from '../../lib/wayout/source'
 import './wayout.css'
 
 /**
@@ -40,6 +41,8 @@ export default function WayoutShell({
    */
   const [signedIn, setSignedIn] = useState(false)
   useUnstuckHead()
+  // ⭐ First-visit source (utm tags + referring domain only) — see source.js.
+  useEffect(() => { captureSource() }, [])
   useEffect(() => {
     let cancelled = false
     supabase.auth.getSession().then(({ data }) => {

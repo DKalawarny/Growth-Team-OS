@@ -7,6 +7,7 @@ import { parseModelJson } from './parseModelJson'
 import { readReplyJson, soundsLikeCrisis } from './replyJson'
 import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse, takeHandoff } from './draft'
 import { historyForPrompt, chapterAnswers } from './chapterHistory'
+import { readSource } from './source'
 
 export { enforceMapContract, mapProblems } from './mapContract'
 
@@ -108,7 +109,7 @@ export async function loadOrCreateSession() {
 
   const { data: created, error: insErr } = await supabase
     .from('wayout_sessions')
-    .insert({ user_id: user.id, answers })
+    .insert({ user_id: user.id, answers, source: readSource() })
     .select()
     .single()
   if (insErr) throw new Error(`Could not start: ${insErr.message}`)
