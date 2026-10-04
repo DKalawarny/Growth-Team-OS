@@ -1210,6 +1210,17 @@ export function Map({
         Our best read of what you told us — a suggested order, not instructions.
         Anything here is yours to change.
       </p>
+      {/* ⭐ KEEP IT WHERE YOU WILL SEE IT. A plan on a fridge, or in front of a
+          partner, does more than a plan in a browser tab — and a reminder in
+          their own calendar brings them back without us emailing anyone. */}
+      {!past && (
+        <p className="wayout__planactions wayout__r" style={at(2.5)}>
+          <button type="button" className="wayout__again" onClick={() => window.print()}>Print or save as PDF</button>
+          {Array.isArray(map.moves) && map.moves.length > 0 && (
+            <button type="button" className="wayout__again" onClick={() => remindMe(map.moves, ticked)}>Remind me in a week</button>
+          )}
+        </p>
+      )}
 
       {/* ⭐⭐ THE PINNED ROUTE. Daniel picked it out of four shapes: "i like the
           fun pin board but the checking off of steps and the progress marker".
@@ -1832,6 +1843,33 @@ function Spent() {
  * The progress strip: each move with its state and, once done, the date. The
  * gate between two moves shows as passed when the move before it is done.
  */
+/**
+ * A calendar reminder for the move they are on, a week from now at 9am their
+ * time — an .ics file their own calendar opens. Nothing is sent anywhere.
+ */
+function remindMe(moves, ticked) {
+  const i = moves.findIndex((_, k) => !ticked.has(k + 1))
+  const move = moves[i === -1 ? moves.length - 1 : i]
+  const start = new Date(); start.setDate(start.getDate() + 7); start.setHours(9, 0, 0, 0)
+  const end = new Date(start.getTime() + 15 * 60 * 1000)
+  const fmt = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  const esc = t => String(t ?? '').replace(/[\\;,]/g, m => `\\${m}`).replace(/\n/g, '\\n')
+  const url = `${window.location.origin}${WAYOUT_BASE}/plan`
+  const ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Unstuck Map//Reminder//EN', 'BEGIN:VEVENT',
+    `UID:${Date.now()}@getunstuckmap.com`, `DTSTAMP:${fmt(new Date())}`,
+    `DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`,
+    `SUMMARY:${esc(`Check in on: ${move?.title ?? 'your plan'}`)}`,
+    `DESCRIPTION:${esc(`Where are you with it? Tick it off or say what changed: ${url}`)}`,
+    `URL:${url}`, 'END:VEVENT', 'END:VCALENDAR',
+  ].join('\r\n')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }))
+  a.download = 'unstuck-map-reminder.ics'
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000)
+}
+
 const OUTCOME_SAID = {
   landed: 'You got there',
   partly: 'Part of the way',

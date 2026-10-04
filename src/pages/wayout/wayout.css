@@ -3245,3 +3245,28 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 .wayout .wayout__situationcard h2.wayout__situationcardq { margin: 0 0 9px; font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: 0; }
 .wayout h2.wayout__label { font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: normal; }
 .wayout__btnauto { width: auto; margin-top: 10px; padding-left: 26px; padding-right: 26px; }
+
+/* Print / remind — two quiet actions under the moves heading. */
+.wayout__planactions { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 10px 0 0; }
+.wayout__planactions .wayout__again { min-height: 44px; }
+
+/* ⭐ PRINT: the plan itself, on paper. Everything interactive goes; the moves,
+   numbers, what was crossed off and what was assumed stay, in black on white. */
+@media print {
+  html, body, .wayout, .wayout__frame { background: #fff !important; }
+  .wayout__brand, .wayout__menu, .wayout__footer, .wayout__thread, .wayout__versions, .wayout__choose,
+  .wayout__choice, .wayout__planactions, .wayout__offer, .wayout__alert, .wayout__progresslink,
+  .wayout__rebuild, button, .wayout__grain, .wayout__aura, .wayout__twine { display: none !important; }
+  .wayout__r, .wayout__rise { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .wayout__card, .wayout__note, .wayout__progress, .wayout__stat { box-shadow: none !important; break-inside: avoid; border: 1px solid #ccc; }
+  .wayout__board { columns: 1 !important; }
+  .wayout__frame { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 12px !important;
+    box-shadow: none !important; border-radius: 0 !important; min-height: 0 !important; }
+  .wayout { padding: 0 !important; }
+  /* ⚠️ The crossed-off items ARE buttons (tap for why). Hiding every button
+     printed an empty "Crossed off, on purpose" — keep them, drop the "Why". */
+  .wayout__cutrow { display: block !important; border: 0 !important; background: none !important; padding: 6px 0 !important; text-align: left; }
+  .wayout__cutrow em { display: none !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  * { color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
