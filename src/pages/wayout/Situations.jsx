@@ -42,7 +42,7 @@ export function SituationIndex() {
         {SITUATIONS.map(s => (
           <Link key={s.slug} to={`${WAYOUT_BASE}/stuck/${s.slug}`} className="wayout__card wayout__situationcard">
             <b>{s.intro}</b>
-            <h3>{s.question}</h3>
+            <h2 className="wayout__situationcardq">{s.question}</h2>
             {/* 🔴 Cut at 130 characters, mid-word ("without cap…"). Now the first
                 sentence, or the last whole word inside the limit. */}
             <p>{excerpt(s.answer)}</p>
@@ -103,13 +103,13 @@ export function SituationPage() {
       <div className="wayout__situationbody">
         {s.body.map((b, i) => (
           <section key={i} className="wayout__r">
-            <h3>{b.h}</h3>
+            <h2 className="wayout__situationh">{b.h}</h2>
             <p>{b.p}</p>
           </section>
         ))}
       </div>
 
-      <h3 className="wayout__label" style={{ marginTop: 38 }}>Questions people ask next</h3>
+      <h2 className="wayout__label" style={{ marginTop: 38 }}>Questions people ask next</h2>
       <div className="wayout__situationfaq">
         {s.faqs.map((f, i) => (
           <section key={i}>
@@ -124,7 +124,7 @@ export function SituationPage() {
           the honest difference, and it is what the offer says. */}
       <div className="wayout__offer wayout__r" style={{ marginTop: 40 }}>
         <span className="wayout__offerkick">If this is your situation</span>
-        <h3>Run it against your own numbers</h3>
+        <h2 className="wayout__situationh">Run it against your own numbers</h2>
         <p className="wayout__offerlead">
           Everything above is the shape of the decision. What it cannot do is use
           your figures. You narrow four ways out to the one that fits you, then turn

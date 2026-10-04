@@ -1,0 +1,12 @@
+# Security headers for BOTH domains (getunstuckmap.com and eliv8os.com are one
+# Netlify site). 1 Oct 2026 audit: only HSTS was set.
+# ⚠️ microphone=(self) — voice typing in both products uses the browser's own
+# speech recognition. Nothing here embeds our pages, so framing is same-origin.
+# A Content-Security-Policy is deliberately NOT set yet: Stripe, Supabase,
+# Google (Drive picker, fonts) and Anthropic-proxied calls would each need
+# listing, and a wrong CSP breaks checkout silently. Add it in report-only first.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), geolocation=(), microphone=(self), payment=(self "https://js.stripe.com" "https://checkout.stripe.com")

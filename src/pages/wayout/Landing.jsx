@@ -118,7 +118,8 @@ export default function Landing() {
       <div className="wayout__aura" aria-hidden="true" />
       <div className="wayout__grain" aria-hidden="true" />
 
-      <div className="wayout__hero">
+      {/* ⚠️ The page's main landmark (Lighthouse, 3 Oct). */}
+      <div className="wayout__hero" role="main">
         <div className="wayout__herocopy">
           <div className="wayout__brand">
             <i />{WAYOUT_NAME}

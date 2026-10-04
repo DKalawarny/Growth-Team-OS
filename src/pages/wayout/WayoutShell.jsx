@@ -156,7 +156,9 @@ export default function WayoutShell({
               The only control here was Sign out. */}
           {signedIn && <AccountMenu />}
         </div>
-        {children}
+        {/* ⚠️ A main landmark for screen readers (Lighthouse, 3 Oct). display:
+            contents keeps the frame's flex layout exactly as it was. */}
+        <main className="wayout__main">{children}</main>
         {/* ⭐⭐ ON EVERY PAGE, SAID ONCE AND PLAINLY. Daniel, 1 Oct: "making sure
             that it is clear this isn't legal or financial advice, this is the
             user's choice." Not a wall of small print — one true sentence and
