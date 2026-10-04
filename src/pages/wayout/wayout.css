@@ -3244,3 +3244,4 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 }
 .wayout .wayout__situationcard h2.wayout__situationcardq { margin: 0 0 9px; font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: 0; }
 .wayout h2.wayout__label { font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: normal; }
+.wayout__btnauto { width: auto; margin-top: 10px; padding-left: 26px; padding-right: 26px; }

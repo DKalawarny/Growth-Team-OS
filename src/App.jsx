@@ -75,6 +75,7 @@ const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
 const WayoutDone       = lazy(() => import('./pages/wayout/Done'))
 const WayoutChapter    = lazy(() => import('./pages/wayout/Chapter'))
 const WayoutHistory    = lazy(() => import('./pages/wayout/History'))
+const WayoutAccount    = lazy(() => import('./pages/wayout/Account'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
 const WayoutLanding    = lazy(() => import('./pages/wayout/Landing'))
@@ -390,6 +391,9 @@ export default function App() {
         <Route path="/chapter" element={<LazyRoute><RequireWayout><WayoutChapter /></RequireWayout></LazyRoute>} />
         <Route path="/wayout/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
         <Route path="/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
+        {/* ⭐ Your data — download or delete (3 Oct). /account is free on both hosts. */}
+        <Route path="/wayout/account" element={<LazyRoute><RequireWayout><WayoutAccount /></RequireWayout></LazyRoute>} />
+        <Route path="/account" element={<LazyRoute><RequireWayout><WayoutAccount /></RequireWayout></LazyRoute>} />
         <Route path="/wayout/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         <Route path="/done" element={<LazyRoute><RequireWayout><WayoutDone /></RequireWayout></LazyRoute>} />
         {import.meta.env.DEV && (

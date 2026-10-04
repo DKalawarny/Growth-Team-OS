@@ -257,9 +257,7 @@ function AccountMenu() {
           <Link to={`${WAYOUT_BASE}/terms`} onClick={close}>Terms of use</Link>
           <Link to={`${WAYOUT_BASE}/privacy`} onClick={close}>Privacy</Link>
           <a href={`mailto:${OPERATOR_CONTACT}`} onClick={close}>Contact us</a>
-          <a href={`mailto:${OPERATOR_CONTACT}?subject=${encodeURIComponent('Delete my Unstuck Map account')}`} onClick={close}>
-            Delete my account
-          </a>
+          <Link to={`${WAYOUT_BASE}/account`} onClick={close}>Your data &amp; account</Link>
           <button
             type="button"
             className="wayout__menusignout"

@@ -395,7 +395,7 @@ export function VersionSwitch({
  * 🔴 showModal focuses the FIRST button, which is the destructive one — Enter
  * by reflex would delete. Focus is moved to the safe answer.
  */
-function Confirm({ open, title, quote = null, body, yes, onYes, onNo }) {
+export function Confirm({ open, title, quote = null, body, yes, onYes, onNo }) {
   const ref = useRef(null)
   useEffect(() => {
     const d = ref.current
