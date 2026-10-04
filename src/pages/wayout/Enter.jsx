@@ -72,7 +72,6 @@ export default function Enter() {
   const [params] = useSearchParams()
   // Where they were headed before they were asked to sign in.
   const next = params.get('next') || WAYOUT_INTAKE
-  }
 
   // 🔴 DEFAULTS TO CREATING AN ACCOUNT, not signing in. The door used to open on
   // "Welcome back — your answers and your plan are where you left them" for
@@ -124,7 +123,6 @@ export default function Enter() {
    */
   const [known, setKnown] = useState(false)
 
-  /** One place, so nothing can be left showing from a previous attempt. */
   const [linkSent, setLinkSent] = useState(false)
 
   async function sendLink() {
@@ -145,7 +143,9 @@ export default function Enter() {
     } finally {
       setBusy(false)
     }
+  }
 
+  /** One place, so nothing can be left showing from a previous attempt. */
   function clearMessages() {
     setError('')
     setNotice('')
