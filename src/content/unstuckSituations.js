@@ -735,6 +735,295 @@ export const SITUATIONS = [
         a: 'It can be, if the rate is genuinely lower, the fees are small, and the cards stay paid off. Compare the total cost, not just the monthly payment.' },
     ],
   },
+
+  // ── Adjacent searches (3 Oct 2026) ─────────────────────────────────────────
+  // ⭐ What people type when they are stuck but would never search "a plan to get
+  // unstuck": consolidation, moving, quitting, burnout. Each answers honestly first;
+  // the free check is offered as the next step, never as the answer. Anything that
+  // differs by country says so; no rates, limits or fees that change.
+  {
+    slug: 'should-i-consolidate-my-debt',
+    question: 'Should I consolidate my debt, or just pay it off myself?',
+    intro: 'Several debts, and one loan promising to make it simple',
+    updated: '2026-10-03',
+    answer:
+      'Consolidation helps in one situation: when the new rate is genuinely lower, the fees are smaller than the interest you save, and the old cards stay paid off. It does not reduce what you owe — it changes who you owe and at what rate. If the real problem is that more goes out each month than comes in, fix that first or the cards fill up again.',
+    body: [
+      { h: 'What consolidation actually does',
+        p: 'A consolidation loan or balance transfer pays off several debts and leaves you with one. The balance is the same. What can change is the interest rate, the monthly payment and how long you pay. A lower monthly payment over more years can cost more in total, even at a lower rate — so compare the total you will pay, not the payment.' },
+      { h: 'When it works',
+        p: 'It works when the rate is clearly lower than what you pay now, the fees are small, and you have stopped adding to the debt. Then every payment does more work, and one date is easier to keep than five.' },
+      { h: 'When it makes things worse',
+        p: 'The common trap is clearing the cards with a loan and then using the cards again. Now there is a loan and new balances. If that has happened before, or if the month does not balance yet, consolidation moves the problem rather than solving it.' },
+      { h: 'Doing it yourself costs nothing',
+        p: 'Paying minimums on everything and putting every extra dollar on the highest-rate debt gets most of the benefit with no new loan, no fees and no application. Calling your card company to ask for a lower rate is free and sometimes works.' },
+      { h: 'Free help exists',
+        p: 'Nonprofit credit counselling services can look at your whole situation and may arrange a repayment plan with lower interest. Be wary of any company that charges large fees up front or promises to make debt disappear — check who regulates them where you live.' },
+    ],
+    faqs: [
+      { q: 'Will consolidating hurt my credit?',
+        a: 'Applying can cause a small, temporary dip. Paying on time on one loan and keeping old balances low usually helps over time. Running the cards back up is what really hurts.' },
+      { q: 'Is a balance transfer card a good idea?',
+        a: 'It can be, if you can clear the balance before the introductory rate ends and the transfer fee is smaller than the interest you save. Read the rate that applies afterwards before you move anything.' },
+      { q: 'What if I cannot get a lower rate?',
+        a: 'Then consolidation usually is not worth it. Put your effort into the monthly numbers — what goes out and what comes in — and the highest-rate debt first.' },
+    ],
+  },
+
+  {
+    slug: 'debt-settlement-or-bankruptcy',
+    question: 'Debt settlement or bankruptcy — which is right for me?',
+    intro: 'When paying it back in full no longer looks possible',
+    updated: '2026-10-03',
+    answer:
+      'Before either, find out whether a formal repayment plan through a nonprofit credit counsellor would work — it is often less damaging than both. Settlement and bankruptcy are both real options for some people, but they work differently in every country and carry lasting effects. Get one free or low-cost professional opinion before you sign anything with anyone.',
+    body: [
+      { h: 'Check the gentler options first',
+        p: 'A nonprofit credit counsellor can sometimes arrange lower interest and one monthly payment across your debts. In Canada, a consumer proposal through a licensed insolvency trustee lets you repay part of what you owe in a legally binding plan. These are worth ruling out before anything harder.' },
+      { h: 'What settlement means',
+        p: 'Settlement is agreeing to pay a creditor less than the full amount. Some settlement companies ask you to stop paying while they negotiate, which can bring late fees, collection calls and damage to your credit, with no guarantee of a deal. In some places forgiven debt can also be taxed. Understand all of that before agreeing.' },
+      { h: 'What bankruptcy means',
+        p: 'Bankruptcy is a legal process, and the rules are different in every country — what you can keep, what you pay, how long it lasts and how long it shows on your record. It can give a genuine fresh start, and it has lasting effects on borrowing. In Canada it is handled by a licensed insolvency trustee; in the US, people usually speak to a bankruptcy attorney.' },
+      { h: 'Be careful who you trust',
+        p: 'Promises to make debt disappear, large fees taken up front, or pressure to sign today are warning signs. A first meeting with a licensed trustee or a nonprofit counsellor is commonly free and explains your options without selling you one.' },
+      { h: 'The numbers still decide it',
+        p: 'Whatever you choose, it has to work against what comes in and what has to go out each month. Knowing that number before the meeting makes the conversation faster and the advice better.' },
+    ],
+    faqs: [
+      { q: 'Will I lose my house if I go bankrupt?',
+        a: 'It depends entirely on where you live, your equity and the rules there. This is exactly the question to ask a licensed professional before deciding.' },
+      { q: 'Are debt settlement companies legitimate?',
+        a: 'Some are and some are not. Check who regulates them where you live, avoid large up-front fees, and get a free opinion from a nonprofit or licensed trustee first.' },
+      { q: 'How long does it affect my credit?',
+        a: 'Years, in both cases, and the length depends on the country and the process. Ask the professional you speak to for the specifics where you live.' },
+    ],
+  },
+
+  {
+    slug: 'behind-on-my-car-payments',
+    question: 'I’m behind on my car payments. What do I do?',
+    intro: 'A missed payment, and the car is how you get to work',
+    updated: '2026-10-03',
+    answer:
+      'Call the lender before the next payment is due, not after. Lenders usually have options — moving a payment to the end of the loan, a short deferral, a new schedule — and they are far more flexible before a car is repossessed than after. If the car costs more than you can carry for the long term, selling it yourself is usually better than waiting.',
+    body: [
+      { h: 'Call first',
+        p: 'It feels like the worst call to make, and it is the one that keeps the most options open. Ask what they can offer: deferring a payment, adding missed payments to the end of the loan, or changing the due date to match your pay. Get any arrangement in writing.' },
+      { h: 'Know whether this is a short gap or a long one',
+        p: 'A one-month shortfall from a surprise bill is different from a payment that no longer fits your month. A deferral fixes the first. The second needs either more coming in, less going out somewhere else, or a cheaper car.' },
+      { h: 'Selling it yourself beats repossession',
+        p: 'If you owe less than the car is worth, selling it privately clears the loan and may leave money over. If you owe more, you may need to cover the difference — still often cheaper than repossession, which adds fees and usually sells the car for less. Ask the lender for the payoff amount and look up what similar cars sell for.' },
+      { h: 'Protect getting to work',
+        p: 'If the car is how you earn, losing it can cost more than the payment. Line up what replaces it — a cheaper car, a ride, transit — before you let it go, so the job is not the next thing at risk.' },
+    ],
+    faqs: [
+      { q: 'How many missed payments before they repossess?',
+        a: 'It depends on your contract and where you live — in some places it can be soon after a missed payment. Read your agreement and call the lender rather than waiting to find out.' },
+      { q: 'Should I refinance?',
+        a: 'It can help if you can get a genuinely lower rate. Stretching the loan to lower the payment usually costs more in total, so compare the full cost.' },
+      { q: 'Can I give the car back voluntarily?',
+        a: 'Usually, but you may still owe the difference between what you owed and what it sells for. Selling it yourself often gets a better price.' },
+    ],
+  },
+
+  {
+    slug: 'moving-to-a-cheaper-city',
+    question: 'Should I move somewhere cheaper to get ahead?',
+    intro: 'Rent eats everything, and somewhere else looks easier',
+    updated: '2026-10-03',
+    answer:
+      'It works when the move lowers what goes out by more than it lowers what comes in. Cheaper housing helps only if the income comes with you — remote work, an in-demand trade, or a job lined up before you go. Count the full cost of moving and the first few months, not just the rent.',
+    body: [
+      { h: 'Compare the whole month, not the rent',
+        p: 'Housing is usually the biggest number, but a cheaper place can mean a car you did not need, longer drives, higher heating or insurance, or lower pay. Write out a month in both places — what comes in and what has to go out — and compare what is left.' },
+      { h: 'The income question decides it',
+        p: 'If your work can come with you, a lower cost of living can change everything. If it cannot, check what your work actually pays there. Moving first and job-hunting second turns savings into the thing you live on while you look.' },
+      { h: 'Count the cost of getting there',
+        p: 'Movers or a truck, deposits, the overlap of two rents, connecting services, time off work. These come out of savings all at once. A move that saves a few hundred a month can take a year to pay back.' },
+      { h: 'What you leave behind has a value too',
+        p: 'Family nearby who help with children, friends, a church or community you rely on — these do work that costs money to replace. They are not reasons not to move; they belong in the comparison.' },
+      { h: 'Try it before you commit',
+        p: 'If you can, spend time there first, line up the work, and rent before you buy. A move you can undo is less risky than one you cannot.' },
+    ],
+    faqs: [
+      { q: 'How much should I save before moving?',
+        a: 'Enough to cover the move itself plus a few months of what has to go out in the new place — more if you do not have work lined up there.' },
+      { q: 'Is moving with no savings a bad idea?',
+        a: 'It is risky unless the income is certain and starts quickly. If you must, line up the job and the housing first so you are not paying for both a search and a move.' },
+      { q: 'Should I move to another country?',
+        a: 'The same comparison applies, plus work permits, health coverage, taxes and currency. Each is a real cost — check them before deciding.' },
+    ],
+  },
+
+  {
+    slug: 'moving-back-home-to-save-money',
+    question: 'Should I move back in with my parents to save money?',
+    intro: 'Rent is the biggest bill, and home is an option',
+    updated: '2026-10-03',
+    answer:
+      'It can be one of the fastest ways to get ahead — if it has an end date and a target. Decide before you move what the money is for, how much you will put aside each month, and roughly when you will leave. Without that, the savings tend to disappear into everyday spending and the stay drifts on.',
+    body: [
+      { h: 'Give it a purpose and a number',
+        p: 'Clearing a debt, building a deposit, a cushion before a career change. Name it, work out what you can put toward it each month, and you will know roughly how long you need to stay. That turns a step back into a plan.' },
+      { h: 'Agree the arrangement out loud',
+        p: 'Rent or no rent, what you cover, what you help with, how long. Saying it at the start avoids most of the tension that comes later. Paying something, even a little, often makes it feel fairer on both sides.' },
+      { h: 'Protect the saving',
+        p: 'Move the amount you agreed into a separate account on payday, before you can spend it. The common failure is that rent stops and spending quietly rises to fill the gap.' },
+      { h: 'Watch the cost you cannot see',
+        p: 'A longer commute, less independence, strain on relationships. These are real. A clear end date makes them easier to carry.' },
+    ],
+    faqs: [
+      { q: 'How long should I stay?',
+        a: 'As long as it takes to reach the target you set — and say that date out loud at the start, so everyone knows what to expect.' },
+      { q: 'Should I pay my parents rent?',
+        a: 'Often, yes — even a small amount. It keeps the arrangement fair and the habit of paying for housing alive. What matters most is agreeing it clearly.' },
+      { q: 'Is it embarrassing at my age?',
+        a: 'Plenty of people do it, at many ages, for good reasons. Moving out with a debt cleared or a deposit saved is a strong place to move out from.' },
+    ],
+  },
+
+  {
+    slug: 'career-change-at-40',
+    question: 'Is it too late to change careers at 40?',
+    intro: 'Twenty years in, and the work no longer fits',
+    updated: '2026-10-03',
+    answer:
+      'No — but the money has to be planned, because the change usually comes with a pay dip before it recovers. Work out how long you can carry a lower income, then pick a path that fits inside that time. Use what you already know; the most realistic changes reuse your experience rather than starting from zero.',
+    body: [
+      { h: 'Plan for the dip',
+        p: 'A new field often pays less at first. Work out what has to go out each month and how long savings, a partner’s income or part-time work can cover the gap. That number tells you whether you need a quick change or can afford a longer retraining.' },
+      { h: 'Your experience is not starting over',
+        p: 'Twenty years of work brings skills that carry: managing people, dealing with customers, knowing an industry from the inside. The changes that work best usually move sideways into something that uses them, rather than to something with no connection at all.' },
+      { h: 'Test before you leap',
+        p: 'Talk to people already doing the work. Try it on the side, volunteer, take a short course before a long one. Finding out it is not for you costs far less this way.' },
+      { h: 'Retraining is an investment only if it opens a door',
+        p: 'A qualification that a named employer or a licence requires is worth paying for. One bought to feel like progress is an expense in the year you can least afford it. Be specific about which job it leads to.' },
+      { h: 'Keep the income going while you can',
+        p: 'Leaving before the new path pays is the riskiest order. Reducing hours, retraining evenings or moving to the new work in steps keeps you choosing rather than scrambling.' },
+    ],
+    faqs: [
+      { q: 'Will I have to take a big pay cut?',
+        a: 'Often a temporary one, depending on the field and how much of your experience carries over. Plan for it rather than hoping it will not happen.' },
+      { q: 'Should I go back to school?',
+        a: 'Only if the qualification is required for the work you want. Check job postings and ask people in the field before enrolling.' },
+      { q: 'What if my family depends on my income?',
+        a: 'Then the change happens in steps, not one leap. The plan starts with how long the household can manage on less.' },
+    ],
+  },
+
+  {
+    slug: 'can-i-afford-to-go-part-time',
+    question: 'Can I afford to go part-time?',
+    intro: 'Less work, if the numbers allow it',
+    updated: '2026-10-03',
+    answer:
+      'Work it out on what you would actually take home, not your hourly rate. Fewer hours often means less tax too, and some costs fall — childcare, commuting — so the gap can be smaller than it looks. Check what you would lose besides pay, such as benefits, health coverage or pension contributions, before you ask.',
+    body: [
+      { h: 'Use take-home pay, not the headline',
+        p: 'Going from five days to four does not usually cut your take-home pay by exactly a fifth — tax often falls a little faster. Ask your payroll or use a pay calculator for where you live to see the real number.' },
+      { h: 'Some costs fall with the hours',
+        p: 'Childcare, commuting, lunches, the convenience spending that comes from being busy. Add them up; they can close more of the gap than people expect.' },
+      { h: 'Check what is tied to full-time',
+        p: 'Health coverage, benefits, pension or retirement matching, paid leave and eligibility for some programs can depend on hours. In some countries this matters far more than in others. Find out before you agree to anything.' },
+      { h: 'Compare the month, then decide',
+        p: 'Write down what comes in now and what would come in part-time, and what has to go out in each case. If there is still room, it is affordable. If not, you know exactly how much needs to change elsewhere.' },
+    ],
+    faqs: [
+      { q: 'How do I ask my employer?',
+        a: 'Bring a specific proposal — which days, how the work gets covered, when it starts — and offer a trial period. A clear plan is easier to say yes to.' },
+      { q: 'Will it affect my retirement savings?',
+        a: 'Often a little, because contributions are usually a share of pay. Check whether any employer matching changes too.' },
+      { q: 'What if it does not work out?',
+        a: 'Ask whether you can return to full-time, and get it in writing if you can. A trial period helps both sides.' },
+    ],
+  },
+
+  {
+    slug: 'burned-out-and-cannot-afford-a-break',
+    question: 'I’m burned out but I can’t afford to stop working. What do I do?',
+    intro: 'Exhausted, and the bills still come',
+    updated: '2026-10-03',
+    answer:
+      'Start by finding out what rest you can get without losing income — sick leave, unused holiday, a short leave or reduced hours. Then look at the month: even a small cut in what has to go out can buy room to work less. And if exhaustion is affecting your health, see a doctor; it is a health problem, not only a money one.',
+    body: [
+      { h: 'Check what you are already entitled to',
+        p: 'Unused holiday, sick days, a short-term leave program, an employee assistance service. Many people burn out with time off they never took. Read your contract or ask HR quietly what exists.' },
+      { h: 'Talk to a doctor',
+        p: 'Burnout can affect sleep, mood and physical health, and a doctor can help — and in some places can support time off or reduced duties. If you ever feel unsafe, contact a crisis line in your country right away.' },
+      { h: 'Make the month lighter',
+        p: 'The less that has to go out, the less you have to earn to be safe. Cutting a few recurring costs can make fewer hours, or a short unpaid break, possible. Every cost removed works every month.' },
+      { h: 'Change the work, not just the hours',
+        p: 'Sometimes the drain is one part of the job — nights, a commute, a role. Asking for a different shift or a change of duties can help more than time off, and costs nothing.' },
+      { h: 'Plan the way out, even slowly',
+        p: 'If the job itself is the problem, a plan with a date — even months away — makes the meantime easier to carry. Feeling stuck is part of what wears people down.' },
+    ],
+    faqs: [
+      { q: 'Can I take time off for burnout?',
+        a: 'It depends on your country, employer and situation. A doctor and your HR department are the people to ask.' },
+      { q: 'Should I just quit?',
+        a: 'Not before you know how many months you can cover what has to go out. Quitting with no runway can swap one kind of stress for another.' },
+      { q: 'How do I know it is burnout and not something else?',
+        a: 'A doctor can help tell the difference. That conversation is worth having either way.' },
+    ],
+  },
+
+  {
+    slug: 'starting-over-financially-at-40',
+    question: 'I’m 40 with nothing saved. How do I start over?',
+    intro: 'Behind where you thought you would be',
+    updated: '2026-10-03',
+    answer:
+      'Begin with the month, not the decades. Know what comes in and what has to go out, make a small gap between them, and point that gap at one thing at a time — a cushion first, then expensive debt, then retirement. Twenty-five working years is long enough for steady saving to add up to a great deal.',
+    body: [
+      { h: 'The month comes first',
+        p: 'Every plan runs on what is left at the end of the month. Write down what comes in and what has to go out. If nothing is left, that is the first problem to solve — more in, or less out — and it is worth solving before anything else.' },
+      { h: 'A small cushion before anything else',
+        p: 'A little money set aside stops the next surprise going onto a card. It does not need to be large to start. It is what makes the rest of the plan survive real life.' },
+      { h: 'Then the expensive debt',
+        p: 'High-interest debt grows faster than most savings do. Clearing it is often the best return available, and it frees money every month once it is gone.' },
+      { h: 'Then the long term — and do not skip the free money',
+        p: 'Retirement saving through work, especially where an employer matches what you put in, is worth starting early in the plan, because matching is money you lose by waiting. The accounts differ by country; the principle does not.' },
+      { h: 'Forty is not late for this',
+        p: 'Steady saving over twenty-five years, with typical long-term returns, can grow to far more than what you put in — returns vary and are never guaranteed, but time does a lot of the work. Starting now matters more than starting perfectly.' },
+    ],
+    faqs: [
+      { q: 'How much should I save each month?',
+        a: 'Whatever the month allows, consistently. A regular amount you keep up beats a big amount you stop after two months.' },
+      { q: 'Should I pay off debt or save first?',
+        a: 'A small cushion first, then expensive debt, then longer-term saving — while not giving up any employer match.' },
+      { q: 'Is it too late to buy a home?',
+        a: 'Not necessarily. It depends on where you live and your income. Get the month working first; a deposit is built from the same gap.' },
+    ],
+  },
+
+  {
+    slug: 'should-we-downsize-our-house',
+    question: 'Should we downsize our house to free up money?',
+    intro: 'More house than you need, and less money than you want',
+    updated: '2026-10-03',
+    answer:
+      'Downsizing works when the smaller home costs clearly less each month and the move releases money you have a plan for. Count every cost of selling and buying — agents, legal fees, taxes, moving — and compare the month in each home. Decide what the freed money is for before you sell, or it tends to drift away.',
+    body: [
+      { h: 'Compare the month, not just the price',
+        p: 'A smaller home can mean a smaller mortgage or rent, lower taxes, lower heating and upkeep. It can also mean a new area with different costs. Write out what has to go out each month in both and compare what is left.' },
+      { h: 'Selling and buying cost more than people expect',
+        p: 'Agent fees, legal fees, transfer or stamp taxes depending on where you live, moving and setting up. Add them up — they come off the money the move frees, and they can be large.' },
+      { h: 'Know what the money is for',
+        p: 'Clearing debt, building a retirement cushion, helping family, buying time to work less. Name it before you sell. Money released without a purpose is often spent within a few years.' },
+      { h: 'The things that are not money',
+        p: 'Room for family to visit, a garden, a neighbourhood you love. These matter and they belong in the decision alongside the numbers.' },
+      { h: 'Timing and tax',
+        p: 'Whether you buy before you sell, and how any gain on the sale is taxed where you live, both change the numbers. A short conversation with a professional is worth it on a decision this size.' },
+    ],
+    faqs: [
+      { q: 'Is it better to rent after selling?',
+        a: 'For some people, yes — it frees the most money and keeps options open. It also means rent that can rise. Compare both over several years.' },
+      { q: 'When is the best time to downsize?',
+        a: 'When the numbers work and you know what the freed money is for — not because of a guess about the market.' },
+      { q: 'Will I pay tax when I sell my home?',
+        a: 'It depends on your country and your situation. Many places treat a main home differently from other property. Check with a tax professional before you sell.' },
+    ],
+  },
 ]
 
 export const SITUATION_BY_SLUG = Object.fromEntries(SITUATIONS.map(s => [s.slug, s]))
