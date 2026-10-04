@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { ANSWERS, ANSWER_CATEGORIES, answerBySlug } from '../../content/answers'
 import { buildPageMeta, faqPageSchema, breadcrumbSchema, jsonLd, SITE_URL, SITE_NAME } from '../../lib/seo'
+import { bridgeToUnstuck, ELIV8_PAGES_TO_UNSTUCK } from '../../lib/bridges'
 
 /**
  * /answers and /answers/:slug — crawlable question pages.
@@ -161,6 +162,18 @@ function AnswerPage() {
             ))}
           </dl>
         </section>
+
+        {/* ⭐ Only where the real question is the owner's own life — bridges.js. */}
+        {ELIV8_PAGES_TO_UNSTUCK.has(a.slug) && (() => {
+          const b = bridgeToUnstuck(a.slug)
+          return (
+            <section className="mt-12 rounded-xl border border-gray-200 bg-gray-50 px-5 py-5">
+              <h2 className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{b.kicker}</h2>
+              <p className="mt-2 text-[16px] leading-[1.7] text-gray-700">{b.text}</p>
+              <a href={b.href} className="mt-3 inline-block text-[15.5px] font-semibold text-brand-700 hover:underline underline-offset-2">{b.label} →</a>
+            </section>
+          )
+        })()}
 
         {related.length > 0 && (
           <section className="mt-12 pt-8 border-t border-gray-100">

@@ -4,6 +4,8 @@ import WayoutNotFound from './NotFound'
 import WayoutShell from './WayoutShell'
 import { SITUATIONS, SITUATION_BY_SLUG } from '../../content/unstuckSituations'
 import { WAYOUT_BASE, WAYOUT_NAME_TITLE, WAYOUT_SITE_URL } from '../../lib/wayout/brand'
+import { bridgeToEliv8, UNSTUCK_PAGES_TO_ELIV8 } from '../../lib/bridges'
+import Bridge from './Bridge'
 
 /**
  * ⭐⭐ THE ONLY PAGES IN THIS PRODUCT BUILT TO BE FOUND. Everything else is
@@ -140,6 +142,9 @@ export function SituationPage() {
         </Link>
         <p className="wayout__offerfine">Free. No card, and no account to begin.</p>
       </div>
+
+      {/* ⭐ Only on pages where a business is already running — see bridges.js. */}
+      {UNSTUCK_PAGES_TO_ELIV8.has(s.slug) && <Bridge {...bridgeToEliv8(s.slug)} />}
 
       <p className="wayout__disclaimer wayout__r">
         This is general information about how these decisions work, not financial,

@@ -19,6 +19,8 @@ import { tick, buzz } from '../../lib/wayout/feedback'
 import { bookOnShelf } from '../../content/wayoutReading'
 import { Marked } from '../../lib/wayout/marked.jsx'
 import CrisisHelp from './CrisisHelp'
+import { bridgeToEliv8 } from '../../lib/bridges'
+import Bridge from './Bridge'
 
 /**
  * The way out — S7, the reveal.
@@ -995,6 +997,22 @@ export function Map({
   const ticked = done ?? localDone
 
   /**
+   * ⭐ THE BRIDGE TO ELIV8 OS — only when they are READY for it (bridges.js).
+   * They told us they work for themselves, they have already acted on this plan
+   * (a move ticked), it is their live plan, and nothing in the thread is a
+   * crisis. Closed once, gone for good.
+   */
+  const [bridgeShut, setBridgeShut] = useState(() => {
+    try { return localStorage.getItem('wayout:bridge-eliv8') === 'closed' } catch { return false }
+  })
+  const showBridge = !bridgeShut && !past && answers?.workType === 'self'
+    && ticked.size > 0 && !thread.some(e => e?.crisis)
+  function shutBridge() {
+    setBridgeShut(true)
+    try { localStorage.setItem('wayout:bridge-eliv8', 'closed') } catch { /* private mode */ }
+  }
+
+  /**
    * ⭐⭐ THE EVENT, NOT THE STATE. Rendering the card is not the same as marking
    * the moment: a card that is simply present when the page loads is a fact,
    * and a card that ARRIVES when the third box is ticked is a moment. This
@@ -1680,6 +1698,9 @@ export function Map({
         )}
         <PlaybookCta onOpen={onOpenPlaybook} hasOpened={hasOpened} />
       </div>
+
+      {/* ⭐ After our own offer, never before it: an addition, not a switch. */}
+      {showBridge && <Bridge {...bridgeToEliv8('plan')} onClose={shutBridge} />}
 
       {/* ⭐⭐ THE WORTH ASK IS OFF. Daniel: "dont get why you would ask this. im
           going to trial this with a handfull of people then just put it to

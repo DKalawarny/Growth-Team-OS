@@ -1024,6 +1024,109 @@ export const SITUATIONS = [
         a: 'It depends on your country and your situation. Many places treat a main home differently from other property. Check with a tax professional before you sell.' },
     ],
   },
+  // ── Starting out, and owners stuck as people (3 Oct 2026) ──────────────────
+  // ⭐ Someone deciding whether to start is a PERSON deciding — Unstuck's job.
+  // Once a business is running, the pages carry a `bridge` to Eliv8 OS for the
+  // business side (see BRIDGE_TO_ELIV8). Not on the "should I quit" page: they
+  // are not ready for it there, and pointing at it would be a push.
+  {
+    slug: 'should-i-quit-my-job-to-start-a-business',
+    question: 'Should I quit my job to start a business?',
+    intro: 'An idea that will not go away, and a paycheque that pays the bills',
+    updated: '2026-10-03',
+    answer:
+      'Usually not first. Start it alongside the job until it has paying customers, and know how many months your savings cover what has to go out before you leave. The question is rarely whether the idea is good — it is whether you can carry the months before it pays, and that is a number you can work out.',
+    body: [
+      { h: 'Runway decides the timing',
+        p: 'Take what has to go out each month and divide what you have saved by it. That is how many months you can go without income. New businesses usually take longer to pay than planned, so the honest runway is the one with a margin built in.' },
+      { h: 'Paying customers are the real test',
+        p: 'Interest, compliments and sign-ups are encouraging; payment is proof. A handful of people paying a real price, while you still have the job, tells you more than any plan.' },
+      { h: 'Leave when the business pulls you, not when the job pushes you',
+        p: 'A job you hate makes quitting feel urgent. A business with more demand than your evenings can handle makes it necessary. The second is the safer reason to go.' },
+      { h: 'Talk to the people it affects',
+        p: 'A partner, a household, anyone who depends on the income. Agree on the runway and the point at which you would go back to a job. That agreement makes the risk shared rather than hidden.' },
+      { h: 'Check your current job’s rules',
+        p: 'Some employment agreements limit side work or competing businesses. Read yours before you start, so the business does not begin with a problem.' },
+    ],
+    faqs: [
+      { q: 'How much should I save before quitting?', a: 'Enough to cover what has to go out for at least as long as you expect the business to take to pay — and then some, because it usually takes longer.' },
+      { q: 'What if I never feel ready?', a: 'Ready is a number, not a feeling: paying customers and a runway you have counted. When both are there, the decision gets much easier.' },
+      { q: 'Can I go part-time instead of quitting?', a: 'Often a good middle step. Fewer hours at the job buys time for the business without giving up all the income.' },
+    ],
+  },
+  {
+    slug: 'how-to-start-a-business-while-working-full-time',
+    question: 'How do I start a business while working full-time?',
+    intro: 'Evenings and weekends, and a job that still needs you',
+    updated: '2026-10-03',
+    answer:
+      'Pick the smallest version that can earn money, give it fixed hours each week, and protect the job while you build it. Most businesses started this way grow slowly at first, and that is fine — the job is what lets you take your time and get the price right.',
+    body: [
+      { h: 'Start with the smallest paying version',
+        p: 'One service, one product, one kind of customer. The aim of the first months is to find out whether people will pay, not to build everything. A small thing that earns teaches more than a big thing that is not finished.' },
+      { h: 'Give it fixed hours',
+        p: 'A few set evenings or a weekend morning, every week. Work squeezed into whatever time is left disappears. Fixed hours also protect the rest of your life from it.' },
+      { h: 'Price it as if it were your only income',
+        p: 'A job in the background makes it tempting to charge too little. Prices set low at the start are hard to raise later, and they make the business look viable when it is not.' },
+      { h: 'Keep the money separate from day one',
+        p: 'A separate account, records of what comes in and goes out, and money set aside for tax on what it earns. It makes the business easy to understand and saves a painful year-end.' },
+      { h: 'Protect the job',
+        p: 'Do not use your employer’s time, tools or customers, and check your agreement for limits on side work. The job is what makes this possible.' },
+    ],
+    faqs: [
+      { q: 'How many hours a week does it take?', a: 'It depends on the business, but a steady few hours each week beats occasional long bursts. Consistency is what moves it forward.' },
+      { q: 'Do I need to register the business?', a: 'Often, depending on where you live and what you sell — and you may need to report the income for tax. Check your local rules early.' },
+      { q: 'When will I know it is working?', a: 'When people pay a fair price without being chased, and come back or send others. That is the sign it can grow.' },
+    ],
+  },
+  {
+    slug: 'my-business-is-taking-over-my-life',
+    question: 'My business is taking over my life. What do I do?',
+    intro: 'It pays the bills, and it has everything else too',
+    updated: '2026-10-03',
+    answer:
+      'Decide what you want the business to give your life — a certain income, certain hours, time with the people you love — and then judge every change against that. A business with no limit set will take all the time it is given. Getting your life back usually starts with one fixed boundary and one thing you stop doing yourself.',
+    body: [
+      { h: 'Name what the business is for',
+        p: 'Not the revenue target — what it is meant to make possible. Evenings home, a certain income, freedom to choose your work. Without that, more work always looks like the right answer.' },
+      { h: 'Set one boundary and keep it',
+        p: 'A day off, a time the phone goes down, a kind of job you no longer take. One kept boundary changes more than five intentions. Customers usually adjust faster than owners expect.' },
+      { h: 'Your own money matters too',
+        p: 'If the business takes everything and pays you little, look at your personal side: what your household needs each month and what you are actually taking home. That number tells you how much room you have to change things.' },
+      { h: 'Stop doing one thing yourself',
+        p: 'The task that eats the most hours and does not need you — scheduling, invoicing, a kind of job someone else could run. Handing off one thing is where the time comes back from.' },
+    ],
+    faqs: [
+      { q: 'Should I close the business?', a: 'Sometimes that is the right answer, but often the business can change shape first: fewer hours, a narrower offer, higher prices. Try those before deciding.' },
+      { q: 'How do I take time off when everything depends on me?', a: 'Start small — one protected day — and decide in advance who handles what. Most things that feel like emergencies can wait a day.' },
+      { q: 'Is it normal to feel this way?', a: 'Very. Many owners reach this point. Feeling it is a sign the business has grown past the way it is run, not that you have failed.' },
+    ],
+  },
+  {
+    slug: 'should-i-close-my-business',
+    question: 'Should I close my business?',
+    intro: 'Years of work, and you are not sure it is worth it any more',
+    updated: '2026-10-03',
+    answer:
+      'Look at three things honestly: whether it pays you a fair income for the hours, whether it can with changes you are willing to make, and what you want your life to look like next. Closing is a real option and not a failure. Decide it on numbers and on what you want, not in the worst week of the year.',
+    body: [
+      { h: 'What does it actually pay you?',
+        p: 'Take what you draw from the business in a year and divide it by the hours you work. Compare that with what you could earn in a job. Many owners have never done this sum, and it changes the conversation either way.' },
+      { h: 'Can it change, and do you want to change it?',
+        p: 'Higher prices, a narrower offer, fewer hours, a key hire. Sometimes a business is one or two changes from working. Sometimes the changes are possible but you do not want to make them — that is a valid answer too.' },
+      { h: 'Closing well protects you',
+        p: 'Finishing commitments, paying what is owed, dealing with leases, staff and the government properly. How a business is closed affects your finances and reputation afterwards. An accountant and sometimes a lawyer are worth involving.' },
+      { h: 'Selling or handing over instead',
+        p: 'A business with steady customers may have value to someone else: a competitor, an employee, a buyer. That is worth checking before simply closing.' },
+      { h: 'Plan the next income first',
+        p: 'Know what comes after — a job, a smaller version, something new — and how many months you can cover in between. Closing with the next step lined up is far less stressful.' },
+    ],
+    faqs: [
+      { q: 'Is closing my business a failure?', a: 'No. Choosing to stop something that no longer serves your life is a decision, and often a good one.' },
+      { q: 'What happens to business debt if I close?', a: 'It depends on how the business is set up and where you live — some debts may follow you personally. Get professional advice before closing.' },
+      { q: 'Should I try one more year?', a: 'If you can name what would be different this year and you can afford the runway, maybe. If nothing would change, another year usually looks like the last one.' },
+    ],
+  },
 ]
 
 export const SITUATION_BY_SLUG = Object.fromEntries(SITUATIONS.map(s => [s.slug, s]))

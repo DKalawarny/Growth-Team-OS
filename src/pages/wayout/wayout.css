@@ -3270,3 +3270,10 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
   a { color: inherit !important; text-decoration: none !important; }
   * { color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
+
+/* Bridge to Eliv8 OS — quieter than the page's own offer, on purpose. */
+.wayout__bridge { position: relative; margin: 28px 0 0; padding: 18px 20px; border: 1px dashed var(--line, #d9d3c4); border-radius: 14px; background: transparent; }
+.wayout__bridge p { margin: 6px 0 10px; font-size: 15px; line-height: 1.6; color: var(--soft); }
+.wayout__bridge a { font-size: 15px; font-weight: 600; color: inherit; text-underline-offset: 3px; }
+.wayout__bridgex { position: absolute; top: 4px; right: 4px; min-width: 44px; min-height: 44px; border: 0; background: none; font-size: 20px; color: var(--soft); cursor: pointer; }
+@media print { .wayout__bridge { display: none !important; } }
