@@ -89,6 +89,15 @@ function useAuthState() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, nextSession) => {
         setSession(nextSession)
+        // 🔴 Signing in arrives here with the SIGNED-OUT state still in place
+        // (profile null, company null), and null reads as "loaded, no profile"
+        // — so the page the login form navigates to saw a session with no
+        // profile and RequireAuth sent the person into onboarding before the
+        // fetch below finished. Back to "not known yet" until it does.
+        if (nextSession) {
+          setProfile(prev => (prev && prev.id === nextSession.user.id ? prev : undefined))
+          setCompany(prev => (prev === null ? undefined : prev))
+        }
         if (nextSession) fetchProfileAndCompany(nextSession.user.id)
         else { setProfile(null); setCompany(null); setAdvisorClients([]); setActiveClientId(null) }
       }
@@ -153,8 +162,13 @@ function useAuthState() {
     // someone who HAS finished back through setup is far worse than missing a
     // prompt — and "not a clear negative" now covers a null/absent payload,
     // which is exactly the case the count version got wrong.
+    // ⭐ A teammate never onboards — the owner did that for the business. And
+    // since 075 an Operations role cannot read business_profiles at all, so
+    // the check below would read "no business" and send them into the owner's
+    // setup questions.
     setOnboarded(
-      bpRes.error || !Array.isArray(bpRes.data) ? true : bpRes.data.length > 0,
+      profileRow.role !== 'owner' ? true
+        : bpRes.error || !Array.isArray(bpRes.data) ? true : bpRes.data.length > 0,
     )
   }
 

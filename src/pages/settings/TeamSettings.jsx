@@ -1,6 +1,7 @@
 import { useAuth } from '../../hooks/useAuth'
 import TeamSection          from '../../components/settings/TeamSection'
 import AdvisorAccessSection from '../../components/settings/AdvisorAccessSection'
+import PeopleSection        from '../../components/settings/PeopleSection'
 
 /**
  * TeamSettings — everyone with access to this workspace.
@@ -25,6 +26,8 @@ export default function TeamSettings() {
 
   return (
     <div className="space-y-4">
+      {/* ⭐ People with an Eliv8 login and a role (migration 075). */}
+      <PeopleSection companyId={profile?.company_id} userId={profile?.id} />
       <TeamSection
         companyId={profile?.company_id}
         companyName={companyName}

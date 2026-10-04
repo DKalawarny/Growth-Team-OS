@@ -125,6 +125,7 @@ const Newsletter         = lazy(() => import('./pages/tools/Newsletter'))
 // the route guards prevent.
 import RequireActiveSubscription from './components/billing/RequireActiveSubscription'
 import ErrorBoundary from './components/ErrorBoundary'
+import { canVisit, homeFor } from './lib/access'
 
 function LoadingScreen() {
   return (
@@ -167,6 +168,23 @@ function RequireAuth({ children }) {
   // them. `onboarded === false` is deliberate: undefined means not yet
   // determined, and must not redirect.
   if (onboarded === false) return <Navigate to="/onboarding" replace />
+  return children
+}
+
+/**
+ * ⭐ A page this person's role does not cover sends them to their own home
+ * rather than an empty screen. 🔴 COSMETIC — the database (migration 075) is
+ * what actually stops them; this only keeps the app honest about it.
+ * Advisors viewing a client keep the client's view (their reads are already
+ * limited to what the owner shared).
+ */
+function RequireArea({ children }) {
+  const { role, loading, activeClientId } = useAuth()
+  const location = useLocation()
+  if (loading) return <LoadingScreen />
+  if (!activeClientId && role && !canVisit(role, location.pathname)) {
+    return <Navigate to={homeFor(role)} replace />
+  }
   return children
 }
 
@@ -432,7 +450,7 @@ export default function App() {
             Non-tool routes (dashboard, settings, etc.) are always reachable
             so a user can manage billing + see their content even with no
             active sub. Tool routes are gated below. */}
-        <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+        <Route element={<RequireAuth><RequireArea><AppLayout /></RequireArea></RequireAuth>}>
           <Route path="/dashboard"    element={<Dashboard />} />
           <Route path="/roadmap"      element={<Roadmap />} />
           <Route path="/advisor"      element={<Advisor />} />

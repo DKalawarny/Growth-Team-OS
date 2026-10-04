@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { canVisit } from '../../lib/access'
 import { fetchIntegration } from '../../lib/quickbooks'
 
 /**
@@ -73,7 +74,11 @@ const GROUPS = [
 ]
 
 export default function ToolsIndex() {
-  const { profile } = useAuth()
+  const { profile, role } = useAuth()
+  // ⭐ Only what this role can open (lib/access.js); empty groups disappear.
+  const groups = GROUPS
+    .map(g => ({ ...g, items: g.items.filter(it => canVisit(role, it.to)) }))
+    .filter(g => g.items.length > 0)
   const [qbo, setQbo] = useState(null)   // null = unknown, then true / false
 
   useEffect(() => {
@@ -126,7 +131,7 @@ export default function ToolsIndex() {
         )}
 
         <div className="flex flex-col gap-10">
-          {GROUPS.map(group => (
+          {groups.map(group => (
             <section key={group.title}>
               <h2 className="text-[11px] font-semibold uppercase tracking-widest text-ink-400 mb-3">
                 {group.title}

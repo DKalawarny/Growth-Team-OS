@@ -1,4 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { canVisit } from '../../lib/access'
+import { useAuth } from '../../hooks/useAuth'
 
 /**
  * SettingsLayout — left-sidebar nav + content panel for the /settings tree.
@@ -29,6 +31,10 @@ const SECTIONS = [
 ]
 
 export default function SettingsLayout() {
+  // ⭐ Only the sections this role can open (lib/access.js). Runs-the-business
+  // sees Business and Integrations; billing, team and deletion are the owner's.
+  const { role } = useAuth()
+  const visible = SECTIONS.filter(sec => canVisit(role, `/settings/${sec.to}`))
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <header className="mb-6 lg:mb-8">
@@ -46,7 +52,7 @@ export default function SettingsLayout() {
             className="lg:hidden flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1"
             aria-label="Settings sections"
           >
-            {SECTIONS.map(s => (
+            {visible.map(s => (
               <NavLink
                 key={s.to}
                 to={s.to}
@@ -66,7 +72,7 @@ export default function SettingsLayout() {
           {/* Desktop: vertical sub-nav */}
           <nav className="hidden lg:block sticky top-6" aria-label="Settings sections">
             <ul className="space-y-0.5">
-              {SECTIONS.map(s => (
+              {visible.map(s => (
                 <li key={s.to}>
                   <NavLink
                     to={s.to}

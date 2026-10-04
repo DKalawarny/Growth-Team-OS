@@ -82,7 +82,8 @@ export default function AdvisorAccessSection({ companyId, userId }) {
     })
   }
 
-  const pendingInvites = invites.filter(i => i.status === 'pending')
+  // ⚠️ Teammate invites live in the same table; they belong to the People card.
+  const pendingInvites = invites.filter(i => i.status === 'pending' && (i.role ?? 'advisor') === 'advisor')
 
   return (
     <section className="mt-10 bg-white border border-ink-100 rounded-xl overflow-hidden shadow-sm">

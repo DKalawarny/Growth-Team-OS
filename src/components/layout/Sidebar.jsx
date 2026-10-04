@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import Wordmark from '../brand/Wordmark'
+import { can, canVisit } from '../../lib/access'
 
 // ── Morning opener indicator ──────────────────────────────────────────────────
 // Returns true if the advisor's morning opener hasn't been triggered today,
@@ -166,12 +167,21 @@ const mainNav = [
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
   { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },
+  // ⭐ Teammates only: for the owner the board lives inside Roadmap, but for
+  // Office and Operations it is the main thing they came in for.
+  { to: '/board',                  label: 'Work board', icon: 'roadmap', teamOnly: true },
 ]
+
+/** The items this role can actually open — see lib/access.js. */
+function navFor(role, items) {
+  const lead = can(role, 'lead')
+  return items.filter(i => (i.teamOnly ? !lead : true) && canVisit(role, i.to))
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Sidebar() {
-  const { profile } = useAuth()
+  const { profile, role } = useAuth()
   const navigate    = useNavigate()
   const [hasOpener, setHasOpener] = useState(false)
 
@@ -210,7 +220,7 @@ export default function Sidebar() {
 
         {/* Main nav */}
         <div className="space-y-0.5">
-          {mainNav.map(({ to, label, sublabel, icon }) => (
+          {navFor(role, mainNav).map(({ to, label, sublabel, icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -306,7 +316,7 @@ export default function Sidebar() {
           )}
         </NavLink>
 
-        <NavLink
+        {can(role, 'lead') && <NavLink
           to="/settings"
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
@@ -325,7 +335,7 @@ export default function Sidebar() {
               {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />}
             </>
           )}
-        </NavLink>
+        </NavLink>}
       </div>
 
       {/* User section + sign out */}

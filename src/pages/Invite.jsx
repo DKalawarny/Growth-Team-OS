@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getInviteByToken, acceptInvite } from '../lib/invites'
+import { ROLE_LABEL, ROLE_DESCRIPTION, homeFor } from '../lib/access'
 import Wordmark from '../components/brand/Wordmark'
 
 /**
@@ -104,12 +105,20 @@ export default function Invite() {
     setAccepting(true); setAcceptError(null)
     try {
       await acceptInvite(token)
-      navigate('/advisor-portal', { replace: true })
+      // ⭐ A teammate now belongs to the business; a full load makes the app
+      // re-read who they are rather than keep the account it signed in as.
+      if (teammate) window.location.assign(homeFor(invite.role))
+      else navigate('/advisor-portal', { replace: true })
     } catch (err) {
       setAcceptError(err.message ?? 'Something went wrong.')
       setAccepting(false)
     }
   }
+
+  // ⭐ A teammate joins the business with a role (migration 075); an advisor
+  // only looks in. Same link, different promise — so a different page.
+  const teammate = !!invite?.role && invite.role !== 'advisor'
+  const companyName = company?.name ?? invite?.company_name
 
   // ── Render states ──
 
@@ -141,7 +150,7 @@ export default function Invite() {
 
   if (inviteState === 'accepted' && session) {
     // Already accepted — just navigate them to the portal
-    navigate('/advisor', { replace: true })
+    navigate(teammate ? homeFor(invite.role) : '/advisor', { replace: true })
     return null
   }
 
@@ -161,17 +170,22 @@ export default function Invite() {
             <div className="relative">
               <div className="text-3xl mb-2">🤝</div>
               <h1 className="text-lg font-bold text-white leading-tight">
-                You've been invited as an advisor
+                {teammate ? `You've been added to the team — ${ROLE_LABEL[invite.role]}` : "You've been invited as an advisor"}
               </h1>
-              {company?.name && (
+              {companyName && (
                 <p className="text-sm text-brand-300 mt-1">
-                  to <span className="font-semibold">{company.name}</span>'s Eliv8 OS workspace
+                  {teammate ? 'at ' : 'to '}<span className="font-semibold">{companyName}</span>{teammate ? ' on Eliv8 OS' : "'s Eliv8 OS workspace"}
                 </p>
               )}
             </div>
           </div>
 
           <div className="px-6 py-5">
+            {teammate ? (
+              <p className="text-sm text-ink-500 leading-relaxed mb-5">
+                What you will be able to see: {ROLE_DESCRIPTION[invite.role]} Sign in or create an account with <b>{invite.email}</b> to join.
+              </p>
+            ) : (<>
             <p className="text-sm text-ink-500 leading-relaxed mb-5">
               As an advisor you'll have read-only access to their roadmap, check-ins, and business intelligence — everything you need to give great advice without being able to change anything.
             </p>
@@ -190,6 +204,7 @@ export default function Invite() {
                 </div>
               ))}
             </div>
+            </>)}
 
             {/* Accept button — only if already signed in */}
             {session ? (

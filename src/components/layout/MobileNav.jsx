@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import Wordmark from '../brand/Wordmark'
+import { can, canVisit, ROLE_LABEL } from '../../lib/access'
 
 /**
  * MobileNav — shown only on small screens (lg:hidden).
@@ -85,7 +86,41 @@ const MAIN_NAV = [
   { to: '/tools/cfo',            label: 'Finances'   },
   { to: '/documents',            label: 'Documents'  },
   { to: '/tools/exit-readiness', label: 'Succession' },
+  { to: '/logs',                 label: 'Daily logs', teamOnly: true },
+  { to: '/board',                label: 'Work board', teamOnly: true },
 ]
+
+// ⭐ The tabs a teammate gets where the owner's are not theirs (lib/access.js).
+const TEAM_TABS = [
+  {
+    to: '/board',
+    label: 'Work board',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>
+      </svg>
+    ),
+  },
+  {
+    to: '/logs',
+    label: 'Daily logs',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/>
+      </svg>
+    ),
+  },
+]
+
+function itemsFor(role, items) {
+  const lead = can(role, 'lead')
+  return items.filter(i => (i.teamOnly ? !lead : true) && canVisit(role, i.to))
+}
+
+function tabsFor(role) {
+  if (can(role, 'lead')) return TABS
+  return [...TEAM_TABS, ...TABS.filter(t => canVisit(role, t.to))]
+}
 
 function advisorHasOpener(userId) {
   if (!userId) return false
@@ -99,7 +134,7 @@ function advisorHasOpener(userId) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function MobileNav() {
-  const { profile } = useAuth()
+  const { profile, role } = useAuth()
   const navigate    = useNavigate()
   const location    = useLocation()
   const [open, setOpen]         = useState(false)
@@ -136,7 +171,7 @@ export default function MobileNav() {
 
       {/* ── Bottom tab bar ─────────────────────────────────────────────────── */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#EDF1F1] border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {TABS.map(tab => {
+        {tabsFor(role).map(tab => {
           const isActive = location.pathname === tab.to || (tab.to !== '/' && location.pathname.startsWith(tab.to))
           const showDot  = tab.to === '/advisor' && hasOpener && !isActive
           return (
@@ -202,7 +237,7 @@ export default function MobileNav() {
 
           {/* Main nav */}
           <div className="space-y-0.5">
-            {MAIN_NAV.map(({ to, label }) => (
+            {itemsFor(role, MAIN_NAV).map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -240,7 +275,7 @@ export default function MobileNav() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-ink-200 truncate">{profile.name}</p>
-                <p className="text-[10px] text-ink-600">Owner</p>
+                <p className="text-[10px] text-ink-600">{ROLE_LABEL[role] ?? 'Owner'}</p>
               </div>
             </div>
           )}
@@ -254,7 +289,7 @@ export default function MobileNav() {
           >
             Help
           </NavLink>
-          <NavLink
+          {can(role, 'lead') && <NavLink
             to="/settings"
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all mb-1 ${
@@ -263,7 +298,7 @@ export default function MobileNav() {
             }
           >
             Settings
-          </NavLink>
+          </NavLink>}
           <button
             onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-ink-500 hover:bg-white/5 hover:text-ink-300 transition-all"

@@ -625,6 +625,22 @@ Deno.serve(async (req) => {
     const asked    = body.model ?? 'claude-sonnet-4-6'
     const model    = body.promptKey?.startsWith('WAYOUT_') && !WAYOUT_MODELS.has(asked) ? 'claude-sonnet-4-6' : asked
 
+    /**
+     * ⭐ WHO MAY RUN WHAT (migration 075, src/lib/access.js). The database
+     * already stops a teammate READING what their role does not cover; this
+     * stops them spending the company's allowance on it — and keeps Solomon
+     * the owner's and whoever runs it, which is the whole design.
+     * Unknown tool ids are lead-only; only the listed ones open wider.
+     */
+    const OFFICE_TOOLS = new Set(['cash-flow', 'cfo-dashboard', 'library-analysis'])
+    const ALL_TOOLS    = new Set(['safety-vault', 'wayout', 'untagged'])
+    const role         = user.role ?? 'member'
+    const isLead       = role === 'owner' || role === 'admin'
+    const isOffice     = isLead || role === 'cfo'
+    if (!(isLead || ALL_TOOLS.has(toolId) || (isOffice && OFFICE_TOOLS.has(toolId)))) {
+      return json({ error: 'Your role on this team does not include this. Ask the owner if you need it.', code: 'role_forbidden' }, 403)
+    }
+
     // Authoritative cap check. The browser does its own optimistic check for
     // fast UX; this one is the real thing, and it runs on EVERY request.
     //

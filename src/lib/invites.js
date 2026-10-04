@@ -19,13 +19,16 @@ import { supabase } from './supabase'
  * Create a new invite for the current company.
  * Returns the created invite row (including the token).
  */
-export async function createInvite({ companyId, userId, email = '' }) {
+export async function createInvite({ companyId, userId, email = '', role = 'advisor' }) {
   const { data, error } = await supabase
     .from('company_invites')
     .insert({
       company_id: companyId,
       invited_by: userId,
       email:      email.trim() || null,
+      // 'advisor' = read-only outsider; 'admin' | 'cfo' | 'manager' = a
+      // teammate who joins the business with that role (migration 075).
+      role,
     })
     .select('*')
     .single()
@@ -156,4 +159,31 @@ export function buildInviteUrl(token) {
     ? window.location.origin
     : 'https://eliv8os.com'
   return `${base}/invite/${token}`
+}
+
+// ---------------------------------------------------------------------------
+// Team — people inside the business, with a role (migration 075)
+// ---------------------------------------------------------------------------
+
+/** Everyone whose account belongs to this business, owner first. */
+export async function listTeam(companyId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, name, email, role, created_at')
+    .eq('company_id', companyId)
+    .order('created_at', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []).sort((a, b) => (a.role === 'owner' ? -1 : b.role === 'owner' ? 1 : 0))
+}
+
+/** Owner only — enforced in the database, not here. */
+export async function setMemberRole(userId, role) {
+  const { error } = await supabase.rpc('set_member_role', { p_user: userId, p_role: role })
+  if (error) throw new Error(error.message)
+}
+
+/** Owner only. Their account survives with nothing of this business in it. */
+export async function removeMember(userId) {
+  const { error } = await supabase.rpc('remove_member', { p_user: userId })
+  if (error) throw new Error(error.message)
 }
