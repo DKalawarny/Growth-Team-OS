@@ -72,6 +72,7 @@ export default function Enter() {
   const [params] = useSearchParams()
   // Where they were headed before they were asked to sign in.
   const next = params.get('next') || WAYOUT_INTAKE
+  }
 
   // 🔴 DEFAULTS TO CREATING AN ACCOUNT, not signing in. The door used to open on
   // "Welcome back — your answers and your plan are where you left them" for
@@ -124,6 +125,27 @@ export default function Enter() {
   const [known, setKnown] = useState(false)
 
   /** One place, so nothing can be left showing from a previous attempt. */
+  const [linkSent, setLinkSent] = useState(false)
+
+  async function sendLink() {
+    clearMessages()
+    if (!email.trim()) { setError('Type your email above first.'); return }
+    setBusy(true)
+    try {
+      const { error: e } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: `${window.location.origin}${next}`, shouldCreateUser: false },
+      })
+      // ⚠️ Same answer whether or not the email has an account — telling a
+      // stranger which emails are registered is a leak.
+      if (e && !/signups not allowed|user not found/i.test(e.message)) throw e
+      setLinkSent(true)
+    } catch (err) {
+      setError(err.message || 'That did not go through.')
+    } finally {
+      setBusy(false)
+    }
+
   function clearMessages() {
     setError('')
     setNotice('')
@@ -347,12 +369,23 @@ export default function Enter() {
             </button>
           </form>
 
-          {mode === 'in' && !resetSent && (
+          {/* ⭐ NO PASSWORD NEEDED, IF THEY WOULD RATHER. Daniel, 3 Oct: passwords
+              stay — this is an option beside them. The link proves the email is
+              theirs and signs them straight in; it never creates an account. */}
+          {mode === 'in' && !resetSent && !linkSent && (
             <p className="wayout__hint">
-              Can’t remember it?{' '}
+              <button type="button" className="wayout__linkbtn" onClick={sendLink} disabled={busy}>
+                Email me a sign-in link instead
+              </button>
+              {' · '}Can’t remember it?{' '}
               <button type="button" className="wayout__linkbtn" onClick={sendReset} disabled={busy}>
                 Email me a reset link
               </button>
+            </p>
+          )}
+          {linkSent && (
+            <p className="wayout__notice">
+              Check your email — the link signs you straight in. It works once, for an hour.
             </p>
           )}
 
