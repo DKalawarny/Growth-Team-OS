@@ -709,6 +709,12 @@ Deno.serve(async (req) => {
     if (!upstream.ok) {
       const text = await upstream.text().catch(() => '')
       console.error('[claude] upstream error', upstream.status, text.slice(0, 500))
+      // ⭐ For ops-check: the status and the provider's own short message —
+      // never the request, so nobody's words are kept. Fire and forget.
+      admin.from('ops_events').insert({
+        kind: 'ai_upstream_error',
+        detail: `${upstream.status} ${text.replace(/\s+/g, ' ').slice(0, 240)}`,
+      }).then(() => {}, () => {})
       return json(
         // 🔴 The raw provider error used to reach the person verbatim
         // ("Anthropic error 529: {json}"). It is logged above; they get a
