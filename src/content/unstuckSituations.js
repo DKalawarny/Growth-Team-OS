@@ -585,6 +585,156 @@ export const SITUATIONS = [
         a: 'With the floor, on one page, together, before any conversation about whose spending is the problem. It takes an evening and it usually ends the blame part, because the number doesn’t belong to either of you.' },
     ],
   },
+
+  // ── United States (3 Oct 2026) ─────────────────────────────────────────────
+  // ⚠️ US-specific facts here are federal and long-standing; anything that varies
+  // by state is said to vary by state. No amounts that change year to year.
+  {
+    slug: 'lost-my-job-what-happens-to-health-insurance',
+    question: 'I lost my job. What happens to my health insurance?',
+    intro: 'In the US, where coverage usually comes with the job',
+    updated: '2026-10-03',
+    answer:
+      'You have three routes and a deadline. You can keep your employer’s plan through COBRA, usually at the full cost; buy a plan on the Health Insurance Marketplace, where losing job-based coverage opens a special enrollment window; or get Medicaid if your income now qualifies. Compare all three this week — the cheapest is often not the one you are offered first.',
+    body: [
+      { h: 'COBRA keeps the same plan — at the full price',
+        p: 'COBRA lets you stay on your employer’s health plan, usually for up to 18 months, with the same doctors and the same deductible you have already been paying toward. The catch is cost: you pay the whole premium your employer used to share, plus a small fee. You generally have 60 days to decide, and if you elect it, coverage reaches back to the day the old coverage ended — which makes it a safety net while you compare.' },
+      { h: 'The Marketplace is often far cheaper when income drops',
+        p: 'Losing job-based coverage is a qualifying event, so you can buy a plan on HealthCare.gov or your state’s marketplace outside the usual enrollment season — generally within 60 days of losing coverage. Help with the premium is based on what you expect to earn for the year, so if your income falls, the help rises. Many people pay a fraction of the COBRA price for a comparable plan.' },
+      { h: 'Medicaid, if your income now qualifies',
+        p: 'Medicaid is free or very low-cost coverage based on income, and the limits depend on your state. You can apply at any time of year, not just in an enrollment window. If your household income has dropped sharply, check it before paying for anything else.' },
+      { h: 'Do not let it lapse without deciding',
+        p: 'The real risk is a gap — weeks with no coverage because the decision got put off. Use the COBRA window as your backstop, price a Marketplace plan and check Medicaid in the same week, then choose. Write down the deadline on your COBRA notice; it is the date everything else hangs on.' },
+      { h: 'Ask what else ends with the job',
+        p: 'Dental, vision, life insurance and any health savings account behave differently. A health savings account is yours to keep; a flexible spending account often is not, so spend what is in it before the last day if you can.' },
+    ],
+    faqs: [
+      { q: 'Is COBRA worth it?',
+        a: 'It can be if you are mid-treatment, have met your deductible this year, or will start a new job with coverage soon. Otherwise a Marketplace plan is often much cheaper. The retroactive election means you can hold COBRA as a backup while you compare.' },
+      { q: 'How long do I have to sign up on the Marketplace?',
+        a: 'Generally 60 days from losing your job-based coverage. Check the date on HealthCare.gov or your state’s marketplace now rather than near the end.' },
+      { q: 'Can I get help paying for a Marketplace plan?',
+        a: 'Yes — it is based on your expected income for the year. A lower income usually means more help, which is why the price after a layoff can be much lower than people expect.' },
+      { q: 'What if I start a new job soon?',
+        a: 'Ask the new employer when its coverage starts. If there is a short gap, COBRA’s retroactive window can cover it without paying for months you never use.' },
+    ],
+  },
+
+  {
+    slug: 'should-i-cash-out-my-401k-after-losing-my-job',
+    question: 'Should I cash out my 401(k) after losing my job?',
+    intro: 'In the US, when the retirement money looks like the only cushion',
+    updated: '2026-10-03',
+    answer:
+      'Usually not first. Cashing out before 59½ is generally taxed as income and usually carries an extra 10% tax, so a large part of it never reaches you. Work out your runway, use unemployment and savings, and treat the 401(k) as a last resort — rolling it into an IRA keeps it growing until you decide.',
+    body: [
+      { h: 'What cashing out actually costs',
+        p: 'A withdrawal before age 59½ is generally added to your income for the year and taxed, and usually has an additional 10% tax on top. When you cash out directly, the plan usually holds back part of it for tax before you see anything. Between the two, a meaningful share of the balance never reaches you — and the money stops growing for the years you will need it most.' },
+      { h: 'The exception people miss: leaving work at 55 or older',
+        p: 'If you leave your employer in or after the year you turn 55, withdrawals from that employer’s 401(k) are generally free of the extra 10% tax (they are still taxed as income). It applies to that plan, not to money you have moved into an IRA — so check before you roll anything over.' },
+      { h: 'If you have a 401(k) loan, find out the deadline',
+        p: 'An outstanding loan from your 401(k) usually has to be repaid after you leave — commonly by your tax filing deadline for that year. If it is not, it is treated as a withdrawal and taxed as one. Ask the plan administrator for the exact date and amount now.' },
+      { h: 'What to do with it instead',
+        p: 'You can leave it where it is, move it to a new employer’s plan later, or roll it into an IRA — any of these keeps it tax-deferred. A direct rollover, where the money goes plan to plan, avoids the tax being held back. Rolling over is not spending, and it keeps the choice open.' },
+      { h: 'Runway first, retirement money last',
+        p: 'Take what has to go out each month and see how many months your savings and severance cover, then add unemployment benefits. Cut the recurring costs in the first week. If the gap is still real, take the smallest withdrawal that closes it — and know the tax on it before you do.' },
+    ],
+    faqs: [
+      { q: 'How much will I actually get if I cash out?',
+        a: 'Less than the balance: income tax for the year plus, before 59½, usually an extra 10%. The plan administrator can tell you the withholding; a tax professional can tell you the rest for your situation.' },
+      { q: 'Is a rollover to an IRA taxed?',
+        a: 'A direct rollover from a 401(k) to a traditional IRA is generally not taxed. Moving it to a Roth IRA is a different decision with tax due — check before you choose.' },
+      { q: 'Can I take just part of it?',
+        a: 'Often yes, depending on the plan. A small, planned withdrawal for a specific gap costs far less than cashing out the whole thing.' },
+    ],
+  },
+
+  {
+    slug: 'how-do-i-file-for-unemployment',
+    question: 'How do I file for unemployment, and what should I expect?',
+    intro: 'In the US, where each state runs its own program',
+    updated: '2026-10-03',
+    answer:
+      'File with your state’s unemployment office in the first week, online if you can — benefits are based on when you file, and delays cost you weeks at the end. Expect to confirm your claim every week or two and show you are looking for work. How much and for how long depends on your state, so read its rules the day you file.',
+    body: [
+      { h: 'File in the first week',
+        p: 'Unemployment insurance is run by each state, so you file with the state where you worked. Most start from the week you file, not the week you lost the job, and some have an unpaid waiting week. Filing late simply loses the weeks in between.' },
+      { h: 'What you will need',
+        p: 'Your Social Security number, your employers for the last year or so with dates, the reason the job ended, and bank details for payment. Getting the separation reason right matters — say what happened plainly and keep any letter from your employer.' },
+      { h: 'Keep the claim alive',
+        p: 'You usually have to confirm every week or two that you are still out of work and looking. Missing a certification can stop payments. Keep a simple log of where you applied and when — states can ask for it.' },
+      { h: 'Severance and other pay',
+        p: 'In some states, severance or final pay can delay or reduce benefits for a period; in others it does not. That is a reason to file early and let the state decide, not a reason to wait.' },
+      { h: 'Plan around it, not on it',
+        p: 'Benefits replace only part of your pay and end after a set number of weeks that depends on your state. Count them as part of your runway — and still cut the recurring costs now, because every month they are lower is a month longer you can choose your next job instead of taking the first one.' },
+    ],
+    faqs: [
+      { q: 'Can I get unemployment if I quit?',
+        a: 'Usually only for specific reasons your state accepts. If you are thinking about leaving, read your state’s rules first — it can change the order you do things in.' },
+      { q: 'How much will I get?',
+        a: 'It depends on your state and your earnings over the past year or so, up to a state maximum. Your state’s office will tell you once you file; most have an estimator.' },
+      { q: 'What if my claim is denied?',
+        a: 'You can appeal, and there is usually a short deadline to do it. Read the reason on the notice and appeal in time even if you are not sure — it is often worth it.' },
+    ],
+  },
+
+  {
+    slug: 'medical-bills-i-cannot-pay',
+    question: 'I have medical bills I can’t pay. What do I do first?',
+    intro: 'In the US, when the bill arrives after the care',
+    updated: '2026-10-03',
+    answer:
+      'Don’t pay it on a credit card, and don’t ignore it. Ask for an itemized bill and check it, then ask the hospital for its financial assistance policy — nonprofit hospitals must have one, and many people qualify after the bill has already arrived. Most providers will also agree an interest-free payment plan if you ask.',
+    body: [
+      { h: 'Ask for the itemized bill',
+        p: 'A summary bill hides the detail. The itemized version lists every charge, and errors are common — duplicates, services you did not receive, insurance not applied. Compare it with your insurer’s explanation of benefits before you pay anything.' },
+      { h: 'Ask about financial assistance, even now',
+        p: 'Nonprofit hospitals are required to have a financial assistance policy, and many reduce or forgive bills based on income — often for people who would not think of themselves as low-income. You can usually apply after the bill arrives. Ask the billing office for the policy and the application by name.' },
+      { h: 'Negotiate, and ask for a payment plan',
+        p: 'Hospitals and providers often reduce a bill for prompt payment of part of it, and most will set up a payment plan with no interest. That beats a credit card or a medical credit card, which can charge interest once a promotional period ends.' },
+      { h: 'Keep it from becoming a collection',
+        p: 'Talking to the billing office early, and getting any arrangement in writing, keeps the account with the provider rather than a collection agency. Medical debt is treated differently from other debt on credit reports — paid medical collections are removed, and small ones are not reported — but it is still better kept out of collections entirely.' },
+      { h: 'Fit it into the month, not on top of it',
+        p: 'A payment plan sized to what you have spare each month is a cost you can carry. One sized by the provider’s first offer often is not — say what you can actually pay, and get that in writing.' },
+    ],
+    faqs: [
+      { q: 'Should I put medical bills on a credit card?',
+        a: 'Usually not. Providers commonly offer interest-free payment plans; a credit card turns a bill into debt that grows. Ask for the plan first.' },
+      { q: 'Can I apply for financial assistance after I got the bill?',
+        a: 'Often yes. Ask the billing office for the financial assistance policy and how long you have to apply — and apply even if you are not sure you qualify.' },
+      { q: 'What if it already went to collections?',
+        a: 'Ask the collector to verify the debt in writing, check it against your itemized bill, and ask the original provider whether financial assistance can still apply. Do not agree to pay before you know the amount is right.' },
+    ],
+  },
+
+  {
+    slug: 'credit-card-debt-which-to-pay-first',
+    question: 'I have debt on several credit cards. Which do I pay first?',
+    intro: 'More than one balance, and every payment feels like it disappears',
+    updated: '2026-10-03',
+    answer:
+      'Pay the minimum on every card, then put everything extra on the one with the highest interest rate — that saves the most money. If you need a win to keep going, the smallest balance first is a fair alternative. Either way, stop adding to the cards while you pay them down, or the order does not matter.',
+    body: [
+      { h: 'The highest rate first saves the most',
+        p: 'Interest is what makes the balance grow, so the card charging the most costs you the most every month it stays. Paying minimums everywhere and every extra dollar on the highest-rate card clears the debt for the least total cost. When it is gone, move its payment to the next-highest.' },
+      { h: 'The smallest balance first keeps people going',
+        p: 'Clearing a small card completely feels like progress, and for some people that is what keeps the plan alive. It costs a little more in interest. A plan you stick to beats a cheaper one you abandon in month three — choose the one you will actually follow.' },
+      { h: 'Find the money to put on it',
+        p: 'The order decides where the extra goes; it does not create any. Look at what has to go out each month and what is left. Recurring costs you can cut are worth more than a one-off saving, because every month they free money for the debt.' },
+      { h: 'Stop the balances growing',
+        p: 'Paying down a card while still spending on it is running on the spot. Take the cards out of your wallet and phone while you pay them down, and keep one emergency option rather than reaching for all of them.' },
+      { h: 'When a lower rate genuinely helps',
+        p: 'Moving a balance to a lower rate, or a single loan at a lower rate, can help — if the fees are smaller than the interest saved and you do not run the cards back up. Read the fee and the rate after any introductory period before you move anything.' },
+    ],
+    faqs: [
+      { q: 'Should I close cards once they are paid off?',
+        a: 'Not necessarily — closing an old card can affect your credit history. Put it away and stop using it rather than closing it in a hurry.' },
+      { q: 'Should I use savings to pay off a card?',
+        a: 'Keep a small cushion first, or the next surprise goes straight back on a card at a high rate. Beyond that, clearing high-interest debt is often the best return available.' },
+      { q: 'Is a debt consolidation loan a good idea?',
+        a: 'It can be, if the rate is genuinely lower, the fees are small, and the cards stay paid off. Compare the total cost, not just the monthly payment.' },
+    ],
+  },
 ]
 
 export const SITUATION_BY_SLUG = Object.fromEntries(SITUATIONS.map(s => [s.slug, s]))
