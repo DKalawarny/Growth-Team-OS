@@ -94,6 +94,27 @@ export function formatMemory(rows) {
   }).join('\n\n')
 }
 
+/**
+ * ⭐⭐ WHO ELSE MAY READ A NOTE. "business" notes are shared with whoever runs
+ * the business (migration 075); "personal" ones are the speaker's alone.
+ * Daniel, 4 Oct: "if the owner is asking a personal question the other people
+ * with access will see this?" — so the default is PRIVATE and the model has to
+ * earn "business".
+ *
+ * ⚠️ The word list is a BACKSTOP, not the decision: it can only move a note
+ * toward private, never toward shared, so a false positive costs nothing and a
+ * false negative still has the prompt rule in front of it.
+ * ⚠️ A note about a specific PERSON is always private: if that employee were
+ * ever given "Runs the business", they would read what was said about them.
+ */
+const PERSONAL_WORDS = /\b(health|sick|illness|diagnos\w*|doctor|therap\w*|counsel\w*|depress\w*|anxi\w*|panic|burn(?:ed|t)?[ -]?out|exhaust\w*|stress\w*|wife|husband|spouse|partner at home|marriage|married|divorc\w*|separat\w*|kids?|children|son|daughter|baby|pregnan\w*|family|mom|mum|dad|mother|father|parents?|funeral|died|death|grief|griev\w*|faith|church|pray\w*|god|mortgage|our house|my house|at home|household|personal debt|credit card|retire\w*|want(?:s|ed)? out|get(?:ting)? out|walk away|sell (?:up|the business|out)|quit|give up|tired of)\b/i
+
+export function scopeFor(item) {
+  if (item?.kind === 'person') return 'personal'
+  if (item?.scope !== 'business') return 'personal'
+  return PERSONAL_WORDS.test(`${item?.statement ?? ''} ${item?.detail ?? ''}`) ? 'personal' : 'business'
+}
+
 const EXTRACT_PROMPT = `
 You maintain an advisor's memory of one business. You are reading a single
 exchange between the owner and their advisor, plus what is already remembered.
@@ -142,8 +163,12 @@ Rules:
 - statement: one plain sentence, in the owner's own terms, under 200 chars.
 - Prefer writing nothing. Most exchanges contain nothing worth keeping, and
   an empty list is a correct and common answer.
-- scope "personal" only for facts about this individual rather than the
-  business — their own hours, their own preferences.
+- scope: "personal" UNLESS the fact is plainly about how the business runs
+  (prices, jobs, customers, cash, hiring plans, standards, decisions about
+  the work). Other people with access to this business can read "business"
+  notes, so when in doubt it is "personal". Always "personal": anything about
+  their health, family, marriage, children, home or household money, faith,
+  stress or exhaustion, or whether they want to keep doing this at all.
 - At most 3 items from one exchange. If you are tempted by more, you are
   recording conversation rather than remembering facts.
 `.trim()
@@ -205,7 +230,7 @@ export async function rememberFromExchange({ companyId, userId, userMessage, ass
       .filter(i => i?.statement && i?.kind)
       .map(i => ({
         company_id: companyId,
-        user_id:    i.scope === 'personal' ? userId : null,
+        user_id:    scopeFor(i) === 'personal' ? userId : null,
         kind:       i.kind,
         statement:  String(i.statement).slice(0, 400),
         detail:     i.detail ? String(i.detail).slice(0, 1200) : null,

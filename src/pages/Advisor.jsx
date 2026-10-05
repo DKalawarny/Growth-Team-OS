@@ -97,6 +97,32 @@ function markOpenedToday(userId) {
 export default function Advisor() {
   const { profile, company } = useAuth()
   const [messages,        setMessages]        = useState([])
+  /**
+   * ⭐⭐ OFF THE RECORD. Daniel, 4 Oct: "an incognito mode for personal
+   * questions the owner doesn't want people to see — no memory stored."
+   * While it is on, nothing about the conversation is written anywhere:
+   * no chat_messages rows, no notes (solomon_memory), no long-term index
+   * (chat_chunks), no photos (they upload to storage), no tool runs (they save
+   * to the Library), no "save to documents". It lives in this page's state and
+   * is gone when switched off or when the page closes. Solomon can still READ
+   * the business to answer. What is still recorded: the COST of each reply in
+   * usage_events — never its content.
+   */
+  const [offRecord,       setOffRecord]       = useState(false)
+  const onRecordRef = useRef([])
+  function toggleOffRecord() {
+    if (sending) return
+    if (!offRecord) {
+      onRecordRef.current = messages
+      setMessages([])
+      setAttachment(null)
+      setOffRecord(true)
+    } else {
+      setMessages(onRecordRef.current)
+      setOffRecord(false)
+    }
+    setError(null)
+  }
   const [input,           setInput]           = useState('')
   const [loading,         setLoading]         = useState(true)
   const [sending,         setSending]         = useState(false)
@@ -337,7 +363,9 @@ export default function Advisor() {
       ? [text, `[image: ${image.name}]`].filter(Boolean).join('\n\n')
       : text
 
-    const { data: userRow, error: userErr } = await supabase
+    const { data: userRow, error: userErr } = offRecord
+      ? { data: { id: `off-${Date.now()}`, role: 'user', content: storedContent, created_at: new Date().toISOString() }, error: null }
+      : await supabase
       .from('chat_messages')
       .insert({
         company_id: profile.company_id,
@@ -435,6 +463,7 @@ export default function Advisor() {
       if (volPulse)     volatileParts.push(`TODAY_PULSE:\n${JSON.stringify(volPulse, null, 2)}`)
       if (volKnowledge) volatileParts.push(`RELEVANT_FROM_YOUR_LIBRARY:\n${JSON.stringify(volKnowledge, null, 2)}`)
       if (volSafety)    volatileParts.push(`SAFETY_CONTEXT:\n${JSON.stringify(volSafety, null, 2)}`)
+      if (offRecord)    volatileParts.push('OFF_THE_RECORD: The owner has switched this conversation off the record. Nothing from it is saved or remembered once it ends. Never say you will remember, note down, follow up on, or bring back anything from it. Answer fully all the same.')
 
       // ⭐ The prompt is no longer sent — only its KEY. ADVISOR_SYSTEM_PROMPT is
       // 21k characters of Solomon and it used to ship to the browser, where
@@ -481,8 +510,9 @@ export default function Advisor() {
           stableContext: stableBlock,
           systemVolatile,
           messages:  convo,
-          tools:      SOLOMON_TOOLS,
-          toolChoice: lastRound ? { type: 'none' } : undefined,
+          // Off the record: no tools — running one saves its result to the Library.
+          tools:      offRecord ? undefined : SOLOMON_TOOLS,
+          toolChoice: offRecord ? undefined : lastRound ? { type: 'none' } : undefined,
           maxTokens: 2000,
           onChunk: (_chunk, fullText) => {
             setMessages(prev => prev.map(m =>
@@ -545,7 +575,7 @@ export default function Advisor() {
       // never sit between the owner and their reply. A failure in here is
       // logged and swallowed — a missed fact is a small loss, a blocked
       // conversation is not.
-      rememberFromExchange({
+      if (!offRecord) rememberFromExchange({
         companyId:        profile.company_id,
         userId:           profile.id,
         userMessage:      text,
@@ -553,7 +583,9 @@ export default function Advisor() {
       })
 
       // 5. Persist the completed reply, swap placeholder with the real DB row.
-      const { data: assistantRow, error: asstErr } = await supabase
+      const { data: assistantRow, error: asstErr } = offRecord
+        ? { data: { id: `off-${Date.now()}-a`, role: 'assistant', content: reply, source_documents: [], created_at: new Date().toISOString() }, error: null }
+        : await supabase
         .from('chat_messages')
         .insert({
           company_id: profile.company_id,
@@ -573,13 +605,13 @@ export default function Advisor() {
       setMessages(prev => prev.map(m => m.id === STREAM_ID ? assistantRow : m))
 
       // Index for long-term memory (background, non-blocking).
-      indexChatExchange({
+      if (!offRecord) indexChatExchange({
         companyId:      profile.company_id,
         userId:         profile.id,
         userMessage:    text,
         assistantReply: reply,
         occurredAt:     new Date(),
-      }).catch(() => {})
+      })?.catch?.(() => {})
     } catch (err) {
       // Remove the streaming placeholder on error.
       setMessages(prev => prev.filter(m => m.id !== STREAM_ID))
@@ -617,7 +649,12 @@ export default function Advisor() {
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#F6F8F8' }}>
-      <Header companyName={company?.name} spendInfo={spendInfo} />
+      <Header companyName={company?.name} spendInfo={spendInfo} offRecord={offRecord} onToggleOffRecord={toggleOffRecord} />
+      {offRecord && (
+        <div className="px-4 sm:px-6 py-2.5 flex-shrink-0 text-center text-[12.5px] leading-relaxed" style={{ background: '#1F2A28', color: '#E8EEEC' }}>
+          <b>Off the record.</b> Nothing here is saved or remembered, and nobody else on your account can see it. It disappears when you switch this off or leave the page.
+        </div>
+      )}
 
       {/* The refresh sits HERE — in the room where the numbers get used —
           rather than only in Settings and on the CFO page, which is where it
@@ -660,7 +697,7 @@ export default function Advisor() {
                   content={m.content}
                   artifacts={m.source_documents}
                   streaming={m.id === '__streaming__'}
-                  onSave={handleSaveMessage}
+                  onSave={offRecord ? undefined : handleSaveMessage}
                   companyId={profile?.company_id}
                   userId={profile?.id}
                 />
@@ -693,7 +730,11 @@ export default function Advisor() {
         disabled={sending || generatingOpen}
         error={error}
         attachment={attachment}
-        onAttach={f => { setError(null); setAttachment(f) }}
+        onAttach={f => {
+          // Photos upload to storage, so they cannot be off the record.
+          if (f && offRecord) { setError('Photos are saved when sent, so they cannot go off the record.'); return }
+          setError(null); setAttachment(f)
+        }}
       />
     </div>
   )
@@ -701,7 +742,7 @@ export default function Advisor() {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function Header({ companyName, spendInfo }) {
+function Header({ companyName, spendInfo, offRecord = false, onToggleOffRecord }) {
   const dayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long' })
 
   // Budget pill — only show once data is loaded and there's meaningful spend
@@ -740,6 +781,23 @@ function Header({ companyName, spendInfo }) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {budgetPill}
+          {onToggleOffRecord && (
+            <button
+              type="button"
+              onClick={onToggleOffRecord}
+              aria-pressed={offRecord}
+              title={offRecord ? 'Back on the record — this conversation will be cleared' : 'Ask something personal: nothing saved, nothing remembered'}
+              className="flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors"
+              style={offRecord
+                ? { color: '#FFFFFF', background: '#1F2A28', border: '1px solid #1F2A28' }
+                : { color: 'rgba(13,20,19,0.55)', background: 'rgba(13,20,19,0.05)', border: '1px solid rgba(13,20,19,0.10)' }}
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5" aria-hidden>
+                <rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>
+              </svg>
+              <span>{offRecord ? 'Off the record — end' : 'Off the record'}</span>
+            </button>
+          )}
           <Link
             to="/checkins"
             aria-label="Log check-in"
