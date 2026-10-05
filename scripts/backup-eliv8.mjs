@@ -53,9 +53,18 @@ let failed = 0
 const tables = query(`select table_name from information_schema.tables
   where table_schema = 'public' and table_type = 'BASE TABLE' order by 1`).map(r => r.table_name)
 
+// ⚠️ The CLI occasionally fails a single query while it re-initialises its
+// login role (4 Oct: `checkins` FAILED with only "Initialising login role…").
+// Transient, so each table gets three tries before it counts as failed.
+function queryWithRetry(q) {
+  for (let i = 1; ; i++) {
+    try { return query(q) } catch (e) { if (i >= 3) throw e; execFileSync('sleep', ['3']) }
+  }
+}
+
 for (const t of tables) {
   try {
-    const rows = query(`select coalesce(json_agg(x), '[]'::json) as data from public."${t.replace(/"/g, '')}" x`)
+    const rows = queryWithRetry(`select coalesce(json_agg(x), '[]'::json) as data from public."${t.replace(/"/g, '')}" x`)
     const data = rows?.[0]?.data ?? []
     fs.writeFileSync(path.join(dir, `${t}.json`), JSON.stringify(data))
     console.log(`  ${t}: ${Array.isArray(data) ? data.length : '?'} rows`)
