@@ -3277,3 +3277,4 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 .wayout__bridge a { font-size: 15px; font-weight: 600; color: inherit; text-underline-offset: 3px; }
 .wayout__bridgex { position: absolute; top: 4px; right: 4px; min-width: 44px; min-height: 44px; border: 0; background: none; font-size: 20px; color: var(--soft); cursor: pointer; }
 @media print { .wayout__bridge { display: none !important; } }
+.wayout__movedwhy { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft); }

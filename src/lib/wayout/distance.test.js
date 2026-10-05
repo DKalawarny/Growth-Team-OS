@@ -86,3 +86,19 @@ describe('doneMoves', () => {
     expect(doneMoves()).toEqual([])
   })
 })
+
+describe('why the margin moved', () => {
+  const ch = (takeHome, mustPay, createdAt) => ({ answers: { takeHome, mustPay }, createdAt })
+  it('names each figure that changed, in their own numbers', () => {
+    const d = distance([ch(6000, 5000, '2026-07-01'), ch(5500, 2500, '2026-09-29')])
+    expect(d.change).toBe(2000)
+    expect(d.why).toEqual([
+      { label: 'take home', from: 6000, to: 5500, direction: 'down', change: 500 },
+      { label: 'what has to go out', from: 5000, to: 2500, direction: 'down', change: 2500 },
+    ])
+    expect(d.toDate).toBe('2026-09-29')
+  })
+  it('leaves out a figure that did not move', () => {
+    expect(distance([ch(6000, 5000), ch(6000, 4000)]).why.map(w => w.label)).toEqual(['what has to go out'])
+  })
+})

@@ -34,6 +34,11 @@ export function margin(answers = {}) {
   return inn - out
 }
 
+function partChange(label, a, b) {
+  if (a === null || b === null || a === b) return null
+  return { label, from: a, to: b, direction: b > a ? 'up' : 'down', change: Math.abs(b - a) }
+}
+
 /**
  * The distance between the first chapter and the latest, or null.
  *
@@ -65,6 +70,14 @@ export function distance(chain = []) {
     direction: now > then ? 'up' : now < then ? 'down' : 'flat',
     fromDate: first?.createdAt ?? null,
     toDate: last?.createdAt ?? null,
+    // ⭐ WHY it moved, in the same two figures it is made of. Daniel checked
+    // the record by hand ("is the math right here") — a margin change with no
+    // reason shown makes a person do the subtraction to trust it. Only the
+    // parts that changed; each is still nothing but their own two answers.
+    why: [
+      partChange('take home', num(first?.answers?.takeHome), num(last?.answers?.takeHome)),
+      partChange('what has to go out', num(first?.answers?.mustPay), num(last?.answers?.mustPay)),
+    ].filter(Boolean),
   }
 }
 

@@ -111,13 +111,23 @@ export default function History() {
             <i aria-hidden="true">→</i>
             <div>
               <b>{money(moved.now)}</b>
-              <em>now</em>
+              {/* A date, not "now": "now" is only true the day it was typed. */}
+              <em>{moved.toDate ? when(moved.toDate) : 'now'}</em>
             </div>
           </div>
           {moved.direction !== 'flat' && (
             <p className="wayout__movedsum">
               {moved.direction === 'up' ? 'Up' : 'Down'} {money(moved.change)} a month
               since your first plan.
+            </p>
+          )}
+          {moved.why.length > 0 && (
+            <p className="wayout__movedwhy">
+              {moved.why.map((w, i) => (
+                <span key={w.label}>
+                  {i > 0 ? ' · ' : ''}{w.label[0].toUpperCase() + w.label.slice(1)} {w.direction} {money(w.change)} ({money(w.from)} → {money(w.to)})
+                </span>
+              ))}
             </p>
           )}
         </div>
