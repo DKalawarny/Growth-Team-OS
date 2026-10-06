@@ -81,8 +81,10 @@ const STEPS = [
       ],
     },
     fields: [
-      { name: 'location',       label: 'City / region',           type: 'text', placeholder: 'e.g. Calgary, AB',
-        hint: 'Where you mostly work. Decides which employment and safety authority we point you to.' },
+      // ⭐ Country matters: GST/HST in Canada, sales tax in the US, VAT in the UK.
+      // Solomon reads this field to use the right words (6 Oct, US readiness).
+      { name: 'location',       label: 'City, region and country', type: 'text', placeholder: 'e.g. Calgary, AB, Canada or Austin, TX, USA',
+        hint: 'Where you mostly work. Decides which tax, employment and safety rules we point you to.' },
       { name: 'team_size',      label: 'Team size',               type: 'select', options: TEAM_SIZE_OPTIONS,
         hint: 'Everyone you pay, including yourself and anyone you use regularly on contract.' },
       { name: 'hours_per_week', label: 'Hours you work per week', type: 'select', options: HOURS_OPTIONS,

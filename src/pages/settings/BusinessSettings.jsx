@@ -35,7 +35,7 @@ const FIELDS = [
     placeholder: 'yourcompany.com',
     hint: "We'll re-read it when you save if the URL has changed." },
   { name: 'industry',        label: 'Industry',             type: 'select', section: 'Business', options: INDUSTRY_OPTIONS },
-  { name: 'location',        label: 'City / region',        type: 'text',   section: 'Business' },
+  { name: 'location',        label: 'City, region and country', type: 'text', section: 'Business' },
   { name: 'team_size',       label: 'Team size',            type: 'select', section: 'Business', options: TEAM_SIZE_OPTIONS },
 
   { name: 'hours_per_week',  label: 'Hours per week',       type: 'select', section: 'Money & time', options: HOURS_OPTIONS },
