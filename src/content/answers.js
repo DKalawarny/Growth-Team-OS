@@ -1132,6 +1132,116 @@ export const ANSWERS = [
       { q: 'Who should help me plan it?', a: 'An accountant and a lawyer who handle business transitions, and the successor themselves, early and honestly.' },
     ],
   },
+  // ── From the 6 Oct teardown (approved by Daniel: "all sounds good") ─────────
+  // ⚠️ No dashes. Facts kept stable: CPP matched and EI at 1.4x (canada.ca),
+  // no rates that change yearly. Hello Alice described from its own press
+  // releases (free core, paid options, grants, six-advisor AI Advisory Board).
+  {
+    slug: 'cost-of-hiring-an-employee-in-canada',
+    question: 'What does it really cost to hire someone in Canada?',
+    category: 'Hiring',
+    updated: '2026-10-06',
+    answer:
+      'More than the wage. On top of pay, you match their CPP contributions, pay 1.4 times their EI premium, pay workers’ compensation for your industry, and owe vacation pay, at least 4% in most provinces, plus statutory holidays. Then come the tools, the training and the weeks before they are fully up to speed. Work out your own number before you hire, not after.',
+    body: [
+      { h: 'The payroll costs you add',
+        p: 'You match the employee’s CPP contributions dollar for dollar and pay 1.4 times their EI premium. Workers’ compensation, through WorkSafeBC, the WCB in Alberta or your province’s board, is set by your industry and your claims history. Some provinces also charge an employer health tax once a payroll passes a certain size.' },
+      { h: 'Vacation and statutory holidays',
+        p: 'Vacation pay is a minimum of 4% of wages in most provinces, and more after several years of service in some. Statutory holidays are paid days too. Both are part of the cost of every hour worked, not extras.' },
+      { h: 'The costs that are not on a pay stub',
+        p: 'A truck or mileage, tools, a phone, safety gear, training and certification. And your own time: showing them the work, checking it and fixing what goes wrong while they learn.' },
+      { h: 'The ramp up',
+        p: 'You pay a full wage from the first day, and full output usually comes weeks or months later. Plan for that gap in your cash, especially if the hire is meant to free you up for sales or estimating.' },
+      { h: 'Remit on time',
+        p: 'The deductions you hold from their pay, plus your share, belong to the government until you send them. Keep them separate and remit on schedule, because late remittances carry penalties and the money is easy to spend by mistake.' },
+    ],
+    faqs: [
+      { q: 'Are subcontractors cheaper than employees?',
+        a: 'Only if they are genuinely independent. The CRA decides whether someone is an employee by the working relationship, not by the label, and getting it wrong can mean back payroll and penalties.' },
+      { q: 'How long before a new hire pays for themselves?',
+        a: 'It depends on the role and your margin. Work out how much extra work, or how much of your own time, they need to free up each month to cover their full cost, then check whether that work is really there.' },
+      { q: 'Do I need payroll software?',
+        a: 'For one or two employees it is not required, but it makes deductions, remittances and year end slips far easier to get right. Many owners find it pays for itself in time saved.' },
+    ],
+  },
+  {
+    slug: 'eliv8-os-or-hello-alice',
+    question: 'Eliv8 OS or Hello Alice: which fits my business?',
+    category: 'Getting help',
+    updated: '2026-10-06',
+    answer:
+      'They solve different problems. Hello Alice is broad: grants, funding opportunities, a large community and an AI advisory board, free to join with paid options. Eliv8 OS is narrower and deeper: an advisor that reads your actual numbers, remembers what you decided and follows up on it. If you are looking for funding, start with Hello Alice. If you want help running the business you already have, that is what Eliv8 OS is built for.',
+    body: [
+      { h: 'What Hello Alice does well',
+        p: 'It brings grants, funding opportunities and resources together in one place, with a community of more than a million owners. Its AI Advisory Board offers six advisors covering strategy, marketing, sales, finance, operations and team, and the core platform is free.' },
+      { h: 'What Eliv8 OS does differently',
+        p: 'It works from your own books, your plan and what you have told it, and it remembers. When you say you will raise a price or chase an invoice, it asks how that went, once, later. The advice is about your business specifically, not owners in general.' },
+      { h: 'Where they overlap',
+        p: 'Both give business guidance through AI. The difference is depth versus breadth: one is a wide doorway into funding and resources, the other is an advisor for the day to day decisions of a business that is already running.' },
+      { h: 'Using both',
+        p: 'They do not compete much. An owner could reasonably use Hello Alice to find funding and Eliv8 OS to decide how to run the business with it.' },
+    ],
+    faqs: [
+      { q: 'Is Hello Alice free?',
+        a: 'Its core platform is free, with paid options. Check their site for current details.' },
+      { q: 'Does Eliv8 OS help with grants?',
+        a: 'No. Eliv8 OS focuses on running the business: your numbers, your decisions and what comes next. For grants and funding, a platform like Hello Alice is the better place to look.' },
+      { q: 'Which is better for a trades business?',
+        a: 'It depends on what you need. Funding and resources: Hello Alice. Pricing, cash flow, hiring and following through on decisions in a business that already has work: Eliv8 OS.' },
+    ],
+  },
+  {
+    slug: 'sales-tax-you-collect-is-not-yours',
+    question: 'The sales tax I collect isn’t mine. How do I stop spending it?',
+    category: 'Money',
+    updated: '2026-10-06',
+    answer:
+      'Sales tax you collect belongs to your state until you remit it. Move it into a separate account every time you are paid, so your bank balance shows only what is actually yours. Rules and filing dates vary by state, so check with your state’s revenue department or your accountant.',
+    body: [
+      { h: 'Why a healthy balance can mislead you',
+        p: 'Every sale with tax on it puts money in your account that is not yours. After a busy stretch the balance looks strong, and part of it is owed to the state. Spending it feels fine until the filing date arrives.' },
+      { h: 'A separate account, every time',
+        p: 'Open a second account and move the tax you collected into it whenever a customer pays. Then your main balance is the money you can actually use, and the filing date stops being a scramble.' },
+      { h: 'Know your filing dates',
+        p: 'States set different filing schedules, often monthly, quarterly or yearly depending on how much you collect. Put the dates in your calendar and check them each year, because a growing business can be moved to a more frequent schedule.' },
+      { h: 'If you have already spent it',
+        p: 'Contact your state’s revenue department before the deadline, not after. Many offer payment arrangements, and penalties and interest usually grow the longer it waits.' },
+    ],
+    faqs: [
+      { q: 'Do I charge sales tax in every state?',
+        a: 'It depends on where you have a connection to a state, which can include where your customers are. The rules changed in recent years, so ask an accountant if you sell across state lines.' },
+      { q: 'Is sales tax an expense for my business?',
+        a: 'Generally no. You collect it on the state’s behalf and pass it on. That is exactly why it should not sit in the account you spend from.' },
+      { q: 'How much should I set aside?',
+        a: 'The exact amount you collected, every time. Your invoices or point of sale reports show it.' },
+    ],
+  },
+  {
+    slug: 'how-to-pay-yourself-from-an-s-corp',
+    question: 'How do I pay myself from an S corp?',
+    category: 'Money',
+    updated: '2026-10-06',
+    answer:
+      'Two ways, and the IRS expects both. You pay yourself a reasonable salary through payroll, with taxes withheld, and take remaining profit as distributions. Setting the salary very low to avoid payroll tax is the classic mistake, and it is one the IRS looks for. Decide the split with a CPA.',
+    body: [
+      { h: 'What reasonable means',
+        p: 'Roughly what you would have to pay someone else to do your job. The IRS looks at your role, your hours and what similar businesses pay. A salary far below that, paired with large distributions, invites questions.' },
+      { h: 'Salary first, distributions after',
+        p: 'Run your salary through payroll on a regular schedule, with withholding. Distributions come from profit that is left over, and they should not leave the business short of what it needs to operate.' },
+      { h: 'Keep enough for tax',
+        p: 'Distributions do not have tax withheld, so the tax on your share of profit still has to be paid, often through quarterly estimated payments. Set money aside as profit comes in, not when the bill arrives.' },
+      { h: 'When an S corp is not worth it',
+        p: 'The structure has costs: payroll, extra filings and accounting fees. At lower profit levels those can outweigh the savings. A CPA can tell you whether it makes sense at your numbers.' },
+    ],
+    faqs: [
+      { q: 'Can I take only distributions and no salary?',
+        a: 'Not if you work in the business. The IRS expects working shareholders to be paid a reasonable salary before taking distributions.' },
+      { q: 'How often should I pay myself?',
+        a: 'Salary on a regular payroll schedule, like any employee. Distributions when profit and cash allow, and not so often that the business runs short.' },
+      { q: 'Does this apply to an LLC?',
+        a: 'Only if the LLC has elected to be taxed as an S corp. Otherwise the owner usually takes draws, which work differently. Ask your CPA which applies to you.' },
+    ],
+  },
 ]
 
 /** Categories in the order they should appear on the index. */
