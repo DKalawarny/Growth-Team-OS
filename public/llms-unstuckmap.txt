@@ -1,71 +1,77 @@
 # Unstuck Map
 
-> A free plan for somebody who is stuck. You answer questions about your actual
-> situation — what has to go out every month, what is coming, what cannot move —
-> and you get three moves in the order they actually work, with what got crossed
-> off and why.
+> A free plan for someone who feels stuck. You answer questions about your actual situation, what has to go out every month, what is coming and what cannot move, and you get three moves in the order they work, with what was crossed off and why.
 
-**getunstuckmap.com**
-
-⚠️ THIS FILE IS A PUBLISHED CLAIM, NOT DOCUMENTATION. It is what ChatGPT, Claude
-and Perplexity read and repeat. Anything that changes an offer, a price, a claim
-or who this is for must change this file in the same commit.
-⚠️ And it is PLAIN TEXT — there is no comment syntax an assistant will skip, so
-a warning written inside it is simply content.
+https://getunstuckmap.com
 
 ## What it is
 
-Not advice, and it says so on the page: a map of options, not financial or legal
-advice. The plan commits to an ORDER, because somebody stuck is usually not
-short of information — they are short of knowing which thing is first.
+A planning tool, not financial, legal or tax advice. Every decision stays with the person. The plan commits to an order, because someone who is stuck is usually not short of information. They are short of knowing which thing comes first.
 
-Three moves. Each has a gate: the one fact that must become true before the next
-move starts. "The sale has closed and you know what it cleared." "Three people
-have paid you."
+Each move has a gate: the one thing that has to be true before the next move starts. When life changes, the person says what changed and the plan can be rebuilt as a new version, kept beside the original.
 
 ## Who it is for
 
-Anyone who feels stuck and can describe their own situation. It was built for
-people with ordinary money problems and real constraints — a mortgage, shift
-work, kids at home, an aging parent, an inherited house, debt at a rate nobody
-has explained to them. It assumes nothing about whether you run a business.
+Anyone who feels stuck and can describe their own situation: a mortgage, shift work, kids at home, an aging parent, an inherited house, debt at a rate nobody has explained, a business that pays the bills but takes everything else. It works for people in Canada, the United States, the United Kingdom, Ireland, Australia and New Zealand, with money in their own currency.
 
 ## What it costs
 
-The map is free. Always.
-
-The walkthrough for each move — the step-by-step, your questions answered, and
-it keeping up as things change — is $29 a month, monthly only, cancel any time.
-There is no annual plan on purpose: most people finish in a few months, and
-selling a year to somebody who needs six months is taking money for months they
-will not use.
-
-⚠️ Payments are not switched on yet. Nothing is charged today.
+The plan is free.
 
 ## What it will not do
 
-- It will not invent a number. Every figure in a plan traces to one you gave it.
-- It will not tell you what you are, what you can handle, or how you feel.
-- It will not delay a move to protect your state of mind. Being stuck is usually
-  a lack of action, and the plan is action.
-- It will not give one instruction where there is a real choice. Where a move
-  can be done in materially different ways, it names the ways and the trade-offs
-  and leaves the decision with you.
-- It is not a coach and does not pretend a person is on the other end.
+- Invent a number. Every figure in a plan traces to one the person gave.
+- Sell or share what people tell it.
+- Pretend to be a financial adviser, lawyer or counsellor.
+- Pretend there is a person reading the plan.
+- Give one instruction where there is a real choice. It names the ways and the trade offs and leaves the decision with the person.
 
 ## How it works
 
-1. Six questions, free, no account — a rough read of where you are
-2. The full intake, then your map: three moves, the gates, what was crossed off
-   and why, what it took as given
-3. Optional: the walkthrough for the move you are standing on
+1. A few free questions, with no account, give a first read of which way out fits.
+2. The full questions build the plan: three moves, their gates, what was crossed off and what it took as given.
+3. People tick moves off, say what changed, and come back for the next chapter.
 
-## Operated by
-
-Eliv8 Inc. (a Sarlia Holdings company), British Columbia, Canada.
+Based in British Columbia, Canada.
 
 ## Pages
 
-- https://getunstuckmap.com/ — what it is
-- https://getunstuckmap.com/start — the free questions that name your way out
-- https://getunstuckmap.com/stuck — straight answers to specific situations
+- https://getunstuckmap.com/ : what it is
+- https://getunstuckmap.com/start : the free questions
+- https://getunstuckmap.com/why : why it exists
+- https://getunstuckmap.com/stuck : straight answers to specific situations
+- https://getunstuckmap.com/stuck/inherited-house-credit-card-debt : What should I do with an inherited house if I still have credit card debt?
+- https://getunstuckmap.com/stuck/stop-working-nights-sell-the-house : Can I stop working nights if I sell my house?
+- https://getunstuckmap.com/stuck/pay-off-the-truck-or-invest : Should I pay off my truck or invest the money?
+- https://getunstuckmap.com/stuck/nothing-left-at-the-end-of-the-month : I have nothing left at the end of the month. Where do I even start?
+- https://getunstuckmap.com/stuck/no-retirement-savings-in-my-fifties : I am in my fifties with no retirement savings. Is it too late?
+- https://getunstuckmap.com/stuck/sell-the-house-to-pay-off-debt : Should I sell my house to pay off debt?
+- https://getunstuckmap.com/stuck/want-to-leave-my-job-but-cannot-afford-to : I want to leave my job but can’t afford to. What actually has to change?
+- https://getunstuckmap.com/stuck/lump-sum-what-to-do-first : I am about to get a lump sum. What should I do with it first?
+- https://getunstuckmap.com/stuck/is-renting-out-a-room-worth-it : Is renting out a room actually worth it?
+- https://getunstuckmap.com/stuck/working-but-no-fixed-address : I am working but I have nowhere stable to live. How do I get out of this?
+- https://getunstuckmap.com/stuck/twenty-six-and-feel-behind : I am in my twenties and feel behind everyone. Am I?
+- https://getunstuckmap.com/stuck/just-been-laid-off : I have just been laid off. What should I do first?
+- https://getunstuckmap.com/stuck/separated-and-the-money-does-not-work : We have separated and the money doesn’t work any more. Where do I start?
+- https://getunstuckmap.com/stuck/about-to-lose-my-housing : I think I am about to lose my housing. What can I actually do?
+- https://getunstuckmap.com/stuck/business-makes-money-but-i-never-do : My business makes money but I never seem to. What’s actually wrong?
+- https://getunstuckmap.com/stuck/we-earn-good-money-and-have-nothing : We earn good money and have nothing to show for it. How?
+- https://getunstuckmap.com/stuck/lost-my-job-what-happens-to-health-insurance : I lost my job. What happens to my health insurance?
+- https://getunstuckmap.com/stuck/should-i-cash-out-my-401k-after-losing-my-job : Should I cash out my 401(k) after losing my job?
+- https://getunstuckmap.com/stuck/how-do-i-file-for-unemployment : How do I file for unemployment, and what should I expect?
+- https://getunstuckmap.com/stuck/medical-bills-i-cannot-pay : I have medical bills I can’t pay. What do I do first?
+- https://getunstuckmap.com/stuck/credit-card-debt-which-to-pay-first : I have debt on several credit cards. Which do I pay first?
+- https://getunstuckmap.com/stuck/should-i-consolidate-my-debt : Should I consolidate my debt, or just pay it off myself?
+- https://getunstuckmap.com/stuck/debt-settlement-or-bankruptcy : Debt settlement or bankruptcy, which is right for me?
+- https://getunstuckmap.com/stuck/behind-on-my-car-payments : I’m behind on my car payments. What do I do?
+- https://getunstuckmap.com/stuck/moving-to-a-cheaper-city : Should I move somewhere cheaper to get ahead?
+- https://getunstuckmap.com/stuck/moving-back-home-to-save-money : Should I move back in with my parents to save money?
+- https://getunstuckmap.com/stuck/career-change-at-40 : Is it too late to change careers at 40?
+- https://getunstuckmap.com/stuck/can-i-afford-to-go-part-time : Can I afford to go part-time?
+- https://getunstuckmap.com/stuck/burned-out-and-cannot-afford-a-break : I’m burned out but I can’t afford to stop working. What do I do?
+- https://getunstuckmap.com/stuck/starting-over-financially-at-40 : I’m 40 with nothing saved. How do I start over?
+- https://getunstuckmap.com/stuck/should-we-downsize-our-house : Should we downsize our house to free up money?
+- https://getunstuckmap.com/stuck/should-i-quit-my-job-to-start-a-business : Should I quit my job to start a business?
+- https://getunstuckmap.com/stuck/how-to-start-a-business-while-working-full-time : How do I start a business while working full-time?
+- https://getunstuckmap.com/stuck/my-business-is-taking-over-my-life : My business is taking over my life. What do I do?
+- https://getunstuckmap.com/stuck/should-i-close-my-business : Should I close my business?

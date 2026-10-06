@@ -12,7 +12,7 @@
 import { writeFileSync } from 'node:fs'
 import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js'
 import { SITUATIONS } from '../src/content/unstuckSituations.js'
-import { WAYOUT_SITE_URL } from '../src/lib/wayout/brand.js'
+import { WAYOUT_SITE_URL, WAYOUT_NAME } from '../src/lib/wayout/brand.js'
 
 const today = new Date().toISOString().slice(0, 10)
 
@@ -77,3 +77,59 @@ ${wayoutUrls}
 `)
 
 console.log(`[sitemap] unstuckmap: ${SITUATIONS.length + 3} urls`)
+
+/**
+ * ⭐ llms-unstuckmap.txt — what ChatGPT, Claude and Perplexity read about
+ * Unstuck Map. GENERATED here from SITUATIONS so the page list can never go
+ * stale again (on 6 Oct it listed none of 35 pages).
+ * 🔴 It is PLAIN TEXT and every word is published: notes about the file live in
+ * THIS comment, never inside it (the old file shipped an internal warning).
+ * ⚠️ No dashes (Daniel), no operator name (he left his name off /why), no
+ * price while payments are off. Change claims here and on the site together.
+ */
+const llms = `# ${WAYOUT_NAME}
+
+> A free plan for someone who feels stuck. You answer questions about your actual situation, what has to go out every month, what is coming and what cannot move, and you get three moves in the order they work, with what was crossed off and why.
+
+${WAYOUT_SITE_URL}
+
+## What it is
+
+A planning tool, not financial, legal or tax advice. Every decision stays with the person. The plan commits to an order, because someone who is stuck is usually not short of information. They are short of knowing which thing comes first.
+
+Each move has a gate: the one thing that has to be true before the next move starts. When life changes, the person says what changed and the plan can be rebuilt as a new version, kept beside the original.
+
+## Who it is for
+
+Anyone who feels stuck and can describe their own situation: a mortgage, shift work, kids at home, an aging parent, an inherited house, debt at a rate nobody has explained, a business that pays the bills but takes everything else. It works for people in Canada, the United States, the United Kingdom, Ireland, Australia and New Zealand, with money in their own currency.
+
+## What it costs
+
+The plan is free.
+
+## What it will not do
+
+- Invent a number. Every figure in a plan traces to one the person gave.
+- Sell or share what people tell it.
+- Pretend to be a financial adviser, lawyer or counsellor.
+- Pretend there is a person reading the plan.
+- Give one instruction where there is a real choice. It names the ways and the trade offs and leaves the decision with the person.
+
+## How it works
+
+1. A few free questions, with no account, give a first read of which way out fits.
+2. The full questions build the plan: three moves, their gates, what was crossed off and what it took as given.
+3. People tick moves off, say what changed, and come back for the next chapter.
+
+Based in British Columbia, Canada.
+
+## Pages
+
+- ${WAYOUT_SITE_URL}/ : what it is
+- ${WAYOUT_SITE_URL}/start : the free questions
+- ${WAYOUT_SITE_URL}/why : why it exists
+- ${WAYOUT_SITE_URL}/stuck : straight answers to specific situations
+${SITUATIONS.map(x => `- ${WAYOUT_SITE_URL}/stuck/${x.slug} : ${x.question}`).join('\n')}
+`
+writeFileSync('public/llms-unstuckmap.txt', llms)
+console.log(`[llms] unstuckmap: ${SITUATIONS.length} situation pages listed`)
