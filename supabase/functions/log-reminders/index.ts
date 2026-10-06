@@ -44,7 +44,19 @@ Deno.serve(async (req: Request) => {
     .not('email', 'is', null)
   if (staffErr) return json({ error: staffErr.message }, 500)
 
+  /**
+   * 🔴 5 Oct: six reminders a day were going to the demo crew
+   * (`@bridgewatermech.example`) and bouncing. Resend watches the bounce rate
+   * across the WHOLE account — kinwove's and Unstuck Map's mail included — and
+   * pauses accounts that bounce too much. Reserved test domains can never
+   * receive mail, so they are never sent to.
+   */
+  const undeliverable = (e: string) =>
+    /@([^@]+\.)?(example|test|invalid|localhost)$/i.test(e.trim()) ||
+    /@example\.(com|net|org)$/i.test(e.trim())
+
   const due = (staff ?? []).filter(s =>
+    !undeliverable(String((s as { email?: string }).email ?? '')) &&
     Array.isArray((s as { log_days?: number[] }).log_days) &&
     (s as { log_days: number[] }).log_days.includes(isoDay))
 
