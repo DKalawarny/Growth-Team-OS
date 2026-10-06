@@ -213,4 +213,34 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/i-feel-trapped-by-money</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/my-life-feels-on-hold</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/how-to-make-a-plan-to-change-your-life</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/i-feel-stuck-in-my-30s</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/i-feel-stuck-in-my-40s</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/debt-snowball-or-avalanche</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
