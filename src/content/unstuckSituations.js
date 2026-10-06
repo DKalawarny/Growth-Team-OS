@@ -1127,6 +1127,96 @@ export const SITUATIONS = [
       { q: 'Should I try one more year?', a: 'If you can name what would be different this year and you can afford the runway, maybe. If nothing would change, another year usually looks like the last one.' },
     ],
   },
+  // ── Stuck, plainly (6 Oct 2026) ─────────────────────────────────────────────
+  // ⭐ The teardown found "feeling stuck" answered by gratitude-journal blogs and
+  // the money questions owned by companies selling the answer. These answer
+  // plainly, with an order. Drafts approved by Daniel ("I think it's good").
+  // ⚠️ No dashes in any of this copy (his rule). The Baby Steps are quoted from
+  // ramseysolutions.com as of 6 Oct 2026 and described fairly.
+  {
+    slug: 'i-feel-stuck-in-life-where-do-i-start',
+    question: 'I feel stuck in life. Where do I even start?',
+    intro: 'When every day looks the same and nothing seems to move',
+    updated: '2026-10-06',
+    answer:
+      'Start by writing down what you want an ordinary day to look like a year from now, then the one thing standing most in the way of it. Feeling stuck is rarely a lack of ideas. It is usually too many options and no order. One clear first step, chosen on purpose, does more than another list of goals.',
+    body: [
+      { h: 'Stuck usually means no order, not no options',
+        p: 'Most people who feel stuck already know several things they could change. The weight comes from not knowing which one goes first, so nothing moves, and every option stays open and unfinished.' },
+      { h: 'Name the life, not the goal',
+        p: '“Be happier” cannot be planned. “Home by six, with a bit left at the end of the month” can. The more ordinary and specific the picture, the easier the first step is to see.' },
+      { h: 'Find what is actually holding it in place',
+        p: 'Often it is money: what has to go out every month, a debt, a job that pays the bills. Sometimes it is a person, a place or a commitment you cannot move yet. Writing these down turns a feeling into something you can work with.' },
+      { h: 'One move, then the next',
+        p: 'Big changes go wrong when they all start at once. Pick the move that unlocks the others, and decide what has to be true before you take the next one. That one fact is what tells you it is time to move on.' },
+      { h: 'Small and finished beats big and started',
+        p: 'A move you complete changes how the next one feels. Choose a first step you can actually finish in the next few weeks, even if it is not the most important one on the list.' },
+    ],
+    faqs: [
+      { q: 'Is feeling stuck normal?',
+        a: 'Very. It often arrives after a stretch of hard work, a change at home, or simply years of the same routine. It is a sign something needs to change, not a sign something is wrong with you.' },
+      { q: 'What if I do not know what I want?',
+        a: 'Start with what you do not want to keep. A clear “not this” is often the first honest step toward knowing what you want instead.' },
+      { q: 'Should I make a big change or a small one?',
+        a: 'Usually the smallest change that opens the door to the next one. Big changes are easier once the first move is behind you and you know what it cost.' },
+    ],
+  },
+  {
+    slug: 'stuck-in-a-job-i-hate-with-bills-to-pay',
+    question: 'I am stuck in a job I hate, but I have bills to pay. What do I do?',
+    intro: 'The paycheque keeps you there, and so does everything it pays for',
+    updated: '2026-10-06',
+    answer:
+      'Work out the number your life actually needs each month, not your current salary. That number decides how much freedom you really have. Then build the way out while the job still pays, so leaving is a decision you make, not a jump you hope works.',
+    body: [
+      { h: 'The number that matters is smaller than your pay',
+        p: 'What has to go out each month is usually less than what you earn, and some costs leave with the job: commuting, lunches, the convenience spending that comes from being worn out. Knowing the real number often shows more room than you expected.' },
+      { h: 'Count your runway',
+        p: 'Divide what you have saved by what has to go out each month. That is how many months you could cover. It turns “I can’t leave” into “I could leave in eight months if I do these three things.”' },
+      { h: 'Build the exit from inside the job',
+        p: 'Test the next thing on evenings or weekends, apply quietly, or ask to change your hours or role. A job you dislike is easier to carry when you know it has an end date.' },
+      { h: 'Lower what has to go out',
+        p: 'Every recurring cost you remove makes the next job possible sooner, including one that pays less but fits your life. A cut that repeats every month is worth far more than a one time saving.' },
+      { h: 'Decide what would have to be true',
+        p: 'Write down the facts that would let you leave with confidence: a number saved, an offer in hand, a few paying customers. When they are true, you go. Until then, the job is paying for your way out.' },
+    ],
+    faqs: [
+      { q: 'Should I quit without another job lined up?',
+        a: 'Only if your runway comfortably covers a longer search than you expect, or staying is harming your health. Otherwise, searching from inside a job gives you more choice and a stronger position.' },
+      { q: 'What if the job I want pays less?',
+        a: 'Compare it with what your life actually needs each month, not with your current salary. If it covers that with something left over, it may be more affordable than it looks.' },
+      { q: 'How do I keep going in a job I am leaving?',
+        a: 'Give it a date and a reason. Knowing exactly what the job is paying for, and when it ends, makes the days in between easier to carry.' },
+    ],
+  },
+  {
+    slug: 'dave-ramsey-baby-steps-do-they-fit-me',
+    question: 'Dave Ramsey’s Baby Steps: do they fit my situation?',
+    intro: 'A clear order millions have followed, and when a different one fits',
+    updated: '2026-10-06',
+    answer:
+      'The Baby Steps give a simple order: a $1,000 starter emergency fund, then all debt except the house using the debt snowball, then three to six months of expenses saved, then investing. That clarity is their strength. Where your situation differs, like an unsteady income, an employer match or very high interest on one debt, a different order can fit you better.',
+    body: [
+      { h: 'What the Baby Steps get right',
+        p: 'One thing at a time, in order, with a starting point almost anyone can reach. For many people the momentum of clearing small debts first is exactly what keeps them going, and a plan you stick to beats a cleverer one you abandon.' },
+      { h: 'An unsteady income may need a bigger cushion first',
+        p: 'If your work is seasonal or uncertain, $1,000 can disappear in one slow month. A larger cushion before attacking debt can stop you landing back on a credit card.' },
+      { h: 'Check what pausing an employer match costs',
+        p: 'During Step 2 the Baby Steps pause retirement investing. If your employer matches what you put in, find out how much that match is worth before you pause it.' },
+      { h: 'One very expensive debt changes the maths',
+        p: 'The debt snowball pays the smallest balance first. Paying the highest interest rate first usually costs less in total. Both work if you keep going, so choose the one you will actually follow.' },
+      { h: 'What the steps do not ask',
+        p: 'The Baby Steps are an order for money. They do not ask what you want your life to look like, or what a change of work, home or hours would do to the plan. That is the question a plan here starts with.' },
+    ],
+    faqs: [
+      { q: 'Is the debt snowball or the avalanche better?',
+        a: 'The avalanche, highest rate first, usually saves more money. The snowball, smallest balance first, gives quicker wins. The better one is whichever you will stick with.' },
+      { q: 'Should I stop my retirement contributions to pay off debt?',
+        a: 'Check whether your employer matches contributions first. Losing a match is giving up money you would otherwise receive. Many people keep at least enough to get the full match.' },
+      { q: 'Do the Baby Steps work in Canada?',
+        a: 'The order works anywhere. The accounts differ: in Canada you would look at an RRSP or TFSA rather than a 401(k), and a workplace pension or group plan may have its own match.' },
+    ],
+  },
 ]
 
 export const SITUATION_BY_SLUG = Object.fromEntries(SITUATIONS.map(s => [s.slug, s]))

@@ -198,4 +198,19 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/i-feel-stuck-in-life-where-do-i-start</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/stuck-in-a-job-i-hate-with-bills-to-pay</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getunstuckmap.com/stuck/dave-ramsey-baby-steps-do-they-fit-me</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
