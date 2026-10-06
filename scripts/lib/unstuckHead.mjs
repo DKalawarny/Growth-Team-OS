@@ -40,5 +40,5 @@ export function unstuckHead(html, { description = null } = {}) {
 
 /** The Unstuck Map routes that are prerendered at the root (see ROUTES). */
 export function isUnstuckRoute(route) {
-  return route === '/start' || route === '/hello' || route === '/stuck' || route.startsWith('/stuck/')
+  return route === '/start' || route === '/hello' || route === '/stuck' || route.startsWith('/stuck/') || route === '/why'
 }

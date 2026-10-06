@@ -96,6 +96,7 @@ const ROUTES = [
   { path: '/start',  titleContains: 'Unstuck Map' },
   { path: '/hello',  titleContains: 'Unstuck Map' },
   { path: '/stuck',  titleContains: 'Being stuck, in specific situations' },
+  { path: '/why',    titleContains: 'Why Unstuck Map exists' },
   // ⚠️ Generated from the same array the pages render from, exactly as the
   // answer pages are. A situation page added to the content file and forgotten
   // here would ship invisible to the one channel it was written for.

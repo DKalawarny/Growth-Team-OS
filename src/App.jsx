@@ -65,6 +65,7 @@ const WayoutDiagnostic = lazy(() => import('./pages/wayout/Diagnostic'))
 // ⭐⭐ The only INDEXABLE pages in this product. Everything else is noindex and
 // behind a session — see the note in Situations.jsx.
 const WayoutStuck      = lazy(() => import('./pages/wayout/Situations').then(m => ({ default: m.SituationIndex })))
+const WayoutWhy          = lazy(() => import('./pages/wayout/Why'))
 const UnstuckTermsPage   = lazy(() => import('./pages/wayout/Legal').then(m => ({ default: m.UnstuckTerms })))
 const UnstuckPrivacyPage = lazy(() => import('./pages/wayout/Legal').then(m => ({ default: m.UnstuckPrivacy })))
 const WayoutNotFoundPage = lazy(() => import('./pages/wayout/NotFound'))
@@ -341,6 +342,10 @@ export default function App() {
         <Route path="/terms"    element={<LazyRoute>{onOwnDomain() ? <UnstuckTermsPage /> : <Terms />}</LazyRoute>} />
         <Route path="/wayout/privacy" element={<LazyRoute><UnstuckPrivacyPage /></LazyRoute>} />
         <Route path="/wayout/terms"   element={<LazyRoute><UnstuckTermsPage /></LazyRoute>} />
+        {/* ⭐ Daniel's own words on why Unstuck Map exists. /why, not /about —
+            /about is Eliv8's on the shared site. */}
+        <Route path="/why"            element={<LazyRoute><WayoutWhy /></LazyRoute>} />
+        <Route path="/wayout/why"     element={<LazyRoute><WayoutWhy /></LazyRoute>} />
         <Route path="/demo"     element={<LazyRoute><Demo /></LazyRoute>} />
 
         {/* Comparison pages — same component, slug-driven */}

@@ -219,6 +219,7 @@ export function WayoutFooter() {
     <footer className="wayout__footer">
       <p>{WAYOUT_NAME} is a planning tool, not legal, financial or tax advice. Every choice is yours.</p>
       <nav aria-label="Legal">
+        <Link to={`${WAYOUT_BASE}/why`}>Why we built this</Link>
         <Link to={`${WAYOUT_BASE}/terms`}>Terms</Link>
         <Link to={`${WAYOUT_BASE}/privacy`}>Privacy</Link>
       </nav>
@@ -257,6 +258,7 @@ function AccountMenu() {
           <Link to={`${WAYOUT_BASE}/history`} onClick={close}>Your progress</Link>
           <Link to={`${WAYOUT_BASE}/plan#correct`} onClick={close}>Correct an answer</Link>
           <p className="wayout__menuhead">Help</p>
+          <Link to={`${WAYOUT_BASE}/why`} onClick={close}>Why we built this</Link>
           <Link to={`${WAYOUT_BASE}/terms`} onClick={close}>Terms of use</Link>
           <Link to={`${WAYOUT_BASE}/privacy`} onClick={close}>Privacy</Link>
           <a href={`mailto:${OPERATOR_CONTACT}`} onClick={close}>Contact us</a>

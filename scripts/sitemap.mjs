@@ -59,6 +59,7 @@ const wayoutUrls = [
   { path: '',                priority: '1.0', freq: 'monthly' },
   { path: '/start',          priority: '0.9', freq: 'monthly' },
   { path: '/stuck',          priority: '0.9', freq: 'weekly'  },
+  { path: '/why',            priority: '0.6', freq: 'yearly'  },
   ...SITUATIONS.map(x => ({ path: `/stuck/${x.slug}`, priority: '0.8', freq: 'monthly' })),
 ].map(u => `  <url>
     <loc>${WAYOUT_SITE_URL}${u.path}</loc>
