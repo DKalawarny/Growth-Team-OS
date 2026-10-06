@@ -16,6 +16,7 @@ import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
 import { referenceCanonBlock } from './references'
 import { loadMemory, formatMemory } from './memory'
 import { roadmapDrift, describeDrift } from './roadmapFingerprint'
+import { AMOUNTS_EMBED, withAmounts } from './jobAmounts'
 
 // Safety vault — char budget for direct loading (no embeddings path).
 // Owner uploads SOPs, SDS sheets, permits. We load the most recent
@@ -242,7 +243,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // an org chart the owner drew once.
     supabase
       .from('work_orders')
-      .select('id, title, status, due_date, staff_member_id, milestone_id, updated_at, quoted_amount, cost_amount, invoiced_amount')
+      .select(`id, title, status, due_date, staff_member_id, milestone_id, updated_at, ${AMOUNTS_EMBED}`)
       .eq('company_id', companyId)
       .order('updated_at', { ascending: false })
       .limit(MAX_WORK_ORDERS),
@@ -289,6 +290,8 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .order('log_date', { ascending: false })
       .limit(20),
   ])
+  // ⭐ Job amounts come from their own table (migration 077).
+  const workRows = withAmounts(woRes?.data)
 
   const bp        = bpRes.data ?? {}
   const allMiles  = msRes.data ?? []
@@ -519,13 +522,13 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       tenure_months: m.created_at
         ? Math.max(0, Math.round((Date.now() - new Date(m.created_at).getTime()) / 2_629_800_000))
         : null,
-      open_work: (woRes?.data ?? []).filter(
+      open_work: workRows.filter(
         w => w.staff_member_id === m.id && w.status !== 'done'
       ).length,
     })),
     // Recent work, so "who does what here" is evidence rather than an org
     // chart drawn once and never revisited.
-    recent_work: (woRes?.data ?? []).slice(0, MAX_WORK_ORDERS).map(w => ({
+    recent_work: workRows.slice(0, MAX_WORK_ORDERS).map(w => ({
       title:    w.title,
       status:   w.status,
       due_date: w.due_date ?? null,
@@ -630,9 +633,9 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       // else in the business puts together — a job that came in under its quote
       // with a two-hour access delay on it has explained itself, and neither
       // half says that alone.
-      job:       (woRes?.data ?? []).find(w => w.id === l.work_order_id)?.title ?? null,
+      job:       workRows.find(w => w.id === l.work_order_id)?.title ?? null,
       job_money: (() => {
-        const w = (woRes?.data ?? []).find(x => x.id === l.work_order_id)
+        const w = workRows.find(x => x.id === l.work_order_id)
         if (!w) return null
         const { quoted_amount: q, cost_amount: c, invoiced_amount: i } = w
         if (q == null && c == null && i == null) return null
@@ -655,7 +658,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // worth noticing once, and is invisible if you only ever send the text.
     office_notes: (notesRes?.data ?? []).map(n => ({
       date: n.note_date, note: n.note, status: n.status ?? 'open',
-      job: (woRes?.data ?? []).find(w => w.id === n.work_order_id)?.title ?? null,
+      job: workRows.find(w => w.id === n.work_order_id)?.title ?? null,
     })),
 
     website_excerpt: bp.website_content

@@ -4,6 +4,8 @@ import {
   listTeam, setMemberRole, removeMember,
 } from '../../lib/invites'
 import { GRANTABLE_ROLES, ROLE_LABEL, ROLE_DESCRIPTION } from '../../lib/access'
+import { useAuth } from '../../hooks/useAuth'
+import { setJobCostsForOperations } from '../../lib/jobAmounts'
 
 /**
  * ⭐⭐ PEOPLE WITH ACCESS — the owner adds someone to the business and picks
@@ -18,6 +20,14 @@ import { GRANTABLE_ROLES, ROLE_LABEL, ROLE_DESCRIPTION } from '../../lib/access'
  * Destructive actions use the in-place confirm the advisor card already uses.
  */
 export default function PeopleSection({ companyId, userId }) {
+  // ⭐ The one switch (settled 2 Sep): may Operations see job costs? Off by default.
+  const { company, refresh } = useAuth()
+  const [costsOn, setCostsOn] = useState(!!company?.job_costs_for_operations)
+  async function toggleCosts(next) {
+    setErr(''); setCostsOn(next)
+    try { await setJobCostsForOperations(companyId, next); await refresh?.() }
+    catch (ex) { setCostsOn(!next); setErr(ex.message) }
+  }
   const [team, setTeam]         = useState([])
   const [invites, setInvites]   = useState([])
   const [loading, setLoading]   = useState(true)
@@ -144,6 +154,14 @@ export default function PeopleSection({ companyId, userId }) {
             </div>
           </div>
         )}
+
+        <label className="flex items-start gap-3 border border-ink-100 rounded-lg px-4 py-3 cursor-pointer">
+          <input type="checkbox" checked={costsOn} onChange={e => toggleCosts(e.target.checked)} className="mt-1" />
+          <span>
+            <span className="block text-sm font-semibold text-ink-900">Operations can see job costs</span>
+            <span className="block text-[12px] text-ink-500 leading-relaxed">What each job was quoted, what it cost and what was invoiced. Off means only you, whoever runs the business and the office see them.</span>
+          </span>
+        </label>
 
         <form onSubmit={invite}>
           <div className={label}>Add someone</div>

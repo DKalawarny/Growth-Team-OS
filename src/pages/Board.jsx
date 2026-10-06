@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { sendTaskAssigned } from '../lib/email'
+import { AMOUNTS_EMBED, withAmounts, canSeeJobCosts, saveJobAmounts } from '../lib/jobAmounts'
 
 /**
  * Work Board — /board
@@ -71,7 +72,8 @@ function isOverdue(d) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Board() {
-  const { profile, company } = useAuth()
+  const { profile, company, role } = useAuth()
+  const seeCosts = canSeeJobCosts(role, company)
   const companyId    = profile?.company_id
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -159,7 +161,7 @@ export default function Board() {
     const [usersRes, staffRes, ordersRes, msRes, tplRes] = await Promise.all([
       supabase.from('profiles').select('id, name, email, avatar_url').eq('company_id', companyId),
       supabase.from('staff_members').select('*').eq('company_id', companyId).order('name'),
-      supabase.from('work_orders').select('*').eq('company_id', companyId).order('created_at', { ascending: false }),
+      supabase.from('work_orders').select(`*, ${AMOUNTS_EMBED}`).eq('company_id', companyId).order('created_at', { ascending: false }),
       supabase.from('milestones').select('id, title, source').eq('company_id', companyId).eq('completed', false).order('sort_order', { ascending: true }),
       // Playbooks — load with items nested so we can spawn the checklist
       // in one go on WO create. Failing silently (e.g. before migration 020
@@ -186,7 +188,7 @@ export default function Board() {
     if (tableMissing(staffRes.error))  setStaffSetupNeeded(true)
     setAppUsers(usersRes.data  ?? [])
     setStaff(staffRes.data    ?? [])
-    setWorkOrders(ordersRes.data ?? [])
+    setWorkOrders(withAmounts(ordersRes.data))
     setMilestones(msRes.data   ?? [])
     // Templates may not exist yet (migration 020 unapplied) — fall back to []
     // so the picker is just hidden, no error UI.
@@ -212,6 +214,10 @@ export default function Board() {
     // Only include staff_member_id when the user picked a staff member
     // AND the column is confirmed to exist — avoids a silent Postgres error
     // when work_orders was created with the old setup SQL.
+    // ⭐ Amounts are saved separately (migration 077); only people allowed to
+    // see job costs ever send them.
+    const toNum = v => (v === '' || v == null ? null : Number(v))
+    const amounts = { quoted: toNum(data.quoted_amount), cost: toNum(data.cost_amount), invoiced: toNum(data.invoiced_amount) }
     const payload = {
       title:        data.title,
       description:  data.description || null,
@@ -221,9 +227,6 @@ export default function Board() {
       // ⚠️ Empty string becomes NULL, not 0. "Not entered" and "this job made
       // nothing" are different facts and only one of them is a problem — the
       // same reasoning as the giving field in migration 028.
-      quoted_amount:   data.quoted_amount   === '' || data.quoted_amount   == null ? null : Number(data.quoted_amount),
-      cost_amount:     data.cost_amount     === '' || data.cost_amount     == null ? null : Number(data.cost_amount),
-      invoiced_amount: data.invoiced_amount === '' || data.invoiced_amount == null ? null : Number(data.invoiced_amount),
       milestone_id: data.milestone_id || null,
       status:       data.status,
       ...(staff_member_id && !staffSetupNeeded ? { staff_member_id } : {}),
@@ -244,9 +247,10 @@ export default function Board() {
 
     if (data.id) {
       const { error } = await supabase.from('work_orders').update(payload).eq('id', data.id)
+      if (!error && seeCosts) await saveJobAmounts({ workOrderId: data.id, companyId, ...amounts })
       if (!error) {
         setWorkOrders(prev => prev.map(o =>
-          o.id === data.id ? { ...o, ...payload } : o
+          o.id === data.id ? { ...o, ...payload, ...(seeCosts ? { quoted_amount: amounts.quoted, cost_amount: amounts.cost, invoiced_amount: amounts.invoiced } : {}) } : o
         ))
         if (staff_member_id && assigneeChanged) {
           notifyStaffAssignee({ staff_member_id, payload })
@@ -262,8 +266,9 @@ export default function Board() {
         priority: payload.priority || 'medium',
         status:   payload.status   || 'backlog',
       }).select().single()
+      if (!error && row && seeCosts) await saveJobAmounts({ workOrderId: row.id, companyId, ...amounts })
       if (!error && row) {
-        setWorkOrders(prev => [row, ...prev])
+        setWorkOrders(prev => [{ ...row, quoted_amount: seeCosts ? amounts.quoted : null, cost_amount: seeCosts ? amounts.cost : null, invoiced_amount: seeCosts ? amounts.invoiced : null }, ...prev])
         // ── Spawn checklist items from the chosen playbook ────────────────
         // The copy is deliberate (see migration 020): editing the template
         // later mustn't change in-flight checklists. We fire-and-forget on
@@ -744,6 +749,7 @@ alter table public.work_orders
       {/* Work order modal */}
       {showModal && (
         <WorkOrderModal
+          seeCosts={seeCosts}
           order={editingOrder}
           appUsers={appUsers}
           staff={staff}
@@ -898,7 +904,7 @@ function WorkOrderCard({ order, member, milestone, onEdit, onMove, onDelete, onD
 
 // ── Work order modal ──────────────────────────────────────────────────────────
 
-function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose }) {
+function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose, seeCosts = true }) {
   // ⚠️ 2 Sep — the two halves of a job record never referenced each other.
   // /logs was a flat stream and the Board showed jobs; standing on Northgate
   // you could not see what the crew wrote about it, and reading a log you could
@@ -1102,6 +1108,8 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
             </div>
 
+            {/* ⭐ Only for people allowed to see job costs (migration 077). */}
+            {seeCosts && (<>
             {/* ⭐ 2 Sep — what the job quoted, cost and made. Added because
                 Daniel scoped a PM to "job numbers, not company numbers" and
                 checking that turned up that no job numbers existed at all.
@@ -1166,6 +1174,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 )
               })()}
             </div>
+            </>)}
           </div>
 
           {milestones.length > 0 && (

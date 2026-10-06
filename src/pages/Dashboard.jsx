@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { classifyAll, todayYmd } from '../lib/milestoneProgress'
+import { AMOUNTS_EMBED, withAmounts } from '../lib/jobAmounts'
 
 /**
  * Home.
@@ -108,7 +109,7 @@ export default function Dashboard() {
         supabase.from('office_notes')
           .select('id, status').eq('company_id', cid).neq('status', 'done'),
         supabase.from('work_orders')
-          .select('id, status, quoted_amount, cost_amount, invoiced_amount').eq('company_id', cid),
+          .select(`id, status, ${AMOUNTS_EMBED}`).eq('company_id', cid),
       ])
       if (cancelled) return
       setState({
@@ -123,7 +124,7 @@ export default function Dashboard() {
         },
         logs:      logsRes.data       ?? [],
         openNotes: openNotesRes.data  ?? [],
-        orders:    ordersRes.data     ?? [],
+        orders:    withAmounts(ordersRes.data),
       })
     })()
 
