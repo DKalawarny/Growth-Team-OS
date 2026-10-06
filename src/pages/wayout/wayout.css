@@ -3279,6 +3279,19 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 @media print { .wayout__bridge { display: none !important; } }
 .wayout__movedwhy { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--soft); }
 
-/* Why we built this — his words read as a letter, not a legal page. */
-.wayout__why p { font-size: 17px; line-height: 1.7; }
-.wayout__why .wayout__whygoal { font-weight: 600; }
+/* Why we built this: his words read as a letter, centred in a calm column.
+   ⚠️ A reset elsewhere zeroes paragraph margins and list bullets, so every
+   spacing here is explicit; measured after the change, not assumed. */
+.wayout .wayout__why { max-width: 620px; margin: 8px auto 24px; }
+.wayout .wayout__why h1 { margin: 0 0 28px; }
+.wayout .wayout__why > p { font-size: 18px; line-height: 1.7; margin: 0 0 20px; color: var(--ink); }
+.wayout .wayout__why > p.wayout__whygoal {
+  margin: 32px 0 0; padding: 18px 22px; border-left: 4px solid var(--sun);
+  background: var(--tint); border-radius: 0 12px 12px 0; font-weight: 600;
+}
+.wayout .wayout__whynot { margin: 40px 0 0; padding-top: 28px; border-top: 1px solid var(--line, #e3ddcf); }
+.wayout .wayout__whynot h2 { font-size: 20px; margin: 0 0 14px; }
+.wayout .wayout__whynot ul { list-style: disc; padding-left: 22px; margin: 0; }
+.wayout .wayout__whynot li { font-size: 17px; line-height: 1.6; margin: 0 0 10px; padding-left: 4px; }
+.wayout .wayout__why > p.wayout__whycta { margin: 36px 0 0; }
+.wayout .wayout__whycta .wayout__btn { display: inline-block; width: auto; padding: 16px 40px; margin: 0; }

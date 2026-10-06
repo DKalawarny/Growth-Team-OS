@@ -15,6 +15,7 @@ import { WAYOUT_NAME, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
  * ⚠️ /why, not /about: one Netlify site serves both domains and /about is
  * Eliv8 OS's page, so on getunstuckmap.com it would have been served Eliv8's
  * prerendered HTML.
+ * ⚠️ NO DASHES (Daniel, 5 Oct: "no one writes like that, it looks AI — use commas").
  * ⚠️ "What we won't do" is the product's own commitments (terms + privacy),
  * not his voice — kept under its own heading so the two never blur.
  */
@@ -26,25 +27,25 @@ export default function Why() {
 
         <p>At some point it dawned on me that what I was working through in my own life is something a lot of people need help with.</p>
 
-        <p>It is easy to get caught up chasing the next thing — more work, more money, more success — and lose sight of why you started. Most of us only learn what really matters by living it, then looking back and saying, “They were right.”</p>
+        <p>It’s easy to get caught up chasing the next thing, whether that’s more work, more money or more success, and lose sight of why you started. Most of us only learn what really matters by living it, then looking back and saying, “They were right.”</p>
 
-        <p>And for a lot of people, the grind is necessary. You have to build something before you can have the time and freedom you want. That time is not wasted. It is part of the path.</p>
+        <p>And for a lot of people, the grind is necessary. You have to build something before you can have the time and freedom you want. That time isn’t wasted. It’s part of the path.</p>
 
-        <p>{WAYOUT_NAME} is for wherever you are on that path. You see where you stand, where you want to be, and the next steps to get there — while building a life that actually holds up once you arrive.</p>
+        <p>{WAYOUT_NAME} is for wherever you are on that path. You see where you stand, where you want to be, and the next steps to get there, while building a life that actually holds up once you arrive.</p>
 
         <p className="wayout__whygoal">My goal is simple: to help people get free of the life they never wanted, or at least make it better.</p>
 
-        <section className="wayout__legalsec">
+        <section className="wayout__whynot">
           <h2>What we won’t do</h2>
           <ul>
             <li>Sell or share what you tell us.</li>
-            <li>Pretend to be your financial adviser, lawyer or counsellor. Your plan is a suggestion; every decision stays yours.</li>
-            <li>Pretend there is a person reading your plan.</li>
-            <li>Charge you for your plan. It is free, and it is yours to keep.</li>
+            <li>Pretend to be your financial adviser, lawyer or counsellor. Your plan is a suggestion, and every decision stays yours.</li>
+            <li>Pretend there’s a person reading your plan.</li>
+            <li>Charge you for your plan. It’s free, and it’s yours to keep.</li>
           </ul>
         </section>
 
-        <p><Link className="wayout__btn wayout__btn--sun" to={WAYOUT_INTAKE}>Start your plan</Link></p>
+        <p className="wayout__whycta"><Link className="wayout__btn wayout__btn--sun" to={WAYOUT_INTAKE}>Start your plan</Link></p>
       </article>
     </WayoutShell>
   )
