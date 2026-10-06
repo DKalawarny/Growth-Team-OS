@@ -98,3 +98,21 @@ function logAndReturn(template, msg) {
   console.warn(`[email] ${template} failed:`, msg)
   return { ok: false, error: msg }
 }
+
+/**
+ * ⭐ Email a teammate their invite (6 Oct). The server reads the token and
+ * checks the address itself; the browser only says which invite. Owner only.
+ */
+export async function sendTeamInvite({ inviteId, to }) {
+  try {
+    const { data, error } = await supabase.functions.invoke('send-email', {
+      method: 'POST',
+      body: { template: 'team-invite', to, data: { inviteId } },
+    })
+    if (error)       return logAndReturn('team-invite', error.message)
+    if (data?.error) return logAndReturn('team-invite', data.error)
+    return { ok: true, id: data?.id ?? null }
+  } catch (err) {
+    return logAndReturn('team-invite', err?.message ?? String(err))
+  }
+}

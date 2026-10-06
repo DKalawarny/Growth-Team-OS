@@ -146,7 +146,7 @@ const staffWelcome: Template<StaffWelcomeData> = {
             <tr>
               <td style="background:#0f1419;padding:24px 32px;">
                 <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">
-                  Growth<span style="color:#d4a843;">OS</span>
+                  Eliv8 <span style="color:#d4a843;">OS</span>
                 </div>
               </td>
             </tr>
@@ -297,7 +297,7 @@ const taskAssigned: Template<TaskAssignedData> = {
             <tr>
               <td style="background:#0f1419;padding:24px 32px;">
                 <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">
-                  Growth<span style="color:#d4a843;">OS</span>
+                  Eliv8 <span style="color:#d4a843;">OS</span>
                 </div>
               </td>
             </tr>
@@ -418,7 +418,7 @@ const userWelcome: Template<UserWelcomeData> = {
             <tr>
               <td style="background:#0f1419;padding:24px 32px;">
                 <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">
-                  Growth<span style="color:#d4a843;">OS</span>
+                  Eliv8 <span style="color:#d4a843;">OS</span>
                 </div>
               </td>
             </tr>
@@ -479,6 +479,84 @@ const userWelcome: Template<UserWelcomeData> = {
   },
 }
 
+
+// ---- team-invite -----------------------------------------------------------
+// ⭐ 6 Oct: the owner adds someone in Settings > Team and the invite now
+// arrives by email instead of a link the owner has to send. The token is read
+// HERE from the database, never accepted from the browser, and the recipient
+// must be exactly the address the invite was made for.
+
+type TeamInviteData = { inviteId: string; token?: string; companyName?: string; ownerName?: string; role?: string }
+
+const ROLE_WORDS: Record<string, string> = {
+  admin:   'run the business with full access, including Solomon and the finances',
+  cfo:     'see the finances, cash flow and documents',
+  manager: 'see the work board, daily logs and playbooks',
+}
+
+const teamInvite: Template<TeamInviteData> = {
+  validate(raw) {
+    const d = (raw ?? {}) as Record<string, unknown>
+    const inviteId = String(d.inviteId ?? '').trim()
+    if (!/^[0-9a-f-]{36}$/i.test(inviteId)) throw new Error('inviteId required')
+    return { inviteId }
+  },
+
+  async guardRecipient(to, ctx) {
+    const { admin, companyId, userId } = ctx
+    const { data: me } = await admin.from('profiles').select('role, name').eq('id', userId).maybeSingle()
+    if (me?.role !== 'owner') throw new Error('only the owner can send team invites')
+    const { data: inv, error } = await admin.from('company_invites')
+      .select('id, company_id, email, role, status, token').eq('id', (ctx as unknown as { _inviteId: string })._inviteId ?? '').maybeSingle()
+    if (error || !inv) throw new Error('invite not found')
+    if (inv.company_id !== companyId) throw new Error('invite belongs to another company')
+    if (inv.status !== 'pending') throw new Error('invite is not pending')
+    if (String(inv.email ?? '').toLowerCase() !== to) throw new Error('recipient must be the address the invite was made for')
+    const { data: co } = await admin.from('companies').select('name').eq('id', companyId).maybeSingle()
+    ;(ctx as unknown as Record<string, unknown>)._invite = { token: inv.token, role: inv.role, companyName: co?.name ?? 'the business', ownerName: me?.name ?? 'The owner' }
+  },
+
+  render(_data, ctx) {
+    const inv = (ctx as unknown as { _invite: { token: string; role: string; companyName: string; ownerName: string } })._invite
+    const link = `${ctx.appUrl}/invite/${inv.token}`
+    const first = String(inv.ownerName).split(' ')[0]
+    const what = ROLE_WORDS[inv.role] ?? 'see the parts of the business they share with you'
+    const subject = `${first} added you to ${inv.companyName} on Eliv8 OS`
+    const text = [
+      `${first} has added you to ${inv.companyName} on Eliv8 OS.`,
+      ``,
+      `You will be able to ${what}.`,
+      ``,
+      `Accept the invite here (it works for this email address only and lasts 30 days):`,
+      link,
+      ``,
+      `If you were not expecting this, you can ignore it.`,
+    ].join('\n')
+    const html = `
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f4f0;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
+          <tr><td style="background:#0f1419;padding:24px 32px;">
+            <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">Eliv8 <span style="color:#d4a843;">OS</span></div>
+          </td></tr>
+          <tr><td style="padding:32px;">
+            <h1 style="margin:0 0 16px 0;font-size:22px;font-weight:700;line-height:1.3;">${escapeHtml(first)} added you to ${escapeHtml(inv.companyName)}</h1>
+            <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#3a3a3a;">You will be able to ${escapeHtml(what)}.</p>
+            <p style="margin:0 0 24px 0;"><a href="${link}" style="display:inline-block;background:#0f1419;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 22px;border-radius:8px;">Accept the invite</a></p>
+            <p style="margin:0;font-size:13px;line-height:1.6;color:#6b6b6b;">The link works for this email address only and lasts 30 days. If you were not expecting this, you can ignore it.</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`
+    return { subject, html, text }
+  },
+}
+
 // ---- registry --------------------------------------------------------------
 
 // deno-lint-ignore no-explicit-any
@@ -486,6 +564,7 @@ const TEMPLATES: Record<string, Template<any>> = {
   'staff-welcome': staffWelcome,
   'task-assigned': taskAssigned,
   'user-welcome':  userWelcome,
+  'team-invite':   teamInvite,
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -524,6 +603,8 @@ Deno.serve(async (req) => {
     const ctx: TemplateContext = { companyId: user.companyId, userId: user.userId, appUrl, admin }
 
     const data = tmpl.validate(body.data)
+    // deno-lint-ignore no-explicit-any
+    ;(ctx as any)._inviteId = (data as any).inviteId
     await tmpl.guardRecipient(to, ctx)
     const rendered = tmpl.render(data, ctx)
 

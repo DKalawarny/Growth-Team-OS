@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { homeFor } from '../../lib/access'
 import { setJobCostsForOperations } from '../../lib/jobAmounts'
+import { sendTeamInvite } from '../../lib/email'
 
 /**
  * ⭐⭐ PEOPLE WITH ACCESS — the owner adds someone to the business and picks
@@ -38,6 +39,7 @@ export default function PeopleSection({ companyId, userId }) {
   const [role, setRole]         = useState('manager')
   const [busy, setBusy]         = useState(false)
   const [err, setErr]           = useState('')
+  const [notice, setNotice]     = useState('')
   const [confirming, setConfirming] = useState(null)   // { kind, id }
   const [copiedId, setCopiedId] = useState(null)
   const copyTimer = useRef(null)
@@ -67,6 +69,9 @@ export default function PeopleSection({ companyId, userId }) {
       const inv = await createInvite({ companyId, userId, email, role })
       setInvites(prev => [inv, ...prev])
       setEmail('')
+      // ⭐ Sent for you now; the link is still copied in case the email is slow.
+      const sent = await sendTeamInvite({ inviteId: inv.id, to: inv.email })
+      setNotice(sent.ok ? `Invite emailed to ${inv.email}. The link is copied too.` : `Could not email it, so the link is copied for you to send.`)
       copy(inv)
     } catch (ex) {
       setErr(ex?.message ?? 'That did not go through. Try again.')
@@ -116,6 +121,7 @@ export default function PeopleSection({ companyId, userId }) {
 
       <div className="p-6 space-y-6">
         {err && <p className="text-[12px] text-red-600" role="alert">{err}</p>}
+        {notice && <p className="text-[12px] text-green-700" role="status">{notice}</p>}
 
         {!loading && (
           <div>
@@ -193,7 +199,7 @@ export default function PeopleSection({ companyId, userId }) {
             {busy ? 'Creating…' : 'Create invite link'}
           </button>
           <p className="text-[11px] text-ink-400 mt-1.5 leading-relaxed">
-            The link is copied for you to send them. It only works for that email address, and lasts 30 days.
+            We email them the invite and copy the link for you too. It only works for that email address, and lasts 30 days.
           </p>
         </form>
 
