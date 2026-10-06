@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import Sidebar       from './Sidebar'
 import MobileNav     from './MobileNav'
 import AdvisorBanner from './AdvisorBanner'
+import PreviewBanner from './PreviewBanner'
 import TrialBanner   from '../billing/TrialBanner'
 
 /**
@@ -57,6 +58,8 @@ export default function AppLayoutChrome({ children }) {
           {/* AdvisorBanner shows a gold strip when an advisor is viewing a
               client workspace. Hidden for regular owners. */}
           <AdvisorBanner />
+          {/* ⭐ The owner previewing a teammate's view. */}
+          <PreviewBanner />
           {/* TrialBanner self-hides unless the user is in the last 3 days
               of their trial with no paid sub. */}
           <TrialBanner />

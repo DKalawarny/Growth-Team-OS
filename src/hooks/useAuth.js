@@ -73,6 +73,14 @@ function useAuthState() {
   const [company, setCompany]   = useState(undefined)
 
   // Advisor state
+  /**
+   * ⭐ "VIEW AS THIS PERSON" (settled 2 Sep: worth more than any checkbox).
+   * The owner previews the app as a teammate's role: menus, routes and every
+   * role-gated part of a page follow `role`, which reads this first. It is a
+   * preview of what they can OPEN; the data loaded is still the owner's, and
+   * the banner says so. Only an owner can start it; it ends on reload.
+   */
+  const [preview, setPreview] = useState(null)   // { role, name } | null
   const [advisorClients, setAdvisorClients] = useState([])
   const [activeClientId, setActiveClientId] = useState(null) // null = own workspace
 
@@ -231,7 +239,11 @@ function useAuthState() {
     isPersonal,
     profile: effectiveProfile,
     company,
-    role:           profile?.role ?? null,
+    role:           (profile?.role === 'owner' && preview?.role) || (profile?.role ?? null),
+    realRole:       profile?.role ?? null,
+    preview,
+    startPreview:   (role, name) => { if (profile?.role === 'owner') setPreview({ role, name }) },
+    endPreview:     () => setPreview(null),
     loading,
     isAdvisor,
     advisorClients,

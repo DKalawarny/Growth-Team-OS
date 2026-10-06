@@ -5,6 +5,8 @@ import {
 } from '../../lib/invites'
 import { GRANTABLE_ROLES, ROLE_LABEL, ROLE_DESCRIPTION } from '../../lib/access'
 import { useAuth } from '../../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
+import { homeFor } from '../../lib/access'
 import { setJobCostsForOperations } from '../../lib/jobAmounts'
 
 /**
@@ -21,7 +23,8 @@ import { setJobCostsForOperations } from '../../lib/jobAmounts'
  */
 export default function PeopleSection({ companyId, userId }) {
   // ⭐ The one switch (settled 2 Sep): may Operations see job costs? Off by default.
-  const { company, refresh } = useAuth()
+  const { company, refresh, startPreview } = useAuth()
+  const navigate = useNavigate()
   const [costsOn, setCostsOn] = useState(!!company?.job_costs_for_operations)
   async function toggleCosts(next) {
     setErr(''); setCostsOn(next)
@@ -145,6 +148,7 @@ export default function PeopleSection({ companyId, userId }) {
                         >
                           {GRANTABLE_ROLES.map(r => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
                         </select>
+                        <button type="button" onClick={() => { startPreview(p.role, p.name || p.email); navigate(homeFor(p.role)) }} className="text-xs font-semibold text-ink-600 hover:text-ink-900">View as</button>
                         <button type="button" onClick={() => setConfirming({ kind: 'remove', id: p.id })} className="text-xs text-ink-400 hover:text-red-600">Remove</button>
                       </div>
                     )}
