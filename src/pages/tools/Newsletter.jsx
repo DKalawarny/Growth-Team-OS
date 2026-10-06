@@ -209,7 +209,7 @@ Return JSON only:
         company_id:  profile.company_id,
         user_id:     profile.id,
         tool_id:     'team-newsletter',
-        title:       `Team Newsletter — ${period}`,
+        title:       `Team Newsletter, ${period}`,
         tags:        ['newsletter', 'team'],
         input_data:  { period, tone, note, context_summary: contextSummary },
         output_data: result,
@@ -354,7 +354,7 @@ Return JSON only:
           </div>
 
           <p className="text-xs text-ink-400 text-center pb-4">
-            Paste into Mailchimp, Gmail, Slack — wherever your team lives.
+            Paste into Mailchimp, Gmail, Slack, wherever your team lives.
           </p>
 
           <ToolDisclaimer toolId="team-newsletter" />
@@ -375,7 +375,7 @@ Return JSON only:
           </div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">Monthly team update</h1>
           <p className="text-xs text-ink-500 mt-0.5">
-            What we built, what we're working on, what's next — no financials.
+            What we built, what we're working on, what's next. No financials.
           </p>
         </div>
       </div>
@@ -451,12 +451,12 @@ Return JSON only:
                 <span className="font-normal normal-case tracking-normal text-ink-400">(optional)</span>
               </label>
               <p className="text-[11px] text-ink-400 mb-2">
-                A shoutout, heads-up, or thank-you — Solomon will weave it in naturally.
+                A shoutout, heads-up, or thank-you. Solomon will weave it in naturally.
               </p>
               <textarea
                 value={note}
                 onChange={e => setNote(e.target.value)}
-                placeholder="e.g. Big thanks to everyone who pushed on the Parker job last week — that's the kind of work that gets us referrals."
+                placeholder="e.g. Big thanks to everyone who pushed on the Parker job last week. That's the kind of work that gets us referrals."
                 rows={3}
                 className="w-full resize-none"
               />
@@ -487,8 +487,8 @@ const NEWSLETTER_STEPS = [
   { label: 'Pulling your recent wins',     sub: 'Check-ins, completed milestones, and team highlights', delay: 0 },
   { label: 'Mapping what\'s in progress',  sub: 'Current milestones and how far along they are', delay: 3000 },
   { label: 'Previewing what\'s coming',    sub: 'What the team will be working on next', delay: 7000 },
-  { label: 'Matching the tone',            sub: 'Warm, energetic, or professional — you chose the feel', delay: 11000 },
-  { label: 'Writing your update',          sub: 'Short, readable, no financials — just progress and momentum', delay: 15000 },
+  { label: 'Matching the tone',            sub: 'Warm, energetic, or professional. You chose the feel', delay: 11000 },
+  { label: 'Writing your update',          sub: 'Short, readable, no financials, just progress and momentum', delay: 15000 },
   { label: 'Polishing the sign-off',       sub: 'A closing line that makes people glad they showed up', delay: 19000 },
 ]
 

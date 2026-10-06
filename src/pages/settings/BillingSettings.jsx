@@ -60,6 +60,6 @@ export default function BillingSettings() {
 function bannerFromParams(params) {
   if (params.get('checkout') !== 'success') return null
   return {
-    text: "Payment successful — you're subscribed. Your plan details are below; it can take a few seconds to update.",
+    text: "Payment successful. You're subscribed. Your plan details are below; it can take a few seconds to update.",
   }
 }

@@ -195,7 +195,7 @@ export default function ExitReadiness() {
       console.error('[exit-readiness] refine failed', err)
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMsgs(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -306,7 +306,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
           <div className="text-3xl flex-shrink-0">📂</div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold text-brand-900">Upload your financials or SOPs first for a sharper score</div>
-            <p className="text-xs text-brand-800 mt-0.5">Solomon will read them directly — cite your actual margins, contract terms, and documented processes — instead of working from a profile alone.</p>
+            <p className="text-xs text-brand-800 mt-0.5">Solomon will read them directly, cite your actual margins, contract terms, and documented processes, instead of working from a profile alone.</p>
           </div>
           <div className="text-brand-600 text-xl flex-shrink-0 self-center group-hover:translate-x-0.5 transition-transform">→</div>
         </Link>
@@ -321,7 +321,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field required label="How much of your revenue is recurring or contracted?" hint="Retainers, maintenance contracts, subscriptions, multi-year agreements. Rough % is fine.">
             <input type="text" value={form.recurring_pct} onChange={onChange('recurring_pct')}
-              placeholder="About 25% — 18 customers on monthly maintenance. The rest is one-off jobs." />
+              placeholder="About 25% – 18 customers on monthly maintenance. The rest is one-off jobs." />
           </Field>
 
           <Field label="What % of your revenue comes from your biggest customer?" hint="If it's over 20%, buyers flinch. Over 40% and it's a discount-the-price conversation.">
@@ -337,7 +337,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field label="How documented are your systems?" hint={`From "it's all in my head" to "every role has an SOP a new hire could follow".`}>
             <textarea value={form.systems_state} onChange={onChange('systems_state')}
-              placeholder="Field work is documented. Office / admin / pricing is not — that's all me."
+              placeholder="Field work is documented. Office / admin / pricing is not. That's all me."
               rows={2} className="w-full" />
           </Field>
 
@@ -465,7 +465,7 @@ function ResultView({ result, saving, error, capError, messages, refining, conte
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine}
           suggestions={EXIT_SUGGESTIONS}
-          placeholder="I hired an ops manager since this — rescore owner dependence. / What if I doubled recurring revenue first?" />
+          placeholder="I hired an ops manager since this, rescore owner dependence. / What if I doubled recurring revenue first?" />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}

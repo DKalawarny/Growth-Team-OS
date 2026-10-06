@@ -44,8 +44,8 @@ const FOCUS_OPTIONS = [
 ]
 
 const CFO_SUGGESTIONS = [
-  'The Feb revenue number is wrong — let me give you the real one',
-  'Remove the invoicing metrics — we collect payment on the day',
+  'The Feb revenue number is wrong, let me give you the real one',
+  'Remove the invoicing metrics. We collect payment on the day',
   'Swap "Average Job Size" in for one of the KPIs',
   'Less scary tone',
   'What should I ask my accountant this month?',
@@ -306,7 +306,7 @@ export default function CFO() {
     } catch (err) {
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap (${err.used}/${err.cap} runs). Resets on the 1st.`
-        : "Couldn't apply that — try rephrasing."
+        : "Couldn't apply that. Try rephrasing."
       setMessages(prev => [...prev, { role: 'assistant', content, error: true }])
     } finally {
       setRefining(false)
@@ -513,7 +513,7 @@ export default function CFO() {
                   refining={refining}
                   onSend={handleRefine}
                   suggestions={CFO_SUGGESTIONS}
-                  placeholder="The Feb revenue number is wrong — should be $52,400. Rerun."
+                  placeholder="The Feb revenue number is wrong. Should be $52,400. Rerun."
                 />
               </div>
             </div>
@@ -523,7 +523,7 @@ export default function CFO() {
               <div className="text-4xl mb-3 opacity-30">📊</div>
               <h2 className="text-base font-bold text-ink-800 mb-1">No financial reads yet</h2>
               <p className="text-sm text-ink-400 mb-4 max-w-sm mx-auto">
-                Generate your first CFO dashboard below — pick a period, add any context, and get a plain-English read of your numbers.
+                Generate your first CFO dashboard below: pick a period, add any context, and get a plain-English read of your numbers.
               </p>
               <button
                 type="button"
@@ -600,7 +600,7 @@ export default function CFO() {
                   with nothing to pattern-match. These now show the range — a win,
                   a neutral one-off, and a question that is genuinely open rather
                   than pre-loaded with a bad answer. Keep the mix. */}
-              <Field label="Notes or context" hint="Anything Solomon can't see — a big job landing, a one-off expense, a quiet month.">
+              <Field label="Notes or context" hint="Anything Solomon can't see: a big job landing, a one-off expense, a quiet month.">
                 <textarea
                   value={form.notes}
                   onChange={e => setForm({ ...form, notes: e.target.value })}
@@ -773,7 +773,7 @@ function QBOBadge({ integration, snapshots, syncing, onSync }) {
         <div className="w-9 h-9 rounded-lg bg-[#2CA01C] flex items-center justify-center text-white font-bold text-xs flex-shrink-0">qb</div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-ink-800">Connect QuickBooks for live numbers</div>
-          <p className="text-xs text-ink-500 mt-0.5">One-click OAuth — P&amp;L and balance sheet flow in automatically.</p>
+          <p className="text-xs text-ink-500 mt-0.5">One-click OAuth, P&amp;L and balance sheet flow in automatically.</p>
         </div>
         <div className="text-ink-400 text-lg flex-shrink-0 self-center group-hover:translate-x-0.5 transition-transform">→</div>
       </Link>

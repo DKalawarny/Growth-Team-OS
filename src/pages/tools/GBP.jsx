@@ -282,7 +282,7 @@ export default function GBP() {
       console.error('[gbp-optimizer] refine failed', err)
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -379,8 +379,8 @@ function FormView({
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">📍 Local & AI Visibility</div>
-          <h1 className="text-xl font-bold text-ink-900 leading-tight">Show up on Google — and in AI search</h1>
-          <p className="text-xs text-ink-500 mt-0.5">GBP audit · website SEO · citations · backlinks · schema · AI search readiness — all in one run.</p>
+          <h1 className="text-xl font-bold text-ink-900 leading-tight">Show up on Google, and in AI search</h1>
+          <p className="text-xs text-ink-500 mt-0.5">GBP audit · website SEO · citations · backlinks · schema · AI search readiness. All in one run.</p>
         </div>
       </div>
 
@@ -393,7 +393,7 @@ function FormView({
           {/* ── Step 1: Find listing ───────────────────────────────────────── */}
           <div className="px-6 pt-6 pb-5 border-b border-ink-100">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-3">
-              Step 1 — Find your Google listing
+              Step 1. Find your Google listing
             </p>
 
             {snapshot ? (
@@ -432,8 +432,8 @@ function FormView({
           {/* ── Step 2: About your business ───────────────────────────────── */}
           <div className="px-6 py-5 space-y-5">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-              Step 2 — About your business
-              <span className="ml-1.5 normal-case font-normal text-gray-300">optional — each field sharpens the output</span>
+              Step 2, About your business
+              <span className="ml-1.5 normal-case font-normal text-gray-300">optional. Each field sharpens the output</span>
             </p>
 
             {/* 2-col question grid */}
@@ -568,7 +568,7 @@ function ManualFallback({ value, onChange }) {
           className="w-full px-2.5 py-2 border border-ink-200 rounded-lg text-xs font-mono bg-white outline-none resize-y transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-300/30"
         />
         <p className="text-xs text-gray-400 mt-1">
-          Category, hours, description, services, review count, photo count — more detail = sharper audit.
+          Category, hours, description, services, review count, photo count, more detail = sharper audit.
         </p>
       </div>
     </details>
@@ -576,7 +576,7 @@ function ManualFallback({ value, onChange }) {
 }
 
 const MANUAL_PLACEHOLDER = `Primary category: Plumber
-Hours: Mon–Fri 7a–5p, Sat 8a–12p
+Hours: Mon, Fri 7a, 5p, Sat 8a: 12p
 Reviews: 47 total, 4.7⭐, last review 3 months ago
 Photos: ~20, mostly logo + truck, no job shots
 Recent posts: none since Nov
@@ -736,7 +736,7 @@ function ResultView({ snapshot, form, result, saving, error, capError, messages,
         </div>
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine} suggestions={GBP_SUGGESTIONS}
-          placeholder="Drop the event posts — we don't do events. Replace with customer-story posts." />
+          placeholder="Drop the event posts. We don't do events. Replace with customer-story posts." />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}
@@ -757,12 +757,12 @@ function ResultView({ snapshot, form, result, saving, error, capError, messages,
 }
 
 const GBP_SUGGESTIONS = [
-  'Rewrite the description — less salesy, more direct',
+  'Rewrite the description, less salesy, more direct',
   'Focus the backlinks on local trade associations',
-  'I\'m service-area only, no storefront — rework the photo list',
-  'I\'m already at 100+ reviews — update the review strategy',
+  'I\'m service-area only, no storefront, rework the photo list',
+  'I\'m already at 100+ reviews, update the review strategy',
   'Add more commercial keywords, less residential',
-  'Simplify the schema section — I\'m on Squarespace',
+  'Simplify the schema section. I\'m on Squarespace',
 ]
 
 // ============================================================== JSON helpers

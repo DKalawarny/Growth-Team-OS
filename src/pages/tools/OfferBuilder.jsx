@@ -106,7 +106,7 @@ export default function OfferBuilder() {
       setResult(parsed)
       setMsgs([{
         role:    'assistant',
-        content: "Here's the first pass. Push the price up, rework the tiers, rewrite the positioning — whatever you want to change, tell me.",
+        content: "Here's the first pass. Push the price up, rework the tiers, rewrite the positioning, whatever you want to change, tell me.",
       }])
       setStage('result')
     } catch (err) {
@@ -169,7 +169,7 @@ export default function OfferBuilder() {
       console.error('[offer-builder] refine failed', err)
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMsgs(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -258,10 +258,10 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
             💰 Offer Builder
           </div>
           <h1 className="text-2xl font-bold text-ink-900 leading-tight mb-2">
-            Turn what you do into a package that's easy to sell — and easy to price.
+            Turn what you do into a package that's easy to sell, and easy to price.
           </h1>
           <p className="text-sm text-ink-400 leading-relaxed">
-            Describe a service you sell — a maintenance contract, a renovation package, a recurring job type.
+            Describe a service you sell: a maintenance contract, a renovation package, a recurring job type.
             We'll define exactly what's included, recommend a price you can defend, and give you word-for-word
             responses when a customer says <em className="text-ink-300">"that seems expensive."</em>
           </p>
@@ -269,7 +269,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
           {/* What you'll get */}
           <div className="flex flex-wrap gap-3 mt-5">
             {[
-              { icon: '📋', label: 'Clear scope', sub: 'What\'s in and what\'s not — in writing' },
+              { icon: '📋', label: 'Clear scope', sub: 'What\'s in and what\'s not, in writing' },
               { icon: '💲', label: 'Right price', sub: 'With a rationale you can explain' },
               { icon: '🗣️', label: 'Sales responses', sub: 'For every objection buyers raise' },
             ].map((item, i) => (
@@ -299,7 +299,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
               Have a past proposal, price list, or P&L?
             </span>
             <span className="text-xs text-brand-700 ml-1.5">
-              Upload it first — we'll price against your real margins, not a guess.
+              Upload it first, we'll price against your real margins, not a guess.
             </span>
           </div>
           <span className="text-brand-500 flex-shrink-0 group-hover:translate-x-0.5 transition-transform">→</span>
@@ -341,7 +341,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
             <textarea
               value={form.outcome}
               onChange={onChange('outcome')}
-              placeholder="No surprise breakdowns in the middle of summer. One flat fee, no call-out charges — they know exactly what they're spending."
+              placeholder="No surprise breakdowns in the middle of summer. One flat fee, no call-out charges. They know exactly what they're spending."
               rows={2}
               className="w-full"
             />
@@ -349,12 +349,12 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field
             label="What do you actually deliver?"
-            hint="List it out — visits, response times, reports, parts, labour. The clearer this is, the better the scope protection."
+            hint="List it out: visits, response times, reports, parts, labour. The clearer this is, the better the scope protection."
           >
             <textarea
               value={form.current_scope}
               onChange={onChange('current_scope')}
-              placeholder={`- 4 scheduled service visits per year\n- Priority response — on-site within 2 hours\n- Annual compliance sign-off letter\n- All labour included; parts at cost + 10%`}
+              placeholder={`- 4 scheduled service visits per year\n- Priority response, on-site within 2 hours\n- Annual compliance sign-off letter\n- All labour included; parts at cost + 10%`}
               rows={4}
               className="w-full"
             />
@@ -387,7 +387,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field
             label="What makes pricing this hard?"
-            hint="Be honest — we'll address it directly. The more context you give, the more useful the output."
+            hint="Be honest, we'll address it directly. The more context you give, the more useful the output."
           >
             <textarea
               value={form.pricing_hesitation}
@@ -478,7 +478,7 @@ function LoadingView({ name }) {
         })}
       </div>
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Pricing anchored to your real margins — not a guess.
+        Pricing anchored to your real margins. Not a guess.
       </p>
     </div>
   )
@@ -492,7 +492,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">💰 Offer Builder</div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.offer_name || 'Your offer'}</h1>
-            <p className="text-xs text-ink-500 mt-0.5">Scope · Pricing · Sales responses — ready to use or refine below.</p>
+            <p className="text-xs text-ink-500 mt-0.5">Scope · Pricing · Sales responses, ready to use or refine below.</p>
           </div>
         </div>
       </div>
@@ -514,7 +514,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine}
           suggestions={OFFER_SUGGESTIONS}
-          placeholder="Push the price up 20%. / Drop the middle tier. / Rewrite objection handlers — I'm B2B not B2C." />
+          placeholder="Push the price up 20%. / Drop the middle tier. / Rewrite objection handlers, I'm B2B not B2C." />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}

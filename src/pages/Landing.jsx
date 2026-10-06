@@ -42,11 +42,11 @@ const LANDING_META = buildPageMeta({
 const TOOLS = [
   {
     name: 'Work through a decision',
-    outcome: 'Argues it more than one way, shows you where the arguments disagree, then says which way it leans \u2014 and what it cannot see.',
+    outcome: 'Argues it more than one way, shows you where the arguments disagree, then says which way it leans, and what it cannot see.',
   },
   {
     name: 'Read your numbers',
-    outcome: 'Connect QuickBooks and get the month in plain English — what changed, what it means, what to do about it.',
+    outcome: 'Connect QuickBooks and get the month in plain English: what changed, what it means, what to do about it.',
   },
   {
     name: 'Forecast your cash',
@@ -115,9 +115,9 @@ const TOOLS = [
  */
 const CHAT_LINES = [
   { role: 'user',      text: "Can I afford a second crew lead?" },
-  { role: 'assistant', text: "On the numbers, probably \u2014 though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that? Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty." },
+  { role: 'assistant', text: "On the numbers, probably, though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that? Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty." },
   { role: 'user',      text: "Show me what it costs." },
-  { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200 \u2014 it holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
+  { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200. It holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
     artifact: 'Cash flow forecast \u00b7 saved to your Library' },
 ]
 
@@ -201,8 +201,8 @@ function HeroSection() {
                 false, so during the pilot the honest word is simply "free".
                 Both now derive from the same flag; do not hardcode either. */}
             {SHOW_PUBLIC_PRICE
-              ? `${TRIAL_DAYS}-day free trial — no credit card required`
-              : `${PILOT_PRICE_LINE} — no credit card required`}
+              ? `${TRIAL_DAYS}-day free trial. No credit card required`
+              : `${PILOT_PRICE_LINE}, no credit card required`}
           </div>
         </div>
 
@@ -403,7 +403,7 @@ function FollowsUpSection() {
           </p>
           <p>
             Once. It asks once, and then it never raises it again. If you
-            changed your mind, that is a complete answer &mdash; an owner who
+            changed your mind, that is a complete answer: an owner who
             reconsiders because the facts moved has done the right thing, and it
             is recorded as exactly that. It does not count your misses, it will
             never tell you how you are doing on the things you said, and there
@@ -442,8 +442,8 @@ function ConvictionSection() {
         <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
           <p>
             Most business advice treats the company as a machine for producing a
-            number, and everything else &mdash; the wages, the estimates, whether
-            the shop is a decent place to work &mdash; as overhead on the way there.
+            number, and everything else, the wages, the estimates, whether
+            the shop is a decent place to work, as overhead on the way there.
           </p>
           {/* ⚠️ 31 Aug — this used to read "notice how the customer who is never
               going to check the invoice gets treated". Daniel: "a weird thing to
@@ -530,7 +530,7 @@ function SolomonSection() {
                 subject at all". */}
             <p className="text-white/60 leading-relaxed mb-6">
               Solomon reads your books, your plan and your last six check-ins
-              before it answers anything &mdash; so the advice starts from your
+              before it answers anything, so the advice starts from your
               numbers, not a template. It remembers what you decided in March and
               why. On the calls that are hard to undo, it makes the case both
               ways, tells you where it comes down, and tells you what it could
@@ -724,7 +724,7 @@ function PriceSection() {
           will tell you what you want to hear.{' '}
           {SHOW_PUBLIC_PRICE
             ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
-            : 'Solomon reads your actual numbers before it says anything. It is free while we are in private pilot — the owners using it now are the ones setting the price.'}
+            : 'Solomon reads your actual numbers before it says anything. It is free while we are in private pilot. The owners using it now are the ones setting the price.'}
         </p>
 
         {/* Toggle — only meaningful when a price is published */}
@@ -760,7 +760,7 @@ function PriceSection() {
                 </div>
               </div>
               {annual ? (
-                <p className="text-brand-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year — you save ${ANNUAL_SAVINGS_USD}</p>
+                <p className="text-brand-400 font-semibold mb-8">Billed as ${PRICE_ANNUAL_USD} USD/year. You save ${ANNUAL_SAVINGS_USD}</p>
               ) : (
                 <p className="text-white/30 mb-8">Switch to annual and save ${ANNUAL_SAVINGS_USD}/year</p>
               )}
@@ -851,8 +851,7 @@ function ClosingCTA() {
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
           {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, no card.`}{' '}
           Connect your books, say what you&rsquo;re weighing, and see whether
-          Solomon tells you anything you did not already know. If not, leave
-          &mdash; and take your data with you.
+          Solomon tells you anything you did not already know. If not, leave, and take your data with you.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link

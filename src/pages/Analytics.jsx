@@ -163,7 +163,7 @@ export default function Analytics() {
 
         {/* ── Cost trend ────────────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-ink-100 shadow-sm p-6">
-          <h2 className="text-sm font-bold text-ink-900 mb-1">API spend — last 6 months</h2>
+          <h2 className="text-sm font-bold text-ink-900 mb-1">API spend, last 6 months</h2>
           <p className="text-xs text-ink-400 mb-6">Solomon + Google Places costs in USD</p>
           <BarChart
             data={history.map(m => ({ label: shortMonth(m.month), value: m.cost }))}
@@ -217,7 +217,7 @@ export default function Analytics() {
 
         {/* ── Activity grid ─────────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-ink-100 shadow-sm p-6">
-          <h2 className="text-sm font-bold text-ink-900 mb-1">Daily activity — last 28 days</h2>
+          <h2 className="text-sm font-bold text-ink-900 mb-1">Daily activity, last 28 days</h2>
           <p className="text-xs text-ink-400 mb-6">Each column = one day · darker = more activity</p>
           <ActivityGrid data={activity} />
           <div className="flex items-center gap-4 mt-4 text-xs text-ink-400">

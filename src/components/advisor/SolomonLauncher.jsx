@@ -30,7 +30,7 @@ const GROUPS = [
     items: [
       { label: 'Forecast cash further out',      seed: 'Walk me through my cash position over the next 13 weeks. Where does it get tight, and what are my options before it does?', to: '/tools/cash-flow' },
       { label: 'Read this month’s numbers to me', seed: 'Read me this month’s numbers in plain English. What actually changed, and what should I do about it?',                     to: '/tools/cfo' },
-      { label: 'Price something honestly',        seed: 'I want to price a service properly — not gouging, not underselling. Help me think through what it’s actually worth.',        to: '/tools/offer-builder' },
+      { label: 'Price something honestly',        seed: 'I want to price a service properly. Not gouging, not underselling. Help me think through what it’s actually worth.',        to: '/tools/offer-builder' },
     ],
   },
   {
@@ -75,7 +75,7 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
           What Solomon can do
         </p>
         <p className="text-[12.5px] leading-[1.5] text-ink-400">
-          Everything the tools page held — it just happens in the conversation now.
+          Everything the tools page held. It just happens in the conversation now.
         </p>
       </div>
 

@@ -161,13 +161,13 @@ function buildMissionLine(businessProfile, stage) {
   const timeline = businessProfile?.goal_timeline
 
   if (goals && timeline) {
-    return `You're building to ${goals.toLowerCase()} over the next ${timeline.toLowerCase()} — here's what's happening today.`
+    return `You're building to ${goals.toLowerCase()} over the next ${timeline.toLowerCase()}, here's what's happening today.`
   }
   if (goals) {
-    return `You're building to ${goals.toLowerCase()} — here's what's happening today.`
+    return `You're building to ${goals.toLowerCase()}, here's what's happening today.`
   }
   if (stage) {
-    return `You're a ${stage.toLowerCase()}-stage operator — here's what's happening today.`
+    return `You're a ${stage.toLowerCase()}-stage operator, here's what's happening today.`
   }
   return "Here's what's happening across your business today."
 }

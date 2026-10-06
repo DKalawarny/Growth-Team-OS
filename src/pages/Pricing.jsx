@@ -37,8 +37,8 @@ const PRICING_META = buildPageMeta({
     ? `Pricing — Eliv8 OS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
     : 'Pricing — Eliv8 OS · free while in private pilot',
   description: SHOW_PUBLIC_PRICE
-    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, an advisor who reads your actual numbers — plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
-    : 'Eliv8 OS is in private pilot and free to use — Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
+    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, an advisor who reads your actual numbers, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
+    : 'Eliv8 OS is in private pilot and free to use: Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
   path:        '/pricing',
 })
 
@@ -54,7 +54,7 @@ const FEATURE_GROUPS = [
     icon:  '💡',
     color: 'amber',
     features: [
-      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way, then says which way it leans — and what it cannot see.' },
+      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way, then says which way it leans, and what it cannot see.' },
       { name: 'Remembers your business', desc: 'Constraints, decisions, people, commitments. You never re-explain the business, and when something you say contradicts something you said before, you hear about it.' },
       { name: 'Will not guess', desc: 'Answers about rules and obligations come from your own documents and the actual regulation, with the source shown. No guessing at the law, and no flattery.' },
     ],
@@ -64,9 +64,9 @@ const FEATURE_GROUPS = [
     icon:  '📈',
     color: 'green',
     features: [
-      { name: 'Finances', desc: 'Live figures pulled straight from QuickBooks, with the month read back to you in plain English — what changed, what it means, what to do about it.' },
+      { name: 'Finances', desc: 'Live figures pulled straight from QuickBooks, with the month read back to you in plain English: what changed, what it means, what to do about it.' },
       { name: 'Cash flow forecast', desc: 'The next thirteen weeks, updated automatically. Know before payroll week becomes a problem.' },
-      { name: 'Pricing something honestly', desc: 'What the work is genuinely worth — neither gouging nor underselling yourself out of discomfort.' },
+      { name: 'Pricing something honestly', desc: 'What the work is genuinely worth. Neither gouging nor underselling yourself out of discomfort.' },
     ],
   },
   {
@@ -87,7 +87,7 @@ const FEATURE_GROUPS = [
     features: [
       { name: 'Roadmap', desc: 'A milestone-by-milestone plan from where you are to where you are going, with the slipped ones surfaced honestly rather than buried.' },
       { name: 'Playbooks', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
-      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones, so the advice tracks how you are actually doing \u2014 not just how the numbers are.' },
+      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones, so the advice tracks how you are actually doing. Not just how the numbers are.' },
       { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
       { name: 'Documents', desc: 'Everything Eliv8 OS writes for you, saved and searchable.' },
     ],
@@ -120,28 +120,28 @@ const FAQS = [
     // something once there is a price to trial against, and
     // SHOW_PUBLIC_PRICE is false. Do not hardcode either half.
     a: SHOW_PUBLIC_PRICE
-      ? `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything — no card, no commitment. You decide at the end of the trial whether it is worth it.`
-      : 'Nope. Sign up with your email — no card, no commitment. Eliv8 OS is free while it is in private pilot, and we are setting the price with the first owners using it.',
+      ? `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything. No card, no commitment. You decide at the end of the trial whether it is worth it.`
+      : 'Nope. Sign up with your email. No card, no commitment. Eliv8 OS is free while it is in private pilot, and we are setting the price with the first owners using it.',
   },
   {
     q: 'What exactly counts as a "report"?',
-    a: 'One finished piece of work — a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
+    a: 'One finished piece of work: a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
   },
   {
     q: 'What if I need more than 10 reports per tool?',
-    a: 'Just email us. We\'ll raise your cap the same day, no questions. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything — including Solomon — once it is reached. Both limits exist to stop runaway AI bills, not to slow you down, and we would rather raise them than have you hit one without warning.',
+    a: 'Just email us. We\'ll raise your cap the same day, no questions. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything, including Solomon, once it is reached. Both limits exist to stop runaway AI bills, not to slow you down, and we would rather raise them than have you hit one without warning.',
   },
   {
     q: 'Can I cancel anytime?',
-    a: 'Yes, always. Monthly plans stop at the end of the billing period. Annual plans can cancel renewal any time — no refund mid-year, but we\'ll never charge you for something you don\'t want.',
+    a: 'Yes, always. Monthly plans stop at the end of the billing period. Annual plans can cancel renewal any time. No refund mid-year, but we\'ll never charge you for something you don\'t want.',
   },
   {
     q: 'Is my business data private?',
-    a: 'Your data lives in your own isolated workspace, is never sold or shared, and is not used to train AI models — the providers we send it to do not train on API data. What you put in stays yours.',
+    a: 'Your data lives in your own isolated workspace, is never sold or shared, and is not used to train AI models. The providers we send it to do not train on API data. What you put in stays yours.',
   },
   {
     q: 'Do I need QuickBooks for this to work?',
-    a: 'No — QuickBooks unlocks the CFO dashboard automatically, but every other tool works without it. You can connect it later, or enter financial data manually.',
+    a: 'No. QuickBooks unlocks the CFO dashboard automatically, but every other tool works without it. You can connect it later, or enter financial data manually.',
   },
 ]
 
@@ -192,8 +192,8 @@ export default function Pricing() {
             assistants can answer specific Eliv8 OS questions verbatim
             from the structured Q&A list, not by inferring from the page). */}
         <script type="application/ld+json">{jsonLd(productSchema({
-          name:        'Eliv8 OS — AI advisor + business tools',
-          description: 'An AI business advisor, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession — for one monthly subscription.',
+          name:        'Eliv8 OS, AI advisor + business tools',
+          description: 'An AI business advisor, plus the tools to act on the advice: finances, cash flow forecasting, hiring, decisions, written procedures, compliance, and succession, for one monthly subscription.',
         }))}</script>
         <script type="application/ld+json">{jsonLd(faqPageSchema(FAQS))}</script>
       </Helmet>
@@ -217,7 +217,7 @@ export default function Pricing() {
         <div className="relative max-w-3xl mx-auto px-6">
           <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-bold px-4 py-1.5 rounded-full mb-7 uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-            {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS}-day free trial — no credit card` : 'Private pilot — free, no credit card'}
+            {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS}-day free trial. No credit card` : 'Private pilot, free, no credit card'}
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
             One subscription.<br />
@@ -243,7 +243,7 @@ export default function Pricing() {
               and do not write "10+". */}
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
             Solomon reads your books and remembers what you decided. Behind that, ten tools
-            on the same set of numbers — the CFO dashboard, thirteen-week cash flow, hiring,
+            on the same set of numbers: the CFO dashboard, thirteen-week cash flow, hiring,
             pricing, compliance and succession. {SHOW_PUBLIC_PRICE
               ? <>All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span></>
               : <span className="text-white font-semibold">Free while we are in private pilot.</span>}
@@ -295,7 +295,7 @@ export default function Pricing() {
           <div className="relative bg-gray-950 rounded-2xl p-8 border border-white/10 shadow-2xl text-center">
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
               <span className="bg-brand-500 text-gray-950 text-xs font-black px-5 py-1.5 rounded-full shadow-lg uppercase tracking-wide whitespace-nowrap">
-                Everything included — no upsells
+                Everything included. No upsells
               </span>
             </div>
 
@@ -317,9 +317,9 @@ export default function Pricing() {
                 </div>
               </div>
               {billing === ANNUAL ? (
-                <p className="text-brand-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD — 2 months completely free</p>
+                <p className="text-brand-400 font-bold mt-2">Billed annually at ${PRICE_ANNUAL_USD} USD, 2 months completely free</p>
               ) : (
-                <p className="text-white/25 text-sm mt-2">Pay annually and pocket ${ANNUAL_SAVINGS_USD} — that's {ANNUAL_MONTHS_FREE} months free</p>
+                <p className="text-white/25 text-sm mt-2">Pay annually and pocket ${ANNUAL_SAVINGS_USD}, that's {ANNUAL_MONTHS_FREE} months free</p>
               )}
             </div>
             ) : (
@@ -341,7 +341,7 @@ export default function Pricing() {
           <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-5 py-4">
             <div>
               <p className="text-sm font-bold text-gray-900">Working with multiple clients?</p>
-              <p className="text-xs text-gray-500 mt-0.5">Agency and white-label options — let's talk.</p>
+              <p className="text-xs text-gray-500 mt-0.5">Agency and white-label options, let's talk.</p>
             </div>
             <a
               href="mailto:support@eliv8os.com?subject=Eliv8 OS%20Agency"
@@ -395,7 +395,7 @@ export default function Pricing() {
               {SHOW_PUBLIC_PRICE ? `What $${PRICE_MONTHLY_USD} replaces.` : 'What it replaces.'}
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
-              Most owners are already paying for this advice — just scattered, expensive, and slow.
+              Most owners are already paying for this advice: just scattered, expensive, and slow.
               Eliv8 OS pulls it all into one place.
             </p>
           </div>
@@ -460,7 +460,7 @@ export default function Pricing() {
                 to="/signup?plan=owner"
                 className="w-full sm:w-auto px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
               >
-                {SHOW_PUBLIC_PRICE ? 'Start free trial — no credit card' : 'Start free — no credit card'}
+                {SHOW_PUBLIC_PRICE ? 'Start free trial. No credit card' : 'Start free. No credit card'}
               </Link>
               <a
                 href="mailto:support@eliv8os.com"
@@ -504,7 +504,7 @@ function OwnerCta({ billing, authState }) {
         to="/settings"
         className="block w-full text-center rounded-xl px-4 py-4 text-sm font-bold bg-white/10 border border-white/20 text-white/80 hover:bg-white/15 transition-colors"
       >
-        You're on the {sub.plan} plan — manage billing →
+        You're on the {sub.plan} plan, manage billing →
       </Link>
     )
   }
@@ -536,7 +536,7 @@ function OwnerCta({ billing, authState }) {
           disabled={clicking}
           className="w-full rounded-xl px-4 py-4 text-base font-black bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-gray-950 transition-colors shadow-lg"
         >
-          {clicking ? 'Redirecting to Stripe…' : `Upgrade now — ${billing === ANNUAL ? `$${PRICE_ANNUAL_USD} / year` : `$${PRICE_MONTHLY_USD} / month`}`}
+          {clicking ? 'Redirecting to Stripe…' : `Upgrade now, ${billing === ANNUAL ? `$${PRICE_ANNUAL_USD} / year` : `$${PRICE_MONTHLY_USD} / month`}`}
         </button>
         {err && <p className="text-xs text-red-400 mt-2 text-center">{err}</p>}
       </div>
@@ -593,7 +593,7 @@ function Tick() {
 
 function bannerFromParams(params) {
   if (params.get('checkout') === 'canceled') {
-    return { tone: 'neutral', text: "Checkout canceled — no charge was made. Come back whenever you're ready." }
+    return { tone: 'neutral', text: "Checkout canceled. No charge was made. Come back whenever you're ready." }
   }
   return null
 }

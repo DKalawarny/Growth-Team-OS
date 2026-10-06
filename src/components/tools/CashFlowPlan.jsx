@@ -84,7 +84,7 @@ export default function CashFlowPlan({ data }) {
       )}
 
       {key_events.length > 0 && (
-        <Section title="On the calendar" hint="The moving parts — big deposits, tax bills, big purchases.">
+        <Section title="On the calendar" hint="The moving parts: big deposits, tax bills, big purchases.">
           <ul className="space-y-1.5">
             {key_events.map((e, i) => <EventRow key={i} event={e} />)}
           </ul>

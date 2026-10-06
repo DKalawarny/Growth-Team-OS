@@ -60,7 +60,7 @@ const STEPS = [
         hint: "We'll read it so the roadmap is specific to your business.",
         optional: true },
       { name: 'industry',      label: 'Industry',            type: 'select', options: INDUSTRY_OPTIONS,
-        hint: 'The closest fit is fine — it sets the benchmarks we compare you against.' },
+        hint: 'The closest fit is fine. It sets the benchmarks we compare you against.' },
     ],
   },
   {
@@ -91,7 +91,7 @@ const STEPS = [
   },
   {
     title:       'The numbers',
-    description: "Rough ranges are fine — we'll sharpen these with your books later.",
+    description: "Rough ranges are fine, we'll sharpen these with your books later.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
         <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
@@ -112,7 +112,7 @@ const STEPS = [
       { name: 'current_revenue', label: 'Where this year is tracking', type: 'select', options: REVENUE_OPTIONS,
         hint: 'If the rest of the year looks like the last few months, what would the year total? Up on last year, pick the higher band.' },
       { name: 'profit',          label: 'Profit margin',        type: 'select', options: PROFIT_OPTIONS,
-        hint: 'NET — what is left after everything, including your own pay. "Not sure" is a real answer, and Solomon can help you work it out from your books.' },
+        hint: 'NET, what is left after everything, including your own pay. "Not sure" is a real answer, and Solomon can help you work it out from your books.' },
     ],
   },
   {
@@ -125,7 +125,7 @@ const STEPS = [
     ),
     panel: {
       headline: 'A roadmap built\nfor your goals.',
-      sub: 'Solomon sequences 8–12 milestones across your timeline — nothing generic.',
+      sub: 'Solomon sequences 8–12 milestones across your timeline. Nothing generic.',
       bullets: [
         'Ordered so the things that unblock other things come first',
         'Balanced across everything you picked, not just the loudest one',
@@ -134,7 +134,7 @@ const STEPS = [
     },
     fields: [
       { name: 'primary_goal',  label: 'Primary goals',           type: 'goals',
-        hint: 'Pick as many as apply — the roadmap will balance them.' },
+        hint: 'Pick as many as apply. The roadmap will balance them.' },
       { name: 'goal_timeline', label: 'Timeline for those goals', type: 'select', options: GOAL_TIMELINE_OPTIONS,
         hint: 'When you want this to be true by. It sets the dates on your roadmap, so pick something you would actually hold yourself to.' },
     ],
@@ -167,8 +167,8 @@ const STEPS = [
     },
     fields: [
       { name: 'why_statement', label: 'Why do you run this business?', type: 'textarea',
-        placeholder: "There's no wrong answer. Something like: it pays for four families, not just mine — and I want to be able to look anyone I've worked with in the eye afterwards.",
-        hint: 'Optional. It is read before every answer — change or delete it any time under Context.',
+        placeholder: "There's no wrong answer. Something like: it pays for four families, not just mine, and I want to be able to look anyone I've worked with in the eye afterwards.",
+        hint: 'Optional. It is read before every answer, change or delete it any time under Context.',
         optional: true },
     ],
   },
@@ -380,7 +380,7 @@ export default function Onboarding() {
         // though the user only sees the generic "try again" message.
         // Useful when Claude returns prose instead of JSON, an empty array,
         // or a different schema after a prompt change.
-        console.error('[Onboarding] AI_PARSE_FAILED — raw response:', raw)
+        console.error('[Onboarding] AI_PARSE_FAILED, raw response:', raw)
         throw new Error('AI_PARSE_FAILED')
       }
 
@@ -560,7 +560,7 @@ export default function Onboarding() {
       console.error('[Onboarding] Roadmap generation failed:', err)
 
       const msg = err.message === 'AI_PARSE_FAILED'
-        ? "We couldn't read the AI's response. Try again — it usually works on the next try."
+        ? "We couldn't read the AI's response. Try again. It usually works on the next try."
         : (err.message ?? 'Something went wrong. Please try again.')
       setError(msg)
       setPhase('error')

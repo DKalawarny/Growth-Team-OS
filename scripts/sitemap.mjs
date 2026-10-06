@@ -9,8 +9,9 @@
  *
  * Runs before the build, so the file on disk is always what the routes say.
  */
-import { writeFileSync } from 'node:fs'
+import { writeFileSync, readFileSync } from 'node:fs'
 import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js'
+import { ANSWERS } from '../src/content/answers.js'
 import { SITUATIONS } from '../src/content/unstuckSituations.js'
 import { WAYOUT_SITE_URL, WAYOUT_NAME } from '../src/lib/wayout/brand.js'
 
@@ -133,3 +134,21 @@ ${SITUATIONS.map(x => `- ${WAYOUT_SITE_URL}/stuck/${x.slug} : ${x.question}`).jo
 `
 writeFileSync('public/llms-unstuckmap.txt', llms)
 console.log(`[llms] unstuckmap: ${SITUATIONS.length} situation pages listed`)
+
+/**
+ * ⭐ Eliv8's llms.txt — the hand-written description lives in
+ * scripts/llms-eliv8-head.md; the Answers list is GENERATED from ANSWERS so it
+ * cannot go stale (6 Oct: it listed 37 of 47). Same rules as Unstuck's: no
+ * dashes, no internal notes inside the file, claims match the site.
+ */
+const eliv8Llms = `${readFileSync('scripts/llms-eliv8-head.md', 'utf8').trimEnd()}
+
+## Answers
+
+Straight answers to questions owner operators actually ask, free to read with no sign up.
+
+Index: ${SITE_URL}/answers
+${ANSWERS.map(a => `- ${a.question} : ${SITE_URL}/answers/${a.slug}`).join('\n')}
+`
+writeFileSync('public/llms.txt', eliv8Llms)
+console.log(`[llms] eliv8: ${ANSWERS.length} answers listed`)

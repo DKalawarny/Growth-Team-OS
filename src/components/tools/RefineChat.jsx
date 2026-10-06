@@ -34,7 +34,7 @@ export default function RefineChat({
   onSend,
   suggestions = [],
   title       = 'Tweak it',
-  hint        = 'Tell me what to change — the result above updates each time.',
+  hint        = 'Tell me what to change, the result above updates each time.',
   placeholder = 'What would you like to change?',
 }) {
   const [draft, setDraft] = useState('')

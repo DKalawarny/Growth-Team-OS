@@ -480,7 +480,11 @@ function buildSystem(
   // then an unmarked volatile block. The cache key is the exact text up to and
   // including the marker, so keeping this order preserves the ~90% saving.
   if (body.promptKey) {
-    const prompt = resolvePrompt(body.promptKey)
+    // ⭐ ONE punctuation rule for every prompt, both products (Daniel, 5 Oct:
+    // dashes "look AI"). Added here once rather than in thirty prompts, so a
+    // prompt written next month inherits it. Displays also clean what slips by.
+    const NO_DASHES = '\n\nPUNCTUATION: never use an em dash or an en dash between words in anything you write, including inside JSON values. Use a comma, a colon or a full stop instead.'
+    const prompt = resolvePrompt(body.promptKey) + NO_DASHES
     const stable = prompt + (body.stableContext ?? '')
 
     if (!body.volatileContext && !body.cacheTtl) {

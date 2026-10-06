@@ -103,7 +103,7 @@ export default function Rocks() {
       setResult(parsed)
       setMessages([{
         role:    'assistant',
-        content: "Here's your quarter. If a rock doesn't fit your team, tell me who should own it — or swap it entirely. You can also move rocks into 'NOT doing', change the theme, or tighten up a definition-of-done.",
+        content: "Here's your quarter. If a rock doesn't fit your team, tell me who should own it, or swap it entirely. You can also move rocks into 'NOT doing', change the theme, or tighten up a definition-of-done.",
       }])
       setStage('result')
     } catch (err) {
@@ -166,7 +166,7 @@ export default function Rocks() {
       console.error('[rocks-tracker] refine failed', err)
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -285,10 +285,10 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field label="Constraints or headwinds" hint="Cash tight? Busy season? Key person away? Anything that limits what's realistic.">
             <textarea value={form.constraints} onChange={onChange('constraints')}
-              placeholder="Summer is our peak — techs are at capacity June–Aug. Can't add overhead right now." rows={2} className="w-full" />
+              placeholder="Summer is our peak, techs are at capacity June, Aug. Can't add overhead right now." rows={2} className="w-full" />
           </Field>
 
-          <Field label="Specific questions you want answered" hint="Optional — anything specific you want the plan to address.">
+          <Field label="Specific questions you want answered" hint="Optional, anything specific you want the plan to address.">
             <textarea value={form.specific_questions} onChange={onChange('specific_questions')}
               placeholder="Should we make Google reviews a rock, or is it a weekly task?" rows={2} className="w-full" />
           </Field>
@@ -371,7 +371,7 @@ function LoadingView({ quarter }) {
         })}
       </div>
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Built from your roadmap milestones — not guessed from scratch.
+        Built from your roadmap milestones. Not guessed from scratch.
       </p>
     </div>
   )
@@ -409,7 +409,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine}
           suggestions={ROCKS_SUGGESTIONS}
-          placeholder="Swap the third rock — we can't do that this quarter. / Move the Google reviews rock to NOT-doing. / Reassign the ops rock to Sarah." />
+          placeholder="Swap the third rock. We can't do that this quarter. / Move the Google reviews rock to NOT-doing. / Reassign the ops rock to Sarah." />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}
@@ -430,10 +430,10 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 }
 
 const ROCKS_SUGGESTIONS = [
-  'Sarah is on leave in May — reassign her rock',
+  'Sarah is on leave in May, reassign her rock',
   'Too ambitious, cut it to 3 rocks',
   'Add a cash-discipline rock, I\'m worried about June',
-  'Reassign rock #2 to me — ops manager doesn\'t have capacity',
+  'Reassign rock #2 to me. Ops manager doesn\'t have capacity',
   'Make the weekly milestones less consultant-y',
 ]
 

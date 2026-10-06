@@ -23,7 +23,7 @@ import { buildPageMeta, jsonLd, organizationSchema, CONTACT_EMAIL } from '../../
 
 const SECURITY_META = buildPageMeta({
   title:       'Security & data handling — Eliv8 OS',
-  description: 'How Eliv8 OS protects your business data. Workspace isolation, encrypted connections, no AI training on your data, vendor list, and breach response. Built honestly — what we have and what we are still building.',
+  description: 'How Eliv8 OS protects your business data. Workspace isolation, encrypted connections, no AI training on your data, vendor list, and breach response. Built honestly, what we have and what we are still building.',
   path:        '/security',
 })
 
@@ -57,8 +57,7 @@ export default function Security() {
           <p>
             Every business gets an isolated workspace inside our database. Your records
             are tagged with a unique company ID, and database-level row security rules
-            (Postgres RLS on Supabase) ensure no query can return another company's data —
-            not by mistake, not by misconfiguration, not by a developer running the wrong
+            (Postgres RLS on Supabase) ensure no query can return another company's data. Not by mistake, not by misconfiguration, not by a developer running the wrong
             command. The same isolation rule lets us safely operate as a multi-tenant
             platform without your data ever sitting next to another company's in
             application memory.
@@ -67,7 +66,7 @@ export default function Security() {
 
         <Section title="Encryption in transit">
           <p>
-            All connections are TLS 1.2+ — your browser to our server, our server to
+            All connections are TLS 1.2+: your browser to our server, our server to
             our database, our server to Anthropic, our server to Stripe. We don't
             accept unencrypted connections. Period.
           </p>
@@ -77,16 +76,16 @@ export default function Security() {
           <p>
             Database storage is encrypted at rest by Supabase (AES-256). File uploads
             (documents you store in the library) are encrypted at rest by Supabase
-            Storage. Authentication tokens never touch our database — they live in
+            Storage. Authentication tokens never touch our database. They live in
             Supabase Auth.
           </p>
         </Section>
 
-        <Section title="AI training — explicitly never">
+        <Section title="AI training, explicitly never">
           <p>
             <strong>Your business data is never used to train AI models.</strong> When
             we send a prompt to Anthropic (Claude) on your behalf, we send it through
-            their API — and Anthropic's API terms explicitly prohibit using API
+            their API, and Anthropic's API terms explicitly prohibit using API
             traffic for training. The same is true for any AI vendor we use.
           </p>
           <p className="mt-3">
@@ -98,12 +97,12 @@ export default function Security() {
         <Section title="Who we share data with (the full list)">
           <p>To run Eliv8 OS, we send minimum-necessary data to:</p>
           <ul className="mt-3 space-y-2">
-            <li><strong>Supabase</strong> — database, authentication, file storage. Your data lives here.</li>
-            <li><strong>Anthropic</strong> — runs Claude (the AI behind Solomon). We send the prompts and context the AI needs to answer your questions. Anthropic does not retain or train on this data.</li>
-            <li><strong>Stripe</strong> — billing. We send your email and subscription info. We do NOT see or store your credit card.</li>
-            <li><strong>QuickBooks (optional)</strong> — read-only financial sync. Only if you connect it. We never write to your books.</li>
-            <li><strong>ElevenLabs (optional)</strong> — turns Solomon&rsquo;s written answer into speech, and only when you press Listen. We send that one answer. Nothing is sent if you never use it.</li>
-            <li><strong>Your browser&rsquo;s speech recognition (optional)</strong> — if you dictate instead of typing. On Chrome this means the audio goes to Google to be turned into text; on Safari it is handled by Apple. Only while the microphone button is on.</li>
+            <li><strong>Supabase</strong>: database, authentication, file storage. Your data lives here.</li>
+            <li><strong>Anthropic</strong>: runs Claude (the AI behind Solomon). We send the prompts and context the AI needs to answer your questions. Anthropic does not use it to train its models.</li>
+            <li><strong>Stripe</strong>: billing. We send your email and subscription info. We do NOT see or store your credit card.</li>
+            <li><strong>QuickBooks (optional)</strong>: read-only financial sync. Only if you connect it. We never write to your books.</li>
+            <li><strong>ElevenLabs (optional)</strong>: turns Solomon&rsquo;s written answer into speech, and only when you press Listen. We send that one answer. Nothing is sent if you never use it.</li>
+            <li><strong>Your browser&rsquo;s speech recognition (optional)</strong>: if you dictate instead of typing. On Chrome this means the audio goes to Google to be turned into text; on Safari it is handled by Apple. Only while the microphone button is on.</li>
           </ul>
           <p className="mt-3">
             That's the full list. No analytics tracking sold to third parties. No
@@ -113,7 +112,7 @@ export default function Security() {
 
         <Section title="Account access">
           <p>
-            Passwords are hashed with bcrypt — we can't see your password, even if
+            Passwords are hashed with bcrypt. We can't see your password, even if
             we wanted to. Password reset flows go through email verification.
             Multi-factor authentication is on the roadmap.
           </p>
@@ -126,7 +125,7 @@ export default function Security() {
             <li>Multi-factor authentication (planned: 2026)</li>
             <li>SOC 2 Type II audit (planned once we cross 100 customers)</li>
             <li>Single sign-on for agency / multi-team accounts (planned)</li>
-            <li>Data residency options (Canada-only / US-only) — currently North-America-wide via Supabase</li>
+            <li>Data residency options (Canada-only / US-only), currently North-America-wide via Supabase</li>
           </ul>
         </Section>
 
@@ -135,7 +134,7 @@ export default function Security() {
             If we discover a security issue affecting your data, we will email you
             within 72 hours of confirmation, describe what happened, what we're
             doing about it, and what you should do. No PR-spin, no "out of an
-            abundance of caution" — just the facts.
+            abundance of caution", just the facts.
           </p>
           <p className="mt-3">
             If you find a vulnerability, please email us at{' '}
@@ -156,11 +155,11 @@ export default function Security() {
               trusting us. That is the wrong way round for a product whose
               entire pitch is that it does not overstate. */}
           <p>
-            Ask us for an export any time — email {CONTACT_EMAIL} and we'll send
+            Ask us for an export any time, email {CONTACT_EMAIL} and we'll send
             your data over. It isn't self-serve yet; built-in export is on the
             list below. You can delete your workspace yourself from Settings →
             Danger zone, which removes it and all its data within 30 days (the
-            30 day window is for backup rotation — after that it's gone).
+            30 day window is for backup rotation, after that it's gone).
           </p>
         </Section>
 

@@ -433,7 +433,7 @@ export default function Trajectories() {
       icon: '🤲',
       label: 'What you could give',
       value: fmtRev(Math.round(target * 0.10 / 12)),
-      note: 'a tenth, monthly — your number, not ours',
+      note: 'a tenth, monthly, your number, not ours',
     }] : []),
     {
       icon: '🏦',
@@ -489,7 +489,7 @@ export default function Trajectories() {
             value={targetRev}
             onChange={setTargetRev}
             placeholder="e.g. 500000"
-            hint="Your goal — what does success look like?"
+            hint="Your goal, what does success look like?"
           />
           <div>
             <label className="block text-xs font-semibold text-ink-600 mb-1.5">
@@ -771,7 +771,7 @@ export default function Trajectories() {
                 Get a custom action plan for your revenue target
               </p>
               <p className="text-xs text-ink-400 max-w-md mx-auto leading-relaxed">
-                Solomon will analyse your revenue gap, industry, and timeline — then generate specific actions
+                Solomon will analyse your revenue gap, industry, and timeline, then generate specific actions
                 you need to take beyond your roadmap milestones to actually hit {fmtRev(Number(targetRev))}/yr.
               </p>
               {planError && (
@@ -859,7 +859,7 @@ export default function Trajectories() {
           </div>
           <div className="px-5 py-3 bg-ink-50 border-t border-ink-100">
             <p className="text-[11px] text-ink-400 leading-relaxed">
-              Estimates from typical margins — use <a href="/tools/cfo" className="underline hover:text-ink-600">Finances</a> with
+              Estimates from typical margins. Use <a href="/tools/cfo" className="underline hover:text-ink-600">Finances</a> with
               your real numbers for anything you intend to act on. And a number
               this size has a cost in hours, people and risk. Worth asking
               Solomon what that cost is before you commit to the date.
@@ -1049,7 +1049,7 @@ function ActionItem({ action, categoryName, checked, added, onToggle, onAddToRoa
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2">
                   <polyline points="1,6 4,9 11,2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Added to side quests — view on roadmap →
+                Added to side quests, view on roadmap →
               </Link>
             ) : (
               <button

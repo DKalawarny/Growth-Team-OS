@@ -1,13 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { plainDashes, forReaders } from './mapContract'
 
-/**
- * ⭐ No dashes in anything a person reads (Daniel, 5 Oct: "no one writes like
- * that, it looks AI"). Every case below is a real sentence from the site;
- * validated both ways, including what must NOT change (ranges, hyphens, a lone
- * dash used as a value). A dash before a new sentence becomes a full stop,
- * before a list a colon, around an aside two commas, otherwise a comma.
- */
+/** ⭐ Every case is a real sentence from one of the sites; validated both ways. */
 const cases = [
   ['Getting the separation reason right matters — say what happened plainly and keep any letter.', 'Getting the separation reason right matters. Say what happened plainly and keep any letter.'],
   ['Same for anything the employer owes — accrued holiday, a final pay run, a pension decision.', 'Same for anything the employer owes: accrued holiday, a final pay run, a pension decision.'],
@@ -25,6 +19,9 @@ const cases = [
   ['Everything else you told us is still here — your town, your hours, what you will not do.', 'Everything else you told us is still here: your town, your hours, what you will not do.'],
   ['Regular clients beat any app — the app keeps the margin.', 'Regular clients beat any app. The app keeps the margin.'],
   ['what must go out every month — and if the house goes, the mortgage, the tax and the insurance go too.', 'what must go out every month, and if the house goes, the mortgage, the tax and the insurance go too.'],
+  ['vs. $1,080 – $3,850/mo separately', 'vs. $1,080 – $3,850/mo separately'],
+  ['Specialty owners, $500k – $15M revenue', 'Specialty owners, $500k – $15M revenue'],
+  ['Read the first part... See which fits — including you.', 'Read the first part... See which fits, including you.'],
   ['Kids aged 5–11', 'Kids aged 5–11'], ['a part-time role', 'a part-time role'], ['—', '—'],
   ['The order matters —', 'The order matters'], ['— and that is the point.', 'and that is the point.'],
 ]

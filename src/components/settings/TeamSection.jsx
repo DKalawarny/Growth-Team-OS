@@ -301,12 +301,12 @@ function AddNotice({ notice, onDismiss }) {
       <span className="flex-1">
         {notice.kind === 'sent' && (
           <>
-            <strong>{notice.name}</strong> added — welcome email sent to {notice.email}.
+            <strong>{notice.name}</strong> added, welcome email sent to {notice.email}.
           </>
         )}
         {notice.kind === 'noEmail' && (
           <>
-            <strong>{notice.name}</strong> added. No email on file — you can still assign tasks, but they won't get notified.
+            <strong>{notice.name}</strong> added. No email on file. You can still assign tasks, but they won't get notified.
           </>
         )}
         {notice.kind === 'failed' && (

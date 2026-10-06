@@ -100,7 +100,7 @@ export default function OrgChart() {
       setResult(parsed)
       setMsgs([{
         role:    'assistant',
-        content: "Here's a target org. Push hires around, drop roles you can't afford, or tell me the owner-transition is wrong — this is a first draft, not a verdict.",
+        content: "Here's a target org. Push hires around, drop roles you can't afford, or tell me the owner-transition is wrong. This is a first draft, not a verdict.",
       }])
       setStage('result')
     } catch (err) {
@@ -162,7 +162,7 @@ export default function OrgChart() {
       console.error('[org-chart] refine failed', err)
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMsgs(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -267,13 +267,13 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
             <input type="text" value={form.horizon} onChange={onChange('horizon')} placeholder="24 months" />
           </Field>
 
-          <Field required label="Who's on the team today?" hint="Describe everyone — roles, rough comp, what they actually do. The more detail, the better the plan.">
+          <Field required label="Who's on the team today?" hint="Describe everyone: roles, rough comp, what they actually do. The more detail, the better the plan.">
             <textarea value={form.current_team} onChange={onChange('current_team')}
               placeholder="Me (owner/operator, HVAC tech + all sales + admin). 2 licensed techs at $35/hr. 1 part-time bookkeeper 10hrs/week."
               rows={4} className="w-full" />
           </Field>
 
-          <Field label="What should be true at your horizon?" hint="Optional — what do you want to have built by then? Solomon will read your roadmap too.">
+          <Field label="What should be true at your horizon?" hint="Optional, what do you want to have built by then? Solomon will read your roadmap too.">
             <textarea value={form.goal} onChange={onChange('goal')}
               placeholder="Off the tools. Operations running without me. Enough of a team to handle a 30% revenue increase."
               rows={2} className="w-full" />
@@ -282,7 +282,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Field label="Constraints" hint="Budget ceilings, remote, geography, anything that limits your options.">
               <textarea value={form.constraints} onChange={onChange('constraints')}
-                placeholder="Can't spend more than $20k/mo on new payroll this year. Needs to be local — field work." rows={3} className="w-full" />
+                placeholder="Can't spend more than $20k/mo on new payroll this year. Needs to be local, field work." rows={3} className="w-full" />
             </Field>
             <Field label="What breaks first when you grow?" hint="The bottleneck that will snap before anything else.">
               <textarea value={form.pain_points} onChange={onChange('pain_points')}
@@ -290,7 +290,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
             </Field>
           </div>
 
-          <Field label="What do YOU want to be doing at the horizon?" hint="Optional — shapes the owner transition plan.">
+          <Field label="What do YOU want to be doing at the horizon?" hint="Optional, shapes the owner transition plan.">
             <input type="text" value={form.role_in_horizon} onChange={onChange('role_in_horizon')}
               placeholder="Sales, key accounts, and strategy. Not service calls." />
           </Field>
@@ -371,7 +371,7 @@ function LoadingView({ horizon }) {
         })}
       </div>
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Roles, sequence, and owner transition — built for where you're going, not where you are.
+        Roles, sequence, and owner transition, built for where you're going, not where you are.
       </p>
     </div>
   )
@@ -406,7 +406,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine}
           suggestions={ORG_SUGGESTIONS}
-          placeholder="Push the Service Manager hire to month 3. / I can't afford a full-time dispatcher — use part-time. / Change the owner role to pure sales." />
+          placeholder="Push the Service Manager hire to month 3. / I can't afford a full-time dispatcher. Use part-time. / Change the owner role to pure sales." />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}
@@ -429,8 +429,8 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 const ORG_SUGGESTIONS = [
   'Push the GM hire to year 2',
   'Make the CFO role fractional',
-  'I\'m not stepping off sales — rework around that',
-  'We can\'t afford a full exec team — simplify',
+  'I\'m not stepping off sales, rework around that',
+  'We can\'t afford a full exec team, simplify',
   'Add an apprentice under the field supervisor',
 ]
 

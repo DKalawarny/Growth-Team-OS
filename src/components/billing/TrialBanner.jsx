@@ -90,7 +90,7 @@ export default function TrialBanner() {
           <Link to="/settings/billing" className="underline hover:no-underline font-semibold">
             Upgrade now
           </Link>{' '}
-          to keep access — or save ${PRICE_MONTHLY_USD * 2} with the{' '}
+          to keep access, or save ${PRICE_MONTHLY_USD * 2} with the{' '}
           <Link to="/settings/billing" className="underline hover:no-underline">
             annual plan
           </Link>.

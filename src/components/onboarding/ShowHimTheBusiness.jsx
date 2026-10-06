@@ -65,7 +65,7 @@ const GAPS_OPERATING = [
   {
     id:      'cash',
     locked:  'Where cash gets tight in the next thirteen weeks',
-    unlock:  'A bank statement — or connect QuickBooks',
+    unlock:  'A bank statement, or connect QuickBooks',
     match:   /bank|statement|cash|ledger|transactions|reconcil/i,
   },
   {
@@ -397,7 +397,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
             onClick={() => startOAuthFlow({ newTab: true }).catch(err => setError(err.message))}
             className="mt-6 w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-50 transition-colors"
           >
-            Connect QuickBooks instead — one click, real numbers
+            Connect QuickBooks instead. One click, real numbers
           </button>
           <p className="text-[11px] text-ink-400 mt-1.5 text-center">
             Opens Intuit in a new tab, so you keep your place here. You can also

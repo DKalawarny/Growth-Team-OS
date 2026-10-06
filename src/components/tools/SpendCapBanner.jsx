@@ -70,7 +70,7 @@ export default function SpendCapBanner({ err, dark = false }) {
               <p className="mt-2 text-red-400 text-xs">{topupErr}</p>
             )}
             <p className="mt-3 text-ink-600 text-xs">
-              Instant — you'll be redirected to Stripe and back in under a minute. Top-ups add to your cap for this month only.
+              Instant, you'll be redirected to Stripe and back in under a minute. Top-ups add to your cap for this month only.
             </p>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function SpendCapBanner({ err, dark = false }) {
             <p className="mt-2 text-red-600 text-xs">{topupErr}</p>
           )}
           <p className="mt-3 text-amber-700 text-xs">
-            Instant — you'll be redirected to Stripe and back in under a minute. Top-ups add to your cap for this month only.
+            Instant, you'll be redirected to Stripe and back in under a minute. Top-ups add to your cap for this month only.
           </p>
         </div>
       </div>

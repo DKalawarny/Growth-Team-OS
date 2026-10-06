@@ -60,7 +60,7 @@ export default function DayDetail({
           <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3">
             <div className="text-xs font-bold text-brand-800 mb-1">📅 Today's focus</div>
             <p className="text-[11px] text-brand-600 mb-2.5">
-              {sessions.length} milestone{sessions.length > 1 ? 's' : ''} in focus today — log how it went when you're done.
+              {sessions.length} milestone{sessions.length > 1 ? 's' : ''} in focus today, log how it went when you're done.
             </p>
             <Link
               to="/checkins"
@@ -74,7 +74,7 @@ export default function DayDetail({
         {/* ── Work Plan ─────────────────────────────────────────────────── */}
         {isWeekend && sessions.length === 0 ? (
           <div className="rounded-xl border border-ink-100 bg-ink-50 px-4 py-3 text-sm text-ink-400">
-            🛌 Weekend — no sessions planned. Toggle "Weekdays only" off in the header if you work weekends.
+            🛌 Weekend. No sessions planned. Toggle "Weekdays only" off in the header if you work weekends.
           </div>
         ) : sessions.length > 0 ? (
           <div>
@@ -154,7 +154,7 @@ export default function DayDetail({
           </div>
         ) : (
           <div className="rounded-xl border border-ink-100 bg-ink-50 px-4 py-3 text-sm text-ink-400">
-            No work sessions planned — all active milestones are either complete or outside their window.
+            No work sessions planned. All active milestones are either complete or outside their window.
           </div>
         )}
 

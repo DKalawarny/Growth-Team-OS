@@ -127,12 +127,12 @@ const staffWelcome: Template<StaffWelcomeData> = {
       ``,
       `${ownerName} added you to the ${companyName} team on Eliv8 OS.`,
       ``,
-      `You'll receive an email any time a task gets assigned to you — with`,
+      `You'll receive an email any time a task gets assigned to you, with`,
       `the job details, due date, and a link to mark it done from your phone.`,
       ``,
       `No login required. Watch this inbox.`,
       ``,
-      `— The Eliv8 OS team`,
+      `The Eliv8 OS team`,
     ].join('\n')
 
     const html = `
@@ -157,7 +157,7 @@ const staffWelcome: Template<StaffWelcomeData> = {
                 </h1>
                 <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#3a3a3a;">
                   ${escapeHtml(ownerName)} just added you to the team. From now on, you'll get
-                  an email any time a task gets assigned to you — with the job details, due date,
+                  an email any time a task gets assigned to you: with the job details, due date,
                   and a link to mark it done from your phone.
                 </p>
                 <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:#3a3a3a;">
@@ -165,7 +165,7 @@ const staffWelcome: Template<StaffWelcomeData> = {
                 </p>
                 <div style="margin:32px 0 0 0;padding-top:24px;border-top:1px solid #e5e3dd;">
                   <p style="margin:0;font-size:13px;line-height:1.5;color:#6b6b6b;">
-                    Questions? Just reply to this email — it'll reach ${escapeHtml(ownerName)} directly.
+                    Questions? Just reply to this email, it'll reach ${escapeHtml(ownerName)} directly.
                   </p>
                 </div>
               </td>
@@ -283,7 +283,7 @@ const taskAssigned: Template<TaskAssignedData> = {
       ``,
       `Tap the link to see job details, mark progress, and upload photos.`,
       ``,
-      `— Eliv8 OS`,
+      `Eliv8 OS`,
     ].join('\n')
 
     const html = `
@@ -386,25 +386,25 @@ const userWelcome: Template<UserWelcomeData> = {
 
   render({ ownerName, companyName }, { appUrl }) {
     const firstName = ownerName.split(' ')[0] ?? ownerName
-    const subject   = `You're set up — here's what to do first`
+    const subject   = `You're set up, here's what to do first`
 
     const text = [
       `Hey ${firstName},`,
       ``,
       `Your Eliv8 OS workspace is live. Here's what to do in your first session:`,
       ``,
-      `1. Open Solomon — your AI advisor is ready with a personalised message.`,
+      `1. Open Solomon. Your AI advisor is ready with a personalised message.`,
       `   ${appUrl}/advisor`,
       ``,
-      `2. Review your roadmap — we've built 8-12 milestones based on your goals.`,
+      `2. Review your roadmap, we've built 8-12 milestones based on your goals.`,
       `   ${appUrl}/roadmap`,
       ``,
-      `3. Connect QuickBooks (optional) — unlock the CFO Dashboard with live numbers.`,
+      `3. Connect QuickBooks (optional), unlock the CFO Dashboard with live numbers.`,
       `   ${appUrl}/settings/integrations`,
       ``,
       `Questions? Just reply to this email.`,
       ``,
-      `— The Eliv8 OS team`,
+      `The Eliv8 OS team`,
     ].join('\n')
 
     const html = `
@@ -435,7 +435,7 @@ const userWelcome: Template<UserWelcomeData> = {
                   ${[
                     { n: '1', label: 'Talk to Solomon', sub: 'Your AI advisor has a personalised message waiting.', href: `${appUrl}/advisor` },
                     { n: '2', label: 'Review your roadmap', sub: '8–12 milestones tailored to your goals and timeline.', href: `${appUrl}/roadmap` },
-                    { n: '3', label: 'Connect QuickBooks', sub: 'Optional — unlocks live CFO numbers automatically.', href: `${appUrl}/settings/integrations` },
+                    { n: '3', label: 'Connect QuickBooks', sub: 'Optional, unlocks live CFO numbers automatically.', href: `${appUrl}/settings/integrations` },
                   ].map(s => `
                   <tr>
                     <td style="padding:10px 0;border-bottom:1px solid #f0eeea;">
@@ -460,7 +460,7 @@ const userWelcome: Template<UserWelcomeData> = {
 
                 <div style="margin:32px 0 0 0;padding-top:24px;border-top:1px solid #e5e3dd;">
                   <p style="margin:0;font-size:13px;line-height:1.5;color:#6b6b6b;">
-                    Questions? Just reply — we read every email. Your 14-day free trial started today.
+                    Questions? Just reply. We read every email. Your 14-day free trial started today.
                   </p>
                 </div>
               </td>

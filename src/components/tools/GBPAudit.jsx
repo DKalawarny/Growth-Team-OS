@@ -168,7 +168,7 @@ function ActionPlanTab({ scores, wins, moves, descriptionRewrite, reviewStrategy
 
       {/* This week — same format */}
       {moves.length > 0 && (
-        <Panel title="This week" hint="Bigger moves that compound — don't skip for another quick win.">
+        <Panel title="This week" hint="Bigger moves that compound. Don't skip for another quick win.">
           <div className="space-y-3">
             {moves.map((m, i) => <ProblemFixCard key={i} index={i + 1} item={m} accent="gray" />)}
           </div>
@@ -179,13 +179,13 @@ function ActionPlanTab({ scores, wins, moves, descriptionRewrite, reviewStrategy
       {(descriptionRewrite || reviewStrategy?.ask_template || websiteSeo?.title_tag) && (
         <Panel
           title="Generated for you"
-          hint="These are ready to copy and paste — no editing needed unless you want to tweak them."
+          hint="These are ready to copy and paste. No editing needed unless you want to tweak them."
         >
           <div className="space-y-3">
 
                   {descriptionRewrite?.concise && (
               <GeneratedBlock
-                label="GBP description — concise"
+                label="GBP description, concise"
                 text={descriptionRewrite.concise}
                 limit={750}
                 limitNote="GBP limit"
@@ -195,7 +195,7 @@ function ActionPlanTab({ scores, wins, moves, descriptionRewrite, reviewStrategy
 
             {descriptionRewrite?.keyword_forward && (
               <GeneratedBlock
-                label="GBP description — keyword-forward"
+                label="GBP description, keyword-forward"
                 text={descriptionRewrite.keyword_forward}
                 limit={750}
                 limitNote="GBP limit"
@@ -301,7 +301,7 @@ function ContentTab({ posts, photos, categories, keywords }) {
       )}
 
       {posts.length > 0 && (
-        <Panel title="Post ideas" hint="One post per week minimum — these are your next 8 weeks.">
+        <Panel title="Post ideas" hint="One post per week minimum. These are your next 8 weeks.">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {posts.map((p, i) => <PostCard key={i} post={p} index={i + 1} />)}
           </div>
@@ -682,9 +682,9 @@ function GeneratedBlock({ label, sublabel, text, where, mono, limit, limitMin, l
           <div className="flex items-center justify-between mb-1">
             <span className={`text-[11px] font-semibold tabular-nums ${countColor}`}>
               {len} / {limit} chars
-              {overMax  && ' — over limit, shorten before pasting'}
-              {underMin && ` — under ${limitMin} chars, try to expand`}
-              {!overMax && !underMin && limitNote && ` — ${limitNote}`}
+              {overMax  && 'over limit, shorten before pasting'}
+              {underMin && `under ${limitMin} chars, try to expand`}
+              {!overMax && !underMin && limitNote && `, ${limitNote}`}
             </span>
           </div>
           <div className="h-1 rounded-full bg-gray-100 overflow-hidden">
@@ -839,7 +839,7 @@ function AISearchTab({ ai }) {
       {ai.top_actions?.length > 0 && (
         <Panel
           title="What to do about it"
-          hint="Ordered by impact — start at the top. These are the specific moves that get you recommended by AI."
+          hint="Ordered by impact. Start at the top. These are the specific moves that get you recommended by AI."
         >
           <div className="space-y-3">
             {ai.top_actions.map((item, i) => (

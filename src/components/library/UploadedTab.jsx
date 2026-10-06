@@ -305,7 +305,7 @@ export default function UploadedTab({ onCountChange }) {
               {freshness.stale.map(f => (
                 <li key={f.id} className="text-ink-600">
                   <span className="font-semibold">{f.title}</span>
-                  {' — changed '}
+                  {'changed '}
                   {new Date(f.upstream_modified_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </li>
               ))}
@@ -313,7 +313,7 @@ export default function UploadedTab({ onCountChange }) {
           )}
           {freshness.stale?.length > 0 && (
             <p className="mt-2 text-ink-500">
-              Import them again to bring Solomon&rsquo;s copy up to date &mdash; the
+              Import them again to bring Solomon&rsquo;s copy up to date. The
               old one stays until you do.
             </p>
           )}
@@ -491,7 +491,7 @@ function LibraryIntelligencePanel({
           {!isRunning && !hasAnalysis && analyzePhase !== 'error' && (
             <div className="py-1">
               <p className="text-sm text-ink-500 leading-relaxed mb-4">
-                Solomon will read all {readyCount} document{readyCount !== 1 ? 's' : ''} together — not one by one — and build a live
+                Solomon will read all {readyCount} document{readyCount !== 1 ? 's' : ''} together, not one by one, and build a live
                 intelligence picture of your business: what's strong, what's missing,
                 and what new roadmap milestones to add.
               </p>
@@ -617,7 +617,7 @@ const UPLOAD_CATEGORIES = [
   {
     icon:     '📊',
     label:    'Financials',
-    why:      'Gives Solomon real numbers — not just what you entered at onboarding.',
+    why:      'Gives Solomon real numbers. Not just what you entered at onboarding.',
     examples: [
       'Profit & loss statement (last 12 months)',
       'Balance sheet',
@@ -649,7 +649,7 @@ const UPLOAD_CATEGORIES = [
           label: 'Enter key numbers manually',
           icon:  '✏️',
           pros: [
-            'No file, no software — just your numbers',
+            'No file, no software, just your numbers',
             'Takes about 2 minutes',
             'You can add context a spreadsheet never could',
           ],
@@ -660,7 +660,7 @@ const UPLOAD_CATEGORIES = [
           label: 'Connect QuickBooks or Xero',
           icon:  '⚡',
           pros: [
-            'Always current — syncs automatically, no re-uploading',
+            'Always current, syncs automatically, no re-uploading',
             'Live revenue and cash flow appear on your dashboard',
             'Set once, forget forever',
           ],
@@ -673,7 +673,7 @@ const UPLOAD_CATEGORIES = [
   {
     icon:     '⚙️',
     label:    'Operations',
-    why:      'Shows how the business runs day-to-day — where time goes and where it leaks.',
+    why:      'Shows how the business runs day-to-day, where time goes and where it leaks.',
     examples: [
       'Standard operating procedures (SOPs)',
       'Service delivery or job checklist',
@@ -695,7 +695,7 @@ const UPLOAD_CATEGORIES = [
   {
     icon:     '📣',
     label:    'Sales & Marketing',
-    why:      'Shows how you win work — and where deals are getting lost.',
+    why:      'Shows how you win work, and where deals are getting lost.',
     examples: [
       'Past proposals or quotes (sanitised)',
       'Customer testimonials or reviews',
@@ -817,7 +817,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
       {open && (
         <div className="p-5">
           <p className="text-sm text-ink-500 leading-relaxed mb-5">
-            Solomon reads everything together as one picture of your business — not file by file.
+            Solomon reads everything together as one picture of your business. Not file by file.
             Upload whatever you have; even partial docs help.
           </p>
 
@@ -838,7 +838,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
             <ol className="space-y-2 text-[13px] text-ink-700 leading-relaxed list-decimal pl-4">
               <li>
                 <span className="font-semibold text-ink-900">Name the file so it says what and when.</span>{' '}
-                &ldquo;Cascade quote &mdash; Mar 2026&rdquo; beats &ldquo;quote.png&rdquo;. Three files
+                &ldquo;Cascade quote. Mar 2026&rdquo; beats &ldquo;quote.png&rdquo;. Three files
                 called quote.png are three files he cannot tell apart.
               </li>
               <li>
@@ -847,7 +847,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
               </li>
               <li>
                 <span className="font-semibold text-ink-900">Leave the reference numbers in.</span>{' '}
-                An invoice or quote number, the job name, the customer &mdash; that is how he ties a
+                An invoice or quote number, the job name, the customer, that is how he ties a
                 document to the job it belongs to instead of guessing.
               </li>
               <li>
@@ -857,7 +857,7 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
               </li>
             </ol>
             <p className="text-[12px] text-ink-500 mt-3 leading-relaxed">
-              None of it is required. He works with whatever he is given &mdash; this is just what
+              None of it is required. He works with whatever he is given. This is just what
               turns &ldquo;a document exists&rdquo; into &ldquo;the Cascade quote says $47,200&rdquo;.
             </p>
           </div>
@@ -1084,7 +1084,7 @@ function EmptyState({ onUpload, onCloudImport, onManualEntry }) {
               product does — an owner does not assume he can photograph the back
               of an envelope — and it was written as a footnote about MIME types. */}
           <span className="text-ink-600">Photograph a handwritten page and it gets read.</span>{' '}
-          A whiteboard, a site note, the back of an envelope — Solomon reads the writing,
+          A whiteboard, a site note, the back of an envelope, Solomon reads the writing,
           not just the picture. Or upload PDF, Word, Excel, CSV, text, Markdown ·
           {' '}{MAX_MB} MB max · only you and your team can see these
         </p>

@@ -356,8 +356,8 @@ export default function Safety() {
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${docs.length > 0 ? 'bg-green-500' : 'bg-ink-300'}`} />
                 <span className="text-[11px] text-ink-400">
                   {docs.length > 0
-                    ? `${docs.length} compliance doc${docs.length > 1 ? 's' : ''} uploaded — will be searched first`
-                    : 'No docs uploaded yet — answers will use AI + regulatory knowledge'}
+                    ? `${docs.length} compliance doc${docs.length > 1 ? 's' : ''} uploaded. Will be searched first`
+                    : 'No docs uploaded yet. Answers will use AI + regulatory knowledge'}
                 </span>
               </div>
             </div>
@@ -663,7 +663,7 @@ function RenewalAlertsBanner({ alerts, onOpenVault }) {
           ))}
           {alerts.length > 4 && (
             <li className={`text-[11px] ${tone.accent} opacity-70`}>
-              +{alerts.length - 4} more — open the vault to see all
+              +{alerts.length - 4} more, open the vault to see all
             </li>
           )}
         </ul>

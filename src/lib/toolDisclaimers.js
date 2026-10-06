@@ -19,37 +19,37 @@
 
 export const TOOL_DISCLAIMERS = {
   'cfo-dashboard':
-    'Commentary is AI-generated from the books you connected. Treat it as a discussion starter for you and your accountant — not a tax filing or financial advice.',
+    'Commentary is AI-generated from the books you connected. Treat it as a discussion starter for you and your accountant. Not a tax filing or financial advice.',
 
   'cash-flow':
-    'A 13-week projection from the inputs you gave. Forecasts move when reality does — re-run when payroll, big invoices, or a new contract changes.',
+    'A 13-week projection from the inputs you gave. Forecasts move when reality does: re-run when payroll, big invoices, or a new contract changes.',
 
   'hiring-scorecard':
-    'This is hiring strategy — not employment law. Probation, classification, termination and pay rules vary by jurisdiction; check your provincial Employment Standards branch before anything goes in writing.',
+    'This is hiring strategy. Not employment law. Probation, classification, termination and pay rules vary by jurisdiction; check your provincial Employment Standards branch before anything goes in writing.',
 
   'org-chart':
-    'A structural draft based on your team and stage. Adjust it to fit how your people actually work — names and reporting lines are your call.',
+    'A structural draft based on your team and stage. Adjust it to fit how your people actually work. Names and reporting lines are your call.',
 
   'offer-builder':
     'Draft offer copy and pricing logic. Read it like a customer would, then ship the version YOU\'D buy.',
 
   'gbp-optimizer':
-    'AI audit of public signals. Suggested copy and changes are drafts — review before publishing anything to your live Google Business profile or website.',
+    'AI audit of public signals. Suggested copy and changes are drafts, review before publishing anything to your live Google Business profile or website.',
 
   'safety-vault':
-    'A tracker, not a compliance audit. Workplace-safety rules vary by province — final compliance call sits with your WCB or OHS authority.',
+    'A tracker, not a compliance audit. Workplace-safety rules vary by province, final compliance call sits with your WCB or OHS authority.',
 
   'exit-readiness':
     'A directional self-score, not a valuation. Get a real broker valuation before any negotiation.',
 
   'rocks-tracker':
-    'Suggested 90-day rocks based on your roadmap. Edit them so they match what your team actually committed to — they only work when the team owns them.',
+    'Suggested 90-day rocks based on your roadmap. Edit them so they match what your team actually committed to. They only work when the team owns them.',
 
   'decision':
-    'Solomon argued this more than one way and told you where he lands — that is a structured opinion, not a verdict. He also names what he cannot see; read that part before you act on the recommendation.',
+    'Solomon argued this more than one way and told you where he lands, that is a structured opinion, not a verdict. He also names what he cannot see; read that part before you act on the recommendation.',
 
   'solomon':
-    'Saved from a conversation with Solomon. It reflects what he could see at the time — if your numbers or your situation have moved since, so has the answer.',
+    'Saved from a conversation with Solomon. It reflects what he could see at the time, if your numbers or your situation have moved since, so has the answer.',
 
   'team-newsletter':
     'A drafted newsletter from your context. Read it, edit the voice to match yours, then send.',

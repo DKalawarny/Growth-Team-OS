@@ -65,7 +65,7 @@ export default function Documents() {
               </span>
             )}
             <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">Files you added — Solomon reads all of them</span>
+            <span className="text-xs text-ink-400">Files you added, Solomon reads all of them</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">

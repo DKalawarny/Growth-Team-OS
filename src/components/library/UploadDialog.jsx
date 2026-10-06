@@ -187,7 +187,7 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
       setError(
         failures.length === files.length
           ? `None of the ${files.length} files could be uploaded.`
-          : `${failures.length} of ${files.length} could not be uploaded — the rest are in your library. Press Upload to retry these.`
+          : `${failures.length} of ${files.length} could not be uploaded. The rest are in your library. Press Upload to retry these.`
       )
       setBusy(false)
       return
@@ -247,7 +247,7 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
               ))}
             </div>
             <p className="text-[11px] text-ink-400 mt-2.5 leading-relaxed">
-              Solomon reads everything together — the more context you give it, the more specific its advice becomes.
+              Solomon reads everything together, the more context you give it, the more specific its advice becomes.
             </p>
           </div>
         )}
@@ -360,7 +360,7 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
                   nothing to say which file each one was about. */}
               {rejected.map(r => (
                 <div key={r.name} className="text-xs text-amber-800 leading-relaxed">
-                  {r.reason.includes(r.name) ? r.reason : `${r.name} — ${r.reason}`}
+                  {r.reason.includes(r.name) ? r.reason : `${r.name}, ${r.reason}`}
                 </div>
               ))}
             </div>

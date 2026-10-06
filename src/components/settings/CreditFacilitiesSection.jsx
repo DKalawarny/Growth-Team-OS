@@ -106,7 +106,7 @@ export default function CreditFacilitiesSection({ companyId }) {
       if (error) throw new Error(error.message)
       setStored(patch)
       setInitial(fields)
-      setMsg({ tone: 'ok', text: 'Saved — Solomon will factor this in from now on.' })
+      setMsg({ tone: 'ok', text: 'Saved. Solomon will factor this in from now on.' })
     } catch (err) {
       setMsg({ tone: 'err', text: err.message ?? 'Could not save.' })
     } finally {
@@ -119,7 +119,7 @@ export default function CreditFacilitiesSection({ companyId }) {
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-ink-900">Credit &amp; liquidity</h2>
         <p className="text-sm text-ink-400 mt-0.5">
-          Stored once — Solomon factors this into cash flow, financial advice, and planning automatically.
+          Stored once: Solomon factors this into cash flow, financial advice, and planning automatically.
         </p>
       </div>
 
@@ -139,12 +139,12 @@ export default function CreditFacilitiesSection({ companyId }) {
           GST/HST you have collected and deductions withheld from payroll sit in
           the account until you remit them. Telling Solomon roughly what and when
           keeps them out of a balance he might otherwise treat as spendable.
-          He will not work out what you owe &mdash; that is your accountant&rsquo;s.
+          He will not work out what you owe, that is your accountant&rsquo;s.
         </p>
 
         <div className="grid sm:grid-cols-2 gap-5 mt-4">
           <SelectField
-            label="GST / HST — how often you remit"
+            label="GST / HST, how often you remit"
             value={fields.gst_frequency}
             onChange={v => set('gst_frequency', v)}
           />
@@ -155,7 +155,7 @@ export default function CreditFacilitiesSection({ companyId }) {
             onChange={v => set('gst_typical', v)}
           />
           <SelectField
-            label="Payroll deductions — how often you remit"
+            label="Payroll deductions, how often you remit"
             value={fields.payroll_deductions_frequency}
             onChange={v => set('payroll_deductions_frequency', v)}
           />

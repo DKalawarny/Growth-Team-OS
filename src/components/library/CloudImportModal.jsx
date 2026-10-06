@@ -263,7 +263,7 @@ function ProviderPick({ onGoogle, onOneDrive }) {
   return (
     <div className="p-6 space-y-4">
       <p className="text-sm text-ink-500 leading-relaxed">
-        Browse your cloud storage and pick specific files to add to your knowledge library. Only the files you select will be imported — nothing syncs automatically.
+        Browse your cloud storage and pick specific files to add to your knowledge library. Only the files you select will be imported. Nothing syncs automatically.
       </p>
 
       <div className="grid sm:grid-cols-2 gap-4 mt-2">
@@ -737,7 +737,7 @@ function ReviewStep({ files, onImport, onBack }) {
     <div className="flex flex-col" style={{ minHeight: 300 }}>
       <div className="px-5 pt-4 pb-3 flex-shrink-0">
         <p className="text-sm text-ink-500">
-          Uncheck any files you don't want to add — for example, documents from a different business.
+          Uncheck any files you don't want to add, for example, documents from a different business.
         </p>
       </div>
 
@@ -843,7 +843,7 @@ function DoneScreen({ results, onClose }) {
         </h3>
         {failed > 0 && (
           <p className="text-sm text-amber-700">
-            {failed} file{failed !== 1 ? 's' : ''} couldn't be imported — see errors above.
+            {failed} file{failed !== 1 ? 's' : ''} couldn't be imported, see errors above.
           </p>
         )}
         {failed === 0 && (

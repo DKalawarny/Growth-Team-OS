@@ -88,7 +88,7 @@ export default function Paywall() {
 
         {/* Trust signals */}
         <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
-          {['Cancel any time — no lock-in', `${TRIAL_DAYS}-day money-back guarantee`, 'Your data stays yours'].map(t => (
+          {['Cancel any time. No lock-in', `${TRIAL_DAYS}-day money-back guarantee`, 'Your data stays yours'].map(t => (
             <span key={t} className="flex items-center gap-1.5 text-xs text-gray-500">
               <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor"><path d="M13.28 4.22a.75.75 0 010 1.06l-6.5 6.5a.75.75 0 01-1.06 0l-3-3a.75.75 0 011.06-1.06l2.47 2.47 5.97-5.97a.75.75 0 011.06 0z"/></svg>
               {t}
@@ -140,7 +140,7 @@ function pickContent(status) {
     return {
       tone:         'neutral',
       title:        'Your subscription has ended',
-      body:         'Your plan is no longer active. Reactivate to get the tools back — your roadmap, documents, and check-ins stayed exactly as you left them.',
+      body:         'Your plan is no longer active. Reactivate to get the tools back: your roadmap, documents, and check-ins stayed exactly as you left them.',
       primary:      'checkout',
       primaryLabel: 'Reactivate subscription',
     }
@@ -157,7 +157,7 @@ function pickContent(status) {
     return {
       tone:         'neutral',
       title:        'You have hit this month\u2019s limit',
-      body:         'Nothing is charged during the pilot and nothing has ended — this is only the cap that stops runaway AI costs. Email support@eliv8os.com and we will raise it, usually the same day.',
+      body:         'Nothing is charged during the pilot and nothing has ended. This is only the cap that stops runaway AI costs. Email support@eliv8os.com and we will raise it, usually the same day.',
       primary:      'none',
       primaryLabel: null,
     }
@@ -167,9 +167,9 @@ function pickContent(status) {
   return {
     tone:         'warn',
     title:        'Your free trial has ended',
-    body:         `You've had two full weeks to kick the tires — time to pick a plan. The Owner plan is $${PRICE_MONTHLY_USD}/month, includes every tool, and you can cancel any time.`,
+    body:         `You've had two full weeks to kick the tires, time to pick a plan. The Owner plan is $${PRICE_MONTHLY_USD}/month, includes every tool, and you can cancel any time.`,
     primary:      'checkout',
-    primaryLabel: `Upgrade now — $${PRICE_MONTHLY_USD} / month`,
+    primaryLabel: `Upgrade now, $${PRICE_MONTHLY_USD} / month`,
   }
 }
 

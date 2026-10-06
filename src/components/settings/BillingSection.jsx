@@ -121,7 +121,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
         <div className="text-sm text-gray-600 space-y-1 mb-4">
           {status.cancelAtPeriodEnd ? (
             <p className="text-amber-700">
-              <strong>Canceling</strong> — access ends {formatDate(status.renewsAt)}.
+              <strong>Canceling</strong>: access ends {formatDate(status.renewsAt)}.
               You can resume any time before then.
             </p>
           ) : status.renewsAt ? (
@@ -142,8 +142,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
       <>
         <PlanHeader plan={status.plan} tone="warn" />
         <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mb-4">
-          Your last payment didn't go through. Update your card to keep access —
-          Stripe will retry automatically once it's fixed.
+          Your last payment didn't go through. Update your card to keep access. Stripe will retry automatically once it's fixed.
         </p>
         <PrimaryButton onClick={onPortal} busy={busy} label="Update payment method" busyLabel="Opening Stripe…" />
         {err && <ErrorLine text={err} />}
@@ -157,7 +156,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
         <PlanHeader plan={status.plan} tone="neutral" />
         <p className="text-sm text-gray-600 mb-4">
           {status.endsAt && new Date(status.endsAt) > new Date()
-            ? <>Canceled — access ends {formatDate(status.endsAt)}.</>
+            ? <>Canceled, access ends {formatDate(status.endsAt)}.</>
             : <>Your subscription has ended. Reactivate any time.</>}
         </p>
         <PrimaryButton onClick={onCheckout} busy={busy} label="Reactivate subscription" busyLabel="Opening Stripe…" />
@@ -179,7 +178,7 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
         </p>
         <Hint>
           If pricing is introduced later you will be told before anything is
-          charged — see the{' '}
+          charged, see the{' '}
           <Link to="/terms" className="text-brand-600 hover:underline">pilot agreement</Link>.
         </Hint>
       </>
@@ -202,8 +201,8 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
           onClick={onCheckout}
           busy={busy}
           label={billing === 'annual'
-            ? `Upgrade — $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
-            : `Upgrade now — $${PRICE_MONTHLY_USD}/mo`}
+            ? `Upgrade, $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
+            : `Upgrade now, $${PRICE_MONTHLY_USD}/mo`}
           busyLabel="Redirecting to Stripe…"
         />
         <Hint>
@@ -228,8 +227,8 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
         onClick={onCheckout}
         busy={busy}
         label={billing === 'annual'
-          ? `Upgrade — $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
-          : `Upgrade now — $${PRICE_MONTHLY_USD}/mo`}
+          ? `Upgrade, $${PRICE_ANNUAL_USD}/yr (~$${ANNUAL_MONTHLY_EQUIV}/mo)`
+          : `Upgrade now, $${PRICE_MONTHLY_USD}/mo`}
         busyLabel="Redirecting to Stripe…"
       />
       <Hint>

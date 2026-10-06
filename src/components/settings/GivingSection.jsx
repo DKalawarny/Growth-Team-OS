@@ -67,7 +67,7 @@ export default function GivingSection({ companyId }) {
           <p className="text-[12.5px] text-ink-400">
             Off unless you turn it on. Solomon won&rsquo;t raise the subject either way.
           </p>
-          {err && <p className="text-[12.5px] text-red-600">Couldn&rsquo;t save that — {err}</p>}
+          {err && <p className="text-[12.5px] text-red-600">Couldn&rsquo;t save that {err}</p>}
         </div>
 
         <button

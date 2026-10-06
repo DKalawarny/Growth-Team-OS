@@ -101,7 +101,7 @@ export default function RocksPlan({ data }) {
       {risks.length > 0 && (
         <Section
           title="Risks to watch"
-          hint="Cross-rock — cash, capacity, key-person, seasonal."
+          hint="Cross-rock: cash, capacity, key-person, seasonal."
         >
           <ul className="space-y-2">
             {risks.map((r, i) => (

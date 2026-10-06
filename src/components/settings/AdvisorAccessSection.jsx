@@ -94,7 +94,7 @@ export default function AdvisorAccessSection({ companyId, userId }) {
             Advisor access
           </div>
           <p className="text-xs text-ink-400">
-            Invite a coach or advisor to view your workspace — read-only, no editing.
+            Invite a coach or advisor to view your workspace. Read-only, no editing.
           </p>
         </div>
         <span className="text-2xl flex-shrink-0">🤝</span>
@@ -186,7 +186,7 @@ export default function AdvisorAccessSection({ companyId, userId }) {
             <p className="text-[11px] text-red-600 mt-1.5">{createErr}</p>
           )}
           <p className="text-[11px] text-ink-400 mt-1.5 leading-relaxed">
-            The link is valid for 30 days. Copy it and share directly with your advisor — they'll create a free account if they don't have one.
+            The link is valid for 30 days. Copy it and share directly with your advisor. They'll create a free account if they don't have one.
           </p>
         </div>
 

@@ -15,6 +15,7 @@ import { fetchLatestSnapshots, syncQuickBooks, fetchIntegration } from '../lib/q
 import { indexChatExchange } from '../lib/rag/chatIndexer'
 import SolomonLauncher from '../components/advisor/SolomonLauncher'
 import { rememberFromExchange, claimDueCommitment } from '../lib/memory'
+import { plainDashes } from '../lib/plainDashes'
 
 /**
  * Advisor — the owner's daily AI coaching chat.
@@ -218,8 +219,8 @@ export default function Advisor() {
         promptKey:     'MORNING_OPENER_PROMPT',
         stableContext: openerContext,
         messages: [{ role: 'user', content: [
-          `Open the check-in. The owner's name is ${ownerFirst} — use ONLY this name in your greeting, no other names.`,
-          `Time context: ${tod} — ${dayStr}.`,
+          `Open the check-in. The owner's name is ${ownerFirst}, use ONLY this name in your greeting, no other names.`,
+          `Time context: ${tod}, ${dayStr}.`,
           owed
             ? `\n\nHE SAID HE WOULD DO THIS AND YOU HAVE NEVER ASKED:\n"${owed.statement}"${owed.due_on ? ` (by ${owed.due_on})` : ''}${owed.detail ? `\nContext: ${owed.detail}` : ''}\nAsk him about it, once, plainly. See FOLLOWING UP ON WHAT HE SAID HE WOULD DO.`
             : '',
@@ -786,7 +787,7 @@ function Header({ companyName, spendInfo, offRecord = false, onToggleOffRecord }
               type="button"
               onClick={onToggleOffRecord}
               aria-pressed={offRecord}
-              title={offRecord ? 'Back on the record — this conversation will be cleared' : 'Ask something personal: nothing saved, nothing remembered'}
+              title={offRecord ? 'Back on the record. This conversation will be cleared' : 'Ask something personal: nothing saved, nothing remembered'}
               className="flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors"
               style={offRecord
                 ? { color: '#FFFFFF', background: '#1F2A28', border: '1px solid #1F2A28' }
@@ -795,7 +796,7 @@ function Header({ companyName, spendInfo, offRecord = false, onToggleOffRecord }
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5" aria-hidden>
                 <rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>
               </svg>
-              <span>{offRecord ? 'Off the record — end' : 'Off the record'}</span>
+              <span>{offRecord ? 'Off the record, end' : 'Off the record'}</span>
             </button>
           )}
           <Link
@@ -868,7 +869,7 @@ function WelcomeBlock({ profile, onPick }) {
         <h2 className="text-xl font-bold text-ink-900">Hey {firstName}.</h2>
         <p className="text-sm mt-1 max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(13,20,19,0.45)' }}>
           I know your business, your roadmap, and your goals.
-          Ask me anything — or I'll kick things off when you come back tomorrow.
+          Ask me anything, or I'll kick things off when you come back tomorrow.
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -949,7 +950,7 @@ function SharedImage({ path, name, companyId, userId }) {
   }
 
   if (failed) {
-    return <p className="text-[11px] mt-1.5 text-white/50">{name} — image unavailable</p>
+    return <p className="text-[11px] mt-1.5 text-white/50">{name}: image unavailable</p>
   }
   if (!url) {
     return <div className="mt-1.5 h-32 w-44 rounded-xl bg-white/10 animate-pulse" />
@@ -974,7 +975,7 @@ function SharedImage({ path, name, companyId, userId }) {
       >
         {saveState === 'saving' ? 'Saving…'
        : saveState === 'saved'  ? '✓ Kept in your documents'
-       : saveState === 'error'  ? 'Could not save — try again'
+       : saveState === 'error'  ? 'Could not save. Try again'
        :                          'Keep this in my documents'}
       </button>
     </div>
@@ -1003,7 +1004,7 @@ function ListenButton({ text }) {
     <button
       type="button"
       onClick={toggle}
-      title={state === 'device' ? 'Using your device voice — Solomon\u2019s own voice is unavailable' : 'Listen'}
+      title={state === 'device' ? 'Using your device voice. Solomon\u2019s own voice is unavailable' : 'Listen'}
       className="absolute -bottom-5 right-14 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 focus:opacity-100"
       style={{ color: state === 'idle' ? 'rgba(13,20,19,0.35)' : '#0f7a5a' }}
     >
@@ -1168,6 +1169,13 @@ function Bubble({ role, content, artifacts, streaming = false, onSave, companyId
  * headers, inline code, code blocks, and paragraph breaks.
  * No external dependency — keeps the bundle lean.
  */
+function cleanLine(line) {
+  if (/^\s*([-*_]\s*){3,}$/.test(line) || /^\s*\|/.test(line)) return line
+  line = line.replace(/(\*\*[^*]+\*\*)\s*[—–]\s*/g, '$1: ')   // **Label** — text → **Label**: text
+  const m = line.match(/^(\s*(?:[-*+]|\d+\.)\s+)([\s\S]*)$/)
+  return m ? m[1] + plainDashes(m[2]) : plainDashes(line)
+}
+
 function MarkdownContent({ text, streaming }) {
   if (!text) {
     return streaming
@@ -1175,7 +1183,10 @@ function MarkdownContent({ text, streaming }) {
       : null
   }
 
-  const lines   = text.split('\n')
+  // ⭐ No dashes in what he says (Daniel, 5 Oct: "it looks AI"). The prompt asks;
+  // this catches the ones that get through, and his older replies. ⚠️ Markdown
+  // structure is left alone: a bullet's leading "- ", table rows, and "---".
+  const lines   = text.split('\n').map(cleanLine)
   const nodes   = []
   let i         = 0
   let paraLines = []
@@ -1505,7 +1516,7 @@ const Composer = forwardRef(function Composer(
             prompts.js handles the sharp, contextual warning on the answers that
             actually carry money. */}
         <p className="text-[10px] mt-2 text-center leading-relaxed" style={{ color: 'rgba(13,20,19,0.32)' }}>
-          Solomon works from what you give him. Not professional advice — confirm anything costly.
+          Solomon works from what you give him. Not professional advice, confirm anything costly.
           <span className="hidden sm:inline"> · Enter to send, Shift+Enter for a new line</span>
         </p>
       </div>

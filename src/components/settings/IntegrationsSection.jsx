@@ -253,7 +253,7 @@ export default function IntegrationsSection() {
 
       <p className="mt-4 text-xs text-gray-500">
         Tokens are stored encrypted-at-rest on Supabase and only accessible to
-        our server functions — never to the browser.
+        our server functions, never to the browser.
       </p>
 
       {/* Google Drive + OneDrive — file import (not a persistent sync) */}
@@ -341,7 +341,7 @@ function bannerFromParams(params) {
 function StatusBadge({ status }) {
   const map = {
     connected:    { cls: 'bg-green-50 text-green-800 border-green-200', label: 'Connected' },
-    expired:      { cls: 'bg-amber-50 text-amber-800 border-amber-200', label: 'Expired — reconnect' },
+    expired:      { cls: 'bg-amber-50 text-amber-800 border-amber-200', label: 'Expired, reconnect' },
     disconnected: { cls: 'bg-gray-50 text-gray-700 border-gray-200',    label: 'Not connected' },
     loading:      { cls: 'bg-gray-50 text-gray-500 border-gray-200',    label: '…' },
   }

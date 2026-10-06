@@ -107,7 +107,7 @@ export default function Hiring() {
       // owner can either hit save or start a conversation to tweak the card.
       setMessages([{
         role: 'assistant',
-        content: "Here's the first pass. Want to tweak anything? Just tell me what to change — outcomes, questions, tone, anything.",
+        content: "Here's the first pass. Want to tweak anything? Just tell me what to change: outcomes, questions, tone, anything.",
       }])
       setStage('result')
     } catch (err) {
@@ -189,7 +189,7 @@ export default function Hiring() {
       // "rephrase or start over" copy.
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool (${err.used}/${err.cap} runs). Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing, or hit Start over to rebuild from scratch."
+        : "Hmm, I couldn't apply that. Try rephrasing, or hit Start over to rebuild from scratch."
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content, error: true },
@@ -305,7 +305,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
               rows={3} className="w-full" />
           </Field>
 
-          <Field label="What does success look like 12 months in?" hint="Optional but recommended — specific outcomes sharpen the scorecard.">
+          <Field label="What does success look like 12 months in?" hint="Optional but recommended, specific outcomes sharpen the scorecard.">
             <textarea value={form.success_picture} onChange={onChange('success_picture')}
               placeholder="Two vans running independently. Revenue per tech above $300k. Call-back rate under 5%. I'm off the tools."
               rows={3} className="w-full" />
@@ -364,7 +364,7 @@ const HIRING_STEPS = [
   },
   {
     label: 'Scoping the role',
-    sub:   'Field tech, office, or leadership — tailoring accordingly',
+    sub:   'Field tech, office, or leadership, tailoring accordingly',
     delay: 4000,
   },
   {
@@ -459,7 +459,7 @@ function LoadingView({ role }) {
       </div>
 
       <p className="mt-10 text-xs text-ink-700 text-center max-w-xs leading-relaxed">
-        Built for trades and home-service businesses — outcomes, questions, and red flags that actually apply to your team.
+        Built for trades and home-service businesses: outcomes, questions, and red flags that actually apply to your team.
       </p>
     </div>
   )
@@ -494,7 +494,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 
         <RefineChat messages={messages} refining={refining} onSend={onRefine}
           suggestions={HIRING_SUGGESTIONS}
-          placeholder="Make the outcomes more specific to my trade. / This is a field role — remove anything office-related." />
+          placeholder="Make the outcomes more specific to my trade. / This is a field role, remove anything office-related." />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={onSave} disabled={saving || refining}
@@ -516,9 +516,9 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
 
 const HIRING_SUGGESTIONS = [
   'Make the outcomes more specific to my trade',
-  'This is a field role — remove anything office-related',
+  'This is a field role, remove anything office-related',
   'Punch up the interview questions',
-  'The pay range is off for my market — rework it',
+  'The pay range is off for my market, rework it',
   'Add a note about the truck and tool package',
   'Tie the 90-day ramp to my roadmap milestone',
 ]

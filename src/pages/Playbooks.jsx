@@ -58,68 +58,68 @@ const STARTERS = [
   },
   {
     name: 'Kitchen demo',
-    description: 'Strip a kitchen down to studs — cabinets, counters, plumbing, flooring.',
+    description: 'Strip a kitchen down to studs: cabinets, counters, plumbing, flooring.',
     items: [
       { text: 'Walk the kitchen with the homeowner',      required: true,  notes: 'Photograph existing conditions. Confirm what stays (appliances, fridge box, etc.) and what goes.' },
-      { text: 'Shut off and cap water + drain lines',     required: true,  notes: 'Tools: pipe cutter, cap kit, shutoff key. Older copper needs a 3/4" adapter — check before you go.' },
+      { text: 'Shut off and cap water + drain lines',     required: true,  notes: 'Tools: pipe cutter, cap kit, shutoff key. Older copper needs a 3/4" adapter. Check before you go.' },
       { text: 'Disconnect gas to range (if applicable)',  required: false, notes: 'Licensed only. Cap and tag the line.' },
       { text: 'Set up dust containment + floor protection', required: true, notes: 'Materials: 6-mil poly, painter\'s tape, drop cloths, 2x cardboard runners. Tape every doorway out of the kitchen.' },
-      { text: 'Remove upper cabinets',                    required: true,  notes: 'Tools: cordless drill, pry bar, sledge. Two-person job — uppers fall.' },
+      { text: 'Remove upper cabinets',                    required: true,  notes: 'Tools: cordless drill, pry bar, sledge. Two-person job, uppers fall.' },
       { text: 'Remove lower cabinets + island',           required: true,  notes: 'Disconnect plumbing under the sink BEFORE pulling the cabinet.' },
-      { text: 'Remove countertops',                       required: true,  notes: 'Granite/quartz are heavy — get a second pair of hands or a dolly.' },
+      { text: 'Remove countertops',                       required: true,  notes: 'Granite/quartz are heavy. Get a second pair of hands or a dolly.' },
       { text: 'Strip flooring (tile, vinyl, hardwood)',   required: false, notes: 'Tools: floor scraper, oscillating tool, pry bar. Watch for subfloor damage underneath.' },
       { text: 'Remove backsplash + wall tile',            required: false },
-      { text: 'Load-out: bin or trailer',                 required: true,  notes: 'Standard kitchen demo = 1× 4-yd dumpster. Heavy on cabinetry — fill bottom-up.' },
-      { text: 'Final cleanup — broom + shop vac',         required: true },
+      { text: 'Load-out: bin or trailer',                 required: true,  notes: 'Standard kitchen demo = 1× 4-yd dumpster. Heavy on cabinetry, fill bottom-up.' },
+      { text: 'Final cleanup, broom + shop vac',         required: true },
       { text: 'Walk-through + sign-off photo',            required: true },
     ],
   },
   {
     name: 'Bathroom demo',
-    description: 'Strip a bathroom — tub/shower, toilet, vanity, flooring.',
+    description: 'Strip a bathroom: tub/shower, toilet, vanity, flooring.',
     items: [
       { text: 'Walk the bathroom with the homeowner',     required: true,  notes: 'Confirm what stays. Photograph existing conditions including any visible water damage.' },
       { text: 'Shut off + drain plumbing',                required: true,  notes: 'Shut water at the main if isolation valves are seized. Drain through the lowest fixture.' },
-      { text: 'Remove toilet + cap drain',                required: true,  notes: 'Tools: socket wrench, rags, drain plug. Toilet wax ring gets messy — bag it immediately.' },
+      { text: 'Remove toilet + cap drain',                required: true,  notes: 'Tools: socket wrench, rags, drain plug. Toilet wax ring gets messy, bag it immediately.' },
       { text: 'Disconnect + remove vanity',               required: true },
-      { text: 'Remove tub or shower surround',            required: true,  notes: 'Cast iron tubs need a sledge + dust mask. Fibreglass cuts with a recip saw — score and snap.' },
-      { text: 'Remove wall tile + cement board',          required: false, notes: 'Tools: hammer, pry bar, recip saw. Wear safety glasses — tile shards travel.' },
-      { text: 'Strip flooring (tile, vinyl, lino)',       required: false, notes: 'Subfloor often rotted under toilets — check before you finish demo so you can quote the repair.' },
+      { text: 'Remove tub or shower surround',            required: true,  notes: 'Cast iron tubs need a sledge + dust mask. Fibreglass cuts with a recip saw, score and snap.' },
+      { text: 'Remove wall tile + cement board',          required: false, notes: 'Tools: hammer, pry bar, recip saw. Wear safety glasses, tile shards travel.' },
+      { text: 'Strip flooring (tile, vinyl, lino)',       required: false, notes: 'Subfloor often rotted under toilets. Check before you finish demo so you can quote the repair.' },
       { text: 'Cap supply + drain lines',                 required: true },
-      { text: 'Load-out + cleanup',                       required: true,  notes: 'Standard bathroom = 1× 2-yd dumpster. Tile is heavy — under the cabinet load to keep weight low.' },
+      { text: 'Load-out + cleanup',                       required: true,  notes: 'Standard bathroom = 1× 2-yd dumpster. Tile is heavy, under the cabinet load to keep weight low.' },
       { text: 'Walk-through + sign-off photo',            required: true },
     ],
   },
   {
     name: 'Commercial strip-out',
-    description: 'Office, retail, or tenant improvement — pull the space back to base building.',
+    description: 'Office, retail, or tenant improvement, pull the space back to base building.',
     items: [
       { text: 'Pre-job walk with building manager',       required: true,  notes: 'Confirm hours of operation, freight elevator access, fire-watch requirements, after-hours protocol.' },
-      { text: 'Verify utility disconnects (HVAC, elec, plumb)', required: true, notes: 'Building engineer must confirm — get a signed lock-out sheet if available.' },
+      { text: 'Verify utility disconnects (HVAC, elec, plumb)', required: true, notes: 'Building engineer must confirm. Get a signed lock-out sheet if available.' },
       { text: 'Hoarding + dust barriers',                 required: true,  notes: 'Adjacent tenants need zero dust. Materials: 8-ft hoarding, poly seal, negative-air HEPA if specified.' },
       { text: 'Strip ceiling tiles + grid',               required: false },
       { text: 'Remove millwork, partitions, drywall',     required: true },
-      { text: 'Strip flooring (carpet tile, VCT, etc.)',  required: true,  notes: 'VCT pre-1980 may contain asbestos. Test BEFORE demo — see CRM safety module.' },
+      { text: 'Strip flooring (carpet tile, VCT, etc.)',  required: true,  notes: 'VCT pre-1980 may contain asbestos. Test BEFORE demo, see CRM safety module.' },
       { text: 'Disconnect + remove fixtures (lighting, plumbing, HVAC diffusers)', required: true },
-      { text: 'Final clean — broom + HEPA vac',           required: true },
+      { text: 'Final clean, broom + HEPA vac',           required: true },
       { text: 'Building-manager walk-through + sign-off', required: true },
     ],
   },
   {
     name: 'Bulk-priced job intake',
-    description: 'For quotes without itemised scope — capture the detail before the crew rolls.',
+    description: 'For quotes without itemised scope, capture the detail before the crew rolls.',
     items: [
       { text: 'Read the quote + contract',                required: true,  notes: 'Bulk-priced quotes often skip detail. Pull out what you can: rooms, square footage, special conditions.' },
       { text: 'Write up detailed scope on this work order', required: true, notes: 'GATING STEP. The bookkeeper can\'t open a PO and the crew can\'t execute until this is filled in. Edit the work order description with the room-by-room scope, exclusions, and any client-provides items.' },
       { text: 'Confirm scope with the client (call or site visit)', required: true, notes: 'Bulk-priced jobs are where surprise change-orders happen. Confirm in writing.' },
-      { text: 'Photograph existing conditions',           required: true,  notes: 'Especially anywhere outside the obvious scope — bulk pricing assumes everything goes per spec.' },
+      { text: 'Photograph existing conditions',           required: true,  notes: 'Especially anywhere outside the obvious scope. Bulk pricing assumes everything goes per spec.' },
       { text: 'Order materials + book bin',               required: false },
       { text: 'Brief the crew on what\'s in and out of scope', required: true, notes: 'Bulk pricing means YOU absorb anything not written down. The crew needs to know exactly where the line is.' },
     ],
   },
   {
     name: 'New crew member onboarding',
-    description: 'First day on the team — nothing falls through.',
+    description: 'First day on the team. Nothing falls through.',
     items: [
       { text: 'Sign safety waiver',                  required: true },
       { text: 'Issue PPE (hard hat, vest, boots)',   required: true },
@@ -133,7 +133,7 @@ const STARTERS = [
     description: 'Before the first swing of the day.',
     items: [
       { text: 'All crew wearing PPE',                required: true },
-      { text: 'Tools inspected — no visible damage', required: true },
+      { text: 'Tools inspected. No visible damage', required: true },
       { text: 'First aid kit stocked + accessible',  required: true },
       { text: 'Photograph any new site hazards',     required: false, notes: 'Send to the owner if you see anything new since yesterday.' },
       { text: 'Toolbox talk completed',              required: true },
@@ -496,7 +496,7 @@ export default function Playbooks() {
             {/* Hint */}
             <p className="mt-3 text-[11px] text-ink-500 leading-relaxed px-1">
               Each playbook becomes a checklist on the work order. Crew ticks off
-              steps as they go — from the office or the staff portal.
+              steps as they go, from the office or the staff portal.
             </p>
           </aside>
 
@@ -567,7 +567,7 @@ function PageHeader() {
           honest version of this all along: "get the jobs that live in your
           head onto paper, so the business can run a day without you in it." */}
       <p className="text-xs text-ink-500 mt-1.5 max-w-2xl leading-relaxed">
-        The jobs you do over and over, written down once — what they involve, and
+        The jobs you do over and over, written down once: what they involve, and
         what actually happened on them. It gets what is in your head onto paper, so
         the business can run a day without you, and so Solomon can see how the work
         really goes rather than how it was supposed to.
@@ -599,14 +599,14 @@ function HowItWorksBanner({ onDismiss }) {
           onClick={onDismiss}
           className="text-[11px] font-semibold text-ink-400 hover:text-ink-700"
         >
-          Got it — hide
+          Got it, hide
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-ink-100">
         <HowStep
           n="1"
           title="Write it down once"
-          body="List the steps for a job your team does over and over — site walkthrough, demo, daily safety. The order matters; the crew works top to bottom."
+          body="List the steps for a job your team does over and over: site walkthrough, demo, daily safety. The order matters; the crew works top to bottom."
         />
         <HowStep
           n="2"
@@ -616,7 +616,7 @@ function HowItWorksBanner({ onDismiss }) {
         <HowStep
           n="3"
           title="It comes back with what happened"
-          body="The crew works through it on their phone and adds notes as they go. Those notes stay with the job — which is what lets Solomon tell you something true about how it actually went."
+          body="The crew works through it on their phone and adds notes as they go. Those notes stay with the job, which is what lets Solomon tell you something true about how it actually went."
         />
       </div>
     </div>
@@ -763,7 +763,7 @@ function PlaybookEditor({
               without ticking them.
               {' '}
               <span className="font-semibold text-ink-700">Notes</span> show
-              under each step in the crew's checklist — use them for the "why"
+              under each step in the crew's checklist. Use them for the "why"
               behind a step or any gotchas to watch for.
             </p>
           </div>
@@ -864,7 +864,7 @@ function CrewPreview({ items }) {
           Preview · what your crew sees
         </h3>
         <span className="text-[10px] text-ink-400 font-medium italic">
-          Tap to try — won't save
+          Tap to try, won't save
         </span>
       </div>
 

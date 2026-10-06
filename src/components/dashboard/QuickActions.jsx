@@ -59,7 +59,7 @@ export default function QuickActions() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm font-bold text-ink-900">Choose your quick links</p>
-            <p className="text-xs text-ink-400 mt-0.5">Pick up to 4 — they'll appear on your dashboard.</p>
+            <p className="text-xs text-ink-400 mt-0.5">Pick up to 4, they'll appear on your dashboard.</p>
           </div>
           <button type="button" onClick={cancel}
             className="text-xs text-ink-400 hover:text-ink-700 font-medium transition-colors">
@@ -103,7 +103,7 @@ export default function QuickActions() {
         <div className="flex items-center justify-between mt-4">
           <p className="text-[11px] text-ink-400">
             {draft.length}/{MAX} selected
-            {draft.length >= MAX && <span className="text-brand-500 font-semibold"> — deselect one to swap</span>}
+            {draft.length >= MAX && <span className="text-brand-500 font-semibold"> deselect one to swap</span>}
           </p>
           <button
             type="button"

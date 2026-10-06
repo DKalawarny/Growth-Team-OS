@@ -26,7 +26,7 @@ import { supabase } from '../../lib/supabase'
 
 const META = buildPageMeta({
   title:       'Free Google Business Profile audit — for contractors and home-services',
-  description: 'Free GBP audit for plumbers, electricians, HVAC, roofers, and every home-services trade. We score your Google listing, citations, and AI search readiness. No sales call, no commitment — get the report by email.',
+  description: 'Free GBP audit for plumbers, electricians, HVAC, roofers, and every home-services trade. We score your Google listing, citations, and AI search readiness. No sales call, no commitment. Get the report by email.',
   path:        '/free-gbp-audit',
 })
 
@@ -50,7 +50,7 @@ export default function FreeGbpAudit() {
       if (insertErr) throw new Error(insertErr.message)
       setSubmitted(true)
     } catch (err) {
-      setError(err.message || 'Something went wrong — try again or email us.')
+      setError(err.message || 'Something went wrong. Try again or email us.')
     } finally {
       setSubmitting(false)
     }
@@ -156,7 +156,7 @@ export default function FreeGbpAudit() {
             <h2 className="text-xl font-black text-gray-900 mb-2">Got it. Audit on the way.</h2>
             <p className="text-gray-700 mb-5">
               We'll send your report to <strong>{email}</strong> within 2 business days.
-              In the meantime — want to see what Eliv8 OS does the rest of the time?
+              In the meantime, want to see what Eliv8 OS does the rest of the time?
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -182,7 +182,7 @@ export default function FreeGbpAudit() {
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              ['Google Business Profile health', 'Categories, photos, hours, attributes, posts cadence — every field that affects local pack ranking.'],
+              ['Google Business Profile health', 'Categories, photos, hours, attributes, posts cadence, every field that affects local pack ranking.'],
               ['Citations + NAP consistency',    'Where your business is listed, where it isn\'t, and where the data is wrong.'],
               ['Review velocity + sentiment',    'How fast you\'re collecting reviews, what people say, and where you\'re losing them.'],
               ['AI search readiness score',      'Whether ChatGPT, Claude, and Perplexity will actually recommend you when asked.'],
@@ -202,7 +202,7 @@ export default function FreeGbpAudit() {
           <h2 className="text-xl font-black text-gray-900 mb-3">Why are we doing this for free?</h2>
           <p className="text-gray-700 leading-relaxed max-w-xl mx-auto">
             Honest reason: most contractors who get the audit see what's possible
-            and want help fixing it — and that's what Eliv8 OS does. The audit
+            and want help fixing it, and that's what Eliv8 OS does. The audit
             itself is genuinely free, no card, no follow-up call. If you want to
             fix what's in the report, that's a separate conversation.
           </p>

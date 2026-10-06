@@ -170,7 +170,7 @@ export default function Invite() {
             <div className="relative">
               <div className="text-3xl mb-2">🤝</div>
               <h1 className="text-lg font-bold text-white leading-tight">
-                {teammate ? `You've been added to the team — ${ROLE_LABEL[invite.role]}` : "You've been invited as an advisor"}
+                {teammate ? `You've been added to the team, ${ROLE_LABEL[invite.role]}` : "You've been invited as an advisor"}
               </h1>
               {companyName && (
                 <p className="text-sm text-brand-300 mt-1">
@@ -187,7 +187,7 @@ export default function Invite() {
               </p>
             ) : (<>
             <p className="text-sm text-ink-500 leading-relaxed mb-5">
-              As an advisor you'll have read-only access to their roadmap, check-ins, and business intelligence — everything you need to give great advice without being able to change anything.
+              As an advisor you'll have read-only access to their roadmap, check-ins, and business intelligence. Everything you need to give great advice without being able to change anything.
             </p>
 
             {/* What they'll see */}

@@ -105,7 +105,7 @@ export default function About() {
           <h2 className="text-2xl font-black text-gray-900 mb-4">The short version</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
             Owners have plenty of people who need answers from them and almost
-            nobody to ask. Eliv8 OS exists to be somewhere to ask — an advisor
+            nobody to ask. Eliv8 OS exists to be somewhere to ask: an advisor
             called Solomon that reads your real numbers, remembers what you
             decided and why, argues the hard calls both ways, and tells you
             plainly when it does not know.
@@ -144,7 +144,7 @@ export default function About() {
               by behaviour, which is what he has been asking for since 22 Aug
               and has been right about every time. */}
           <p className="text-gray-700 leading-relaxed">
-            Some owners are called to build the thing a particular way &mdash; in
+            Some owners are called to build the thing a particular way: in
             how they price, how they pay, who they hire, and whether their word
             holds when keeping it costs something. That is harder than it sounds,
             and it is a lonely job.
@@ -222,7 +222,7 @@ export default function About() {
               and saves both sides the trouble. */}
           <p className="text-gray-700 leading-relaxed mb-4">
             Owner-operators, where you are still the one making the financial
-            calls. It is not sector-specific — what these owners have in common
+            calls. It is not sector-specific, what these owners have in common
             is a conviction about how the business should be run, not what it
             does. Trade and construction are well represented, but the question
             it answers is not a trade question.
@@ -239,7 +239,7 @@ export default function About() {
           <h2 className="text-2xl font-black text-gray-900 mb-4">Want to talk?</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
             A person reads every email, not a queue. If you are an owner thinking
-            about it, or you want to introduce someone — write. No sales script.
+            about it, or you want to introduce someone. Write. No sales script.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
             <a

@@ -67,7 +67,7 @@ export default function Terms() {
         <p className="text-gray-700 leading-relaxed mb-10">
           This covers the private {SITE_NAME} pilot. It is an agreement between
           you and <strong>{OPERATOR_LEGAL_NAME}</strong> (&ldquo;we&rdquo;,
-          &ldquo;us&rdquo;). Please read it — it is short, and section 4 is the
+          &ldquo;us&rdquo;). Please read it. It is short, and section 4 is the
           one that matters most.
         </p>
 
@@ -85,7 +85,7 @@ export default function Terms() {
           <p className="text-gray-800 leading-relaxed text-[15px]">
             He is not your accountant, lawyer, or regulator, and nothing here is
             professional advice. Every decision is yours and you are responsible
-            for it — so where being wrong would be expensive, confirm it with a
+            for it, so where being wrong would be expensive, confirm it with a
             qualified professional or the relevant authority before you act.
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function Terms() {
           </p>
           <p>
             We may change how it works, add or remove features, pause it, or end
-            it — for everyone or for you specifically — at any time and without
+            it, for everyone or for you specifically, at any time and without
             notice. That is what a pilot is.
           </p>
         </Section>
@@ -117,7 +117,7 @@ export default function Terms() {
           <p>
             Solomon is an AI. It is designed to decline questions that need a
             lawyer, an accountant, or a regulator, and to point you to the right
-            authority instead — but it can still be wrong, out of date, or
+            authority instead, but it can still be wrong, out of date, or
             confidently mistaken, including on things it was not designed to
             decline.
           </p>
@@ -144,7 +144,7 @@ export default function Terms() {
           </p>
           <p>
             Please check anything important before acting on it, especially where
-            the cost of being wrong is real — payroll, a hire, a contract, a
+            the cost of being wrong is real: payroll, a hire, a contract, a
             regulatory obligation, a price you are about to quote.
           </p>
         </Section>
@@ -163,10 +163,9 @@ export default function Terms() {
             <strong>
               To the fullest extent the law allows, we are not liable for any
               indirect, incidental, special, consequential, or punitive loss
-            </strong>{' '}
-            — including lost profits, lost revenue, lost or corrupted data, lost
-            business or contracts, regulatory penalties, or reputational harm —
-            arising from your use of Eliv8 OS or from any decision you made in
+            </strong>,
+            including lost profits, lost revenue, lost or corrupted data, lost
+            business or contracts, regulatory penalties, or reputational harm, arising from your use of Eliv8 OS or from any decision you made in
             reliance on it.
           </p>
           <p>
@@ -209,7 +208,7 @@ export default function Terms() {
           </p>
           <p>
             Do not upload anyone else&rsquo;s personal information without a
-            proper basis for doing so — particularly employee records.
+            proper basis for doing so, particularly employee records.
           </p>
         </Section>
 
@@ -218,7 +217,7 @@ export default function Terms() {
             The point of a pilot is to find out what is wrong, so tell us. If you
             send us feedback, bug reports, or suggestions, you are giving us
             permission to use them to improve the product, without obligation or
-            payment to you. You keep your own business information — this covers
+            payment to you. You keep your own business information. This covers
             the suggestions, not your data.
           </p>
         </Section>
@@ -270,8 +269,7 @@ export default function Terms() {
             still stands.
           </p>
           <p>
-            Questions about any of this — including the parts you do not like —
-            go to{' '}
+            Questions about any of this, including the parts you do not like, go to{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>.
           </p>
         </Section>

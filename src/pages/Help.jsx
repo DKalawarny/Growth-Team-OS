@@ -26,11 +26,11 @@ import { Link } from 'react-router-dom'
 const FAQ = [
   {
     q: 'How does Solomon know about my business?',
-    a: 'Solomon reads three things every day: the answers you gave during onboarding (industry, revenue, goals), anything you tell it in conversation, and — if you\'ve connected QuickBooks — your live financials. The more specific you are when you check in, the better its advice gets.',
+    a: 'Solomon reads three things every day: the answers you gave during onboarding (industry, revenue, goals), anything you tell it in conversation, and, if you\'ve connected QuickBooks, your live financials. The more specific you are when you check in, the better its advice gets.',
   },
   {
     q: 'Why is there a 10-runs-per-month cap on tools?',
-    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap is what stops those costs running away — it is not there to slow you down. If you need more, email me and I will raise it, usually the same day.`,
+    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap is what stops those costs running away. It is not there to slow you down. If you need more, email me and I will raise it, usually the same day.`,
   },
   {
     q: 'Do I need QuickBooks to use Eliv8 OS?',
@@ -46,11 +46,11 @@ const FAQ = [
   },
   {
     q: 'How do I add my employees / techs?',
-    a: 'Settings → Team & access → Team card. Add their name, email, and role. They\'ll show up on the Work Board so you can assign tasks and email them updates. Adding staff does not create logins for them — only people you invite as advisors can sign in.',
+    a: 'Settings → Team & access → Team card. Add their name, email, and role. They\'ll show up on the Work Board so you can assign tasks and email them updates. Adding staff does not create logins for them. Only people you invite as advisors can sign in.',
   },
   {
     q: 'What\'s the difference between a milestone and a task?',
-    a: 'Milestones live on your Growth Roadmap — they\'re the big chunks (e.g. "Hire a foreman", "Launch service area in Airdrie"). Tasks live on the Work Board — they\'re the day-to-day work that gets you there ("Post job ad", "Call three references"). Milestones tell you where you\'re going. Tasks tell you what to do today.',
+    a: 'Milestones live on your Growth Roadmap. They\'re the big chunks (e.g. "Hire a foreman", "Launch service area in Airdrie"). Tasks live on the Work Board. They\'re the day-to-day work that gets you there ("Post job ad", "Call three references"). Milestones tell you where you\'re going. Tasks tell you what to do today.',
   },
   {
     q: 'Can I cancel anytime?',
@@ -58,11 +58,11 @@ const FAQ = [
   },
   {
     q: 'How do I export my data?',
-    a: 'Not self-serve yet — email me at support@eliv8os.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
+    a: 'Not self-serve yet: email me at support@eliv8os.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
   },
   {
     q: 'I think I found a bug / something broke',
-    a: 'Email support@eliv8os.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general — "the cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
+    a: 'Email support@eliv8os.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general. "The cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
   },
 ]
 
@@ -70,9 +70,9 @@ const TOOL_GUIDES = [
   {
     name:   'Solomon (AI advisor)',
     href:   '/advisor',
-    short:  'Your always-on business advisor — chat anytime, opens with a brief each morning.',
+    short:  'Your always-on business advisor, chat anytime, opens with a brief each morning.',
     steps: [
-      'Open Solomon from the sidebar — it remembers every prior conversation in this workspace.',
+      'Open Solomon from the sidebar. It remembers every prior conversation in this workspace.',
       'Each morning it pre-reads your latest financials, roadmap, and check-ins, then opens with what needs attention.',
       'Ask it anything: "Should I hire?", "What\'s my biggest risk this quarter?", "Help me write a job ad for a foreman".',
       'It can write documents, scope jobs, run numbers, and pull from your CFO Dashboard if QuickBooks is connected.',
@@ -86,17 +86,17 @@ const TOOL_GUIDES = [
       'Go to Settings → Integrations and connect QuickBooks (one-time OAuth).',
       'Once connected, the CFO Dashboard auto-pulls revenue, expenses, AR, and cash on hand.',
       'On the first of each month, you\'ll see a plain-English narrative explaining what changed and why.',
-      'No QuickBooks? Skip this tool — Cash Flow Forecast works manually.',
+      'No QuickBooks? Skip this tool. Cash Flow Forecast works manually.',
     ],
   },
   {
     name:   'Cash Flow Forecast',
     href:   '/tools/cash-flow',
-    short:  'Rolling 13-week forecast — see runway, gaps, and bad weeks before they hit.',
+    short:  'Rolling 13-week forecast: see runway, gaps, and bad weeks before they hit.',
     steps: [
       'Enter the basics: starting cash, expected weekly inflows (jobs closing), and weekly outflows (payroll, rent, materials).',
       'Eliv8 OS extends 13 weeks out and highlights any week where you go negative.',
-      'If QuickBooks is connected, the inflow/outflow defaults come from your real data — just adjust forward-looking weeks.',
+      'If QuickBooks is connected, the inflow/outflow defaults come from your real data, just adjust forward-looking weeks.',
       'Re-run it any time your pipeline changes. It\'s designed to be cheap to run weekly.',
     ],
   },
@@ -114,10 +114,10 @@ const TOOL_GUIDES = [
   {
     name:   'Org Chart Planner',
     href:   '/tools/org-chart',
-    short:  'Maps the team you need in 12 months — not the one you\'re stuck with today.',
+    short:  'Maps the team you need in 12 months. Not the one you\'re stuck with today.',
     steps: [
       'Describe your current team and your 12-month revenue goal.',
-      'Eliv8 OS sketches the org structure that supports that goal — what roles you\'ll need, in what order.',
+      'Eliv8 OS sketches the org structure that supports that goal, what roles you\'ll need, in what order.',
       'Tells you which hire to make first and what hiring will cost vs. what it unlocks.',
       'Run it once a quarter. The picture changes as your roadmap moves.',
     ],
@@ -136,18 +136,18 @@ const TOOL_GUIDES = [
   {
     name:   'Growth Roadmap',
     href:   '/roadmap',
-    short:  'Milestone-by-milestone plan with progress tracking — your 12-month operating plan.',
+    short:  'Milestone-by-milestone plan with progress tracking, your 12-month operating plan.',
     steps: [
       'Generated automatically from your onboarding answers. Each milestone has actions, dependencies, and a target date.',
-      'Mark milestones complete as you finish them — Solomon tracks your pace and adjusts advice.',
+      'Mark milestones complete as you finish them, Solomon tracks your pace and adjusts advice.',
       'If your situation changes meaningfully (big new contract, key team change), update your answers in Business and regenerate from Settings → Danger zone.',
-      'Regenerating wipes existing milestones including completed ones — only do it when the old roadmap really doesn\'t fit any more.',
+      'Regenerating wipes existing milestones including completed ones. Only do it when the old roadmap really doesn\'t fit any more.',
     ],
   },
   {
     name:   'Work Board',
     href:   '/board',
-    short:  'Kanban for the day-to-day work — assign tasks, email staff, track WIP.',
+    short:  'Kanban for the day-to-day work: assign tasks, email staff, track WIP.',
     steps: [
       'Add staff in Settings → Team & access first so you can assign tasks to specific people.',
       'Create tasks under the relevant milestone or as standalone work.',
@@ -158,19 +158,19 @@ const TOOL_GUIDES = [
   {
     name:   'Check-ins',
     href:   '/checkins',
-    short:  'Weekly or daily logs that Solomon reads — your operating heartbeat.',
+    short:  'Weekly or daily logs that Solomon reads, your operating heartbeat.',
     steps: [
       'Quick prompts: what went well, what didn\'t, what you\'re worried about.',
       'Solomon reads these overnight and factors them into the morning brief.',
-      'Owners who check in 2–3 times a week get noticeably better advice — patterns emerge that a one-shot conversation can\'t see.',
+      'Owners who check in 2–3 times a week get noticeably better advice, patterns emerge that a one-shot conversation can\'t see.',
     ],
   },
   {
     name:   'Document Library',
     href:   '/documents',
-    short:  'Everything Solomon and the tools can reference — contracts, SOPs, financials.',
+    short:  'Everything Solomon and the tools can reference: contracts, SOPs, financials.',
     steps: [
-      'Upload PDFs, Word docs, spreadsheets — anything you want Solomon to know about.',
+      'Upload PDFs, Word docs, spreadsheets, anything you want Solomon to know about.',
       'Eliv8 OS reads them once and stores the extracted text so future conversations and tools can reference them.',
       'Good things to upload: master service agreement, employee handbook, last year\'s P&L, vendor list, safety manual.',
     ],
@@ -178,7 +178,7 @@ const TOOL_GUIDES = [
   {
     name:   'Team Newsletter',
     href:   '/tools/newsletter',
-    short:  'Generates a monthly newsletter from your check-ins and milestones — keep the team in the loop.',
+    short:  'Generates a monthly newsletter from your check-ins and milestones. Keep the team in the loop.',
     steps: [
       'Click Generate; Eliv8 OS reads your last 30 days of activity and drafts a newsletter.',
       'Covers wins, what\'s coming up, hiring, and any compliance reminders.',
@@ -391,7 +391,7 @@ function RoadmapGuide() {
           ))}
         </ul>
         <p className="text-xs text-ink-500 mt-3 leading-relaxed">
-          The dot lets you scan the list and group milestones by area of the business at a glance — without having
+          The dot lets you scan the list and group milestones by area of the business at a glance, without having
           to read each title.
         </p>
       </div>
@@ -405,8 +405,7 @@ function RoadmapGuide() {
               Name
             </span>
             <span className="text-ink-600">
-              <strong>Team staff.</strong> Field crew added in Settings → Team. They get an emailed magic-link when assigned —
-              tap the link and they see only their tasks, no login needed.
+              <strong>Team staff.</strong> Field crew added in Settings → Team. They get an emailed magic-link when assigned, tap the link and they see only their tasks, no login needed.
             </span>
           </li>
           <li className="flex items-center gap-3">
@@ -415,7 +414,7 @@ function RoadmapGuide() {
             </span>
             <span className="text-ink-600">
               <strong>App user.</strong> Someone with their own login. They see assignments inside the Eliv8 OS dashboard.
-              No magic-link email — they're already in the app.
+              No magic-link email. They're already in the app.
             </span>
           </li>
           <li className="flex items-center gap-3">
@@ -440,7 +439,7 @@ function RoadmapGuide() {
             If you pick a Team staff member, they get an email with a link to a mobile page showing just their
             tasks. If you pick an App user, they'll see the task in their dashboard.
           </li>
-          <li>To change who's on it, hover the same action again — the button now reads "Reassign".</li>
+          <li>To change who's on it, hover the same action again, the button now reads "Reassign".</li>
         </ol>
       </div>
 

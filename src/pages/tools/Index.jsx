@@ -49,7 +49,7 @@ const GROUPS = [
     title: 'Money',
     items: [
       { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', needsQbo: true },
-      { label: 'Read this month’s numbers to me', note: 'The month in plain English — what changed, and what to do about it.', to: '/tools/cfo', needsQbo: true },
+      { label: 'Read this month’s numbers to me', note: 'The month in plain English: what changed, and what to do about it.', to: '/tools/cfo', needsQbo: true },
       { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder' },
     ],
   },
@@ -65,7 +65,7 @@ const GROUPS = [
     title: 'The business',
     items: [
       { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision' },
-      { label: 'Set this quarter’s priorities',  note: 'The two or three that matter — and an honest word if it is too many.', to: '/tools/rocks' },
+      { label: 'Set this quarter’s priorities',  note: 'The two or three that matter, and an honest word if it is too many.', to: '/tools/rocks' },
       { label: 'Write down a repeating job',     note: 'Get it out of your head and onto paper, so the business can run without you.', to: '/playbooks' },
       { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety' },
       { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness' },
@@ -103,7 +103,7 @@ export default function ToolsIndex() {
           </h1>
           <p className="text-[15px] leading-relaxed text-ink-500">
             He can run most of these in conversation, with your numbers already
-            loaded — that is usually the shorter path.{' '}
+            loaded, that is usually the shorter path.{' '}
             <Link to="/advisor" className="text-brand-700 font-semibold underline underline-offset-2">
               Talk to Solomon
             </Link>
@@ -121,8 +121,7 @@ export default function ToolsIndex() {
           <div className="mb-10 rounded-xl border border-ink-200 bg-ink-50 px-5 py-4">
             <p className="text-[14px] text-ink-700 leading-relaxed">
               <strong className="font-semibold">QuickBooks is not connected.</strong>{' '}
-              The two money tools below work from your real books once it is —
-              until then you enter the figures by hand.{' '}
+              The two money tools below work from your real books once it is, until then you enter the figures by hand.{' '}
               <Link to="/settings/integrations" className="text-brand-700 font-semibold underline underline-offset-2">
                 Connect it
               </Link>

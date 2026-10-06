@@ -63,12 +63,12 @@ const CHAT = [
   { role: 'user', text: 'Should I take on the Riverside contract? It’s $480k over eight months.' },
   {
     role: 'assistant',
-    text: 'Before the yes or no — that contract is 14% of your trailing revenue and Riverside pays on 60-day terms. You are already carrying $134k over 60 days, and $82k of that is one GC.\n\nSo the real question is not whether the work is good. It is whether you can float eight months of labour and materials while your two slowest payers are already sitting on six weeks of your cash.\n\nWhat are their payment terms, and is there a holdback?',
+    text: 'Before the yes or no, that contract is 14% of your trailing revenue and Riverside pays on 60-day terms. You are already carrying $134k over 60 days, and $82k of that is one GC.\n\nSo the real question is not whether the work is good. It is whether you can float eight months of labour and materials while your two slowest payers are already sitting on six weeks of your cash.\n\nWhat are their payment terms, and is there a holdback?',
   },
   { role: 'user', text: '60 days, 10% holdback until substantial completion.' },
   {
     role: 'assistant',
-    text: 'Then at peak you would be out roughly $95k–$110k before the first cheque clears, and the holdback keeps $48k out of reach until the end.\n\nYou have $81k on hand. That does not work without either a deposit, a draw schedule, or the overdraft — and using the overdraft to fund a contract at 7% margin means the financing cost eats a meaningful slice of the profit.\n\nI would go back to Riverside and ask for a 15% mobilisation deposit and monthly draws. If they say no to both, this contract is a cash-flow problem wearing a revenue costume.\n\nThat is a read on the figures you have given me — your bookkeeper should confirm the receivables ageing before you sign anything.',
+    text: 'Then at peak you would be out roughly $95k–$110k before the first cheque clears, and the holdback keeps $48k out of reach until the end.\n\nYou have $81k on hand. That does not work without either a deposit, a draw schedule, or the overdraft, and using the overdraft to fund a contract at 7% margin means the financing cost eats a meaningful slice of the profit.\n\nI would go back to Riverside and ask for a 15% mobilisation deposit and monthly draws. If they say no to both, this contract is a cash-flow problem wearing a revenue costume.\n\nThat is a read on the figures you have given me. Your bookkeeper should confirm the receivables ageing before you sign anything.',
   },
 ]
 
@@ -80,13 +80,13 @@ const DECISION = {
     {
       name:          'The cash case',
       leaning:       'against',
-      argument:      'At 7% net margin a $78k seat needs about $1.1M of additional revenue to carry itself before it improves anything. You do not have that booked — you have it hoped for. Overtime is expensive per hour but it is variable, and variable is what a business with 5.5 weeks of cash should be buying right now.',
-      weakest_point: 'This treats the overtime as if it were free of risk. It is not — it is concentrated on two people, and if either leaves the cost of replacing them lands all at once.',
+      argument:      'At 7% net margin a $78k seat needs about $1.1M of additional revenue to carry itself before it improves anything. You do not have that booked. You have it hoped for. Overtime is expensive per hour but it is variable, and variable is what a business with 5.5 weeks of cash should be buying right now.',
+      weakest_point: 'This treats the overtime as if it were free of risk. It is not. It is concentrated on two people, and if either leaves the cost of replacing them lands all at once.',
     },
     {
       name:          'The people case',
       leaning:       'for',
-      argument:      'Both techs carrying the overtime are past nine months of it. That is the point where good people start taking calls from competitors, and losing either one costs you more than the seat does — a replacement search, six weeks of reduced capacity, and the institutional knowledge that walks out with them.',
+      argument:      'Both techs carrying the overtime are past nine months of it. That is the point where good people start taking calls from competitors, and losing either one costs you more than the seat does: a replacement search, six weeks of reduced capacity, and the institutional knowledge that walks out with them.',
       weakest_point: 'You have not actually asked them how they feel about it. This is inferred from the hours, not from a conversation, and the conversation is free.',
     },
     {
@@ -99,12 +99,12 @@ const DECISION = {
   conflict: 'The cash case and the people case point in opposite directions, and both are right. The tension is real: the safest thing for the balance sheet this quarter is also the thing most likely to cost you a tech next quarter.',
   landing: {
     recommendation: 'Do not hire yet. Have the conversation with both techs this week, and fix the pricing before you add capacity to it.',
-    reasoning:      'The margin drop is the actual problem — a second tech added to 7% work produces more 7% work. Find out whether the drop is pricing or materials first, because that answer changes what the right hire even is. Meanwhile the retention risk is real but it is not yet a resignation, and a direct conversation buys you information for nothing.',
+    reasoning:      'The margin drop is the actual problem, a second tech added to 7% work produces more 7% work. Find out whether the drop is pricing or materials first, because that answer changes what the right hire even is. Meanwhile the retention risk is real but it is not yet a resignation, and a direct conversation buys you information for nothing.',
     my_weakest_point: 'I am assuming you have four to six weeks before the retention risk becomes a resignation. If either tech is already interviewing, this recommendation is wrong and the sequencing should flip.',
   },
   cannot_see: [
     'Whether the two techs are actually unhappy, or just tired in a way that passes',
-    'Whether the margin drop is pricing, materials, or job mix — your books would tell you and I have not seen the job-level costing',
+    'Whether the margin drop is pricing, materials, or job mix. Your books would tell you and I have not seen the job-level costing',
     'What is in your pipeline past the next eight weeks',
   ],
   next_asks: [
@@ -138,7 +138,7 @@ export default function Demo() {
             What it actually looks like<br />when you ask.
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Below is a real walkthrough of the product — the same screens and the
+            Below is a real walkthrough of the product, the same screens and the
             same components a signed-in owner sees. The only difference is that
             the business is made up.
           </p>
@@ -157,7 +157,7 @@ export default function Demo() {
         {/* ── The setup ───────────────────────────────────────────────────── */}
         <Step n="1" title="What Solomon already knows">
           <p className="text-gray-700 leading-relaxed mb-5">
-            {CO.name} is a {CO.trade} contractor in {CO.where} — {CO.people} people,
+            {CO.name} is a {CO.trade} contractor in {CO.where}, {CO.people} people,
             about {CO.revenue} a year at {CO.margin} net. The owner connected
             QuickBooks and answered the setup questions once. Nothing here was
             re-typed for this conversation.
@@ -177,7 +177,7 @@ export default function Demo() {
         <Step
           n="2"
           title="He answers the question underneath the question"
-          blurb="The owner asks about a contract. Solomon starts with the thing that actually decides it — and ends by naming what he has not checked."
+          blurb="The owner asks about a contract. Solomon starts with the thing that actually decides it, and ends by naming what he has not checked."
         >
           <div className="rounded-2xl border border-gray-200 bg-[#F6F8F8] p-4 sm:p-5 flex flex-col gap-3">
             {CHAT.map((m, i) => (

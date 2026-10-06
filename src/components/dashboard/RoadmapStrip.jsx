@@ -46,7 +46,7 @@ export default function RoadmapStrip({ milestones, statusById, weightedPct }) {
 
       {upcoming.length === 0 ? (
         <div className="text-sm text-ink-500 bg-white border border-ink-100 rounded-xl px-5 py-4">
-          Nothing queued up — every live milestone is parked or complete. Open the roadmap to unblock or regenerate.
+          Nothing queued up. Every live milestone is parked or complete. Open the roadmap to unblock or regenerate.
         </div>
       ) : (
         <ul className="space-y-2.5">

@@ -82,7 +82,7 @@ export default class ErrorBoundary extends Component {
             Something went wrong on this page.
           </h1>
           <p className="text-sm text-ink-500 leading-relaxed mb-6">
-            We've logged what happened. Reloading usually clears it — if
+            We've logged what happened. Reloading usually clears it: if
             it keeps happening, head back to the dashboard and try
             from there.
           </p>

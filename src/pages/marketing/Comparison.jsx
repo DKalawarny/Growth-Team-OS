@@ -32,8 +32,8 @@ const COMPETITORS = {
     name:    'Knowify',
     tagline: 'Construction job-costing software',
     url:     'https://www.knowify.com',
-    summary: 'Knowify is a job-costing and project management tool aimed at construction subcontractors. It does estimating, scheduling, time tracking, and integrates tightly with QuickBooks. Strong at the operational layer — weak on advisory and growth.',
-    bestFor: 'Subcontractors who want detailed job-costing and tight QuickBooks sync — and don\'t need a strategic advisor.',
+    summary: 'Knowify is a job-costing and project management tool aimed at construction subcontractors. It does estimating, scheduling, time tracking, and integrates tightly with QuickBooks. Strong at the operational layer, weak on advisory and growth.',
+    bestFor: 'Subcontractors who want detailed job-costing and tight QuickBooks sync, and don\'t need a strategic advisor.',
     pricing: 'From around $186/month for a 5-user team. Add-ons drive the price up quickly.',
     strengths: [
       'Deep job-costing and labour tracking',
@@ -42,30 +42,30 @@ const COMPETITORS = {
       'Scheduling and field-team workflows',
     ],
     weaknesses: [
-      'No AI advisor or strategic guidance — pure operations',
+      'No AI advisor or strategic guidance, pure operations',
       'No memory of your decisions or your reasoning',
       'No hiring scorecards or org planning',
       'Steeper price for small teams',
     ],
     growthOSWins: [
-      'Solomon (AI advisor) — pulls your numbers and tells you what to do, not just what happened',
-      'Hiring, org planning and succession — Knowify is operations-only',
+      'Solomon (AI advisor). Pulls your numbers and tells you what to do, not just what happened',
+      'Hiring, org planning and succession. Knowify is operations-only',
       'Remembers your decisions and constraints across months, not just this session',
-      SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month flat — no per-seat math, no add-ons` : 'One flat price when we launch — no per-seat math, no add-ons',
+      SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month flat. No per-seat math, no add-ons` : 'One flat price when we launch. No per-seat math, no add-ons',
     ],
     competitorWins: [
       'Deeper job-costing detail if you live in the field every day',
       'More mature scheduling and time-tracking workflows',
     ],
     pickThem: 'You\'re a 10-50 person construction sub, your bottleneck is real-time job-costing accuracy, and you don\'t need strategic advice from your software.',
-    pickUs: 'You are an owner-operator who needs actual counsel — something that understands your numbers and tells you what to do about them, and that cares how the business is run and not only what it earns.',
+    pickUs: 'You are an owner-operator who needs actual counsel: something that understands your numbers and tells you what to do about them, and that cares how the business is run and not only what it earns.',
   },
 
   jobber: {
     name:    'Jobber',
     tagline: 'Field-service CRM and scheduling',
     url:     'https://www.getjobber.com',
-    summary: 'Jobber is the dominant field-service CRM for home-services. It does quoting, scheduling, dispatching, invoicing, and customer communications. Famously good at what it does — and explicitly not an advisor or growth tool.',
+    summary: 'Jobber is the dominant field-service CRM for home-services. It does quoting, scheduling, dispatching, invoicing, and customer communications. Famously good at what it does, and explicitly not an advisor or growth tool.',
     bestFor: 'Field-service businesses (lawn care, plumbing, cleaning, etc.) where the bottleneck is dispatching crews and getting paid.',
     pricing: 'From $39/month (limited) up to $349/month for full features. Per-user pricing on higher tiers.',
     strengths: [
@@ -82,10 +82,10 @@ const COMPETITORS = {
       'Higher tiers get pricey fast',
     ],
     growthOSWins: [
-      'AI advisor that knows your business — Jobber has no equivalent',
-      'CFO dashboard, cash flow forecasting, hiring planner — strategic tools Jobber doesn\'t build',
+      'AI advisor that knows your business. Jobber has no equivalent',
+      'CFO dashboard, cash flow forecasting, hiring planner, strategic tools Jobber doesn\'t build',
       'Succession planning and written playbooks',
-      SHOW_PUBLIC_PRICE ? `Flat $${PRICE_MONTHLY_USD}/month for everything` : 'One flat price for everything — no tiers, no per-seat',
+      SHOW_PUBLIC_PRICE ? `Flat $${PRICE_MONTHLY_USD}/month for everything` : 'One flat price for everything. No tiers, no per-seat',
     ],
     competitorWins: [
       'Mature scheduling, dispatching, and customer-facing workflows',
@@ -93,14 +93,14 @@ const COMPETITORS = {
       'Larger integration library',
     ],
     pickThem: 'Your bottleneck is dispatching, scheduling, and getting invoices paid. You have field crews running multiple jobs a day and need real-time coordination.',
-    pickUs: 'You already have ops handled, or your ops are simpler than Jobber needs to manage. What you actually need is counsel — cash flow, hiring, the hard decisions, what happens to this business after you. The advisor, and the tools to act on the advice.',
+    pickUs: 'You already have ops handled, or your ops are simpler than Jobber needs to manage. What you actually need is counsel: cash flow, hiring, the hard decisions, what happens to this business after you. The advisor, and the tools to act on the advice.',
   },
 
   'housecall-pro': {
     name:    'Housecall Pro',
     tagline: 'All-in-one home-services platform',
     url:     'https://www.housecallpro.com',
-    summary: 'Housecall Pro is a field-service platform aimed at residential home-services trades — plumbing, HVAC, electrical, cleaning. Strong on scheduling, payments, and customer experience. Light on strategic and advisory tools.',
+    summary: 'Housecall Pro is a field-service platform aimed at residential home-services trades: plumbing, HVAC, electrical, cleaning. Strong on scheduling, payments, and customer experience. Light on strategic and advisory tools.',
     bestFor: 'Residential home-services contractors with active dispatching needs and a customer-experience focus.',
     pricing: 'From $79/month (limited) up to $279/month per office. Add-ons stack quickly.',
     strengths: [
@@ -117,17 +117,17 @@ const COMPETITORS = {
       'Per-user fees and add-ons inflate the real price',
     ],
     growthOSWins: [
-      'Solomon — strategic advisor knowing your numbers and goals',
+      'Solomon, strategic advisor knowing your numbers and goals',
       'Cash flow forecasting and CFO dashboard',
       'Hiring, org chart, roadmap and succession planning',
-      'Flat pricing — no per-user inflation',
+      'Flat pricing. No per-user inflation',
     ],
     competitorWins: [
       'Better customer-facing booking + reviews + payment workflows',
       'More mature mobile app for crews',
     ],
     pickThem: 'You run a high-volume residential service business, your customer experience IS your moat, and dispatching/payments are your daily friction.',
-    pickUs: 'You have customer experience handled. Your real friction is the deciding — what to do next, when to hire, where the cash is actually going, and whether the business is still serving your family or consuming it.',
+    pickUs: 'You have customer experience handled. Your real friction is the deciding: what to do next, when to hire, where the cash is actually going, and whether the business is still serving your family or consuming it.',
   },
 
   buildertrend: {
@@ -144,9 +144,9 @@ const COMPETITORS = {
       'Strong in larger, project-heavy GC and remodeler workflows',
     ],
     weaknesses: [
-      'Significant cost — out of reach for most sub-$5M contractors',
+      'Significant cost, out of reach for most sub-$5M contractors',
       'Steep learning curve',
-      'No AI advisor — features-driven, not advisory',
+      'No AI advisor, features-driven, not advisory',
       'Sized for project managers, not owner-operators',
       'No advisory layer, and no memory of your decisions',
     ],
@@ -163,7 +163,7 @@ const COMPETITORS = {
       'Mature commercial-construction workflows',
     ],
     pickThem: 'You\'re a homebuilder or remodeler running 10+ active projects with dedicated PM staff. You need every project management feature in the catalog and the budget supports it.',
-    pickUs: 'You are an owner-operator, not a project manager. You do not need a catalogue of project-management features — you need counsel that understands your size and the way you want this run.'
+    pickUs: 'You are an owner-operator, not a project manager. You do not need a catalogue of project-management features. You need counsel that understands your size and the way you want this run.'
   },
 }
 
@@ -178,7 +178,7 @@ export default function Comparison() {
 
   const meta = buildPageMeta({
     title:       `Eliv8 OS vs ${data.name} — an honest comparison`,
-    description: `Comparing Eliv8 OS and ${data.name} for owner-operated businesses. ${data.summary.slice(0, 100)}... See which one actually fits — including when the answer is ${data.name}.`,
+    description: `Comparing Eliv8 OS and ${data.name} for owner-operated businesses. ${data.summary.slice(0, 100)}... See which one actually fits, including when the answer is ${data.name}.`,
     path:        `/vs/${competitor}`,
   })
 
@@ -195,7 +195,7 @@ export default function Comparison() {
             : <meta key={i} name={m.name} content={m.content} />
         )}
         <script type="application/ld+json">{jsonLd(productSchema({
-          name:        `Eliv8 OS — alternative to ${data.name}`,
+          name:        `Eliv8 OS, alternative to ${data.name}`,
           description: `An AI business advisor for owners who want counsel, not another operations tool. Considered alongside ${data.name} by owner-operators who already have scheduling and invoicing handled.`,
         }))}</script>
       </Helmet>
@@ -212,7 +212,7 @@ export default function Comparison() {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Both are good tools. They do different things. Here's a fair side-by-side
-            so you can pick the right one — even if that's not us.
+            so you can pick the right one, even if that's not us.
           </p>
         </section>
 
@@ -226,7 +226,7 @@ export default function Comparison() {
           <Row label="What it is" growth="AI advisor + business OS for owner-operators" them={data.tagline} />
           <Row label="Best for" growth="Specialty-trade owners, $500k–$15M revenue, 3–50 people" them={data.bestFor} />
           <Row label="Pricing" growth={SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month flat, all features, all users` : 'Free while in private pilot; one flat price at launch'} them={data.pricing} />
-          <Row label="AI advisor" growth="Yes — Solomon, with long-term memory" them="No" />
+          <Row label="AI advisor" growth="Yes, Solomon, with long-term memory" them="No" />
           <Row label="CFO dashboard + cash flow forecast" growth="Yes" them={
             data.name === 'Knowify' ? 'Partial (job-costing only)' : 'No'
           } />
@@ -236,8 +236,8 @@ export default function Comparison() {
               that does not exist and is not being built. Keep the answer
               honest and complete: we don't do dispatching, on purpose, and the
               tool you already use is the answer — not a promise from us. */}
-          <Row label="Field crew dispatching" growth="No — on purpose. Keep the tool you already use for that." them={
-            data.name === 'Knowify' || data.name === 'Buildertrend' ? 'Limited' : 'Yes — strong'
+          <Row label="Field crew dispatching" growth="No, on purpose. Keep the tool you already use for that." them={
+            data.name === 'Knowify' || data.name === 'Buildertrend' ? 'Limited' : 'Yes, strong'
           } last />
         </section>
 

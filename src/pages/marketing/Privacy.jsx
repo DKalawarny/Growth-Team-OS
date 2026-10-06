@@ -70,7 +70,7 @@ export default function Privacy() {
             <li>
               <strong>Technical info we collect automatically:</strong> IP address,
               browser type, pages visited, error logs. Used to keep the product running
-              and debug problems — never sold.
+              and debug problems, never sold.
             </li>
           </ul>
         </Sec>
@@ -80,7 +80,7 @@ export default function Privacy() {
           <ul>
             <li>Provide your subscription, sync data, generate AI outputs.</li>
             <li>Send service emails (password resets, billing, security alerts).</li>
-            <li>Improve the product (aggregate, anonymized usage patterns — never your specific data).</li>
+            <li>Improve the product (aggregate, anonymized usage patterns, never your specific data).</li>
             <li>Comply with legal obligations.</li>
           </ul>
           <p className="mt-3">
@@ -92,13 +92,13 @@ export default function Privacy() {
         <Sec title="3. Who we share data with">
           <p>To run Eliv8 OS, we share minimum-necessary data with:</p>
           <ul>
-            <li><strong>Supabase</strong> — database, auth, storage</li>
-            <li><strong>Anthropic</strong> — AI processing (Claude)</li>
-            <li><strong>Stripe</strong> — billing</li>
-            <li><strong>QuickBooks (optional)</strong> — financial sync, only if you connect it</li>
-            <li><strong>Email providers</strong> — to deliver transactional email</li>
-            <li><strong>ElevenLabs (optional)</strong> — text-to-speech, only when you press Listen on a reply</li>
-            <li><strong>Google or Apple (optional)</strong> — speech-to-text, only while you are dictating, via your browser&rsquo;s built-in microphone feature</li>
+            <li><strong>Supabase</strong>: database, auth, storage</li>
+            <li><strong>Anthropic</strong>: AI processing (Claude)</li>
+            <li><strong>Stripe</strong>: billing</li>
+            <li><strong>QuickBooks (optional)</strong>: financial sync, only if you connect it</li>
+            <li><strong>Email providers</strong>: to deliver transactional email</li>
+            <li><strong>ElevenLabs (optional)</strong>: text-to-speech, only when you press Listen on a reply</li>
+            <li><strong>Google or Apple (optional)</strong>: speech-to-text, only while you are dictating, via your browser&rsquo;s built-in microphone feature</li>
           </ul>
           <p className="mt-3">
             <strong>We do not:</strong> sell your data, share it with advertisers,
@@ -121,7 +121,7 @@ export default function Privacy() {
 
         <Sec title="5. Cookies and tracking">
           <p>
-            We use minimal cookies — authentication (so you stay logged in)
+            We use minimal cookies, authentication (so you stay logged in)
             and basic preferences. We do not use third-party advertising cookies,
             tracking pixels, or sell data to data brokers.
           </p>
@@ -160,7 +160,7 @@ export default function Privacy() {
               note on the security page. */}
           <p className="mt-3">
             Deleting your workspace is self-serve, in Settings → Danger zone.
-            Export isn't built yet, so for that — or anything else here — email{' '}
+            Export isn't built yet, so for that, or anything else here, email{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-600 hover:underline">{CONTACT_EMAIL}</a>{' '}
             and we'll handle it within 30 days.
           </p>

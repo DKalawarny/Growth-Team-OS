@@ -85,7 +85,7 @@ export default function SolomonContext() {
     qboLive && {
       title: 'QuickBooks',
       detail: s.lastSync
-        ? `Revenue, margin and cash position — synced ${relative(s.lastSync)}`
+        ? `Revenue, margin and cash position, synced ${relative(s.lastSync)}`
         : 'Revenue, margin and cash position',
     },
     // Only claim this when the files are actually indexed. Uploaded and
@@ -93,15 +93,15 @@ export default function SolomonContext() {
     // to him — saying "Live" over it is the most misleading thing this page
     // could do, because it is the exact question the page exists to answer.
     s.files > 0 && s.chunks > 0 && {
-      title: `Your documents — ${s.files} ${s.files === 1 ? 'file' : 'files'}`,
+      title: `Your documents, ${s.files} ${s.files === 1 ? 'file' : 'files'}`,
       detail: 'Searched by meaning, so he can quote the relevant part rather than the whole file',
     },
     s.safety > 0 && {
-      title: `Licences and compliance — ${s.safety} ${s.safety === 1 ? 'document' : 'documents'}`,
+      title: `Licences and compliance, ${s.safety} ${s.safety === 1 ? 'document' : 'documents'}`,
       detail: 'Answered against the real regulation, with the source shown',
     },
     s.staff > 0 && {
-      title: `Your team — ${s.staff} ${s.staff === 1 ? 'person' : 'people'}`,
+      title: `Your team, ${s.staff} ${s.staff === 1 ? 'person' : 'people'}`,
       detail: 'Who does what, and who is carrying how much',
     },
   ].filter(Boolean)
@@ -117,7 +117,7 @@ export default function SolomonContext() {
     s.staff === 0 && {
       key: 'crew',
       headline: "He doesn't know your crew.",
-      body: "Names, who does what, roughly how long they've been with you. Two minutes, and it changes what he can say about hiring, about who's carrying too much, and about who could run a job without you. Until then he'll tell you plainly that he can't judge anything about your people — which is honest, but it's also half an answer.",
+      body: "Names, who does what, roughly how long they've been with you. Two minutes, and it changes what he can say about hiring, about who's carrying too much, and about who could run a job without you. Until then he'll tell you plainly that he can't judge anything about your people, which is honest, but it's also half an answer.",
       cta: { label: 'Add your team', to: '/settings/team' },
     },
     !qboLive && {
@@ -129,13 +129,13 @@ export default function SolomonContext() {
     s.files > 0 && s.chunks === 0 && {
       key: 'unindexed',
       headline: `Your ${s.files} ${s.files === 1 ? 'file is' : 'files are'} uploaded, but he can't read ${s.files === 1 ? 'it' : 'them'} yet.`,
-      body: "They were added while document search was switched off, so they were never indexed — which means every answer so far has ignored them completely. Indexing takes a few seconds and only needs doing once.",
+      body: "They were added while document search was switched off, so they were never indexed, which means every answer so far has ignored them completely. Indexing takes a few seconds and only needs doing once.",
       cta: { label: 'Index them now', to: '/admin/backfill' },
     },
     s.files === 0 && {
       key: 'docs',
       headline: 'Nothing of yours is in his hands yet.',
-      body: 'Contracts, your handbook, a job debrief, last year’s numbers — whatever is already written down. He reads what you give him and quotes the relevant part back rather than generalising.',
+      body: 'Contracts, your handbook, a job debrief, last year’s numbers, whatever is already written down. He reads what you give him and quotes the relevant part back rather than generalising.',
       cta: { label: 'Add documents', to: '/documents' },
     },
   ].filter(Boolean)
@@ -183,7 +183,7 @@ export default function SolomonContext() {
               >
                 {g.cta.label}
               </Link>
-              <span className="text-[13.5px] text-ink-400">Or leave it — he'll ask again when it matters.</span>
+              <span className="text-[13.5px] text-ink-400">Or leave it, he'll ask again when it matters.</span>
             </div>
           </section>
         ))}
@@ -254,7 +254,7 @@ function MemorySection({ rows, onDismiss }) {
         </p>
         <p className="text-[14.5px] leading-[1.65] text-ink-500">
           Nothing yet. As you talk, he writes down the things that will still
-          matter in six months — lines you’ve drawn, decisions you’ve already
+          matter in six months: lines you’ve drawn, decisions you’ve already
           made, who your people are. Not the conversation, just what lasts.
         </p>
       </section>

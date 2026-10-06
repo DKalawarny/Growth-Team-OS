@@ -170,7 +170,7 @@ export default function CashFlow() {
       setResult(parsed)
       setMsgs([{
         role:    'assistant',
-        content: "Here's your 13-week picture. Tell me to rerun under any assumption — losing a client, winning a retainer, delaying a purchase — and I'll reshape the whole plan.",
+        content: "Here's your 13-week picture. Tell me to rerun under any assumption, losing a client, winning a retainer, delaying a purchase, and I'll reshape the whole plan.",
       }])
       setStage('result')
     } catch (err) {
@@ -221,7 +221,7 @@ export default function CashFlow() {
     } catch (err) {
       const content = isCapExceeded(err)
         ? `You've hit your monthly cap for this tool. Resets on the 1st of next month.`
-        : "Hmm, I couldn't apply that — try rephrasing."
+        : "Hmm, I couldn't apply that. Try rephrasing."
       setMsgs(prev => [...prev, { role: 'assistant', content, error: true }])
     } finally {
       setRefining(false)
@@ -297,7 +297,7 @@ export default function CashFlow() {
         <div className="max-w-5xl mx-auto px-8 py-5">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Cash Flow</div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">13-week cash runway</h1>
-          <p className="text-xs text-ink-500 mt-0.5">See week-by-week when cash gets tight — and what to do about it.</p>
+          <p className="text-xs text-ink-500 mt-0.5">See week-by-week when cash gets tight, and what to do about it.</p>
         </div>
       </div>
       <PageShell>
@@ -349,7 +349,7 @@ export default function CashFlow() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-blue-600 mt-3">Solomon will read these files for your balance, revenue, and expense figures — and tell you which document each number came from.</p>
+              <p className="text-xs text-blue-600 mt-3">Solomon will read these files for your balance, revenue, and expense figures, and tell you which document each number came from.</p>
             </div>
             <SmartConcernsForm concerns={concerns} setConcerns={setConcerns} onGenerate={handleGenerate} buttonLabel="Generate from uploaded docs →" />
           </div>
@@ -364,7 +364,7 @@ export default function CashFlow() {
                   <span className="text-xl flex-shrink-0">🔗</span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-brand-900">Connect QuickBooks</p>
-                    <p className="text-xs text-brand-700 mt-0.5">Skip the form — pull numbers directly from your books.</p>
+                    <p className="text-xs text-brand-700 mt-0.5">Skip the form, pull numbers directly from your books.</p>
                   </div>
                   <span className="text-brand-500 self-center group-hover:translate-x-0.5 transition-transform ml-auto">→</span>
                 </Link>
@@ -395,7 +395,7 @@ export default function CashFlow() {
                   <MoneyInput value={form.typical_monthly_expenses} onChange={updateField('typical_monthly_expenses')} placeholder="52000" />
                 </Field>
               </div>
-              <Field label="Payroll rhythm" hint="When and how much — lets us land it in the right weeks.">
+              <Field label="Payroll rhythm" hint="When and how much, lets us land it in the right weeks.">
                 <input type="text" value={form.payroll_rhythm} onChange={updateField('payroll_rhythm')} placeholder="Biweekly Fridays, about $18k per run." className="w-full rounded-xl border border-ink-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
               </Field>
               <Field label="Known big deposits in the next 13 weeks" hint="Retainer starts, milestone payments, tax refunds, loan draws.">
@@ -404,8 +404,8 @@ export default function CashFlow() {
               <Field label="Known big outflows in the next 13 weeks" hint="Quarterly taxes, equipment, bonuses, insurance renewal.">
                 <textarea value={form.known_outflows} onChange={updateField('known_outflows')} placeholder="Q2 GST week 3 ~$4.5k. Equipment purchase week 8 ~$12k." rows={3} className="w-full rounded-xl border border-ink-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none" />
               </Field>
-              <Field label="What are you worried about?" hint="Optional — shapes the commentary toward the thing keeping you up.">
-                <textarea value={form.concerns} onChange={updateField('concerns')} placeholder="Covering July payroll — our biggest customer pays slow and I'm hiring another tech next month." rows={2} className="w-full rounded-xl border border-ink-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none" />
+              <Field label="What are you worried about?" hint="Optional, shapes the commentary toward the thing keeping you up.">
+                <textarea value={form.concerns} onChange={updateField('concerns')} placeholder="Covering July payroll. Our biggest customer pays slow and I'm hiring another tech next month." rows={2} className="w-full rounded-xl border border-ink-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none" />
               </Field>
               <div className="flex items-center gap-3 pt-1">
                 <button type="submit" disabled={!canSubmitManual} className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors">Project 13 weeks →</button>
@@ -583,7 +583,7 @@ function SmartConcernsForm({ concerns, setConcerns, onGenerate, buttonLabel }) {
     <div className="bg-white border border-ink-200 rounded-2xl p-6">
       <label className="block">
         <p className="text-sm font-semibold text-ink-800 mb-1">Anything specific you're watching?</p>
-        <p className="text-xs text-ink-400 mb-3">Optional — shapes the commentary toward what's on your mind.</p>
+        <p className="text-xs text-ink-400 mb-3">Optional, shapes the commentary toward what's on your mind.</p>
         <textarea
           value={concerns}
           onChange={e => setConcerns(e.target.value)}
@@ -608,7 +608,7 @@ function SmartConcernsForm({ concerns, setConcerns, onGenerate, buttonLabel }) {
 
 const CASH_SUGGESTIONS = [
   'Assume a $15k/mo retainer starts in week 5',
-  'We lost our biggest customer — rerun',
+  'We lost our biggest customer, rerun',
   'Skip owner pay for 2 weeks',
   'Add a $50k equipment purchase in week 4',
   'What if I raise prices 10% starting next month?',

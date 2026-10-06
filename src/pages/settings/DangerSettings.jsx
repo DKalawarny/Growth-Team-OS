@@ -244,7 +244,7 @@ export default function DangerSettings() {
           Replace your current milestones with a fresh roadmap based on your latest answers in{' '}
           <strong className="text-ink-700">Business</strong>.
           <strong className="block mt-1 text-red-600">
-            This deletes every existing milestone — including completed ones.
+            This deletes every existing milestone, including completed ones.
           </strong>
         </p>
 
@@ -284,10 +284,9 @@ export default function DangerSettings() {
       <section className="bg-white border border-red-200 rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-ink-900 mb-1">Delete workspace</h2>
         <p className="text-sm text-ink-500 leading-relaxed mb-4">
-          Permanently delete this workspace and all data — milestones, documents,
+          Permanently delete this workspace and all data: milestones, documents,
           financial records, and advisor memory. <strong className="text-red-600">This cannot be undone.</strong>{' '}
-          If anyone else is on this workspace, only your own account is removed &mdash;
-          their records stay with them.
+          If anyone else is on this workspace, only your own account is removed, their records stay with them.
         </p>
 
         {deleteState === 'idle' && (

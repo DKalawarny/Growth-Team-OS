@@ -206,7 +206,7 @@ export default function DailyLogs() {
         type="search"
         value={q}
         onChange={e => setQ(e.target.value)}
-        placeholder="Search everything on this page — a word, a name, a job"
+        placeholder="Search everything on this page: a word, a name, a job"
         className="mt-4 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
       />
 
@@ -222,7 +222,7 @@ export default function DailyLogs() {
         <div className="px-5 py-3 border-b border-ink-100">
           <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your list</h2>
           <p className="text-[12px] text-ink-400 mt-0.5">
-            Things to remember, chase or buy — not tied to any one job. Tick them off
+            Things to remember, chase or buy. Not tied to any one job. Tick them off
             as they go. Written by you and the office, not the crew.
           </p>
         </div>
@@ -231,7 +231,7 @@ export default function DailyLogs() {
             value={noteDraft}
             onChange={e => setNoteDraft(e.target.value)}
             rows={2}
-            placeholder="Supplier rang — steel is going up 6% from the first. Worth repricing the Cascade quote before it goes out."
+            placeholder="Supplier rang. Steel is going up 6% from the first. Worth repricing the Cascade quote before it goes out."
             className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
           />
           <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -319,7 +319,7 @@ export default function DailyLogs() {
               Same thing came up twice
             </p>
             <p className="text-[13px] text-ink-700 mt-1.5 leading-relaxed">
-              Worth a look — two different days ran into something similar. It may be
+              Worth a look, two different days ran into something similar. It may be
               coincidence, or it may be one thing you can fix once.
             </p>
             <ul className="mt-3 space-y-2">
@@ -345,7 +345,7 @@ export default function DailyLogs() {
         </h2>
         <p className="text-[12px] text-ink-400 mt-0.5 max-w-xl leading-relaxed">
           What each person wrote from site when they finished, about the job they were
-          on. You cannot edit it &mdash; add your own note underneath instead.
+          on. You cannot edit it, add your own note underneath instead.
         </p>
       </div>
 
@@ -354,8 +354,7 @@ export default function DailyLogs() {
           <p className="text-sm font-semibold text-ink-900">No crew logs yet.</p>
           <p className="text-[13px] text-ink-500 mt-1.5 leading-relaxed">
             Crew write these from the link they already use for their jobs, under
-            &ldquo;End my shift&rdquo;. Nothing here means nobody has written one —
-            not that the days went smoothly.
+            &ldquo;End my shift&rdquo;. Nothing here means nobody has written one. Not that the days went smoothly.
           </p>
         </div>
       )}
@@ -386,7 +385,7 @@ export default function DailyLogs() {
                   <div className="rounded-lg bg-red-50 border border-red-300 px-3 py-2">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-red-700">Someone was hurt</p>
                     <p className="text-[13px] text-ink-800 mt-1 leading-relaxed">
-                      Reported by the crew. This is not a WorkSafe report — that still has to be filed.
+                      Reported by the crew. This is not a WorkSafe report, that still has to be filed.
                     </p>
                   </div>
                 )}

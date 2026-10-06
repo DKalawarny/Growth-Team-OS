@@ -36,7 +36,7 @@ const TRADES = {
     pain: [
       'Cash flow is hostage to slow-paying property managers and GCs',
       'You estimate two-hour calls in 30 seconds at the kitchen table',
-      'Hiring an apprentice is a coin flip — no scorecard, all gut',
+      'Hiring an apprentice is a coin flip. No scorecard, all gut',
       'You want this run a particular way, and nobody you can ask about the numbers understands why that matters',
     ],
     examples: [
@@ -53,7 +53,7 @@ const TRADES = {
     properNoun:   'electrical',
     icon:         '⚡',
     pain: [
-      'Material costs (copper, panels, fixtures) move weekly — your quotes age in days',
+      'Material costs (copper, panels, fixtures) move weekly, your quotes age in days',
       'Service calls and project work pull the same crew in opposite directions',
       'Permits, inspections, and licence renewals fall through the cracks',
       'A single $20k commercial bid mistake eats a month of margin',
@@ -72,7 +72,7 @@ const TRADES = {
     properNoun:   'HVAC',
     icon:         '🌡️',
     pain: [
-      'Seasonality whiplashes your cash — Q1 and Q3 are tight, summer is chaos',
+      'Seasonality whiplashes your cash. Q1 and Q3 are tight, summer is chaos',
       'Maintenance contracts are gold but most software doesn\'t track them',
       'Service technicians, install crews, and office staff pull in different directions',
       'The cost of doing nothing on hiring is bigger than the cost of hiring wrong',
@@ -91,7 +91,7 @@ const TRADES = {
     properNoun:   'roofing',
     icon:         '🏠',
     pain: [
-      'Insurance jobs come in waves — you\'re feast-or-famine on cash',
+      'Insurance jobs come in waves. You\'re feast-or-famine on cash',
       'Hail and storm work spikes demand and your team can\'t scale fast enough',
       'Material lead times surprise you mid-project',
       'Storm money tempts you into decisions you would not make in a calm quarter',
@@ -113,10 +113,10 @@ const TRADES = {
       'Disposal and tipping fees move constantly and quietly eat margins',
       'Asbestos / hazmat compliance docs scatter across email, drive, and your inspector\'s clipboard',
       'GCs slow-pay you on demo because you\'re first off the job',
-      'Every bid is unique — generic estimating tools fight you',
+      'Every bid is unique, generic estimating tools fight you',
     ],
     examples: [
-      'An offer builder that uses your real cost guide — not a generic template',
+      'An offer builder that uses your real cost guide. Not a generic template',
       'A compliance tracker for every WCB, asbestos, and hazmat document',
       'Solomon flagging that 60% of your AR is sitting with one slow-paying GC',
     ],
@@ -130,7 +130,7 @@ const TRADES = {
     icon:         '🌿',
     pain: [
       'Six months of revenue has to carry twelve months of fixed costs',
-      'Crews ramp up in March, get cut in October — hiring is a yearly puzzle',
+      'Crews ramp up in March, get cut in October. Hiring is a yearly puzzle',
       'Maintenance contracts keep the lights on but design-build pays the rent',
       'You are the only one who knows how any of it actually works, and you have not had a full week off in years',
     ],
@@ -150,8 +150,8 @@ export default function TradePage() {
   if (!data) return <Navigate to="/" replace />
 
   const meta = buildPageMeta({
-    title:       `Eliv8 OS for ${data.label} — an advisor who knows ${data.h1Trade}`,
-    description: `An AI business advisor for owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession — and a finished document every time. Currently free while in private pilot.`,
+    title:       `Eliv8 OS for ${data.label}, an advisor who knows ${data.h1Trade}`,
+    description: `An AI business advisor for owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession, and a finished document every time. Currently free while in private pilot.`,
     path:        `/for/${trade}`,
   })
 
@@ -192,15 +192,15 @@ export default function TradePage() {
           </h1>
           <p className="text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
             Built around how {data.h1Trade} businesses actually run. Cash flow,
-            hiring, the hard decisions, compliance — all in one place, all
-            connected — and free while we are in private pilot.
+            hiring, the hard decisions, compliance, all in one place, all
+            connected, and free while we are in private pilot.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/signup"
               className="px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black transition-colors"
             >
-              Start free trial — no card
+              Start free trial. No card
             </Link>
             <Link
               to="/pricing"
@@ -221,7 +221,7 @@ export default function TradePage() {
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-center mb-10">
             The friction points we hear constantly from {data.label}. Eliv8 OS doesn't
-            fix all of them magically — but it gives you a co-pilot to think through them.
+            fix all of them magically, but it gives you a co-pilot to think through them.
           </p>
           <div className="space-y-4">
             {data.pain.map((p, i) => (
@@ -263,7 +263,7 @@ export default function TradePage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
-              ['💡', 'Solomon — AI advisor'],
+              ['💡', 'Solomon, AI advisor'],
               ['📈', 'CFO Dashboard'],
               ['📊', 'Cash Flow Forecast'],
               ['📖', 'Playbooks'],

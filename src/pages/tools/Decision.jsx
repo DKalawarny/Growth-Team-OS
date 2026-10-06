@@ -114,7 +114,7 @@ export default function Decision() {
             </header>
 
             <div className="flex flex-col gap-5">
-              <Field label="What are you deciding?" hint="In your own words — a sentence is plenty.">
+              <Field label="What are you deciding?" hint="In your own words. A sentence is plenty.">
                 <textarea
                   rows={2}
                   value={form.decision}

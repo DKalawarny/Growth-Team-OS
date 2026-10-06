@@ -925,7 +925,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
       <div className="p-8 max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-ink-900 mb-2 tracking-tight">Your roadmap</h1>
         <div className="bg-white border border-dashed border-ink-200 rounded-xl p-8 text-center mt-6">
-          <p className="text-ink-500">No milestones yet — finish onboarding to generate yours.</p>
+          <p className="text-ink-500">No milestones yet, finish onboarding to generate yours.</p>
         </div>
       </div>
     )
@@ -1044,7 +1044,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
             <p className="text-[13px] text-gray-600 mt-1 leading-snug">
               The milestones below were planned for the earlier answers, so some of
               them may be solving a problem you no longer have. It may still be the
-              right plan — you would know better than the plan does. Rebuilding it
+              right plan. You would know better than the plan does. Rebuilding it
               from your current profile is under Settings &rarr; Danger, and it
               replaces every milestone, including the ones you have made progress on.
             </p>
@@ -1256,19 +1256,19 @@ function RoadmapLegend() {
                 <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
                   Name
                 </span>
-                <span className="text-ink-600">Team staff — got the email</span>
+                <span className="text-ink-600">Team staff, got the email</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-[10px] font-semibold bg-ink-100 text-ink-700 border border-ink-200 px-2 py-0.5 rounded-full">
                   Name
                 </span>
-                <span className="text-ink-600">App user — sees in dashboard</span>
+                <span className="text-ink-600">App user, sees in dashboard</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-[10px] font-semibold bg-ink-50 text-ink-600 border border-ink-200 px-1.5 py-0.5 rounded-full">
                   +2
                 </span>
-                <span className="text-ink-600">More people — hover for names</span>
+                <span className="text-ink-600">More people, hover for names</span>
               </li>
             </ul>
             <p className="text-[10px] text-ink-400 mt-3 leading-relaxed">
@@ -1320,7 +1320,7 @@ function SideQuestsSection({ milestones, statusById, onToggleComplete, onSetDate
         <div>
           {milestones.length === 0 ? (
             <p className="px-5 py-6 text-sm text-ink-400 text-center">
-              No side quests yet — head to{' '}
+              No side quests yet, head to{' '}
               <a href="/trajectories" className="underline text-orange-600">Trajectories</a>{' '}
               to generate your action plan.
             </p>
@@ -1698,7 +1698,7 @@ function AllDoneCard({ regenPhase, regenError, onRegen, onConfirm, onCancelRegen
           You finished every milestone.
         </h2>
         <p className="text-ink-300 text-sm max-w-md mx-auto leading-relaxed mb-8">
-          That's not common. Most people plan and never execute — you did both. Your business is stronger because of it.
+          That's not common. Most people plan and never execute. You did both. Your business is stronger because of it.
           Time to set the next level of ambition.
         </p>
 
@@ -1807,7 +1807,7 @@ function GanttView({
   if (!dateRange || milestones.every(m => !m.start_date || !m.end_date)) {
     return (
       <div className="bg-white border border-dashed border-ink-200 rounded-2xl p-8 text-center text-sm text-ink-500">
-        No timeline data yet — regenerate your roadmap from Settings to add dates.
+        No timeline data yet, regenerate your roadmap from Settings to add dates.
       </div>
     )
   }
@@ -2705,7 +2705,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
               </label>
               <select value={template_id} onChange={e => setTemplateId(e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No playbook — blank work order</option>
+                <option value="">No playbook, blank work order</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name}{t.items?.length ? ` (${t.items.length} steps)` : ''}
@@ -2775,7 +2775,7 @@ function MilestoneAttachments({ milestoneId, milestoneTitle, milestoneCategory }
     try {
       // Build a descriptive title so it's recognisable in the Library
       const baseName  = file.name.replace(/\.[^.]+$/, '')
-      const docTitle  = `${milestoneTitle} — ${baseName}`
+      const docTitle  = `${milestoneTitle}, ${baseName}`
 
       const row = await uploadKnowledgeFile(file, {
         companyId:   profile.company_id,
@@ -2872,7 +2872,7 @@ function MilestoneAttachments({ milestoneId, milestoneTitle, milestoneCategory }
               Attach the deliverable from this milestone
             </div>
             <div className="text-[10px] text-green-600 mt-0.5 opacity-70">
-              The SOP, report, contract, or document you produced — Solomon will read it and learn from it.
+              The SOP, report, contract, or document you produced. Solomon will read it and learn from it.
             </div>
             <div className="text-[10px] text-ink-400 mt-1">PDF, Excel, CSV, TXT, Markdown · up to 10 MB</div>
           </button>
@@ -3073,8 +3073,8 @@ function PaceControl({
           </span>
           <p className="text-xs text-ink-400 mt-0.5">
             {paceAuto && learnedPreset
-              ? `Auto-set from your history — you run at ${learnedPreset.label} pace.`
-              : 'Adjust your speed — the timeline and projected finish update live.'}
+              ? `Auto-set from your history. You run at ${learnedPreset.label} pace.`
+              : 'Adjust your speed, the timeline and projected finish update live.'}
           </p>
         </div>
         {projectedFinish && (
@@ -3197,8 +3197,7 @@ function PaceControl({
             {!paceConfirm ? (
               <div className="flex items-center gap-3 flex-wrap">
                 <p className="text-xs text-ink-500 flex-1 leading-relaxed">
-                  Previewing at <strong className="text-ink-800">{active?.label}</strong> pace —
-                  the Gantt below reflects adjusted dates. Your saved plan is unchanged until you lock it in.
+                  Previewing at <strong className="text-ink-800">{active?.label}</strong> pace, the Gantt below reflects adjusted dates. Your saved plan is unchanged until you lock it in.
                 </p>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
@@ -3268,7 +3267,7 @@ function ChatPanel({ chatInput, setChatInput, chatPhase, chatSuggestion, inputRe
         </div>
         <div>
           <h2 className="text-sm font-bold text-ink-900">Something come up?</h2>
-          <p className="text-xs text-ink-400">Describe it — Solomon will figure out where it fits in your plan.</p>
+          <p className="text-xs text-ink-400">Describe it. Solomon will figure out where it fits in your plan.</p>
         </div>
       </div>
 
@@ -3492,7 +3491,7 @@ function monthsBetweenFrac(a, b) {
 
 function formatShortRange(start, end) {
   const fmt = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-  return `${fmt(start)} – ${fmt(end)}`
+  return `${fmt(start)}, ${fmt(end)}`
 }
 
 /** "April 2026" — readable target date for the hero card and group headings. */

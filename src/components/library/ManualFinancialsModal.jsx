@@ -60,7 +60,7 @@ function buildDocumentText({ period, revenue, expenses, profit, cash, overdraftL
     : null
 
   const lines = [
-    `FINANCIAL SNAPSHOT — Manual Entry`,
+    `FINANCIAL SNAPSHOT, Manual Entry`,
     `Period: ${period}`,
     ``,
     `HEADLINE NUMBERS`,
@@ -178,7 +178,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
         streams, topExpenses, notes,
       })
 
-      const title = `Financial Snapshot — ${period} (manual entry)`
+      const title = `Financial Snapshot, ${period} (manual entry)`
 
       // Create a File object from the text so it feeds through the standard upload pipeline
       const blob = new Blob([docText], { type: 'text/plain' })
@@ -198,7 +198,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
       onUploaded(row)
       onClose()
     } catch (err) {
-      setError(err.message ?? 'Something went wrong — please try again.')
+      setError(err.message ?? 'Something went wrong, please try again.')
       setBusy(false)
     }
   }
@@ -236,7 +236,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
         {/* Subheader */}
         <div className="px-5 py-3 bg-ink-50 border-b border-ink-100 flex-shrink-0">
           <p className="text-xs text-ink-500 leading-relaxed">
-            No files or accounting software needed. Fill in what you know — even rough numbers help Solomon give much more specific advice. Your entries are saved to your private library.
+            No files or accounting software needed. Fill in what you know, even rough numbers help Solomon give much more specific advice. Your entries are saved to your private library.
           </p>
         </div>
 
@@ -402,11 +402,11 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
               onChange={e => setNotes(e.target.value)}
               disabled={busy}
               rows={3}
-              placeholder="e.g. Revenue is lower than usual — we lost a major contract in March. Expect recovery by June."
+              placeholder="e.g. Revenue is lower than usual. We lost a major contract in March. Expect recovery by June."
               className="w-full rounded-lg border border-ink-200 bg-ink-50 px-3 py-2.5 text-sm text-ink-900 placeholder-ink-400 focus:border-brand-400 focus:bg-white outline-none resize-none transition-colors"
             />
             <p className="text-xs text-ink-400 mt-1">
-              This is where the real value is — context a spreadsheet can't capture.
+              This is where the real value is. Context a spreadsheet can't capture.
             </p>
           </div>
 
@@ -435,7 +435,7 @@ export default function ManualFinancialsModal({ companyId, userId, onClose, onUp
         {/* Footer */}
         <div className="px-5 py-4 border-t border-ink-100 bg-ink-50/40 flex items-center justify-between gap-3 flex-shrink-0">
           <p className="text-xs text-ink-400 leading-relaxed max-w-xs">
-            Saved to your private library — only you and your team can see these numbers.
+            Saved to your private library. Only you and your team can see these numbers.
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button

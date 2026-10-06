@@ -85,7 +85,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
         model: HAIKU,
         promptKey:     'MORNING_OPENER_PROMPT',
         stableContext: openerContext,
-        messages: [{ role: 'user', content: `Open the check-in. Time context: ${greeting()} — ${timeOfDay}.` }],
+        messages: [{ role: 'user', content: `Open the check-in. Time context: ${greeting()}, ${timeOfDay}.` }],
         maxTokens: 120,
       })
       if (!opener) return

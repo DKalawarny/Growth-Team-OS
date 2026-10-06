@@ -292,7 +292,7 @@ export default function Checkins() {
           </h2>
           {checkins.length === 0 ? (
             <div className="bg-white border border-dashed border-ink-200 rounded-xl p-8 text-center">
-              <p className="text-sm text-ink-500">No check-ins yet — log your first one above.</p>
+              <p className="text-sm text-ink-500">No check-ins yet, log your first one above.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -325,7 +325,7 @@ function Nudge({ daysSinceLast, nextMilestone }) {
           <span className="text-xs text-white" aria-hidden>✦</span>
         </div>
         <div>
-          <p className="text-sm font-semibold text-ink-900">Welcome — log your first check-in.</p>
+          <p className="text-sm font-semibold text-ink-900">Welcome, log your first check-in.</p>
           <p className="text-xs text-ink-500 mt-0.5">
             30 seconds now builds the habit, and your advisor learns more about your week every time you log one.
           </p>
@@ -363,7 +363,7 @@ function Nudge({ daysSinceLast, nextMilestone }) {
 
   const message =
     daysSinceLast === 1 ? 'Last check-in: yesterday.' :
-    isOverdue ? `It's been ${daysSinceLast} days — worth a minute to catch up.` :
+    isOverdue ? `It's been ${daysSinceLast} days, worth a minute to catch up.` :
     isLate    ? `${daysSinceLast} days since your last check-in.` :
     `Last check-in: ${daysSinceLast} days ago.`
 

@@ -588,7 +588,7 @@ alter table public.work_orders
             </pre>
             <button type="button" onClick={loadAll}
               className="mt-6 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors">
-              I've run it — load the board
+              I've run it, load the board
             </button>
           </div>
         </div>
@@ -1033,7 +1033,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
               </label>
               <select value={form.template_id} onChange={e => set('template_id', e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No playbook — blank work order</option>
+                <option value="">No playbook, blank work order</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name} {t.items?.length ? `(${t.items.length} steps)` : ''}
@@ -1072,7 +1072,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                   <optgroup label="Team staff">
                     {staff.map(s => (
                       <option key={`s:${s.id}`} value={`s:${s.id}`}>
-                        {s.name}{s.email ? ` — ${s.email}` : ''}
+                        {s.name}{s.email ? `, ${s.email}` : ''}
                       </option>
                     ))}
                   </optgroup>
@@ -1110,7 +1110,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 ⚠️ All three optional, forever. Blank is "not entered", not 0. */}
             <div>
               <label className="block text-xs font-semibold text-ink-600 mb-1.5">
-                The numbers <span className="font-normal text-ink-400">— optional</span>
+                The numbers <span className="font-normal text-ink-400">optional</span>
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -1156,7 +1156,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 }
                 if (i != null && c != null && i > 0) {
                   const pct = Math.round(((i - c) / i) * 100)
-                  bits.push(`Made ${money(i - c)} — ${pct}% margin`)
+                  bits.push(`Made ${money(i - c)}, ${pct}% margin`)
                 }
                 if (!bits.length) return null
                 return (
@@ -1406,7 +1406,7 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
             this drawer for the first time doesn't assume it's compliance. */}
         <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/40">
           <p className="text-[10px] text-ink-500 leading-snug">
-            Field flags are an insight stream for SOP improvement — not a
+            Field flags are an insight stream for SOP improvement. Not a
             safety-compliance log. FLHA, toolbox talks, and incident reports
             live in the CRM's safety module.
           </p>

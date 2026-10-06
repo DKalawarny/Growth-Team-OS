@@ -262,7 +262,7 @@ export function organizationSchema() {
     url:         SITE_URL,
     logo:        `${SITE_URL}/favicon.svg`,
     email:       CONTACT_EMAIL,
-    description: 'An AI business advisor that reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering — not only what it earns.',
+    description: 'An AI business advisor that reads your actual numbers, remembers what you decided and why, argues the hard calls both ways, and treats how the business is run as mattering. Not only what it earns.',
     sameAs:      [
       // Add LinkedIn / X / YouTube once those exist
     ],

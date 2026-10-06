@@ -19,7 +19,7 @@ export default function AdminBackfill() {
 
   async function handleRun() {
     if (!profile?.company_id || !profile?.id) {
-      setError('Not logged in — open the app first, then navigate here.')
+      setError('Not logged in, open the app first, then navigate here.')
       return
     }
 
@@ -54,7 +54,7 @@ export default function AdminBackfill() {
         <div>
           <h1 className="text-xl font-bold text-ink-900">Backfill Chat Memory</h1>
           <p className="mt-1 text-sm text-ink-500">
-            One-time setup — indexes all your existing Advisor conversations so
+            One-time setup. Indexes all your existing Advisor conversations so
             Solomon can recall them when relevant.
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function AdminBackfill() {
           </ul>
           <p className="text-ink-400 text-xs pt-1">
             Requires your OpenAI key to be set in .env.local. Safe to run more
-            than once — it resets and re-indexes cleanly each time.
+            than once. It resets and re-indexes cleanly each time.
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export default function AdminBackfill() {
             <p className="text-sm font-semibold text-green-800">Backfill complete</p>
             <p className="text-sm text-green-700">
               {result.pairs} conversation{result.pairs !== 1 ? 's' : ''} indexed
-              {result.skipped > 0 ? ` (${result.skipped} skipped — no embedding generated)` : ''}
+              {result.skipped > 0 ? ` (${result.skipped} skipped. No embedding generated)` : ''}
             </p>
             <p className="text-xs text-green-600 pt-1">
               Solomon can now recall your full conversation history. You won't need to run this again.
@@ -115,7 +115,7 @@ export default function AdminBackfill() {
             <p className="text-sm font-semibold text-red-800">Something went wrong</p>
             <p className="text-sm text-red-600 mt-1 font-mono break-all">{error}</p>
             <p className="text-xs text-red-500 mt-2">
-              Most likely cause: the embed function isn't deployed — run: supabase functions deploy embed
+              Most likely cause: the embed function isn't deployed, run: supabase functions deploy embed
             </p>
           </div>
         )}

@@ -237,11 +237,11 @@ export default function AdminReview() {
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
-              Internal — Admin only
+              Internal, Admin only
             </div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Solomon chat review</h1>
             <p className="text-[11px] text-ink-400 mt-1 max-w-md leading-snug">
-              Read the last {days} days of advisor conversations. Flag any answer that drifted out of scope, slipped tone, or made something up — then tighten the prompts.
+              Read the last {days} days of advisor conversations. Flag any answer that drifted out of scope, slipped tone, or made something up, then tighten the prompts.
             </p>
           </div>
           <div className="flex items-center gap-2 text-[11px]">
@@ -417,7 +417,7 @@ function Message({ msg, flag, onToggleFlag, onUpdateNote }) {
           <textarea
             value={flag.note ?? ''}
             onChange={e => onUpdateNote(msg.id, e.target.value)}
-            placeholder="Why? (e.g. 'Gave specific HR advice — should redirect to Employment Standards')"
+            placeholder="Why? (e.g. 'Gave specific HR advice. Should redirect to Employment Standards')"
             className="mt-2 w-full text-xs bg-amber-50 border border-amber-200 rounded p-2 resize-y min-h-[44px] focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
         )}
@@ -447,10 +447,10 @@ function FlagSummary({ flags, messages, companies, onClear }) {
         `Solomon said: ${(m.content || '').slice(0, 600)}${m.content?.length > 600 ? '…' : ''}`,
       ].join('\n')
     })
-    const text = `Solomon review notes — ${new Date().toLocaleDateString()}\n\n${lines.join('\n\n---\n\n')}`
+    const text = `Solomon review notes, ${new Date().toLocaleDateString()}\n\n${lines.join('\n\n---\n\n')}`
     navigator.clipboard?.writeText(text).then(
       () => window.alert(`Copied ${ids.length} flag${ids.length === 1 ? '' : 's'} to clipboard.`),
-      () => window.alert('Copy failed — your browser may have blocked clipboard access.'),
+      () => window.alert('Copy failed. Your browser may have blocked clipboard access.'),
     )
   }
 
@@ -463,7 +463,7 @@ function FlagSummary({ flags, messages, companies, onClear }) {
             {ids.length} flagged message{ids.length === 1 ? '' : 's'}
           </p>
           <p className="text-[11px] text-amber-800 mt-0.5">
-            Saved locally to this browser. Copy them out before clearing — that's your prompt-tuning to-do list.
+            Saved locally to this browser. Copy them out before clearing. That's your prompt-tuning to-do list.
           </p>
           <div className="mt-2 flex gap-2">
             <button

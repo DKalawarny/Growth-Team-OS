@@ -26,7 +26,7 @@ export default function RecentActivity({ documents, checkins }) {
       <div className="p-4">
         {items.length === 0 ? (
           <div className="py-3 text-xs text-ink-400 leading-relaxed">
-            Nothing yet — run a tool from quick actions to see it here.
+            Nothing yet, run a tool from quick actions to see it here.
           </div>
         ) : (
           <ul className="space-y-0.5">

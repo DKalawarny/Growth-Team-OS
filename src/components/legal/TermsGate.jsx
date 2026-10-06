@@ -68,7 +68,7 @@ export default function TermsGate({ children }) {
       source: 'gate',
     })
     if (err) {
-      setError('Could not save that — check your connection and try again.')
+      setError('Could not save that. Check your connection and try again.')
       setSaving(false)
       return
     }
@@ -120,7 +120,7 @@ export default function TermsGate({ children }) {
             </p>
             <p className="text-[13.5px] text-ink-800 leading-relaxed mt-2.5">
               He is not your accountant, lawyer, or regulator, and nothing here is{' '}
-              <strong>professional advice</strong>. The decisions stay yours — on
+              <strong>professional advice</strong>. The decisions stay yours: on
               anything expensive, like a hire, a price, or a tax or safety
               question, get it confirmed before you act.
             </p>
@@ -129,7 +129,7 @@ export default function TermsGate({ children }) {
           <p className="text-[13px] text-ink-500 leading-relaxed mb-5">
             The pilot is free and nothing will be charged to you during it. It is
             currently run by {OPERATOR_LEGAL_NAME} while the company behind
-            Eliv8 OS is being incorporated — once that is done, you will be asked
+            Eliv8 OS is being incorporated, once that is done, you will be asked
             to accept a version in the company&rsquo;s name.
           </p>
 
@@ -150,7 +150,7 @@ export default function TermsGate({ children }) {
               >
                 pilot agreement
               </Link>
-              {' '}— including that Solomon gives business thinking rather than
+              , including that Solomon gives business thinking rather than
               professional advice, and that the decisions remain mine.
             </span>
           </label>

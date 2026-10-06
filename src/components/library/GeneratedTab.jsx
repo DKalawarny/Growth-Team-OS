@@ -287,7 +287,7 @@ function GeneratedEmpty() {
         <div className="text-4xl mb-3" aria-hidden>📄</div>
         <h2 className="text-lg font-bold text-ink-900 mb-1 tracking-tight">Nothing generated yet</h2>
         <p className="text-sm text-ink-500 max-w-md mx-auto mb-6 leading-relaxed">
-          Run a tool — like the Hiring Planner — and the output shows up here.
+          Run a tool, like the Hiring Planner, and the output shows up here.
         </p>
         <Link
           to="/tools"

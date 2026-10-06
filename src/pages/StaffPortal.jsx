@@ -400,7 +400,7 @@ export default function StaffPortal() {
       </main>
 
       <footer className="mt-10 px-5 text-center text-[11px] text-ink-400">
-        Bookmark this page — same link works every time.
+        Bookmark this page. Same link works every time.
       </footer>
     </div>
   )
@@ -451,7 +451,7 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
     if (nextStatus === 'done' && order.status !== 'done' && !hasJobClose && firstItem) {
       // Open after a tick so the optimistic status update has rendered first.
       setTimeout(() => {
-        openWorkflowPrompt('job_close', 'Quick close-out — what would you tell the next foreman on this kind of job?')
+        openWorkflowPrompt('job_close', 'Quick close-out, what would you tell the next foreman on this kind of job?')
       }, 50)
     }
   }
@@ -498,7 +498,7 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
       {needsStartWalk && (
         <button
           type="button"
-          onClick={() => openWorkflowPrompt('start_walk', 'Walked the site? Anything different from the quote — extra rooms, wrong material, surprise hazards?')}
+          onClick={() => openWorkflowPrompt('start_walk', 'Walked the site? Anything different from the quote: extra rooms, wrong material, surprise hazards?')}
           className="mt-3 w-full text-left bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-lg px-3 py-2 transition-colors"
         >
           <div className="flex items-center gap-2">
@@ -1012,7 +1012,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // jobs, but someone got hurt" must not be thrown away because both job
       // boxes were empty.
       .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0)
-      .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported — see the note.' : 'Nothing to add on the work itself.') }))
+      .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported, see the note.' : 'Nothing to add on the work itself.') }))
     if (toSend.length === 0) return
     if (recording) stopRecording()
     setSending(true)
@@ -1060,7 +1060,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
           <span aria-hidden className="text-xl">🌙</span>
           <div className="flex-1">
             <p className="text-sm font-bold text-ink-900">End my shift</p>
-            <p className="text-[11px] text-ink-500 leading-snug">Quick reflection — anything slow you down today?</p>
+            <p className="text-[11px] text-ink-500 leading-snug">Quick reflection, anything slow you down today?</p>
           </div>
           <span className="text-[11px] font-semibold text-brand-700">Open →</span>
         </button>
@@ -1086,7 +1086,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
 
       <div className="px-4 py-3 space-y-3">
         <p className="text-[12px] text-ink-600 leading-relaxed">
-          Anything slow you down on these jobs today? Leave a note per job — the
+          Anything slow you down on these jobs today? Leave a note per job, the
           office reads these tomorrow morning.
         </p>
 
@@ -1103,7 +1103,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
               }`}
             >
               <span aria-hidden>🎤</span>
-              {recording ? 'Stop' : 'Voice — talks into the last textarea you tapped'}
+              {recording ? 'Stop' : 'Voice, talks into the last textarea you tapped'}
             </button>
           </div>
         )}
@@ -1139,7 +1139,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
             <span className="text-[12px] leading-snug text-ink-800">
               Someone was hurt today
               <span className="block text-[11px] text-ink-500 mt-0.5">
-                This tells the office straight away. It is not a WorkSafe report — that
+                This tells the office straight away. It is not a WorkSafe report, that
                 still has to be filed properly.
               </span>
             </span>
@@ -1188,7 +1188,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
                   placeholder="Hours"
                   className="w-24 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
                 />
-                <span className="text-[11px] text-ink-400">on site — optional</span>
+                <span className="text-[11px] text-ink-400">on site, optional</span>
               </div>
             </li>
           ))}

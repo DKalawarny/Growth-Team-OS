@@ -45,7 +45,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink-50 px-4">
       <Helmet>
-        <title>Reset password — {SITE_NAME}</title>
+        <title>Reset password {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/reset-password`} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
@@ -80,7 +80,7 @@ export default function ResetPassword() {
         ) : (
           <>
             <h1 className="text-2xl font-bold text-ink-900 mb-1 tracking-tight">Set new password</h1>
-            <p className="text-sm text-ink-500 mb-8">Choose something strong — at least 8 characters.</p>
+            <p className="text-sm text-ink-500 mb-8">Choose something strong, at least 8 characters.</p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>

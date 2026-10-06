@@ -55,12 +55,12 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <Helmet>
-        <title>{SHOW_PUBLIC_PRICE ? 'Start your free trial' : 'Start free — private pilot'} — {SITE_NAME}</title>
+        <title>{SHOW_PUBLIC_PRICE ? 'Start your free trial' : 'Start free, private pilot'} — {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/signup`} />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content={SHOW_PUBLIC_PRICE
-          ? `Start your ${TRIAL_DAYS}-day free trial of Eliv8 OS — an advisor that reads your actual numbers. No credit card required.`
-          : 'Eliv8 OS is in private pilot and free to use — an advisor that reads your actual numbers. No credit card required.'} />
+          ? `Start your ${TRIAL_DAYS}-day free trial of Eliv8 OS, an advisor that reads your actual numbers. No credit card required.`
+          : 'Eliv8 OS is in private pilot and free to use, an advisor that reads your actual numbers. No credit card required.'} />
       </Helmet>
 
       {/* ── Left brand panel ─────────────────────────────────────────── */}
@@ -208,7 +208,7 @@ export default function Signup() {
                 <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold underline underline-offset-2">
                   pilot agreement
                 </Link>
-                {' '}— Eliv8 OS is in private pilot, Solomon gives business
+                : Eliv8 OS is in private pilot, Solomon gives business
                 thinking rather than professional advice, and the decisions
                 stay mine.
               </span>

@@ -26,7 +26,7 @@ export default function PublicHeader() {
             are why the logo still said "GrowthOS" for days after the rename —
             and this one slipped through the same way. Never restate the mark in
             markup; if it needs a new size or tone, add a prop. */}
-        <Link to="/" aria-label="Eliv8 OS — home">
+        <Link to="/" aria-label="Eliv8 OS, home">
           <Wordmark tone="light" size={19} />
         </Link>
         <nav className="flex items-center gap-4 text-sm">

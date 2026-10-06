@@ -55,7 +55,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <Helmet>
-        <title>Sign in — {SITE_NAME}</title>
+        <title>Sign in {SITE_NAME}</title>
         <link rel="canonical" href={`${SITE_URL}/login`} />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content="Sign in to your Eliv8 OS account." />

@@ -78,7 +78,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
             tone="red"
             title="Needs attention"
             items={red_flags}
-            emptyHint="No red flags — keep the discipline."
+            emptyHint="No red flags. Keep the discipline."
           />
         </div>
       )}
@@ -94,7 +94,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
       {accountant_questions.length > 0 && (
         <Section
           title="Ask your accountant"
-          hint="Copy-paste these into an email — they're sharper than 'how was my month'."
+          hint="Copy-paste these into an email. They're sharper than 'how was my month'."
         >
           <ul className="space-y-2">
             {accountant_questions.map((q, i) => (
@@ -249,7 +249,7 @@ function KPICard({ kpi, computedDeltas = {}, prevPeriodLabel = null }) {
         {is_estimate && (
           <span
             className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full"
-            title="Estimated — upload a P&L for the real number"
+            title="Estimated, upload a P&L for the real number"
           >
             est.
           </span>
