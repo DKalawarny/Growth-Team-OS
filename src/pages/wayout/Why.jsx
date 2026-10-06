@@ -5,10 +5,10 @@ import { WAYOUT_NAME, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
 /**
  * ⭐⭐ WHY THIS EXISTS — FROM DANIEL'S OWN WORDS (5 Oct 2026). He wrote the
  * reason; at his request ("I might have divulged too much") it was reworded to
- * keep the meaning and leave out his family's details, then he asked for "a bit
- * more… I want people to feel it's authentic because it is". Every added line
- * is either his or a true description of what the product does (starts from
- * what you want, order, the cut list, gates, versions). Unsigned, his choice. A founder
+ * keep the meaning and leave out his family's details, this is the
+ * text he approved. ⚠️ He rejected an added paragraph describing the product
+ * ("sounds like a sale, not personal") — show him drafts before adding ANYTHING
+ * here. Unsigned, his choice. A founder
  * story someone else wrote is the fastest way for a page like this to read as
  * fake, which is why it sat empty until he wrote it.
  *
@@ -30,9 +30,7 @@ export default function Why() {
 
         <p>And for a lot of people, the grind is necessary. You have to build something before you can have the time and freedom you want. That time is not wasted. It is part of the path.</p>
 
-        <p>I am still working through it myself. That is why your plan does not start with a budget. It starts with what you actually want your life to look like, and works back from there: the order to do things in, what to say no to, and what has to be true before you take the next step.</p>
-
-        <p>{WAYOUT_NAME} is for wherever you are on that path. You see where you stand, where you want to be, and the next steps to get there — while building a life that actually holds up once you arrive. And when your life changes, your plan changes with it.</p>
+        <p>{WAYOUT_NAME} is for wherever you are on that path. You see where you stand, where you want to be, and the next steps to get there — while building a life that actually holds up once you arrive.</p>
 
         <p className="wayout__whygoal">My goal is simple: to help people get free of the life they never wanted, or at least make it better.</p>
 
