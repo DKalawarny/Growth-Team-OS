@@ -57,7 +57,7 @@ export const WAYOUT_READING = [
     title: 'Four Thousand Weeks',
     author: 'Oliver Burkeman',
     for: 'Somebody whose scarce thing is time rather than money, and who is trying to solve it by being more efficient.',
-    hold: 'It is philosophy rather than method. If what you need this week is a first step, this is not that — it is the book for why the steps keep not happening.',
+    hold: 'It is philosophy rather than method. If what you need this week is a first step, this is not that. It is the book for why the steps keep not happening.',
   },
   {
     title: 'The Psychology of Money',
@@ -87,7 +87,7 @@ export const WAYOUT_READING = [
     title: 'Shop Class as Soulcraft',
     author: 'Matthew B. Crawford',
     for: 'Somebody working with their hands who has been told their whole life it was the lesser option, or somebody in an office wondering why the work feels weightless.',
-    hold: 'A defence rather than a guide — there is nothing to do at the end of it. Worth reading anyway if you have been made to feel small about the work you do.',
+    hold: 'A defence rather than a guide. There is nothing to do at the end of it. Worth reading anyway if you have been made to feel small about the work you do.',
   },
   {
     title: 'Essentialism',
@@ -110,7 +110,7 @@ export const WAYOUT_READING = [
     title: 'The Total Money Makeover',
     author: 'Dave Ramsey',
     for: 'Somebody buried in debt who does not need another opinion, they need a sequence and some momentum. It is rigid on purpose, and for a lot of people rigid is exactly what works.',
-    hold: 'Paying the smallest balance first is about momentum, not arithmetic — clearing the highest RATE first saves more money. If you know that and still want the wins, that is a fair trade. Also written for the US: the accounts and the tax bits will not match Canada.',
+    hold: 'Paying the smallest balance first is about momentum, not arithmetic. Clearing the highest RATE first saves more money. If you know that and still want the wins, that is a fair trade. Also written for the US: the accounts and the tax bits will not match Canada.',
   },
   {
     title: 'The Simple Path to Wealth',
@@ -121,13 +121,13 @@ export const WAYOUT_READING = [
   {
     title: 'Debt-Free Forever',
     author: 'Gail Vaz-Oxlade',
-    for: 'Somebody in real trouble right now — collections, nothing left at the end of the month, avoiding the mail. Canadian, blunt, and entirely about getting out rather than about mindset.',
+    for: 'Somebody in real trouble right now: collections, nothing left at the end of the month, avoiding the mail. Canadian, blunt, and entirely about getting out rather than about mindset.',
     hold: 'Blunt is the point and it can read as a telling-off on a bad day. Take the method and ignore the tone.',
   },
   {
     title: 'Scarcity',
     author: 'Sendhil Mullainathan and Eldar Shafir',
-    for: 'Somebody who cannot understand why they keep making decisions they know are wrong. It shows that being short — of money, of time — measurably changes how anybody thinks, and that this is a bandwidth problem rather than a character one.',
+    for: 'Somebody who cannot understand why they keep making decisions they know are wrong. It shows that being short, of money, of time, measurably changes how anybody thinks, and that this is a bandwidth problem rather than a character one.',
     hold: 'It explains and it does not instruct. Read it for the relief of knowing it is not a flaw in you; do not expect a plan at the end.',
   },
 ]

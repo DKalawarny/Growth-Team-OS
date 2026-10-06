@@ -124,7 +124,7 @@ export default function PlanThread({
               >
                 <b>V{v.n}</b>
                 <span>
-                  {v.key === -1 ? 'Original — from your answers' : `“${v.about ?? 'Rewritten'}”`}
+                  {v.key === -1 ? 'Original, from your answers' : `“${v.about ?? 'Rewritten'}”`}
                   {/* ⭐ Two versions built from the same sentence read
                       identically — the first move is what tells them apart. */}
                   {v.map?.moves?.[0]?.title && <small>Move 1: {v.map.moves[0].title}</small>}
@@ -194,7 +194,7 @@ export default function PlanThread({
           {pending ? (
             <div className="wayout__draftwait">
               <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
-              <span>Building V{nextN}. Up to a minute — your plan stays as it is until it is ready.</span>
+              <span>Building V{nextN}. Up to a minute. Your plan stays as it is until it is ready.</span>
             </div>
           ) : !quiet && onRedo && (lastReply || corrected) && !lastReply?.crisis && (
             <div className="wayout__draftact">
@@ -353,7 +353,7 @@ export function VersionSwitch({
       )}
       <p className="wayout__versionnote">
           {showing == null
-            ? 'Your plan was rebuilt from your answers since — none of these is showing.'
+            ? 'Your plan was rebuilt from your answers since. None of these is showing.'
             : showing === -1
               ? 'The plan from your answers, before anything you said below.'
               : on?.about ? `Rewritten around “${on.about.replace(/[.!?]+$/, '')}”.` : null}

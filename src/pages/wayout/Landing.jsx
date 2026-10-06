@@ -173,7 +173,7 @@ export default function Landing() {
               one would… a year of night shifts"). Recognition works when a
               person meets their own situation twice, not two different lists. */}
           <p className="wayout__herolead">
-            {WAYOUT_TAGLINE} The house, the debt, the job, the hours — which of
+            {WAYOUT_TAGLINE} The house, the debt, the job, the hours, which of
             those moves first, and what to leave alone for now.
           </p>
 
@@ -257,7 +257,7 @@ export default function Landing() {
               <p className="wayout__herocut">
                 <b>Crossed off, with the reason</b>
                 {pl.cut.map(([what, why]) => (
-                  <span key={what}><s>{what}</s> — {why}</span>
+                  <span key={what}><s>{what}</s>: {why}</span>
                 ))}
               </p>
             </div>
@@ -308,7 +308,7 @@ export default function Landing() {
               <h3>Six taps, to start</h3>
               <p>
                 Where the money goes, what you have, what you will not move. Enough to
-                narrow four ways out to the one that fits you — no account, nothing typed.
+                narrow four ways out to the one that fits you. No account, nothing typed.
               </p>
             </div>
             <div>
@@ -318,7 +318,7 @@ export default function Landing() {
                   "it's still all over this page." Said once it is an offer. */}
               <h3>The questions that build the plan</h3>
               <p>
-                The rent, the debt, the hours, the people it affects — in your own
+                The rent, the debt, the hours, the people it affects, in your own
                 words and your own figures, because that is what the plan is made of.
               </p>
             </div>
@@ -356,7 +356,7 @@ export default function Landing() {
               <h3>Your plan crosses things off.</h3>
               <p>
                 Your plan names what you should <b>not</b> do right now, and why.
-                Everything else only ever adds to your list — which is how you ended
+                Everything else only ever adds to your list, which is how you ended
                 up with three options and no first step.
               </p>
             </div>
@@ -364,7 +364,7 @@ export default function Landing() {
               <h3>One thing at a time.</h3>
               <p>
                 Each move says what has to be true before the next one starts, so you
-                always know whether you’re ready — instead of half-doing all
+                always know whether you’re ready, instead of half-doing all
                 three and finishing none.
               </p>
             </div>
@@ -427,7 +427,7 @@ export default function Landing() {
               on a landing page. */}
           <h2 className="wayout__pitchh">Read the one that sounds like yours.</h2>
           <p className="wayout__pitchlead">
-            Some of what people arrive with, answered properly — what the number
+            Some of what people arrive with, answered properly: what the number
             really is, what changes it, and what order things go in. Free to read,
             nothing to fill in, and written to be worth your time whether or not
             you ever make a plan.
@@ -453,7 +453,7 @@ export default function Landing() {
               we cover that too" is a promise; "built from your answers" is how
               it works, and a reader can check it in twenty minutes. */}
           <p className="wayout__unique">
-            Yours will not be on this list, and that is the point — a plan is built
+            Yours will not be on this list, and that is the point. A plan is built
             from your own answers, not matched to one of these. The specifics are
             the whole input.
           </p>
@@ -469,11 +469,10 @@ export default function Landing() {
 
           <div className="wayout__deal">
             <div>
-              <span className="wayout__dealtag">Free — no card</span>
+              <span className="wayout__dealtag">Free. No card</span>
               <h3>The questions, then your plan</h3>
               <p>
-                Your direction first, then the questions that turn it into a plan —
-                three moves in the order they work, what each is worth in your own
+                Your direction first, then the questions that turn it into a plan: three moves in the order they work, what each is worth in your own
                 figures, and what to ignore. Yours to keep, and we don’t ask for a
                 card to see any of it.
               </p>
@@ -483,7 +482,7 @@ export default function Landing() {
                   label, and again in the body. Once is the offer; three times
                   reads as protesting. The label now says what the thing IS. */}
               <span className={`wayout__dealtag${WAYOUT_PAYMENTS_LIVE ? ' wayout__dealtag--paid' : ''}`}>
-                {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL} — only if you want it` : 'The paid half, later'}
+                {WAYOUT_PAYMENTS_LIVE ? `${WAYOUT_PRICE_FULL}, only if you want it` : 'The paid half, later'}
               </span>
               <h3>The step-by-step guide</h3>
               <p>
@@ -515,7 +514,7 @@ export default function Landing() {
               unwritten and Eliv8 Inc. does not exist, so Sarlia is currently the
               only entity between Daniel and a user. docs/wayout-before-launch.md */}
           <p className="wayout__disclaimer" style={{ marginTop: 20 }}>
-            Both are general information about how these decisions work — not
+            Both are general information about how these decisions work. Not
             financial, legal or tax advice, and not a substitute for someone who
             knows your full situation.
           </p>

@@ -56,9 +56,9 @@ import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } fr
  * only answer that teaches us anything.
  */
 const OPTIONS = [
-  { key: 'landed',  label: 'I’m there — that’s my life now',   hint: 'The thing you were aiming at actually happened. The next question is where now.' },
+  { key: 'landed',  label: 'I’m there. That’s my life now',   hint: 'The thing you were aiming at actually happened. The next question is where now.' },
   { key: 'partly',  label: 'Closer. Not there yet.',           hint: 'Real ground gained. The route from here is not the one you were given at the start.' },
-  { key: 'no',      label: 'I did it all and it didn’t land',  hint: 'The most useful thing you can tell us — and the next plan will not contain that route.' },
+  { key: 'no',      label: 'I did it all and it didn’t land',  hint: 'The most useful thing you can tell us, and the next plan will not contain that route.' },
   { key: 'changed', label: 'I’m after something else now',     hint: 'Everything true about your situation carries over. The destination is yours to reset.' },
 ]
 
@@ -78,8 +78,8 @@ const OPTIONS = [
 const NEXT = {
   landed: {
     cta: 'Set the next one',
-    line: 'That was the destination. The next plan starts from a different question — '
-      + 'where now — and only you can answer it.',
+    line: 'That was the destination. The next plan starts from a different question'
+      + 'where now, and only you can answer it.',
   },
   partly: {
     cta: 'Re-plan the rest from here',
@@ -93,7 +93,7 @@ const NEXT = {
   },
   changed: {
     cta: 'Start the new one',
-    line: 'New destination. Everything already known about you carries over — your '
+    line: 'New destination. Everything already known about you carries over, your '
       + 'town, your hours, what you will not do.',
   },
 }
@@ -235,7 +235,7 @@ export default function Done() {
           <p className="wayout__lead">
             Those moves were built for this year and they are spent. What is not
             spent is that you now know exactly what your own follow-through looks
-            like — which is the one thing the questions could never have told
+            like, which is the one thing the questions could never have told
             you, and the reason the next plan can be bolder than this one was.
           </p>
         </div>
@@ -264,7 +264,7 @@ export default function Done() {
       <h2 className="wayout__nowh">So where does that leave you?</h2>
       <p className="wayout__lead">
         One answer, and it decides everything about the next one. Whether this
-        moved anything is the one thing only you know — and the one thing
+        moved anything is the one thing only you know, and the one thing
         nobody ever asks.
       </p>
 
@@ -308,7 +308,7 @@ export default function Done() {
               straightforward." This one is quieter now, and once it is sent it
               stops being a button at all. */}
           {saved ? (
-            <p className="wayout__sent">✓ Saved — read by a person, and it changes what gets built next.</p>
+            <p className="wayout__sent">✓ Saved. Read by a person, and it changes what gets built next.</p>
           ) : (
             <button className="wayout__btn wayout__btn--quiet" onClick={submit} disabled={sending}>
               {sending ? 'One moment…' : 'Send it'}
@@ -341,7 +341,7 @@ export default function Done() {
               that they are not. */}
           <p className="wayout__offerfine">
             {picked === 'landed' || picked === 'changed'
-              ? 'Five questions. Your numbers, what changed, and where you are headed — everything else you already told us carries over.'
+              ? 'Five questions. Your numbers, what changed, and where you are headed. Everything else you already told us carries over.'
               : 'Three questions. What changed and your numbers, so the next plan starts from where you actually are.'}
           </p>
         </div>

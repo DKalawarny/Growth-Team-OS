@@ -230,7 +230,7 @@ export default function Enter() {
       if (already) {
         setMode('in')
         setKnown(true)
-        setNotice('You already have an account with that email. Sign in and your answers come with you — or reset the password below if you don’t have it.')
+        setNotice('You already have an account with that email. Sign in and your answers come with you, or reset the password below if you don’t have it.')
       } else if (/invalid login credentials/i.test(err?.message ?? '')) {
         // ⚠️ Never "wrong password" — it might be the wrong email, and telling
         // somebody which one is wrong is also telling a stranger which emails
@@ -249,8 +249,7 @@ export default function Enter() {
       <WayoutShell title="Check your email">
         <p className="wayout__q">Check your email.</p>
         <p className="wayout__lead">
-          There is a link waiting. Open it and you will come straight back here —
-          your answers are saved.
+          There is a link waiting. Open it and you will come straight back here. Your answers are saved.
         </p>
       </WayoutShell>
     )
@@ -275,7 +274,7 @@ export default function Enter() {
           </h1>
           <p className="wayout__lead">
             {known
-              ? 'That email is already registered. Sign in and everything you just answered comes with you — or send yourself a reset link below.'
+              ? 'That email is already registered. Sign in and everything you just answered comes with you, or send yourself a reset link below.'
               : mode === 'in'
                 ? 'Your answers and your plan are where you left them.'
                 : leadFor(next)}
@@ -347,7 +346,7 @@ export default function Enter() {
                 <span>
                   I’m over 18 and I agree to the{' '}
                   <a href={`${WAYOUT_BASE}/terms`} target="_blank" rel="noopener noreferrer">terms</a>{' '}
-                  — including that this is not legal or financial advice and every choice is mine.
+                  including that this is not legal or financial advice and every choice is mine.
                 </span>
               </label>
             )}
@@ -385,7 +384,7 @@ export default function Enter() {
           )}
           {linkSent && (
             <p className="wayout__notice">
-              Check your email — the link signs you straight in. It works once, for an hour.
+              Check your email, the link signs you straight in. It works once, for an hour.
             </p>
           )}
 

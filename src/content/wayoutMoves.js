@@ -58,7 +58,7 @@ export const WAYOUT_MOVES = [
     upfront: 'nothing',
     effort: 'high',
     familyCost: 'Heavy lifting and unpredictable hours at the start.',
-    growsInto: 'Commercial accounts — property managers and realtors repeat.',
+    growsInto: 'Commercial accounts, property managers and realtors repeat.',
     seasons: 'all',
     climateTags: [],
   },
@@ -156,7 +156,7 @@ export const WAYOUT_MOVES = [
     key: 'room-midterm',
     direction: 'earn',
     reaches: 'supplement',
-    title: 'Furnished mid-term let — 90 days and up',
+    title: 'Furnished mid-term let, 90 days and up',
     needs: ['spare-room'],
     timeToCash: 'weeks',
     upfront: '$500-1500 to furnish',
@@ -217,7 +217,7 @@ export const WAYOUT_MOVES = [
     key: 'house-hack',
     direction: 'spend-less',
     reaches: 'replaces-a-wage',
-    title: 'House-hack — rent part of what you already own',
+    title: 'House-hack, rent part of what you already own',
     needs: ['home-equity', 'spare-room', 'garage'],
     timeToCash: 'months',
     upfront: 'varies by conversion',
@@ -275,13 +275,13 @@ export const WAYOUT_MOVES = [
     timeToCash: 'weeks',
     upfront: 'nothing',
     effort: 'low',
-    familyCost: 'Almost none at first — same work, different arrangement.',
+    familyCost: 'Almost none at first, same work, different arrangement.',
     growsInto: 'A second client, then the income is no longer one relationship.',
     seasons: 'all',
     climateTags: [],
     // ⚠️ The fastest move on this list for an employed person, and the one
     // nobody suggests. It also has a real risk: it can end the job. Say so.
-    caution: 'Read your contract first — some have a clause about this.',
+    caution: 'Read your contract first. Some have a clause about this.',
   },
   {
     key: 'sub-for-someone-busier',
@@ -321,7 +321,7 @@ export const WAYOUT_MOVES = [
     upfront: 'nothing',
     effort: 'low',
     familyCost: 'Fits school hours better than almost anything else here.',
-    growsInto: 'Small groups instead of one at a time — the same hour, paid two or three times.',
+    growsInto: 'Small groups instead of one at a time: the same hour, paid two or three times.',
     seasons: 'all',
     climateTags: [],
   },
@@ -335,7 +335,7 @@ export const WAYOUT_MOVES = [
     upfront: 'nothing',
     effort: 'medium',
     familyCost: 'Whatever hours you give it. Easy to give it too many.',
-    growsInto: 'Regular clients beat any app — the app keeps the margin.',
+    growsInto: 'Regular clients beat any app. The app keeps the margin.',
     seasons: 'all',
     climateTags: [],
   },
@@ -352,7 +352,7 @@ export const WAYOUT_MOVES = [
     effort: 'high',
     familyCost: 'High and immediate. Only worth it against a named finish line.',
     growsInto:
-      'Nothing. ⚠️ This is fuel for a real move, never the plan itself — it is ' +
+      'Nothing. ⚠️ This is fuel for a real move, never the plan itself. It is ' +
       'the one entry here that does not compound, and a map that ends on it has failed.',
     seasons: 'all',
     climateTags: [],
@@ -402,7 +402,7 @@ export const WAYOUT_MOVES = [
     timeToCash: 'weeks',
     upfront: 'nothing',
     effort: 'low',
-    familyCost: 'Depends entirely which way you move it — that is the point of doing it deliberately.',
+    familyCost: 'Depends entirely which way you move it, that is the point of doing it deliberately.',
     growsInto: 'Nights and differentials pay more; days buy back the evenings.',
     seasons: 'all',
     climateTags: [],
@@ -490,7 +490,7 @@ export const WAYOUT_MOVES = [
     upfront: 'a week up front, no credit check, no references',
     effort: 'low',
     familyCost: 'Cramped and it is a roof. Often the only thing available same-week.',
-    growsInto: 'A bridge, not a destination — the monthly rate is well below the nightly one.',
+    growsInto: 'A bridge, not a destination. The monthly rate is well below the nightly one.',
     seasons: 'all',
     climateTags: [],
   },
@@ -671,7 +671,7 @@ export const WAYOUT_MOVES = [
     timeToCash: 'months',
     upfront: 'moving costs',
     effort: 'high',
-    familyCost: 'A whole life relocated — and usually the reason for doing it.',
+    familyCost: 'A whole life relocated, and usually the reason for doing it.',
     growsInto: 'Childcare, care for a parent, and the years you do not get back.',
     seasons: 'all',
     climateTags: [],
@@ -724,7 +724,7 @@ export const WAYOUT_MOVES = [
     timeToCash: 'months',
     upfront: 'usually some income',
     effort: 'medium',
-    familyCost: 'None — this is the one people take a pay cut for and never regret.',
+    familyCost: 'None. This is the one people take a pay cut for and never regret.',
     growsInto: 'Two hundred evenings a year is not a lifestyle change, it is a different life.',
     seasons: 'all',
     climateTags: [],
@@ -779,7 +779,7 @@ export const WAYOUT_MOVES = [
     timeToCash: 'immediate',
     upfront: 'nothing',
     effort: 'low',
-    familyCost: 'Pride, mostly. Sometimes a real loss of capability — check first.',
+    familyCost: 'Pride, mostly. Sometimes a real loss of capability. Check first.',
     growsInto: 'The payment, freed, every month, starting now.',
     seasons: 'all',
     climateTags: [],
@@ -858,7 +858,7 @@ export function movesLibraryForPrompt() {
     if (m.subtract) bits.push(`  SUBTRACT. five-year test: ${m.fiveYearTest}`)
     if (m.needsProfessional) bits.push(`  ⚠️ must be flagged: talk to ${m.needsProfessional}`)
     if (m.blockedByImmovables) bits.push('  🔴 RULED OUT by any immovable that keeps them where they are.')
-    if (m.requiresSlack) bits.push('  ⚠️ Only honest once the cutting has made it affordable — before that it is a pay cut dressed as a plan.')
+    if (m.requiresSlack) bits.push('  ⚠️ Only honest once the cutting has made it affordable, before that it is a pay cut dressed as a plan.')
     if (m.climateTags.includes('seasonal-by-design')) bits.push('  ⭐ The off-season is the POINT, not a gap to fill.')
     return bits.join('\n')
   }).join('\n\n')

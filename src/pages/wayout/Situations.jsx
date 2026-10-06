@@ -30,7 +30,7 @@ export function SituationIndex() {
         <title>{title}</title>
         <meta
           name="description"
-          content="Straight answers to specific situations — an inherited house with debt against it, working nights, a loan against a lump of money."
+          content="Straight answers to specific situations: an inherited house with debt against it, working nights, a loan against a lump of money."
         />
       </Helmet>
 
@@ -130,7 +130,7 @@ export function SituationPage() {
         <p className="wayout__offerlead">
           Everything above is the shape of the decision. What it cannot do is use
           your figures. You narrow four ways out to the one that fits you, then turn
-          it into three moves in the order they work — free, and yours to keep.
+          it into three moves in the order they work: free, and yours to keep.
         </p>
         {/* 🔴 "Start with six questions" was the same untruth as the landing page
             carried, on all 16 of these pages. Six taps name a DIRECTION; the three

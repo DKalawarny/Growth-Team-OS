@@ -83,7 +83,7 @@ function alreadyDone(
   // ⚠️ One sentence. This sits above the ask and must not become the email.
   return done.length === 1
     ? `You marked "${title}" done on ${when}.`
-    : `That is ${done.length} done so far — the last was "${title}", on ${when}.`
+    : `That is ${done.length} done so far. The last was "${title}", on ${when}.`
 }
 
 function compose(moveTitle: string, gate: string, count: number) {
@@ -98,7 +98,7 @@ function compose(moveTitle: string, gate: string, count: number) {
   if (count >= 2) {
     return {
       subject: `Still on: ${moveTitle}`,
-      lead: `Nothing's moved on "${moveTitle}" for a week, which is completely normal — `
+      lead: `Nothing's moved on "${moveTitle}" for a week, which is completely normal`
         + 'these things take as long as they take.',
       ask: `The one thing it's waiting on is: ${gate} `
         + "If that's turned out to be wrong, or something changed, tell me and I'll redo the move.",
@@ -109,7 +109,7 @@ function compose(moveTitle: string, gate: string, count: number) {
     lead: `You're on move "${moveTitle}".`,
     ask: `It's done when: ${gate} `
       + "If you've got there, mark it off and the next move opens. If you're stuck on a "
-      + "specific bit, ask — that's what the box on the move is for.",
+      + "specific bit, ask. That's what the box on the move is for.",
   }
 }
 
@@ -163,7 +163,7 @@ Deno.serve(async (req: Request) => {
     return json({
       due: (due ?? []).length,
       sent: 0,
-      failures: ['WAYOUT_EMAIL_FROM is not set — refusing to send as Eliv8 OS. '
+      failures: ['WAYOUT_EMAIL_FROM is not set, refusing to send as Eliv8 OS. '
         + 'supabase secrets set WAYOUT_EMAIL_FROM="the way out <hello@yourdomain>"'],
     })
   }

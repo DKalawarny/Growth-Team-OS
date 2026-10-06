@@ -79,7 +79,7 @@ export default function Reset() {
         <div className="wayout__col">
           {status === 'waiting' ? (
             <p className="wayout__notice">
-              Open this page from the link in the email — that’s what lets it set
+              Open this page from the link in the email. That’s what lets it set
               a new password. If you typed the address in by hand, go back to the
               email and tap the link.
             </p>

@@ -67,7 +67,7 @@ const SAMPLE = {
     { label: 'Moving somewhere cheaper', why: 'Shared custody. That ends the conversation, and a plan that ignores it is not a plan.' },
   ],
   seasonPlan: [
-    { months: 'Nov–Mar', work: 'Snow clearing and gutters for the same customers. Christmas lights in December.' },
+    { months: 'Nov, Mar', work: 'Snow clearing and gutters for the same customers. Christmas lights in December.' },
   ],
   disclaimer: 'This is a map of options, not financial or legal advice. Check the numbers before you act.',
 }

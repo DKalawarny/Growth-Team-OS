@@ -82,7 +82,7 @@ export function priceLine() {
   // ⭐ The assessment is free and always will be. What is paid for is the
   // play-by-play — how to actually do the move you are standing on.
   return WAYOUT_PAYMENTS_LIVE
-    ? `Your plan is free. ${WAYOUT_PRICE_FULL} later, only if you want the step-by-step for actually doing it — and only for as long as you are doing it.`
+    ? `Your plan is free. ${WAYOUT_PRICE_FULL} later, only if you want the step-by-step for actually doing it, and only for as long as you are doing it.`
     // ⚠️ True while payments are off: nothing is charged anywhere. It must not
     // promise "anywhere else" — the step-by-step is meant to be paid later.
     : 'Your plan is free. There is nothing to pay.'
@@ -102,7 +102,7 @@ export function guaranteeLine() {
   // ⚠️ Nothing about money back while nothing is being taken — "refund" copy on
   // a free product reads as a script somebody forgot to switch off.
   return WAYOUT_PAYMENTS_LIVE
-    ? 'Cancel in one click, any month. If it doesn’t fit your life, say so and you get that month back — no form to fill in.'
+    ? 'Cancel in one click, any month. If it doesn’t fit your life, say so and you get that month back. No form to fill in.'
     : ''
 }
 

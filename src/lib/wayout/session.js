@@ -2,7 +2,7 @@ import { supabase } from '../supabase'
 import { callClaude, SONNET, HAIKU } from '../anthropic'
 import { movesLibraryForPrompt } from '../../content/wayoutMoves'
 import { readingForPrompt } from '../../content/wayoutReading'
-import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes, noTuesday } from './mapContract'
+import { enforceMapContract, enforcePlaybookContract, scrubFigures, mapProblems, mapStyleNotes, forReaders } from './mapContract'
 import { parseModelJson } from './parseModelJson'
 import { readReplyJson, soundsLikeCrisis } from './replyJson'
 import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse, takeHandoff } from './draft'
@@ -338,7 +338,7 @@ export async function reflect(screenAnswers) {
       toolId: TOOL_ID,
       kind: 'reflection',
     })
-    const text = noTuesday(String(raw ?? '').trim())
+    const text = forReaders(String(raw ?? '').trim())
     if (!text) return null
 
     // A model that ignores "two sentences" usually does so by adding a third
@@ -746,9 +746,9 @@ export async function generateMoveQuestions({ answers, map, move }) {
       .slice(0, 3)
       // 🔴 "a step toward your Tuesday" reached a person from here on 1 Oct.
       .map(q => ({
-        q: noTuesday(String(q.q).trim()),
-        why: noTuesday(String(q.why ?? '').trim()),
-        options: Array.isArray(q.options) ? q.options.map(o => noTuesday(String(o))).slice(0, 4) : [],
+        q: forReaders(String(q.q).trim()),
+        why: forReaders(String(q.why ?? '').trim()),
+        options: Array.isArray(q.options) ? q.options.map(o => forReaders(String(o))).slice(0, 4) : [],
       }))
     return questions
   } catch (err) {

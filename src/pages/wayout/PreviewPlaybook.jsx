@@ -94,7 +94,7 @@ export default function PreviewPlaybook() {
         <p className="wayout__lead">{error}</p>
         <p className="wayout__hint">
           If that says something about auth, this needs a signed-in window rather
-          than a private one — the model runs behind the same authenticated proxy
+          than a private one. The model runs behind the same authenticated proxy
           as the rest of the product.
         </p>
       </WayoutShell>
@@ -105,7 +105,7 @@ export default function PreviewPlaybook() {
     return (
       <WayoutShell title="This week">
         <p className="wayout__q">Writing it.</p>
-        <p className="wayout__lead">Real output from the real prompt — about twenty seconds.</p>
+        <p className="wayout__lead">Real output from the real prompt, about twenty seconds.</p>
       </WayoutShell>
     )
   }

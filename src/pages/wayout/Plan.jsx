@@ -346,7 +346,7 @@ export default function Plan() {
     const after = await build({ ...s, plan_thread: t }, `thread:${id}`)
     setThreadBuild(null)
     if (!after) {
-      if (!crisisShown.current) setThreadErr('That did not rewrite. Your plan has not changed — try it again.')
+      if (!crisisShown.current) setThreadErr('That did not rewrite. Your plan has not changed. Try it again.')
       return
     }
     // ⚠️ The same plan twice is not a new version — two identical chips made
@@ -730,7 +730,7 @@ export default function Plan() {
              contained a figure they never gave us — a different situation, and
              one worth naming plainly rather than dressing as an ordinary wait. */
           <Working
-            foot={`Another minute at most${pass > 2 ? ' — last go' : ''}.`}
+            foot={`Another minute at most${pass > 2 ? ', last go' : ''}.`}
             lines={[
               'That version had a number you never gave us.',
               'We do not guess about your life.',
@@ -890,7 +890,7 @@ function WorthAsk({ onSave }) {
   if (sent) {
     return (
       <div className="wayout__worth wayout__worth--done">
-        <b>Thank you — that genuinely helps.</b>
+        <b>Thank you, that genuinely helps.</b>
         <p>It is read by a person, and it changes what gets built next.</p>
       </div>
     )
@@ -900,7 +900,7 @@ function WorthAsk({ onSave }) {
   return (
     <div className="wayout__worth">
       <b>One question, while it is in front of you</b>
-      <p>This was free and stays free. If it had not been — what would it have been worth?</p>
+      <p>This was free and stays free. If it had not been, what would it have been worth?</p>
       <div className="wayout__worthrow">
         {OPTIONS.map(c => (
           <button
@@ -918,7 +918,7 @@ function WorthAsk({ onSave }) {
         value={note}
         maxLength={1000}
         onChange={e => setNote(e.target.value)}
-        placeholder="And anything you would tell someone else about it — good or bad."
+        placeholder="And anything you would tell someone else about it, good or bad."
       />
       <label className="wayout__worthquote">
         <input type="checkbox" checked={canQuote} onChange={e => setCanQuote(e.target.checked)} />
@@ -1225,7 +1225,7 @@ export function Map({
           said. It is also simply true: the order is our best reading of their
           answers, and every part of it can be changed by them. */}
       <p className="wayout__suggested wayout__r" style={at(2.45)}>
-        Our best read of what you told us — a suggested order, not instructions.
+        Our best read of what you told us, a suggested order, not instructions.
         Anything here is yours to change.
       </p>
       {/* ⭐ KEEP IT WHERE YOU WILL SEE IT. A plan on a fridge, or in front of a
@@ -1307,7 +1307,7 @@ export function Map({
                       onClick={() => isOpen && onOpenPlaybook?.(order)}
                     >
                       {isOpen
-                        ? (WAYOUT_PAYMENTS_LIVE && order === 1 ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how')
+                        ? (WAYOUT_PAYMENTS_LIVE && order === 1 ? `Show me how, ${WAYOUT_PRICE_FULL}` : 'Show me how')
                         : `Opens after gate ${order - 1}`}
                     </button>
                     {isOpen && (
@@ -1356,13 +1356,13 @@ export function Map({
                         {spent ? (
                           <>
                             <b>Pin it on</b> keeps your note beside ours. You have used the one
-                            free rewrite — reworking the plan around what you have learned is
+                            free rewrite, reworking the plan around what you have learned is
                             part of the walkthrough.
                           </>
                         ) : (
                           <>
                             <b>Pin it on</b> keeps your note beside ours. <b>Redo</b> rewrites this
-                            move around what you said — and everything after it, because the order
+                            move around what you said, and everything after it, because the order
                             depends on it. You get one, so use it when you know something new.
                           </>
                         )}
@@ -1438,7 +1438,7 @@ export function Map({
           <b>You finished the plan.</b>
           <p>
             Most people who write one never get to the end of it. You did the
-            whole order, in order — which is the hard part and the part nobody
+            whole order, in order, which is the hard part and the part nobody
             sees.
           </p>
           {/* ⚠️ A Link, not navigate — this component is also rendered by
@@ -1523,7 +1523,7 @@ export function Map({
                           if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onInsist(c.label) }
                         }}
                       >
-                        I want this one anyway — put it in the plan
+                        I want this one anyway. Put it in the plan
                       </span>
                     )}
                   </>
@@ -1539,7 +1539,7 @@ export function Map({
           <h3 className="wayout__label wayout__r" style={at(3.7)}>Through the off-season</h3>
           {map.seasonPlan.map((s, i) => (
             <p className="wayout__hint wayout__r" key={i} style={at(3.75)}>
-              <b>{s.months}</b> — {s.work}
+              <b>{s.months}</b>: {s.work}
             </p>
           ))}
         </section>
@@ -1655,10 +1655,10 @@ export function Map({
         <h3>{map.moves?.[0]?.title ?? 'Move one'}</h3>
         <p className="wayout__offerlead">
           {hasOpened
-            ? 'Where you left off — what to do first, the words to use, and what usually goes wrong.'
+            ? 'Where you left off: what to do first, the words to use, and what usually goes wrong.'
             : Array.isArray(map.stuck) && map.stuck.length > 0
               ? 'You know what the move is. These are the questions that turn up the moment you start it.'
-              : 'You know what it is. This is how you do it — for your town, your hours, and the people who have already paid you.'}
+              : 'You know what it is. This is how you do it: for your town, your hours, and the people who have already paid you.'}
         </p>
         {/* ⭐⭐ THE QUESTIONS, NOT THE FEATURES. Daniel: "telling you what is
             inside is weak, not a good sell." He is right, and the reason is
@@ -1679,7 +1679,7 @@ export function Map({
           <ul className="wayout__offerlist">
             <li>The first thing to do, and the day to do it</li>
             <li>The words to send, short enough to send without editing</li>
-            <li>What to charge — and where that number comes from</li>
+            <li>What to charge, and where that number comes from</li>
             <li>What you do <b>not</b> need to buy yet</li>
             <li>What goes wrong the first time, and what to do about it</li>
           </ul>
@@ -1737,7 +1737,7 @@ export function Map({
           <button type="button" className="wayout__again" onClick={onRegenerate} disabled={rebuilding}>
             {rebuilding ? 'Building…' : 'Regenerate from the same answers'}
           </button>
-          {' '}— dev only, not in the build.
+          {', '}dev only, not in the build.
         </p>
       )}
 
@@ -1757,7 +1757,7 @@ export function Map({
           <button type="button" className="wayout__again" onClick={onRestore} disabled={rebuilding}>
             put the previous plan back
           </button>
-          {' '}— exactly as it was, nothing regenerated.
+          {', '}exactly as it was, nothing regenerated.
         </p>
       )}
 
@@ -1767,7 +1767,7 @@ export function Map({
           <button type="button" className="wayout__again" onClick={onRebuild} disabled={rebuilding}>
             go back through the questions
           </button>
-          {' '}— the plan is rebuilt on what you change.
+          {', '}the plan is rebuilt on what you change.
         </p>
       )}
 
@@ -1808,7 +1808,7 @@ function PlaybookCta({ onOpen, hasOpened = false }) {
       <button className="wayout__btn wayout__btn--sun" onClick={() => onOpen()}>
         {hasOpened
           ? 'Back to the walkthrough'
-          : WAYOUT_PAYMENTS_LIVE ? `Show me how — ${WAYOUT_PRICE_FULL}` : 'Show me how'}
+          : WAYOUT_PAYMENTS_LIVE ? `Show me how, ${WAYOUT_PRICE_FULL}` : 'Show me how'}
       </button>
       {/* ⚠️ THE PRICE LINE IS AN ANSWER TO "what will this cost me", and once
           somebody is already inside, nobody is asking. Repeating "nothing to
@@ -1835,7 +1835,7 @@ function Spent() {
   return (
     <p className="wayout__rebuild">
       You’ve been back through your answers once, and this is the plan they
-      make. Move one is still first — and it’s still the only one you can
+      make. Move one is still first, and it’s still the only one you can
       start today.
     </p>
   )

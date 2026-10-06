@@ -152,7 +152,7 @@ export const DIAGNOSTIC_OPENING = {
    */
   highlight: 'four ways out',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
-  body: 'A handful of questions and you’ll know which one is yours, and exactly why the other three aren’t — whether getting out means earning more or needing less. Keep going from there and it becomes the plan. About twenty minutes, start to finish.',
+  body: 'A handful of questions and you’ll know which one is yours, and exactly why the other three aren’t, whether getting out means earning more or needing less. Keep going from there and it becomes the plan. About twenty minutes, start to finish.',
   cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts
@@ -204,7 +204,7 @@ export const DIAGNOSTIC_QUESTIONS = [
     kicker: 'The things that are not up for debate',
     multi: true,
     question: 'What can’t move?',
-    hint: 'Pick any that are true — the plan gets built around these.',
+    hint: 'Pick any that are true. The plan gets built around these.',
     options: [
       { key: 'kids',    label: 'Kids or custody' },
       { key: 'partner', label: 'A partner’s job' },
@@ -245,11 +245,11 @@ export const DIAGNOSTIC_QUESTIONS = [
     kicker: 'The room you have',
     question: 'After the bills, what’s left in a month?',
     options: [
-      { key: 'negative', label: 'Nothing — it doesn’t stretch' },
+      { key: 'negative', label: 'Nothing. It doesn’t stretch' },
       { key: 'tight',    label: 'A little' },
       { key: 'some',     label: 'A few hundred' },
       { key: 'lots',     label: 'More than a thousand' },
-      { key: 'plenty',   label: 'Plenty — money isn’t the problem' },
+      { key: 'plenty',   label: 'Plenty, money isn’t the problem' },
     ],
   },
   {
@@ -280,7 +280,7 @@ export const DIAGNOSTIC_QUESTIONS = [
     key: 'region',
     kicker: 'Last one',
     question: 'Where are you?',
-    hint: 'It changes what is actually possible — and what half of the advice out there is even written for.',
+    hint: 'It changes what is actually possible, and what half of the advice out there is even written for.',
     options: [
       { key: 'ca',    label: 'Canada' },
       { key: 'us',    label: 'United States' },
@@ -298,7 +298,7 @@ export const DIAGNOSTIC_QUESTIONS = [
  */
 export const DIAGNOSTIC_NOTE = {
   question: 'Anything the taps missed?',
-  label: 'In a sentence — what’s actually going on?',
+  label: 'In a sentence, what’s actually going on?',
   placeholder: 'Sold a business, economy turned, five kids, new job abroad…',
   hint: 'Optional. The full version asks properly.',
 }
@@ -343,7 +343,7 @@ export const DIAGNOSTIC_NOTE = {
  */
 export const DIAGNOSTIC_REGION = {
   label: 'Where are you?',
-  hint: 'It changes what is actually possible — and what half of the advice out there is even written for.',
+  hint: 'It changes what is actually possible, and what half of the advice out there is even written for.',
   options: [
     { key: 'ca',    label: 'Canada' },
     { key: 'us',    label: 'United States' },
@@ -379,9 +379,9 @@ export const PATHS = {
     body: 'Space, equity or a ticket someone else is short of. It earns without asking for your evenings.',
   },
   'relocate-or-stay': {
-    gist: 'Move somewhere it is easier — or decide for good not to.',
+    gist: 'Move somewhere it is easier, or decide for good not to.',
     name: 'Relocate, or decide not to',
-    lead: 'Nothing is holding you in place, which makes location the biggest lever you have — and the one you’ve been avoiding deciding.',
+    lead: 'Nothing is holding you in place, which makes location the biggest lever you have, and the one you’ve been avoiding deciding.',
     body: 'Either moving is the plan or it isn’t. Half-deciding costs more than either answer.',
   },
 }
@@ -468,11 +468,11 @@ export function whyNot(chosen, a) {
     'side-income': a.money === 'negative'
       ? 'Starting something new needs a float you told us you don’t have this month.'
       : wants(a, 'time')
-        ? 'It works, but it spends evenings — and time is the thing you said you’re short of.'
+        ? 'It works, but it spends evenings, and time is the thing you said you’re short of.'
         : 'Your fastest money isn’t a new venture right now.',
     'cut-delegate': (a.money === 'lots' || a.money === 'plenty')
       ? 'You already have room in the budget. Cutting further buys less than using what you own.'
-      : 'Worth doing, but on its own it won’t get you out — it buys runway, not a destination.',
+      : 'Worth doing, but on its own it won’t get you out. It buys runway, not a destination.',
     'asset-play': none(a, 'asset')
       ? 'This one needs space, equity or a ticket, and you told us there isn’t much there yet.'
       : 'You have the asset, but something else pays faster from where you’re standing.',
@@ -497,7 +497,7 @@ export function pathCopy(key, a = {}) {
   const base = PATHS[key]
   if (key === 'cut-delegate') {
     if (a.money === 'negative') return { lead: 'Nothing is left at the end of the month, so the first money is money already coming in.', body: 'Cutting needs no customer, no float and nobody’s permission, and it starts this week.' }
-    if (a.money === 'plenty') return { lead: 'Money is not what is missing, so earning more is not the answer.', body: 'What is missing is room — and room comes from taking things off, not adding them.' }
+    if (a.money === 'plenty') return { lead: 'Money is not what is missing, so earning more is not the answer.', body: 'What is missing is room, and room comes from taking things off, not adding them.' }
     if (wants(a, 'time')) return { lead: base.lead, body: 'Adding income costs hours, and time is what you said you want back. Subtracting costs none, needs no customer, and starts this week.' }
     return { lead: base.lead, body: 'Subtracting needs no customer and no float, and it starts this week.' }
   }
@@ -505,7 +505,7 @@ export function pathCopy(key, a = {}) {
     const what = has(a, 'asset', 'property') ? 'a property you could sell'
       : has(a, 'asset', 'cash') ? 'savings'
       : 'space'
-    return { lead: `You already have ${what} — the thing most people spend years trying to build.`, body: 'It can earn, or buy you time, without asking for your evenings.' }
+    return { lead: `You already have ${what}, the thing most people spend years trying to build.`, body: 'It can earn, or buy you time, without asking for your evenings.' }
   }
   if (key === 'side-income') {
     const what = has(a, 'asset', 'vehicle') ? 'a vehicle or tools'

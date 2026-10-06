@@ -33,7 +33,7 @@ export const WAYOUT_OPENING = {
   // again for the six intake screens put two different sixes in one flow, which is
   // the kind of small wrongness that makes somebody wonder what else does not add
   // up. What this screen promises is the plan, so that is what it says.
-  lead: 'Honest questions, then a plan built from what you already have — or what you’d be glad to be rid of.',
+  lead: 'Honest questions, then a plan built from what you already have, or what you’d be glad to be rid of.',
   field: {
     key: 'out',
     kind: 'text',
@@ -84,7 +84,7 @@ export const WAYOUT_SCREENS = [
         key: 'region',
         kind: 'choice',
         label: 'Which country do you live in?',
-        hint: 'It decides which numbers and services we point you to — including the ones that matter most if things get hard.',
+        hint: 'It decides which numbers and services we point you to, including the ones that matter most if things get hard.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
@@ -167,7 +167,7 @@ export const WAYOUT_SCREENS = [
         key: 'faith',
         kind: 'chips',
         label: 'A faith or practice?',
-        hint: 'Asked because it usually holds part of the week — a Sunday, a Friday, a standing evening — and a plan that books work across it is one you’ll abandon.',
+        hint: 'Asked because it usually holds part of the week, a Sunday, a Friday, a standing evening, and a plan that books work across it is one you’ll abandon.',
         required: false,
         options: [
           { key: 'yes', label: 'Yes' },
@@ -195,7 +195,7 @@ export const WAYOUT_SCREENS = [
         // to happen before anything else will hold.
         key: 'health',
         kind: 'chips',
-        label: 'Your health — where is it in this?',
+        label: 'Your health, where is it in this?',
         hint: 'Both directions count: something that limits what you can take on, or getting back in shape as part of what you’re actually after.',
         required: false,
         options: [
@@ -314,7 +314,7 @@ export const WAYOUT_SCREENS = [
         showIf: a => a.relationship && a.relationship !== 'single',
         kind: 'text',
         label: 'If there’s someone else in this, what do they want?',
-        placeholder: 'Not what they’d object to — what they’d actually like.',
+        placeholder: 'Not what they’d object to, what they’d actually like.',
         required: false,
       },
       {
@@ -349,7 +349,7 @@ export const WAYOUT_SCREENS = [
   {
     id: 's3',
     section: 'What you can start from',
-    why: 'Not a wish list — what is already in your life. Most people own or can do more than they count, and the first move almost always comes from this screen.',
+    why: 'Not a wish list, what is already in your life. Most people own or can do more than they count, and the first move almost always comes from this screen.',
     question: 'What have you already got that could earn?',
     reflectAfter: true,
     fields: [
@@ -362,7 +362,7 @@ export const WAYOUT_SCREENS = [
         kind: 'choice',
         // 🔴 "hours a week to what? doesn't say."
         label: 'How many hours a week could you put into changing things?',
-        hint: 'On top of what you already do — evenings, a weekend morning, whatever is genuinely spare. Be honest rather than hopeful: this decides the order of the moves more than anything else here.',
+        hint: 'On top of what you already do: evenings, a weekend morning, whatever is genuinely spare. Be honest rather than hopeful: this decides the order of the moves more than anything else here.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         options: [
@@ -377,7 +377,7 @@ export const WAYOUT_SCREENS = [
         kind: 'chips',
         allowCustom: true,
         required: true,
-        emptyMessage: 'Add at least one. Everyone has something here — it is not only tools and trucks.',
+        emptyMessage: 'Add at least one. Everyone has something here. It is not only tools and trucks.',
         groups: [
           {
             label: 'Vehicles and gear',
@@ -473,7 +473,7 @@ export const WAYOUT_SCREENS = [
      * answer at all belongs to the section, said once, where it reads as the
      * point of the screen rather than as the form defending itself.
      */
-    why: 'Rough numbers are fine — this is the arithmetic the whole plan runs on, '
+    why: 'Rough numbers are fine. This is the arithmetic the whole plan runs on, '
       + 'and the two lines that decide most of it are what housing costs you and '
       + 'what your debt is charging you.',
     question: 'Money, plainly.',
@@ -487,7 +487,7 @@ export const WAYOUT_SCREENS = [
         // the quit number — the single figure the whole plan aims at — and
         // nothing told us which one we had been given.
         label: 'Your monthly take-home',
-        hint: 'What actually lands in your account, after tax. Just yours — the household comes next.',
+        hint: 'What actually lands in your account, after tax. Just yours. The household comes next.',
         required: true,
         emptyMessage: 'A rough number is fine.',
       },
@@ -562,7 +562,7 @@ export const WAYOUT_SCREENS = [
         key: 'debt',
         kind: 'text',
         label: 'What you owe, and roughly what it costs you',
-        hint: 'Balances and rates if you know them — a statement will say. The rate is what decides whether a debt is worth clearing.',
+        hint: 'Balances and rates if you know them. A statement will say. The rate is what decides whether a debt is worth clearing.',
         placeholder: '$30k on cards at about 21%, $22k left on the truck at 4%',
         required: false,
       },
@@ -582,7 +582,7 @@ export const WAYOUT_SCREENS = [
           { key: 'time', label: 'Some wasted weekends' },
           { key: 'savings', label: 'Money I’d rather not lose' },
           { key: 'security', label: 'My family’s security' },
-          { key: 'cannot-fail', label: 'It can’t fail — there’s no cushion' },
+          { key: 'cannot-fail', label: 'It can’t fail, there’s no cushion' },
         ],
       },
       {
@@ -602,7 +602,7 @@ export const WAYOUT_SCREENS = [
           // Not everyone has slack. Saying so out loud matters here: the cut
           // list is where most plans find their first money, and someone with
           // nothing to cut should be told that is an answer, not a failure.
-          { key: 'none', label: 'None of this — it’s all must-pay', exclusive: true },
+          { key: 'none', label: 'None of this. It’s all must-pay', exclusive: true },
         ],
       },
       {
@@ -619,7 +619,7 @@ export const WAYOUT_SCREENS = [
         // it; asked once, in their own words, it is the sentence the cut list
         // gets built from.
         label: 'Which of those would you actually miss?',
-        hint: 'Not which ones you could justify — which ones you’d feel the loss of in a year. The rest is usually the fastest money anyone has.',
+        hint: 'Not which ones you could justify, which ones you’d feel the loss of in a year. The rest is usually the fastest money anyone has.',
         required: false,
       },
     ],
@@ -643,7 +643,7 @@ export const WAYOUT_SCREENS = [
         key: 'tradeRank',
         kind: 'score',
         label: 'How much does each of these matter to you?',
-        hint: 'Score the ones that matter. You do not have to do all nine — a few honest ones tell the plan more than nine polite ones.',
+        hint: 'Score the ones that matter. You do not have to do all nine, a few honest ones tell the plan more than nine polite ones.',
         required: true,
         emptyMessage: 'Put them in an order, even a rough one.',
         // 🔴 THIS LIST USED TO BE SIX MATERIAL THINGS — comfort, space,
@@ -653,11 +653,11 @@ export const WAYOUT_SCREENS = [
         // more than its income. Someone who ranks status above their health has
         // told us something no money question could.
         options: [
-          { key: 'comfort', label: 'Comfort — the standard of living you’re used to' },
-          { key: 'space', label: 'Space — room in the house, a yard, somewhere to work' },
-          { key: 'stability', label: 'Stability — knowing what’s coming in each month' },
-          { key: 'status', label: 'Status — how it looks to other people' },
-          { key: 'savings', label: 'Savings — the cushion staying where it is' },
+          { key: 'comfort', label: 'Comfort, the standard of living you’re used to' },
+          { key: 'space', label: 'Space: room in the house, a yard, somewhere to work' },
+          { key: 'stability', label: 'Stability, knowing what’s coming in each month' },
+          { key: 'status', label: 'Status, how it looks to other people' },
+          { key: 'savings', label: 'Savings, the cushion staying where it is' },
           { key: 'family-proximity', label: 'Being near family' },
           { key: 'time-with-people', label: 'Time with the people you love' },
           { key: 'health', label: 'Your health and fitness' },
@@ -671,7 +671,7 @@ export const WAYOUT_SCREENS = [
         dictate: true,
         kind: 'shorttext',
         label: 'Where are you based, and where does the work happen?',
-        hint: 'Season, local economy and what is even possible all turn on this. If the work is online or abroad, say so — it changes the answer.',
+        hint: 'Season, local economy and what is even possible all turn on this. If the work is online or abroad, say so. It changes the answer.',
         placeholder: 'Nanaimo BC · remote, clients in the US · two weeks on in Alberta',
         required: true,
         emptyMessage: 'Roughly is fine.',
@@ -780,7 +780,7 @@ export const WAYOUT_SCREENS = [
         key: 'tuesday',
         kind: 'text',
         label: 'Three years from now, what does a normal day look like? Where are you, doing what, with who?',
-        hint: 'This is the one that shapes everything else, so take a minute. An ordinary weekday, not a holiday — what you get up for, who is around, what you are doing by mid-morning.',
+        hint: 'This is the one that shapes everything else, so take a minute. An ordinary weekday, not a holiday: what you get up for, who is around, what you are doing by mid-morning.',
         placeholder: 'Still working, but not six days. Home when the kids get in. Not driving an hour each way.',
         required: true,
         emptyMessage: 'A few lines is enough.',
@@ -789,7 +789,7 @@ export const WAYOUT_SCREENS = [
         key: 'horizon',
         kind: 'choice',
         label: 'How long before you want to be there?',
-        hint: 'Not a deadline — it tells the plan whether to take the fast rough route or the slower one that lasts.',
+        hint: 'Not a deadline. It tells the plan whether to take the fast rough route or the slower one that lasts.',
         required: true,
         emptyMessage: 'Pick one.',
         options: [
@@ -810,7 +810,7 @@ export const WAYOUT_SCREENS = [
         key: 'yearShape',
         kind: 'choice',
         label: 'Do you want money coming in evenly, or is earning it in bursts fine?',
-        hint: 'Some of the best options are seasonal — hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
+        hint: 'Some of the best options are seasonal, hard for six months and then genuinely free. That only suits some people, and it changes the whole plan.',
         required: true,
         emptyMessage: 'Pick the closest one.',
         /**
@@ -825,8 +825,8 @@ export const WAYOUT_SCREENS = [
          * shape of a year: one big payday that has to last.
          */
         options: [
-          { key: 'steady', label: 'Evenly — the same every month' },
-          { key: 'seasonal', label: 'In bursts — flat out, then time off' },
+          { key: 'steady', label: 'Evenly, the same every month' },
+          { key: 'seasonal', label: 'In bursts, flat out, then time off' },
           { key: 'lumpy', label: 'One big payday I make last' },
           { key: 'dontmind', label: 'Don’t mind' },
         ],
@@ -851,7 +851,7 @@ export const WAYOUT_SCREENS = [
           { key: 'time', label: 'More time' },
           { key: 'independent', label: 'Not working for someone else' },
           { key: 'mobile', label: 'Freedom to move' },
-          { key: 'simpler', label: 'Less — a simpler life' },
+          { key: 'simpler', label: 'Less, a simpler life' },
           { key: 'place', label: 'To be somewhere else' },
         ],
       },
@@ -869,7 +869,7 @@ export const WAYOUT_SCREENS = [
           { key: 'time', label: 'More time' },
           { key: 'independent', label: 'Not working for someone else' },
           { key: 'mobile', label: 'Freedom to move' },
-          { key: 'simpler', label: 'Less — a simpler life' },
+          { key: 'simpler', label: 'Less, a simpler life' },
           { key: 'place', label: 'To be somewhere else' },
         ],
       },
@@ -900,8 +900,8 @@ export const WAYOUT_SCREENS = [
          * "What has to go out every month". This one is the aim, so it says so.
          */
         label: 'What would you like it to bring in each month?',
-        hint: 'The number you are aiming for, not the minimum — what has to go out every month is asked separately. Sometimes the useful answer is that you passed it already.',
-        placeholder: 'About $4,500 — enough to cover everything without watching the account.',
+        hint: 'The number you are aiming for, not the minimum, what has to go out every month is asked separately. Sometimes the useful answer is that you passed it already.',
+        placeholder: 'About $4,500, enough to cover everything without watching the account.',
         required: false,
       },
     ],
@@ -953,7 +953,7 @@ export const WAYOUT_OPEN = {
     label: 'What else should I know about your situation?',
     placeholder: 'Whatever matters. What went wrong before, what you are carrying, what you have already tried, what you would never do again.',
     required: true,
-    emptyMessage: 'A few words is enough — but this one is not a formality.',
+    emptyMessage: 'A few words is enough, but this one is not a formality.',
   },
   hint: 'Take as long as you want. Nobody reads this but the plan.',
   cta: 'See the plan',

@@ -26,7 +26,7 @@ const tagged = (base, from, campaign) =>
 export function bridgeToEliv8(campaign) {
   return {
     kicker: 'For the business side',
-    text: `${WAYOUT_NAME} keeps working on your life — the money at home, your time, what all of it is for. The business itself may need something different: pricing that leaves a margin, cash flow, hiring, getting out of the day-to-day. ${SITE_NAME} is built for that side, and we make it too.`,
+    text: `${WAYOUT_NAME} keeps working on your life: the money at home, your time, what all of it is for. The business itself may need something different: pricing that leaves a margin, cash flow, hiring, getting out of the day-to-day. ${SITE_NAME} is built for that side, and we make it too.`,
     label: `See what ${SITE_NAME} does for a business`,
     href: tagged(SITE_URL, 'unstuckmap', campaign),
   }
@@ -36,7 +36,7 @@ export function bridgeToEliv8(campaign) {
 export function bridgeToUnstuck(campaign) {
   return {
     kicker: 'If this is about your life, not just the business',
-    text: `${SITE_NAME} keeps helping with the business. If what is stuck is your own life — your household money, your time, whether you want out — ${WAYOUT_NAME} is built for that side. We make it too, and the plan is free.`,
+    text: `${SITE_NAME} keeps helping with the business. If what is stuck is your own life, your household money, your time, whether you want out, ${WAYOUT_NAME} is built for that side. We make it too, and the plan is free.`,
     label: `Try ${WAYOUT_NAME}`,
     href: tagged(WAYOUT_SITE_URL, 'eliv8', campaign),
   }

@@ -3319,6 +3319,11 @@ and plain enough for anyone (the shorthand rule still applies):
 // PROMPT THAT SPLICES THEM.
 // ─────────────────────────────────────────────────────────────────────────────
 export const WAYOUT_VOICE = `
+🔴🔴 NO DASHES AS PUNCTUATION. Never use an em dash or an en dash between
+words, in any field. Daniel: "no one writes like that, it looks AI." Where you
+would reach for one, use a comma or start a new sentence. Number ranges like
+5 to 11 are fine written as words or with a plain hyphen.
+
 🔴🔴 WRITE TO THEM. "YOU", ALWAYS. NEVER ABOUT THEM.
 Daniel, reading a comparison that said "which is what Danny said he wanted" and
 "the thing he said wore him down": "what danny said thats me why worded like

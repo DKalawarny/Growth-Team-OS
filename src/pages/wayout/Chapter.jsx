@@ -183,7 +183,7 @@ export default function Chapter() {
           {saving ? 'One moment…' : 'Build this one'}
         </button>
         <p className="wayout__chapterfine">
-          Everything else you told us is still here — your town, your hours, what
+          Everything else you told us is still here: your town, your hours, what
           you will not do. Only what moved gets asked again.
         </p>
       </div>

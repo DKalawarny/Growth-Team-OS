@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { WAYOUT_NAME, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
+import { useHasPlan } from '../../lib/wayout/useHasPlan'
 
 /**
  * ⭐⭐ WHY THIS EXISTS — FROM DANIEL'S OWN WORDS (5 Oct 2026). He wrote the
@@ -20,6 +21,7 @@ import { WAYOUT_NAME, WAYOUT_BASE, WAYOUT_INTAKE } from '../../lib/wayout/brand'
  * not his voice — kept under its own heading so the two never blur.
  */
 export default function Why() {
+  const hasPlan = useHasPlan()
   return (
     <WayoutShell title={`Why ${WAYOUT_NAME} exists`} wide noindex={false} canonicalPath={`${WAYOUT_BASE}/why`} home>
       <article className="wayout__legal wayout__why">
@@ -45,7 +47,9 @@ export default function Why() {
           </ul>
         </section>
 
-        <p className="wayout__whycta"><Link className="wayout__btn wayout__btn--sun" to={WAYOUT_INTAKE}>Start your plan</Link></p>
+        <p className="wayout__whycta">{hasPlan
+          ? <Link className="wayout__btn wayout__btn--sun" to={`${WAYOUT_BASE}/plan`}>Back to your plan</Link>
+          : <Link className="wayout__btn wayout__btn--sun" to={WAYOUT_INTAKE}>Start your plan</Link>}</p>
       </article>
     </WayoutShell>
   )

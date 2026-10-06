@@ -370,7 +370,7 @@ export default function Diagnostic() {
           <em>So far</em>
           {said.length
             ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
-            : <span className="wayout__soempty">nothing yet — six taps is enough to start</span>}
+            : <span className="wayout__soempty">nothing yet. Six taps is enough to start</span>}
         </div>
 
         {/* ⚠️ NEUTRAL THE WHOLE WAY THROUGH, and the label says so. The rules are
@@ -490,7 +490,7 @@ function Result({ answers, note }) {
           className="wayout__btn wayout__rise wayout__r3"
           style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}
         >
-          Keep going — next question
+          Keep going, next question
         </Link>
         {/* 🔴 "Nothing you just answered gets asked twice." — Daniel: "pointless
             to say." He is right: it reassures against a fear nobody has yet, and
@@ -540,7 +540,7 @@ function Result({ answers, note }) {
             does not know reads as an apology for the verdict it just gave. */}
         <h3 className="wayout__label">What the questions ahead settle</h3>
         <ul className="wayout__list">
-          <li>How you’d actually <b>want</b> to get there — and what you’d refuse to do.</li>
+          <li>How you’d actually <b>want</b> to get there, and what you’d refuse to do.</li>
           <li>What “enough” is for you, as a number or as a week.</li>
           <li>What you’ve already tried, and why it stopped.</li>
           <li>Who else this has to work for.</li>

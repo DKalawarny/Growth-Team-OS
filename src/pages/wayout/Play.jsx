@@ -159,7 +159,7 @@ function Asking({ move, questions, busy, onSubmit }) {
         Write it
       </button>
       <p className="wayout__hint">
-        Skip anything you would rather not answer — it gets written either way.
+        Skip anything you would rather not answer. It gets written either way.
       </p>
     </WayoutShell>
   )
@@ -237,7 +237,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed, region = null }) {
         // plainly is more useful than another answer would be.
         <p className="wayout__hint">
           That is a dozen questions on this one move. The next real answer is
-          probably on the other side of trying it — come back when it has met
+          probably on the other side of trying it, come back when it has met
           the world and tell me what happened.
         </p>
       ) : (
@@ -542,7 +542,7 @@ function PlayMove({ order }) {
         <div className="wayout__stale">
           <p>
             Your plan changed after this was written, so this is the play for the
-            move you had before{moveNow ? <> — not <b>{moveNow}</b></> : null}.{' '}
+            move you had before{moveNow ? <> not <b>{moveNow}</b></> : null}.{' '}
             <button
               type="button"
               className="wayout__again"
@@ -622,7 +622,7 @@ function PlayMove({ order }) {
                 says what happens rather than what state you are in. */}
             <p className="wayout__gatecheck">{play.done_when}</p>
             <button className="wayout__btn wayout__btn--sun" onClick={() => toggleDone(true)}>
-              {order < 3 ? `That's true — open move ${order + 1}` : 'That’s true — I’ve done all three'}
+              {order < 3 ? `That's true, open move ${order + 1}` : 'That’s true, I’ve done all three'}
             </button>
             <p className="wayout__hint">
               Only when it is actually true. Move {order < 3 ? order + 1 : 3} is written for where you
@@ -642,7 +642,7 @@ function PlayMove({ order }) {
               <button type="button" className="wayout__again" onClick={rewrite}>
                 Ask again and rewrite
               </button>
-              {' — dev only'}
+              {'dev only'}
             </>
           )}
         </p>

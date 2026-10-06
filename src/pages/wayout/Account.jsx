@@ -74,7 +74,7 @@ export default function Account() {
         <p className="wayout__q">Your plans are deleted.</p>
         <p className="wayout__lead">
           {done.keptLogin
-            ? 'Every Unstuck Map plan, version and walkthrough is gone. Your login stays, because it also runs your Eliv8 OS business — that was not touched.'
+            ? 'Every Unstuck Map plan, version and walkthrough is gone. Your login stays, because it also runs your Eliv8 OS business, that was not touched.'
             : `Every plan, version and walkthrough is gone, and so is your account. Thank you for using ${WAYOUT_NAME}.`}
         </p>
       </WayoutShell>

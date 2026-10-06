@@ -58,6 +58,6 @@ export function showAnswer(kind, value, options = null, symbol = '$') {
  */
 export function correctionSentence(field, from, to) {
   const was = String(from ?? '').trim()
-  return `Correction to my answers — ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to, field.options, field.symbol)}`
+  return `Correction to my answers. ${field.label.replace(/\?$/, '')}: ${showAnswer(field.kind, to, field.options, field.symbol)}`
     + (was ? ` (I had put ${showAnswer(field.kind, was, field.options, field.symbol)}).` : '.')
 }

@@ -27,6 +27,6 @@ describe('correctionSentence', () => {
   it('says what it is now and what it was', () => {
     const f = { label: 'Savings you could actually reach', kind: 'number' }
     expect(correctionSentence(f, '100000', '60000'))
-      .toBe('Correction to my answers — Savings you could actually reach: $60,000 (I had put $100,000).')
+      .toBe('Correction to my answers. Savings you could actually reach: $60,000 (I had put $100,000).')
   })
 })

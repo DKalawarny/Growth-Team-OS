@@ -37,7 +37,7 @@ export const CHAPTER_SCREEN = {
       key: 'chapterChanged',
       kind: 'text',
       label: 'What actually changed?',
-      hint: 'Since the last plan. The facts, not the feeling — what is different about your week, your money or the people around you.',
+      hint: 'Since the last plan. The facts, not the feeling: what is different about your week, your money or the people around you.',
       placeholder: 'The debt is gone. Same hours as before. One less person at home.',
       dictate: true,
       required: true,
@@ -53,7 +53,7 @@ export const CHAPTER_SCREEN = {
       key: 'chapterLearned',
       kind: 'text',
       label: 'What do you know now that you didn’t when you started?',
-      hint: 'Anything the doing taught you — about the work, the numbers, or what you will actually put up with.',
+      hint: 'Anything the doing taught you: about the work, the numbers, or what you will actually put up with.',
       placeholder: 'I will not do the admin side of it. And everything takes longer than people say.',
       dictate: true,
       required: false,
@@ -79,7 +79,7 @@ export const CHAPTER_SCREEN = {
      * somebody who skips them is no worse off than they were before.
      */
     { key: 'housingCost', kind: 'number', label: 'Of that, how much is housing now?', hint: 'Rent or mortgage plus tax, insurance, heat and hydro. If you sold or moved, this is the line that changed most.', required: false },
-    { key: 'debt', kind: 'text', label: 'What you owe now, and what it costs you', hint: 'Balances and rates. Paid something off since last time? Say so — it changes what the plan can be bold about.', dictate: true, required: false },
+    { key: 'debt', kind: 'text', label: 'What you owe now, and what it costs you', hint: 'Balances and rates. Paid something off since last time? Say so. It changes what the plan can be bold about.', dictate: true, required: false },
     /* 🔴 "what could you reach today? does that mean savings?" — it did, and
        nobody should have to ask. The label avoided the word "savings" because
        some people have none and it can sting; the cost was that nobody knew
@@ -219,7 +219,7 @@ export const CHAPTER_SCREEN = {
       key: 'tuesday',
       kind: 'text',
       label: 'And a normal day, three years from here?',
-      hint: 'Optional — the sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
+      hint: 'Optional. The sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
       placeholder: 'Same town, fewer hours, and home when the kids get in.',
       dictate: true,
       required: false,
@@ -274,7 +274,7 @@ export function visibleChapterFields(outcome, answers) {
  * work and watched it fail.
  */
 export const CHAPTER_LEAD = {
-  landed:  'You got there. So this one starts from a different question — where now.',
+  landed:  'You got there. So this one starts from a different question, where now.',
   changed: 'You want something else now. Everything true about your situation carries over; the destination is yours to reset.',
   partly:  'Same destination, closer to it. The route from here is not the route you were given at the start.',
   no:      'That route did not work. The destination stands, and the next plan will not contain it.',

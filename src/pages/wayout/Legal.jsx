@@ -43,9 +43,9 @@ export function UnstuckTerms() {
           <ul>
             <li>{WAYOUT_NAME} helps you think through your situation and put your options in an order. It is a planning tool.</li>
             <li><b>It is not legal, financial, tax, investment, medical or mental-health advice</b>, and using it does not make anyone your adviser.</li>
-            <li><b>Every decision is yours.</b> Check anything that matters with a qualified professional before you act on it — especially anything to do with money, tax, property, employment or the law.</li>
+            <li><b>Every decision is yours.</b> Check anything that matters with a qualified professional before you act on it: especially anything to do with money, tax, property, employment or the law.</li>
             <li>Plans and replies are written by AI from what you tell us. They can be wrong, out of date, or miss something about your life.</li>
-            <li><b>It is not a crisis service.</b> If you are in danger, call your local emergency number. If you are struggling, a crisis line in your country can help right now — <a href="https://findahelpline.com" target="_blank" rel="noreferrer">findahelpline.com</a> lists one near you.</li>
+            <li><b>It is not a crisis service.</b> If you are in danger, call your local emergency number. If you are struggling, a crisis line in your country can help right now <a href="https://findahelpline.com" target="_blank" rel="noreferrer">findahelpline.com</a> lists one near you.</li>
           </ul>
         </div>
 
@@ -54,8 +54,8 @@ export function UnstuckTerms() {
         </Section>
 
         <Section title="2. Your choices are yours">
-          <p>A plan is a suggestion about order, built only from what you told us. You decide what to do with it — including whether to do nothing. You are responsible for the decisions you make and for checking anything important with someone qualified to advise on it. Where a plan names a kind of professional (an accountant, a lawyer, a financial planner), that is a suggestion about who to ask, not a referral or an endorsement.</p>
-          <p>Any figures — returns, costs, timelines, what something might be worth — are rough and general. Nothing here predicts what your money will earn or promises any result.</p>
+          <p>A plan is a suggestion about order, built only from what you told us. You decide what to do with it. Including whether to do nothing. You are responsible for the decisions you make and for checking anything important with someone qualified to advise on it. Where a plan names a kind of professional (an accountant, a lawyer, a financial planner), that is a suggestion about who to ask, not a referral or an endorsement.</p>
+          <p>Any figures, returns, costs, timelines, what something might be worth, are rough and general. Nothing here predicts what your money will earn or promises any result.</p>
         </Section>
 
         <Section title="3. If you are in crisis">
@@ -106,12 +106,12 @@ export function UnstuckPrivacy() {
             <li><b>What we write for you:</b> your plan, its versions, what you say under “Something changed?”, your notes and what you tick off.</li>
             <li><b>The free check:</b> your six taps are recorded without your name, to see which situations people arrive with.</li>
             <li><b>In your browser:</b> answers you give before you have an account are kept in your own browser until you make one, so nothing is lost.</li>
-            <li><b>How you found us:</b> on your first visit, the website, search or ad that brought you here (for example "google" or a campaign name) — never who you are. It tells us which places actually help people, and it is never shared with advertisers.</li>
+            <li><b>How you found us:</b> on your first visit, the website, search or ad that brought you here (for example "google" or a campaign name), never who you are. It tells us which places actually help people, and it is never shared with advertisers.</li>
           </ul>
         </Section>
 
         <Section title="What it is used for">
-          <p>To write and keep your plan, to answer you when you tell us something changed, and to keep the service working and safe (including limits that stop it being misused). We never sell your information, we never share what you tell us with advertisers unless you have said yes, and we do not use it to train AI models. (We do advertise Unstuck Map itself — that never involves your answers.)</p>
+          <p>To write and keep your plan, to answer you when you tell us something changed, and to keep the service working and safe (including limits that stop it being misused). We never sell your information, we never share what you tell us with advertisers unless you have said yes, and we do not use it to train AI models. (We do advertise Unstuck Map itself, that never involves your answers.)</p>
         </Section>
 
         {/* ⚠️ Described by KIND, not by brand. Daniel, 2 Oct: listing vendor names
