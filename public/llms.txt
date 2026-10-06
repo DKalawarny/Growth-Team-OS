@@ -192,3 +192,12 @@ Index: https://eliv8os.com/answers
 - Eliv8 OS or Hello Alice: which fits my business? : https://eliv8os.com/answers/eliv8-os-or-hello-alice
 - The sales tax I collect isn’t mine. How do I stop spending it? : https://eliv8os.com/answers/sales-tax-you-collect-is-not-yours
 - How do I pay myself from an S corp? : https://eliv8os.com/answers/how-to-pay-yourself-from-an-s-corp
+- The GST/HST I collect isn’t mine. How do I stop spending it? : https://eliv8os.com/answers/gst-hst-you-collect-is-not-yours
+- Should I pay myself salary or dividends from my Canadian corporation? : https://eliv8os.com/answers/salary-or-dividends-canada
+- What does it really cost to hire an employee in the US? : https://eliv8os.com/answers/cost-of-hiring-an-employee-in-the-us
+- What does it really cost to hire someone in the UK? : https://eliv8os.com/answers/cost-of-hiring-an-employee-in-the-uk
+- The VAT I collect isn’t mine. How do I stop spending it? : https://eliv8os.com/answers/vat-you-collect-is-not-yours
+- Should I pay myself salary or dividends from my UK limited company? : https://eliv8os.com/answers/salary-or-dividends-uk-limited-company
+- What does it really cost to hire someone in Australia? : https://eliv8os.com/answers/cost-of-hiring-an-employee-in-australia
+- The GST I collect isn’t mine. How do I stop spending it before my BAS? : https://eliv8os.com/answers/gst-and-bas-australia-set-aside
+- How do I pay myself from my Pty Ltd company? : https://eliv8os.com/answers/how-to-pay-yourself-from-a-pty-ltd
