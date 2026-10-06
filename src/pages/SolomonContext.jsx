@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { loadMemory, dismissMemory } from '../lib/memory'
+import ShareWithUnstuck from '../components/settings/ShareWithUnstuck'
 
 /**
  * What Solomon is working from — /context
@@ -160,6 +161,9 @@ export default function SolomonContext() {
             await dismissMemory(id)
           }}
         />
+
+        {/* ⭐ The shared summary with Unstuck Map; renders only for people with a plan there. */}
+        <ShareWithUnstuck />
 
         {connected.length > 0 && <Group label="Connected" rows={connected} live />}
         {learned.length   > 0 && <Group label="Picked up from using the app" rows={learned} />}

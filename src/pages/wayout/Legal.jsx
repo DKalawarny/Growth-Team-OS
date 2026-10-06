@@ -20,7 +20,7 @@ import { OPERATOR_LEGAL_NAME, OPERATOR_CONTACT, GOVERNING_PROVINCE, LIABILITY_CA
  * ⚠️ Every claim about data must match what the code does. If a vendor or a
  * data flow changes, this page changes in the same commit.
  */
-export const WAYOUT_LEGAL_UPDATED = '1 October 2026'
+export const WAYOUT_LEGAL_UPDATED = '6 October 2026'
 
 function Section({ title, children }) {
   return (
@@ -134,7 +134,7 @@ export function UnstuckPrivacy() {
         </Section>
 
         <Section title="Who can see it">
-          <p>Only you, through your account. Your plan is never visible to an employer, a partner or anyone else, and nothing ties it to anything outside {WAYOUT_NAME}.</p>
+          <p>Only you, through your account. Your plan is never visible to an employer, a partner or anyone else. If you also run a business on Eliv8 OS, you can choose to share a few lines you write yourself with your own Eliv8 OS account. Only those lines go across, only when you press share, and only you can see them there. Nothing else is ever shared.</p>
         </Section>
 
         <Section title="Your choices">

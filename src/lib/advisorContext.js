@@ -292,6 +292,10 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
   ])
   // ⭐ Job amounts come from their own table (migration 077).
   const workRows = withAmounts(woRes?.data)
+  const sharedPersonal = userId
+    ? ((await supabase.from('personal_handoffs').select('body, created_at').eq('user_id', userId)
+        .eq('from_product', 'unstuck').order('created_at', { ascending: false }).limit(1)).data?.[0]?.body ?? null)
+    : null
 
   const bp        = bpRes.data ?? {}
   const allMiles  = msRes.data ?? []
@@ -510,6 +514,11 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       vision_3yr:        bp.vision_3yr ?? null,
     },
     stage: detectStage(bp.current_revenue),
+    // ⭐ What the owner chose to share from their personal plan on Unstuck Map
+    // (personal_handoffs, private to them). Their own words, edited by them.
+    // Absent unless they shared it. Never mention where it came from unless
+    // they do; treat it as something they told you.
+    shared_from_personal_plan: sharedPersonal,
     // ── The people ────────────────────────────────────────────────────────
     // Solomon was previously never told who works here, which made every
     // answer about hiring, load, or who could run a job without the owner

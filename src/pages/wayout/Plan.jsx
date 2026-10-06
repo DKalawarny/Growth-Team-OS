@@ -21,6 +21,7 @@ import { Marked } from '../../lib/wayout/marked.jsx'
 import CrisisHelp from './CrisisHelp'
 import { bridgeToEliv8 } from '../../lib/bridges'
 import Bridge from './Bridge'
+import Handoff from './Handoff'
 
 /**
  * The way out — S7, the reveal.
@@ -1701,6 +1702,9 @@ export function Map({
 
       {/* ⭐ After our own offer, never before it: an addition, not a switch. */}
       {showBridge && <Bridge {...bridgeToEliv8('plan')} onClose={shutBridge} />}
+
+      {/* ⭐ The shared summary with Eliv8 OS (Handoff.jsx). Their words only. */}
+      {!past && <Handoff answers={answers} onTell={onSay} />}
 
       {/* ⭐⭐ THE WORTH ASK IS OFF. Daniel: "dont get why you would ask this. im
           going to trial this with a handfull of people then just put it to
