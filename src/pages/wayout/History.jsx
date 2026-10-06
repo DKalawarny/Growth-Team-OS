@@ -6,6 +6,7 @@ import { WAYOUT_BASE } from '../../lib/wayout/brand'
 import { tidyQuote, firstSentences } from '../../lib/wayout/tidyQuote'
 import { distance, doneMoves } from '../../lib/wayout/distance'
 import { humanError } from '../../lib/wayout/humanError'
+import { forReaders } from '../../lib/wayout/mapContract'
 
 /**
  * The way out — the whole way here.
@@ -175,7 +176,7 @@ export default function History() {
           <ol>
             {did.map((m, i) => (
               <li key={`${m.chapter}-${i}`}>
-                <b>{m.title}</b>
+                <b>{forReaders(m.title)}</b>
                 <em>{when(m.doneAt)}</em>
               </li>
             ))}
@@ -199,7 +200,7 @@ export default function History() {
             {cuts.map((c, i) => (
               <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
                 <s style={{ textDecoration: 'none' }}>{c.label}</s>
-                {c.why && <span className="wayout__cutwhy">{c.why}</span>}
+                {c.why && <span className="wayout__cutwhy">{forReaders(c.why)}</span>}
               </div>
             ))}
           </div>
@@ -246,7 +247,7 @@ export default function History() {
 
                   {c.moves.length > 0 && (
                     <ul className="wayout__arcmoves">
-                      {c.moves.map((m, i) => <li key={i}>{m.title}</li>)}
+                      {c.moves.map((m, i) => <li key={i}>{forReaders(m.title)}</li>)}
                     </ul>
                   )}
 

@@ -5,6 +5,14 @@ import { versionList, liveVersions, currentChoice, showingKey, openFrom } from '
 import { correctableAnswers, showAnswer } from '../../lib/wayout/correctable'
 import { humanError } from '../../lib/wayout/humanError'
 import CrisisHelp from './CrisisHelp'
+import { forReaders } from '../../lib/wayout/mapContract'
+
+/**
+ * Their own words are never rewritten, with one exception: corrections saved
+ * before 5 Oct carry OUR old wording, "Correction to my answers — ", with a
+ * dash Daniel asked to be gone. Only that prefix changes.
+ */
+const theirWords = t => String(t ?? '').replace(/^Correction to my answers [—–] /, 'Correction to my answers. ')
 
 /**
  * ⭐⭐ THE RUNNING THREAD — "tell it what changed".
@@ -178,10 +186,10 @@ export default function PlanThread({
           </div>
           {draft.map((m, i) => (
             m.role === 'user'
-              ? <p key={i} className="wayout__draftsaid">“{m.content}”</p>
+              ? <p key={i} className="wayout__draftsaid">“{theirWords(m.content)}”</p>
               : !m.rebuilt && (
                 <div key={i}>
-                  <p className="wayout__draftreply">{m.content}</p>
+                  <p className="wayout__draftreply">{forReaders(m.content)}</p>
                   {/* ⭐⭐ The right lines for their country, from a fixed table,
                       under any reply that read danger in what they wrote. */}
                   {m.crisis && <CrisisHelp region={answers?.region} />}
