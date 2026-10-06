@@ -493,7 +493,7 @@ function buildSystem(
      */
     const COUNTRY_TERMS = body.promptKey.startsWith('WAYOUT_') ? '' : `
 
-THE OWNER'S COUNTRY: read it from their location in the business context. Use that country's words and authorities, never another's. Canada: GST, HST or PST, the CRA, T4, CPP and EI, provincial rules. United States: sales tax (it varies by state), the IRS, W-2 and 1099, payroll taxes, state rules. United Kingdom: VAT, HMRC, PAYE and National Insurance. Elsewhere: that country's equivalents, named generally if you are not sure. Examples elsewhere in these instructions use Canadian terms; translate them, do not copy them. If the country is genuinely unclear and it changes the answer, ask once.`
+THE OWNER'S COUNTRY: read it from their location in the business context. Use that country's words and authorities, never another's. Canada: GST, HST or PST, the CRA, T4, CPP and EI, provincial rules, dollars. United States: sales tax (it varies by state), the IRS, W-2 and 1099, payroll taxes, state rules, dollars. United Kingdom: VAT, HMRC, PAYE, National Insurance and workplace pensions, pounds. Ireland: VAT, Revenue, PAYE, PRSI and USC, euro. Australia: GST, the ATO, BAS, PAYG withholding and superannuation, state rules, Australian dollars. New Zealand: GST, Inland Revenue, PAYE, KiwiSaver and ACC, New Zealand dollars. Elsewhere: that country's equivalents and currency, named generally if you are not sure. Always write money in the owner's currency. Examples elsewhere in these instructions use Canadian terms; translate them, do not copy them. If the country is genuinely unclear and it changes the answer, ask once.`
     const prompt = resolvePrompt(body.promptKey) + NO_DASHES + COUNTRY_TERMS
     const stable = prompt + (body.stableContext ?? '')
 
