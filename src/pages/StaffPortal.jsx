@@ -338,6 +338,9 @@ export default function StaffPortal() {
         <div className="bg-white border border-ink-200 rounded-2xl p-6 max-w-sm w-full text-center shadow-sm">
           <div className="text-3xl mb-3">⚠️</div>
           <p className="text-sm text-ink-800 leading-relaxed">{msg}</p>
+          {state.error && !ERROR_COPY[state.error] && (
+            <p className="text-[11px] text-ink-300 mt-3 font-mono break-all">{state.error}</p>
+          )}
         </div>
       </div>
     )
