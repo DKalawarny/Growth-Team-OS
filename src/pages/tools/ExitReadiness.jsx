@@ -239,11 +239,12 @@ export default function ExitReadiness() {
 
   // ============================================================== views
 
-  if (stage === 'loading') return <LoadingView />
+  if (stage === 'loading') return <LoadingView wantsToSell={wantsToSell} />
 
   if (stage === 'result' || stage === 'saving') {
     return (
       <ResultView
+        wantsToSell={wantsToSell}
         result={result}
         saving={stage === 'saving'}
         error={error}
@@ -321,7 +322,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
 
           <Field required label="How much of your revenue is recurring or contracted?" hint="Retainers, maintenance contracts, subscriptions, multi-year agreements. Rough % is fine.">
             <input type="text" value={form.recurring_pct} onChange={onChange('recurring_pct')}
-              placeholder="About 25% – 18 customers on monthly maintenance. The rest is one-off jobs." />
+              placeholder="About 25%, 18 customers on monthly maintenance. The rest is one-off jobs." />
           </Field>
 
           <Field label="What % of your revenue comes from your biggest customer?" hint="If it's over 20%, buyers flinch. Over 40% and it's a discount-the-price conversation.">
@@ -392,7 +393,7 @@ const EXIT_STEPS = [
   { label: 'Building your exit playbook',       sub: 'Prioritised fixes that move the needle most', delay: 30000 },
 ]
 
-function LoadingView() {
+function LoadingView({ wantsToSell }) {
   const [activeStep, setActiveStep] = useState(0)
   useEffect(() => {
     const timers = EXIT_STEPS.slice(1).map((s, i) => setTimeout(() => setActiveStep(i + 1), s.delay))
@@ -436,7 +437,7 @@ function LoadingView() {
   )
 }
 
-function ResultView({ result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
+function ResultView({ wantsToSell, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="bg-white border-b border-ink-100">

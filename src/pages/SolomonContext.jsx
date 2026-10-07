@@ -41,7 +41,7 @@ export default function SolomonContext() {
         count('document_chunks'),
         count('safety_documents', q => q.eq('is_current', true)),
         count('financial_snapshots'),
-        supabase.from('integrations').select('status, updated_at').eq('company_id', cid).eq('provider', 'quickbooks').maybeSingle(),
+        supabase.from('integrations').select('status').eq('company_id', cid).eq('provider', 'quickbooks').maybeSingle(),
         count('checkins'),
         count('chat_messages'),
         count('documents'),

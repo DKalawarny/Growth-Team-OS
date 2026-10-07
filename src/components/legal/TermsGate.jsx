@@ -97,7 +97,7 @@ export default function TermsGate({ children }) {
           </h2>
           <p className="text-sm text-ink-500 leading-relaxed mb-5">
             You are one of a small group testing Eliv8 OS early. There is a short
-            agreement covering it — worth a look before you accept.
+            agreement covering it. Worth a look before you accept.
           </p>
 
           {/* ⚠️ TONE IS LOAD-BEARING HERE — do not restack this as a list of
