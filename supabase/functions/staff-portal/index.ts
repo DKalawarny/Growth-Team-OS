@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
     // ---- Look up the staff member ----
     const { data: staff, error: staffErr } = await admin
       .from('staff_members')
-      .select('id, company_id, name, email, phone, role, tokens_valid_after')
+      .select('id, company_id, name, email, role, tokens_valid_after')
       .eq('id', payload.sid)
       .maybeSingle()
 
@@ -330,7 +330,6 @@ Deno.serve(async (req) => {
           id:    staff.id,
           name:  staff.name,
           email: staff.email,
-          phone: staff.phone,
           role:  staff.role,
         },
         company: {
