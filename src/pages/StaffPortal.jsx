@@ -174,6 +174,20 @@ export default function StaffPortal() {
       return { ok: false }
     }
   }
+  // A foreman fixes their OWN recent log in place (today/yesterday). Keeps
+  // Solomon's input to one current truth instead of a pile of corrections.
+  const editDailyLog = useCallback(async (logId, fields) => {
+    try {
+      const res = await callPortal('editDailyLog', { token, logId, ...fields })
+      if (res?.ok && res.log) {
+        setState(s => ({ ...s, data: { ...s.data, recent_logs: (s.data?.recent_logs ?? []).map(l => l.id === logId ? { ...l, ...res.log } : l) } }))
+        return { ok: true }
+      }
+      return { ok: false }
+    } catch {
+      return { ok: false }
+    }
+  }, [token])
   const addStepComment = useCallback(async (workOrderId, itemId, { text, isVoice, promptType }) => {
     const trimmed = (text ?? '').trim()
     if (!trimmed) return { ok: false, error: 'empty' }
@@ -329,7 +343,7 @@ export default function StaffPortal() {
     )
   }
 
-  const { staff, company, work_orders } = state.data ?? {}
+  const { staff, company, work_orders, recent_logs } = state.data ?? {}
   const open       = (work_orders ?? []).filter(w => w.status !== 'done')
   const inProgress = (work_orders ?? []).filter(w => w.status === 'in_progress')
   const completed  = (work_orders ?? []).filter(w => w.status === 'done')
@@ -380,6 +394,12 @@ export default function StaffPortal() {
             cleanly across jobs they touched. */}
         {inProgress.length > 0 && (
           <ShiftEndRecap workOrders={inProgress} onSubmitDailyLog={submitDailyLog} />
+        )}
+
+        {/* Your recent logs — edit your own words if you got something wrong,
+            so the office and Solomon see the correction, not a contradiction. */}
+        {(recent_logs ?? []).length > 0 && (
+          <RecentLogsEditor logs={recent_logs} workOrders={work_orders ?? []} onEdit={editDailyLog} />
         )}
 
         {/* Completed — keep these in view but visually dimmed. The crew
@@ -701,6 +721,71 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
  * Safari-mobile. If the API isn't present we hide the 🎤 button entirely
  * rather than show a broken control. Typed comments still work everywhere.
  */
+function RecentLogsEditor({ logs, workOrders, onEdit }) {
+  const titleFor = (id) => workOrders.find(w => w.id === id)?.title
+  return (
+    <section>
+      <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500 mb-2.5">Your recent logs</h2>
+      <ul className="space-y-2.5">
+        {logs.map(log => (
+          <RecentLogRow key={log.id} log={log} jobTitle={titleFor(log.work_order_id)} onEdit={onEdit} />
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+function RecentLogRow({ log, jobTitle, onEdit }) {
+  const [editing, setEditing]   = useState(false)
+  const [what, setWhat]         = useState(log.what_happened ?? '')
+  const [blockers, setBlockers] = useState(log.blockers ?? '')
+  const [hours, setHours]       = useState(log.hours_on_site ?? '')
+  const [saving, setSaving]     = useState(false)
+  const [error, setError]       = useState('')
+  const fmt = (d) => { try { return new Date(d + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) } catch { return d } }
+
+  async function save() {
+    setSaving(true); setError('')
+    const res = await onEdit(log.id, {
+      whatHappened: what.trim(), blockers: blockers.trim(), hours: String(hours ?? '').trim(),
+      whoOnSite: log.who_on_site, safetyNote: log.safety_note, injury: log.injury,
+    })
+    setSaving(false)
+    if (res?.ok) setEditing(false)
+    else setError('Could not save. Tap Save to try again.')
+  }
+
+  return (
+    <li className="rounded-xl border border-ink-100 bg-white p-3.5">
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <span className="text-[12px] font-semibold text-ink-700">{fmt(log.log_date)}{jobTitle ? ` \u00b7 ${jobTitle}` : ''}</span>
+        <div className="flex items-center gap-2">
+          {log.edited_at && <span className="text-[11px] text-amber-600 font-medium">edited</span>}
+          {!editing && <button type="button" onClick={() => setEditing(true)} className="text-[12px] font-semibold text-brand-700">Edit</button>}
+        </div>
+      </div>
+      {!editing ? (
+        <>
+          <p className="text-[13px] text-ink-800 leading-snug">{log.what_happened}</p>
+          {log.blockers && <p className="text-[12px] text-ink-500 mt-1 leading-snug">Got in the way: {log.blockers}</p>}
+          {log.hours_on_site != null && <p className="text-[12px] text-ink-400 mt-0.5">{log.hours_on_site}h on site</p>}
+        </>
+      ) : (
+        <div className="space-y-2 mt-1">
+          <textarea value={what} onChange={e => setWhat(e.target.value)} rows={2} placeholder="What got done?" className="w-full text-[14px] rounded-lg border border-ink-200 p-2" />
+          <textarea value={blockers} onChange={e => setBlockers(e.target.value)} rows={2} placeholder="Anything slow you down?" className="w-full text-[14px] rounded-lg border border-ink-200 p-2" />
+          <input value={hours} onChange={e => setHours(e.target.value)} inputMode="decimal" placeholder="Hours" className="w-24 text-[14px] rounded-lg border border-ink-200 p-2" />
+          {error && <p className="text-[12px] text-red-600">{error}</p>}
+          <div className="flex items-center gap-2">
+            <button type="button" disabled={saving} onClick={save} className="px-3.5 py-2 rounded-lg bg-brand-600 text-white text-[13px] font-semibold disabled:opacity-50">{saving ? 'Saving\u2026' : 'Save'}</button>
+            <button type="button" disabled={saving} onClick={() => { setEditing(false); setWhat(log.what_happened ?? ''); setBlockers(log.blockers ?? ''); setHours(log.hours_on_site ?? ''); setError('') }} className="px-3 py-2 text-[13px] text-ink-500">Cancel</button>
+          </div>
+        </div>
+      )}
+    </li>
+  )
+}
+
 function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placeholder = 'Add a note for the office or next crew...', autoFocus = false }) {
   const [draft, setDraft]         = useState('')
   const [voiceUsed, setVoiceUsed] = useState(false)

@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, staff_member_id, work_order_id, who_on_site, safety_note, injury')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -373,6 +373,7 @@ export default function DailyLogs() {
                 <div className="flex items-center gap-3 text-[12px] text-ink-400">
                   {log.hours_on_site != null && <span>{log.hours_on_site}h on site</span>}
                   <span title={log.log_date}>{humanDate(log.log_date)}</span>
+                  {log.edited_at && <span className="text-amber-600 font-medium" title={`Edited by the crew ${new Date(log.edited_at).toLocaleString()}`}>edited</span>}
                   {log.reviewed_at && <span className="text-brand-600 font-semibold">read</span>}
                 </div>
               </div>

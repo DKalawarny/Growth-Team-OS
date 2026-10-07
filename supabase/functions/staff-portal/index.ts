@@ -314,6 +314,17 @@ Deno.serve(async (req) => {
         })),
       }))
 
+      // This crew member's own recent logs (today + yesterday) so the page can
+      // show them back and let the author fix a mistake in place.
+      const yday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      const { data: recentLogs } = await admin
+        .from('daily_logs')
+        .select('id, log_date, work_order_id, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury, edited_at')
+        .eq('company_id', staff.company_id)
+        .eq('staff_member_id', staff.id)
+        .gte('log_date', yday)
+        .order('log_date', { ascending: false })
+
       return json({
         staff: {
           id:    staff.id,
@@ -327,6 +338,7 @@ Deno.serve(async (req) => {
           name: company?.name ?? null,
         },
         work_orders: workOrdersWithItems,
+        recent_logs: recentLogs ?? [],
       })
     }
 
@@ -577,8 +589,11 @@ Deno.serve(async (req) => {
         updated_at:      new Date().toISOString(),
       }
 
+      // Re-submitting the same day's recap overwrites it (same as before) and
+      // now stamps edited_at so the owner can see it was revised. A first write
+      // leaves edited_at null.
       const res = existing?.id
-        ? await admin.from('daily_logs').update(payload).eq('id', (existing as { id: string }).id).select('id, log_date').maybeSingle()
+        ? await admin.from('daily_logs').update({ ...payload, edited_at: new Date().toISOString() }).eq('id', (existing as { id: string }).id).select('id, log_date').maybeSingle()
         : await admin.from('daily_logs').insert(payload).select('id, log_date').maybeSingle()
 
       if (res.error) {
@@ -586,6 +601,55 @@ Deno.serve(async (req) => {
         return json({ error: 'insert_failed' }, 500)
       }
       return json({ ok: true, log: res.data })
+    }
+
+    // ── editDailyLog ──────────────────────────────────────────────────────
+    // A foreman corrects their OWN recent log in place, so Solomon reads one
+    // current truth instead of the original plus "ignore what I said" notes
+    // (Daniel, 7 Oct). Author-scoped (the row's staff_member_id must be this
+    // token's holder) and window-limited to today and yesterday, so it is "fix
+    // a mistake," not "rewrite history." The office still cannot edit at all.
+    if (body.op === 'editDailyLog') {
+      if (!body.logId) return json({ error: 'missing logId' }, 400)
+      const { data: log } = await admin
+        .from('daily_logs')
+        .select('id, company_id, staff_member_id, log_date')
+        .eq('id', body.logId)
+        .maybeSingle()
+      const lrow = log as { company_id: string; staff_member_id: string | null; log_date: string } | null
+      // Author + company check: only the crew member who wrote it may edit it.
+      if (!lrow || lrow.company_id !== staff.company_id || lrow.staff_member_id !== staff.id) {
+        return json({ error: 'not_found' }, 404)
+      }
+      // Edit window: today or yesterday only.
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      if (lrow.log_date < yesterday) {
+        return json({ error: 'edit_window_closed' }, 403)
+      }
+      const whatHappened = String(body.whatHappened ?? '').trim()
+      if (!whatHappened && !String(body.blockers ?? '').trim()) {
+        return json({ error: 'empty' }, 400)
+      }
+      const { data: updated, error: editErr } = await admin
+        .from('daily_logs')
+        .update({
+          what_happened: whatHappened || (String(body.blockers ?? '').trim() ? 'See what got in the way.' : 'Nothing to add on the work itself.'),
+          blockers:      String(body.blockers ?? '').trim() || null,
+          hours_on_site: body.hours ?? null,
+          who_on_site:   String(body.whoOnSite ?? '').trim() || null,
+          safety_note:   String(body.safetyNote ?? '').trim() || null,
+          injury:        !!body.injury,
+          edited_at:     new Date().toISOString(),
+          updated_at:    new Date().toISOString(),
+        })
+        .eq('id', body.logId)
+        .select('id, log_date, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury, edited_at, work_order_id')
+        .maybeSingle()
+      if (editErr) {
+        console.error('[staff-portal] daily log edit failed', editErr)
+        return json({ error: 'edit_failed' }, 500)
+      }
+      return json({ ok: true, log: updated })
     }
 
     return json({ error: 'unknown_op' }, 400)
