@@ -100,6 +100,17 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     await supabase.from('staff_members').update({ log_days: days }).eq('id', id)
   }
 
+  // Edit an existing staff member's name / email / role. Email edits do NOT
+  // re-send the welcome (that fires only on add). Optimistic, reverts nothing
+  // because a failed update just leaves the old values on a re-fetch.
+  async function saveStaff(id, fields) {
+    const clean = { name: (fields.name || '').trim(), email: (fields.email || '').trim() || null, role: (fields.role || '').trim() || null }
+    if (!clean.name) return { ok: false }
+    setStaff(list => list.map(s => (s.id === id ? { ...s, ...clean } : s)).sort((a, b) => a.name.localeCompare(b.name)))
+    const { error } = await supabase.from('staff_members').update(clean).eq('id', id)
+    return { ok: !error }
+  }
+
   async function handleRemove(id) {
     setRemoving(id)
     await supabase.from('staff_members').delete().eq('id', id)
@@ -133,6 +144,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   removing={removing === s.id}
                   onRemove={() => handleRemove(s.id)}
                   onSetDays={(days) => saveDays(s.id, days)}
+                  onSave={(fields) => saveStaff(s.id, fields)}
                 />
               ))}
             </div>
@@ -197,9 +209,39 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   )
 }
 
-function StaffRow({ staff: s, removing, onRemove, onSetDays }) {
+function StaffRow({ staff: s, removing, onRemove, onSetDays, onSave }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft]     = useState({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' })
+  const [busy, setBusy]       = useState(false)
   const initials = (s.name || s.email || '?')
     .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+
+  async function save() {
+    if (!draft.name.trim()) return
+    setBusy(true)
+    const res = await onSave({ ...draft })
+    setBusy(false)
+    if (res?.ok) setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <div className="flex items-start gap-3 px-4 py-3 rounded-xl border border-brand-200 bg-brand-50/40">
+        <div className="w-9 h-9 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0 space-y-2">
+          <input value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} placeholder="Full name" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <input value={draft.role} onChange={e => setDraft({ ...draft, role: e.target.value })} placeholder="Role (optional)" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <input value={draft.email} onChange={e => setDraft({ ...draft, email: e.target.value })} placeholder="Email (for task notifications)" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <div className="flex items-center gap-2 pt-0.5">
+            <button type="button" disabled={busy || !draft.name.trim()} onClick={save} className="px-4 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white text-xs font-bold transition-colors">{busy ? 'Saving\u2026' : 'Save'}</button>
+            <button type="button" disabled={busy} onClick={() => { setEditing(false); setDraft({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' }) }} className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-700">Cancel</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-ink-100 hover:border-ink-200 transition-colors">
@@ -257,6 +299,16 @@ function StaffRow({ staff: s, removing, onRemove, onSetDays }) {
           <span className="text-[11px] text-ink-300 italic mt-0.5 block">No email</span>
         )}
       </div>
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="p-2 rounded-lg text-ink-300 hover:text-brand-600 hover:bg-brand-50 transition-colors flex-shrink-0"
+        title="Edit"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9.5 2.5l2 2L5 11l-2.5.5.5-2.5 6.5-6.5z" />
+        </svg>
+      </button>
       <button
         type="button"
         onClick={onRemove}
