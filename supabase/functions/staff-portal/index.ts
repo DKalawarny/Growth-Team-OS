@@ -536,6 +536,10 @@ Deno.serve(async (req) => {
       // ⚠️ A flag, never a report. It exists so the owner hears today; the
       // formal record is WorkSafeBC's and the prompt sends him there.
       const injury      = body.injury === true
+      // Light safety signals (heads-up, not the audit record).
+      const injuryDetail = typeof body.injuryDetail === 'string' ? body.injuryDetail.trim().slice(0, MAX_COMMENT_LEN) : null
+      const incidentReportFiled = typeof body.incidentReportFiled === 'boolean' ? body.incidentReportFiled : null
+      const flhaDone     = typeof body.flhaDone === 'boolean' ? body.flhaDone : null
 
       // Optional and deliberately loose — this is context for the owner, not a
       // timesheet. Anything unparseable is simply dropped rather than refused;
@@ -584,6 +588,9 @@ Deno.serve(async (req) => {
         who_on_site:     whoOnSite || null,
         safety_note:     safetyNote || null,
         injury,
+        injury_detail:         injury ? (injuryDetail || null) : null,
+        incident_report_filed: injury ? incidentReportFiled : null,
+        flha_done:             flhaDone,
         hours_on_site:   hours,
         updated_at:      new Date().toISOString(),
       }

@@ -168,6 +168,7 @@ export default function StaffPortal() {
       const res = await callPortal('submitDailyLog', {
         token, workOrderId, whatHappened, blockers, hours,
         whoOnSite: day.whoOnSite, safetyNote: day.safetyNote, injury: day.injury,
+        injuryDetail: day.injuryDetail, incidentReportFiled: day.incidentReportFiled, flhaDone: day.flhaDone,
       })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
@@ -998,6 +999,16 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * another textarea, talk. Simpler than a 🎤 per WO and the natural way a
  * crew member moves through their thoughts at end-of-shift.
  */
+function YesNo({ value, onChange }) {
+  const base = 'text-[11px] font-semibold px-3 py-1 rounded-md border transition-colors'
+  return (
+    <div className="flex items-center gap-1.5 flex-shrink-0">
+      <button type="button" onClick={() => onChange(true)} className={`${base} ${value === true ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>Yes</button>
+      <button type="button" onClick={() => onChange(false)} className={`${base} ${value === false ? 'bg-ink-700 text-white border-ink-700' : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>No</button>
+    </div>
+  )
+}
+
 function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
@@ -1010,6 +1021,9 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   const [whoOnSite, setWhoOnSite]         = useState('')
   const [safetyNote, setSafetyNote]       = useState('')
   const [injury, setInjury]               = useState(false)
+  const [injuryDetail, setInjuryDetail]   = useState('')
+  const [reportFiled, setReportFiled]     = useState(null)   // null | true | false
+  const [flhaDone, setFlhaDone]           = useState(null)   // null | true | false
   // ⚠️ 2 Sep — still tracked, currently unread. It used to travel to the step
   // comment as is_voice; daily_logs has no such column and does not need one —
   // a dictated account of the day is not worth less than a typed one. Kept
@@ -1103,7 +1117,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // ⚠️ A day-level fact is enough on its own. "Nothing to report on the
       // jobs, but someone got hurt" must not be thrown away because both job
       // boxes were empty.
-      .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0)
+      .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0 || flhaDone !== null)
       .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported, see the note.' : 'Nothing to add on the work itself.') }))
     if (toSend.length === 0) return
     if (recording) stopRecording()
@@ -1115,7 +1129,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, safetyNote, injury }))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
@@ -1125,6 +1139,9 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
         setWhoOnSite('')
         setSafetyNote('')
         setInjury(false)
+        setInjuryDetail('')
+        setReportFiled(null)
+        setFlhaDone(null)
         setVoiceWoIds(new Set())
         setSuccess(true)
         // Auto-collapse after a beat so the crew can move on without a
@@ -1151,8 +1168,8 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
         >
           <span aria-hidden className="text-xl">🌙</span>
           <div className="flex-1">
-            <p className="text-sm font-bold text-ink-900">End my shift</p>
-            <p className="text-[11px] text-ink-500 leading-snug">Quick reflection, anything slow you down today?</p>
+            <p className="text-sm font-bold text-ink-900">Today's log</p>
+            <p className="text-[11px] text-ink-500 leading-snug">How's today going? Add to it any time, the office reads it tomorrow.</p>
           </div>
           <span className="text-[11px] font-semibold text-brand-700">Open →</span>
         </button>
@@ -1165,7 +1182,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span aria-hidden className="text-lg">🌙</span>
-          <h2 className="text-sm font-bold text-ink-900">Shift recap</h2>
+          <h2 className="text-sm font-bold text-ink-900">Today\u2019s log</h2>
         </div>
         <button
           type="button"
@@ -1222,6 +1239,10 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
             maxLength={4000}
             className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
           />
+          <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md border border-ink-150 bg-white">
+            <span className="text-[12px] text-ink-700 leading-snug">Field level hazard assessment done today?</span>
+            <YesNo value={flhaDone} onChange={setFlhaDone} />
+          </div>
           <label className="flex items-start gap-2 px-2 py-2 rounded-md bg-red-50 border border-red-200 cursor-pointer">
             <input
               type="checkbox"
@@ -1237,6 +1258,22 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
               </span>
             </span>
           </label>
+          {injury && (
+            <div className="space-y-2 pl-2 border-l-2 border-red-200">
+              <textarea
+                value={injuryDetail}
+                onChange={(e) => setInjuryDetail(e.target.value)}
+                placeholder="What happened?"
+                rows={2}
+                maxLength={4000}
+                className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-red-300 placeholder:text-ink-400"
+              />
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[12px] text-ink-700 leading-snug">Was an incident report filled out?</span>
+                <YesNo value={reportFiled} onChange={setReportFiled} />
+              </div>
+            </div>
+          )}
         </div>
 
         <ul className="space-y-2.5">

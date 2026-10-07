@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -385,13 +385,26 @@ export default function DailyLogs() {
                 {log.injury && (
                   <div className="rounded-lg bg-red-50 border border-red-300 px-3 py-2">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-red-700">Someone was hurt</p>
-                    <p className="text-[13px] text-ink-800 mt-1 leading-relaxed">
-                      Reported by the crew. This is not a WorkSafe report, that still has to be filed.
+                    {log.injury_detail && (
+                      <p className="text-[14px] text-ink-900 mt-1 leading-relaxed whitespace-pre-wrap">{log.injury_detail}</p>
+                    )}
+                    <p className={`text-[12px] mt-1 font-semibold ${log.incident_report_filed === true ? 'text-green-700' : 'text-red-700'}`}>
+                      {log.incident_report_filed === true
+                        ? 'Incident report filed'
+                        : log.incident_report_filed === false
+                          ? 'Incident report NOT filed yet'
+                          : 'Incident report: crew did not say'}
                     </p>
+                    <p className="text-[12px] text-ink-500 mt-1">Reported by the crew. This is not a WorkSafe report, that still has to be filed.</p>
                   </div>
                 )}
                 {log.who_on_site && (
                   <p className="text-[13px] text-ink-500">On site: {log.who_on_site}</p>
+                )}
+                {log.flha_done != null && (
+                  <p className={`text-[12px] font-medium ${log.flha_done ? 'text-ink-500' : 'text-amber-700'}`}>
+                    FLHA: {log.flha_done ? 'done' : 'not done'}
+                  </p>
                 )}
                 <p className="text-[15px] text-ink-900 leading-relaxed whitespace-pre-wrap">
                   {log.what_happened}
