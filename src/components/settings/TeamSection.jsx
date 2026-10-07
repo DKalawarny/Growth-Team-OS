@@ -47,7 +47,10 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   const [lastAdd,   setLastAdd]   = useState(null)
   const [tz,        setTz]        = useState('America/Edmonton')
   const [sendingId, setSendingId] = useState(null)
-  const [sentId,    setSentId]    = useState(null)
+  const [selected,  setSelected]  = useState(() => new Set())
+  const [bulkDays,  setBulkDays]  = useState([1, 2, 3, 4, 5])
+  const [bulkHour,  setBulkHour]  = useState(16)
+  const [bulkMsg,   setBulkMsg]   = useState('')
 
   useEffect(() => {
     if (!companyId) return
@@ -58,6 +61,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
       .order('name')
       .then(({ data }) => {
         setStaff(data ?? [])
+        setSelected(new Set((data ?? []).filter(s => s.email).map(s => s.id)))
         setLoading(false)
       })
     supabase.from('companies').select('timezone').eq('id', companyId).maybeSingle()
@@ -127,12 +131,35 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     await supabase.from('staff_members').update({ log_hour: hour }).eq('id', id)
   }
 
-  // Fast "set everyone the same," then adjust the exceptions (e.g. a night crew).
-  async function applyToAll(src) {
-    const days = Array.isArray(src.log_days) ? src.log_days : []
-    const hour = src.log_hour ?? 16
-    setStaff(list => list.map(s => (s.email ? { ...s, log_days: days, log_hour: hour } : s)))
-    await supabase.from('staff_members').update({ log_days: days, log_hour: hour }).eq('company_id', companyId).not('email', 'is', null)
+  function toggleSelect(id) {
+    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+  }
+  function toggleSelectAll() {
+    const withEmail = staff.filter(s => s.email).map(s => s.id)
+    setSelected(prev => (prev.size >= withEmail.length ? new Set() : new Set(withEmail)))
+  }
+  // Set the chosen days + time on whoever is ticked. Tick the day crew, apply;
+  // untick them and tick the night crew, apply their time. No blind "everyone".
+  async function applyToSelected() {
+    const ids = [...selected]
+    if (!ids.length) return
+    setStaff(list => list.map(s => (ids.includes(s.id) ? { ...s, log_days: bulkDays, log_hour: bulkHour } : s)))
+    setBulkMsg(`Set ${ids.length} ${ids.length === 1 ? 'person' : 'people'}.`)
+    setTimeout(() => setBulkMsg(''), 3000)
+    await supabase.from('staff_members').update({ log_days: bulkDays, log_hour: bulkHour }).in('id', ids)
+  }
+  async function sendLinkToSelected() {
+    const chosen = staff.filter(s => selected.has(s.id) && s.email)
+    if (!chosen.length) return
+    const okIds = []
+    for (const s of chosen) { const r = await sendStaffLogLink({ to: s.email, staffId: s.id, staffName: s.name }); if (r?.ok) okIds.push(s.id) }
+    if (okIds.length) {
+      const now = new Date().toISOString()
+      setStaff(list => list.map(x => (okIds.includes(x.id) ? { ...x, last_link_sent_at: now } : x)))
+      await supabase.from('staff_members').update({ last_link_sent_at: now }).in('id', okIds)
+    }
+    setBulkMsg(`Sent a link to ${okIds.length} of ${chosen.length}.`)
+    setTimeout(() => setBulkMsg(''), 4000)
   }
 
   async function saveTz(v) {
@@ -140,12 +167,25 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     await supabase.from('companies').update({ timezone: v }).eq('id', companyId)
   }
 
+  // "Today" in the company's timezone, so "Sent today" rolls over at local midnight.
+  const localYmd = (d) => {
+    try {
+      const pp = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d).map(x => [x.type, x.value]))
+      return `${pp.year}-${pp.month}-${pp.day}`
+    } catch { return '' }
+  }
+  const sentToday = (s) => !!s.last_link_sent_at && localYmd(new Date(s.last_link_sent_at)) === localYmd(new Date())
+
   async function sendLinkNow(s) {
     if (!s.email) return
     setSendingId(s.id)
     const res = await sendStaffLogLink({ to: s.email, staffId: s.id, staffName: s.name })
     setSendingId(null)
-    if (res?.ok) { setSentId(s.id); setTimeout(() => setSentId(null), 3000) } else { setErr('Could not send the link. Check the email address.') }
+    if (res?.ok) {
+      const now = new Date().toISOString()
+      setStaff(list => list.map(x => (x.id === s.id ? { ...x, last_link_sent_at: now } : x)))
+      supabase.from('staff_members').update({ last_link_sent_at: now }).eq('id', s.id)
+    } else { setErr('Could not send the link. Check the email address.') }
   }
 
   // Edit an existing staff member's name / email / role. Email edits do NOT
@@ -180,11 +220,40 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
       ) : (
         <div className="divide-y divide-ink-50">
           {staff.length > 0 && (
-            <div className="px-6 pt-5 flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] text-ink-500">Reminder times are in</span>
-              <select value={tz} onChange={e => saveTz(e.target.value)} className="text-[12px] py-1 rounded-lg border border-ink-200">
-                {(TZ_OPTIONS.some(([v]) => v === tz) ? TZ_OPTIONS : [[tz, tz], ...TZ_OPTIONS]).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
-              </select>
+            <div className="px-6 pt-5 space-y-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] text-ink-500">Reminder times are in</span>
+                <select value={tz} onChange={e => saveTz(e.target.value)} className="text-[12px] py-1 rounded-lg border border-ink-200">
+                  {(TZ_OPTIONS.some(([v]) => v === tz) ? TZ_OPTIONS : [[tz, tz], ...TZ_OPTIONS]).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+                </select>
+              </div>
+              <div className="rounded-xl border border-ink-100 bg-ink-50/40 p-4">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Set a schedule for the crew</span>
+                  <button type="button" onClick={toggleSelectAll} className="text-[11px] font-semibold text-brand-700 hover:text-brand-800">
+                    {selected.size > 0 ? 'Clear' : 'Select all'}
+                  </button>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap mb-3">
+                  <span className="text-[11px] text-ink-500 mr-1">Remind on</span>
+                  {[[1, 'M'], [2, 'T'], [3, 'W'], [4, 'T'], [5, 'F'], [6, 'S'], [7, 'S']].map(([d, l], i) => {
+                    const on = bulkDays.includes(d)
+                    return (
+                      <button key={i} type="button" onClick={() => setBulkDays(on ? bulkDays.filter(x => x !== d) : [...bulkDays, d].sort())} className={`w-6 h-6 rounded text-[11px] font-bold transition-colors ${on ? 'bg-teal-600 text-white' : 'bg-ink-100 text-ink-400 hover:bg-ink-200'}`}>{l}</button>
+                    )
+                  })}
+                  <span className="text-[11px] text-ink-500 ml-1">at</span>
+                  <select value={bulkHour} onChange={e => setBulkHour(Number(e.target.value))} className="text-[12px] py-1 rounded-lg border border-ink-200">
+                    {HOURS.map(h => <option key={h} value={h}>{fmtHour(h)}</option>)}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button type="button" onClick={applyToSelected} disabled={selected.size === 0} className="px-3 py-1.5 rounded-lg bg-ink-900 hover:bg-ink-800 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Apply to {selected.size} selected</button>
+                  <button type="button" onClick={sendLinkToSelected} disabled={selected.size === 0} className="px-3 py-1.5 rounded-lg border border-ink-200 hover:bg-white disabled:opacity-40 text-ink-700 text-xs font-semibold transition-colors">Send link to {selected.size}</button>
+                  {bulkMsg && <span className="text-[11px] text-green-700 font-medium">{bulkMsg}</span>}
+                </div>
+                <p className="text-[11px] text-ink-400 mt-2 leading-relaxed">Tick the people below, set the days and time, then Apply. Untick the night crew and set theirs on their own row.</p>
+              </div>
             </div>
           )}
           {staff.length > 0 && (
@@ -195,11 +264,12 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   staff={s}
                   removing={removing === s.id}
                   sending={sendingId === s.id}
-                  sent={sentId === s.id}
+                  sentToday={sentToday(s)}
+                  selected={selected.has(s.id)}
+                  onToggleSelect={() => toggleSelect(s.id)}
                   onRemove={() => handleRemove(s.id)}
                   onSetDays={(days) => saveDays(s.id, days)}
                   onSetHour={(hour) => saveHour(s.id, hour)}
-                  onApplyAll={() => applyToAll(s)}
                   onSendLink={() => sendLinkNow(s)}
                   onSave={(fields) => saveStaff(s.id, fields)}
                 />
@@ -266,7 +336,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   )
 }
 
-function StaffRow({ staff: s, removing, sending, sent, onRemove, onSetDays, onSetHour, onApplyAll, onSendLink, onSave }) {
+function StaffRow({ staff: s, removing, sending, sentToday, selected, onToggleSelect, onRemove, onSetDays, onSetHour, onSendLink, onSave }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft]     = useState({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' })
   const [busy, setBusy]       = useState(false)
@@ -302,6 +372,9 @@ function StaffRow({ staff: s, removing, sending, sent, onRemove, onSetDays, onSe
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-ink-100 hover:border-ink-200 transition-colors">
+      {s.email && (
+        <input type="checkbox" checked={!!selected} onChange={onToggleSelect} className="w-4 h-4 flex-shrink-0 accent-teal-600" aria-label={`Select ${s.name}`} />
+      )}
       <div className="w-9 h-9 rounded-full bg-teal-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
         {initials}
       </div>
@@ -352,9 +425,6 @@ function StaffRow({ staff: s, removing, sending, sent, onRemove, onSetDays, onSe
             >
               {HOURS.map(h => <option key={h} value={h}>{fmtHour(h)}</option>)}
             </select>
-            <button type="button" onClick={onApplyAll} className="text-[10px] text-ink-400 hover:text-brand-600 underline" title="Set every crew member to these days and this time">
-              apply to all
-            </button>
           </div>
         )}
         {s.email ? (
@@ -377,10 +447,10 @@ function StaffRow({ staff: s, removing, sending, sent, onRemove, onSetDays, onSe
           type="button"
           onClick={onSendLink}
           disabled={sending}
-          className="text-[11px] font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50 px-2 py-1 rounded-lg hover:bg-brand-50 transition-colors flex-shrink-0 whitespace-nowrap"
-          title="Email this person their log link now"
+          className={`text-[11px] font-semibold disabled:opacity-50 px-2 py-1 rounded-lg transition-colors flex-shrink-0 whitespace-nowrap ${sentToday ? 'text-green-700 hover:bg-green-50' : 'text-brand-700 hover:text-brand-800 hover:bg-brand-50'}`}
+          title={sentToday ? 'Link already sent today. Tap to send again.' : 'Email this person their log link now'}
         >
-          {sent ? 'Sent \u2713' : sending ? 'Sending\u2026' : 'Send link'}
+          {sending ? 'Sending\u2026' : sentToday ? 'Sent today \u2713' : 'Send link'}
         </button>
       )}
       <button

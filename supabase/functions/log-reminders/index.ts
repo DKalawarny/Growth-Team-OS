@@ -123,6 +123,7 @@ Deno.serve(async (req: Request) => {
     return (forCo.find(r => r.role === 'owner') ?? forCo[0])?.email ?? null
   }
   let sent = 0
+  const sentIds: string[] = []
   const failures: string[] = []
 
   for (const s of toSend as Array<{ id: string; name: string; email: string; company_id: string }>) {
@@ -165,10 +166,15 @@ Deno.serve(async (req: Request) => {
       if (!res.ok) {
         const detail = await res.text().catch(() => '')
         failures.push(`${s.name}: ${res.status} ${detail.slice(0, 200)}`)
-      } else sent++
+      } else { sent++; sentIds.push(s.id) }
     } catch (e) {
       failures.push(`${s.name}: ${e instanceof Error ? e.message : String(e)}`)
     }
+  }
+
+  // Mark who we actually sent to, so the owner sees "Sent today".
+  if (sentIds.length) {
+    await admin.from('staff_members').update({ last_link_sent_at: new Date().toISOString() }).in('id', sentIds)
   }
 
   // Failures are reported, never thrown — one bad address must not stop the
