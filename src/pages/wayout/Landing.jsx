@@ -108,6 +108,7 @@ export default function Landing() {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={WAYOUT_SITE_URL} />
         <meta name="twitter:title" content={`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
         <meta name="twitter:description" content={WAYOUT_TAGLINE} />
         <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
