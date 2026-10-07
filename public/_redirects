@@ -92,15 +92,30 @@ https://getunstuckmap.com/wayout/*        https://getunstuckmap.com/:splat      
 http://www.getunstuckmap.com/*     https://getunstuckmap.com/:splat      301!
 https://www.getunstuckmap.com/*    https://getunstuckmap.com/:splat      301!
 
-# ⚠️ AND THE OTHER WAY ROUND ON ELIV8. There the prefix is what keeps this
-# product out of the way, so a root-level twin is sent back to it. Listed
-# explicitly rather than by wildcard: /start, /stuck and /plan are plausible
-# Eliv8 paths one day, and a greedy rule here would quietly steal them.
-https://eliv8os.com/hello       https://eliv8os.com/wayout/hello    301!
-https://eliv8os.com/start       https://eliv8os.com/wayout/start    301!
-https://eliv8os.com/stuck       https://eliv8os.com/wayout/stuck    301!
-https://eliv8os.com/stuck/*     https://eliv8os.com/wayout/stuck/:splat  301!
-https://eliv8os.com/questions   https://eliv8os.com/wayout          301!
+# ⭐⭐ UNSTUCK MAP IS ITS OWN PRODUCT ON ITS OWN DOMAIN (Daniel, 7 Oct: "i want
+# them to be on their own, not connected through the URL"). eliv8os.com used to
+# SERVE the Unstuck Map under /wayout; now it must not. Everything under /wayout,
+# and the bare twins that used to fold into it, 301 straight to getunstuckmap.com.
+# The Eliv8 app does not link to /wayout internally (the Unstuck<>Eliv8 handoff is
+# data through Supabase, not navigation) and no real Unstuck user signs in on this
+# host, so nothing in-app or in-session breaks. The wayout pages were noindex here
+# anyway, so the 301 loses no SEO and consolidates everything on the real domain.
+# ⚠️ Specific before wildcard (first match wins); the `!` forces it over the SPA
+# fallback. These stay the ONLY rules that touch eliv8os.com root paths — /start,
+# /stuck and /plan could be Eliv8's own one day, so they are listed, not wildcarded.
+https://eliv8os.com/wayout        https://getunstuckmap.com/               301!
+https://eliv8os.com/wayout/       https://getunstuckmap.com/               301!
+https://eliv8os.com/wayout/hello  https://getunstuckmap.com/               301!
+https://eliv8os.com/wayout/*      https://getunstuckmap.com/:splat         301!
+http://eliv8os.com/wayout         https://getunstuckmap.com/               301!
+http://eliv8os.com/wayout/*       https://getunstuckmap.com/:splat         301!
+https://www.eliv8os.com/wayout    https://getunstuckmap.com/               301!
+https://www.eliv8os.com/wayout/*  https://getunstuckmap.com/:splat         301!
+https://eliv8os.com/hello       https://getunstuckmap.com/               301!
+https://eliv8os.com/start       https://getunstuckmap.com/start          301!
+https://eliv8os.com/stuck       https://getunstuckmap.com/stuck          301!
+https://eliv8os.com/stuck/*     https://getunstuckmap.com/stuck/:splat   301!
+https://eliv8os.com/questions   https://getunstuckmap.com/               301!
 
 # ── Unstuck Map's own robots / sitemap / llms.txt ─────────────────────────
 #
