@@ -395,9 +395,12 @@ export default function StaffPortal() {
             like "your crew flags this tool gap on every kitchen demo."
             Each WO gets its own textarea so the crew can split thoughts
             cleanly across jobs they touched. */}
-        {inProgress.length > 0 && (
-          <ShiftEndRecap workOrders={inProgress} onSubmitDailyLog={submitDailyLog} />
-        )}
+        {/* Always a place to log the day. With no assigned job in the system,
+            a general entry (work_order_id = null) so a foreman can still log. */}
+        <ShiftEndRecap
+          workOrders={inProgress.length > 0 ? inProgress : [{ id: null, title: 'Your day' }]}
+          onSubmitDailyLog={submitDailyLog}
+        />
 
         {/* Your recent logs — edit your own words if you got something wrong,
             so the office and Solomon see the correction, not a contradiction. */}
@@ -996,6 +999,7 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * crew member moves through their thoughts at end-of-shift.
  */
 function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
+  const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
   const [blockerDrafts, setBlockerDrafts] = useState({})   // { [workOrderId]: what got in the way }
@@ -1174,8 +1178,9 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
 
       <div className="px-4 py-3 space-y-3">
         <p className="text-[12px] text-ink-600 leading-relaxed">
-          Anything slow you down on these jobs today? Leave a note per job, the
-          office reads these tomorrow morning.
+          {general
+            ? 'How did today go? What got done, anything that slowed you up, who was on site. The office reads this tomorrow morning.'
+            : 'Anything slow you down on these jobs today? Leave a note per job, the office reads these tomorrow morning.'}
         </p>
 
         {voiceSupported && (
@@ -1236,7 +1241,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
 
         <ul className="space-y-2.5">
           {workOrders.map(wo => (
-            <li key={wo.id} className="border border-ink-150 rounded-lg p-2.5 bg-ink-50/40">
+            <li key={wo.id ?? 'general'} className="border border-ink-150 rounded-lg p-2.5 bg-ink-50/40">
               <p className="text-[12px] font-bold text-ink-900 mb-1 leading-snug">{wo.title}</p>
               {/* ⚠️ 2 Sep — there was ONE box here and it sent what_happened.
                   blockers and hours_on_site existed in the table, in Solomon's
