@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { sendStaffWelcome } from '../../lib/email'
+import { sendStaffWelcome, sendStaffLogLink } from '../../lib/email'
 
 /**
  * TeamSection — add staff members so they can be assigned tasks on the
@@ -16,6 +16,23 @@ import { sendStaffWelcome } from '../../lib/email'
  * optional — the email helper falls back to "Your manager" / "the team"
  * if missing.
  */
+const HOURS = Array.from({ length: 24 }, (_, h) => h)
+const fmtHour = (h) => { const am = h < 12; const n = h % 12 === 0 ? 12 : h % 12; return `${n}${am ? 'am' : 'pm'}` }
+const TZ_OPTIONS = [
+  ['America/Edmonton', 'Mountain (Calgary / Edmonton)'],
+  ['America/Vancouver', 'Pacific (Vancouver)'],
+  ['America/Toronto', 'Eastern (Toronto)'],
+  ['America/Winnipeg', 'Central (Winnipeg)'],
+  ['America/Halifax', 'Atlantic (Halifax)'],
+  ['America/New_York', 'US Eastern'],
+  ['America/Chicago', 'US Central'],
+  ['America/Denver', 'US Mountain'],
+  ['America/Los_Angeles', 'US Pacific'],
+  ['Europe/London', 'UK (London)'],
+  ['Australia/Sydney', 'Sydney'],
+  ['Pacific/Auckland', 'Auckland'],
+]
+
 export default function TeamSection({ companyId, companyName, ownerName }) {
   const [staff,     setStaff]     = useState([])
   const [loading,   setLoading]   = useState(true)
@@ -28,6 +45,9 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   //   { kind: 'noEmail', name }   — staff added but no address, so nothing sent
   //   { kind: 'failed',  name }   — staff added but the email errored (rare)
   const [lastAdd,   setLastAdd]   = useState(null)
+  const [tz,        setTz]        = useState('America/Edmonton')
+  const [sendingId, setSendingId] = useState(null)
+  const [sentId,    setSentId]    = useState(null)
 
   useEffect(() => {
     if (!companyId) return
@@ -40,6 +60,8 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
         setStaff(data ?? [])
         setLoading(false)
       })
+    supabase.from('companies').select('timezone').eq('id', companyId).maybeSingle()
+      .then(({ data }) => { if (data?.timezone) setTz(data.timezone) })
   }, [companyId])
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -100,6 +122,32 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     await supabase.from('staff_members').update({ log_days: days }).eq('id', id)
   }
 
+  async function saveHour(id, hour) {
+    setStaff(list => list.map(s => (s.id === id ? { ...s, log_hour: hour } : s)))
+    await supabase.from('staff_members').update({ log_hour: hour }).eq('id', id)
+  }
+
+  // Fast "set everyone the same," then adjust the exceptions (e.g. a night crew).
+  async function applyToAll(src) {
+    const days = Array.isArray(src.log_days) ? src.log_days : []
+    const hour = src.log_hour ?? 16
+    setStaff(list => list.map(s => (s.email ? { ...s, log_days: days, log_hour: hour } : s)))
+    await supabase.from('staff_members').update({ log_days: days, log_hour: hour }).eq('company_id', companyId).not('email', 'is', null)
+  }
+
+  async function saveTz(v) {
+    setTz(v)
+    await supabase.from('companies').update({ timezone: v }).eq('id', companyId)
+  }
+
+  async function sendLinkNow(s) {
+    if (!s.email) return
+    setSendingId(s.id)
+    const res = await sendStaffLogLink({ to: s.email, staffId: s.id, staffName: s.name })
+    setSendingId(null)
+    if (res?.ok) { setSentId(s.id); setTimeout(() => setSentId(null), 3000) } else { setErr('Could not send the link. Check the email address.') }
+  }
+
   // Edit an existing staff member's name / email / role. Email edits do NOT
   // re-send the welcome (that fires only on add). Optimistic, reverts nothing
   // because a failed update just leaves the old values on a re-fetch.
@@ -132,14 +180,27 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
       ) : (
         <div className="divide-y divide-ink-50">
           {staff.length > 0 && (
-            <div className="p-6 space-y-2">
+            <div className="px-6 pt-5 flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] text-ink-500">Reminder times are in</span>
+              <select value={tz} onChange={e => saveTz(e.target.value)} className="text-[12px] py-1 rounded-lg border border-ink-200">
+                {(TZ_OPTIONS.some(([v]) => v === tz) ? TZ_OPTIONS : [[tz, tz], ...TZ_OPTIONS]).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+              </select>
+            </div>
+          )}
+          {staff.length > 0 && (
+            <div className="p-6 pt-4 space-y-2">
               {staff.map(s => (
                 <StaffRow
                   key={s.id}
                   staff={s}
                   removing={removing === s.id}
+                  sending={sendingId === s.id}
+                  sent={sentId === s.id}
                   onRemove={() => handleRemove(s.id)}
                   onSetDays={(days) => saveDays(s.id, days)}
+                  onSetHour={(hour) => saveHour(s.id, hour)}
+                  onApplyAll={() => applyToAll(s)}
+                  onSendLink={() => sendLinkNow(s)}
                   onSave={(fields) => saveStaff(s.id, fields)}
                 />
               ))}
@@ -205,7 +266,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   )
 }
 
-function StaffRow({ staff: s, removing, onRemove, onSetDays, onSave }) {
+function StaffRow({ staff: s, removing, sending, sent, onRemove, onSetDays, onSetHour, onApplyAll, onSendLink, onSave }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft]     = useState({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' })
   const [busy, setBusy]       = useState(false)
@@ -280,6 +341,22 @@ function StaffRow({ staff: s, removing, onRemove, onSetDays, onSave }) {
             })}
           </div>
         )}
+        {s.email && (
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span className="text-[10px] text-ink-400">at</span>
+            <select
+              value={s.log_hour ?? 16}
+              onChange={(e) => onSetHour(Number(e.target.value))}
+              className="text-[11px] py-0.5 pl-1.5 pr-1 rounded border border-ink-200 text-ink-700"
+              title="When to send the reminder"
+            >
+              {HOURS.map(h => <option key={h} value={h}>{fmtHour(h)}</option>)}
+            </select>
+            <button type="button" onClick={onApplyAll} className="text-[10px] text-ink-400 hover:text-brand-600 underline" title="Set every crew member to these days and this time">
+              apply to all
+            </button>
+          </div>
+        )}
         {s.email ? (
           <a
             href={`mailto:${s.email}`}
@@ -295,6 +372,17 @@ function StaffRow({ staff: s, removing, onRemove, onSetDays, onSave }) {
           <span className="text-[11px] text-ink-300 italic mt-0.5 block">No email</span>
         )}
       </div>
+      {s.email && (
+        <button
+          type="button"
+          onClick={onSendLink}
+          disabled={sending}
+          className="text-[11px] font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50 px-2 py-1 rounded-lg hover:bg-brand-50 transition-colors flex-shrink-0 whitespace-nowrap"
+          title="Email this person their log link now"
+        >
+          {sent ? 'Sent \u2713' : sending ? 'Sending\u2026' : 'Send link'}
+        </button>
+      )}
       <button
         type="button"
         onClick={() => setEditing(true)}

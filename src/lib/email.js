@@ -27,6 +27,22 @@ import { supabase } from './supabase'
  * Skips entirely if no email address is provided — the staff_members table
  * allows email-less rows for cash-only / in-person crews.
  */
+export async function sendStaffLogLink({ to, staffId, staffName }) {
+  if (!to) return { ok: false, error: 'no_email' }
+  if (!staffId) return { ok: false, error: 'no_staff_id' }
+  try {
+    const { data, error } = await supabase.functions.invoke('send-email', {
+      method: 'POST',
+      body: { template: 'staff-log-link', to, data: { staffId, staffName } },
+    })
+    if (error)       return logAndReturn('staff-log-link', error.message)
+    if (data?.error) return logAndReturn('staff-log-link', data.error)
+    return { ok: true, id: data?.id ?? null }
+  } catch (err) {
+    return logAndReturn('staff-log-link', err?.message ?? String(err))
+  }
+}
+
 export async function sendStaffWelcome({ to, staffName, companyName, ownerName }) {
   if (!to) return { ok: false, error: 'no_email' }
   try {

@@ -557,6 +557,48 @@ const teamInvite: Template<TeamInviteData> = {
   },
 }
 
+// ---- staff-log-link --------------------------------------------------------
+//
+// Owner taps "Send link now" on a crew member. Emails that person their daily
+// log magic-link on demand, with no job attached and no waiting for the daily
+// reminder. Same magic-link machinery as task-assigned (staffId + the
+// __MAGIC_LINK__ placeholder, minted in the handler).
+interface StaffLogLinkData { staffId: string; staffName: string }
+const staffLogLink: Template<StaffLogLinkData> = {
+  validate(raw) {
+    const d = (raw ?? {}) as Record<string, unknown>
+    const staffId   = String(d.staffId   ?? '').trim()
+    const staffName = String(d.staffName ?? '').trim()
+    if (!staffId)   throw new Error('staffId required')
+    if (!staffName) throw new Error('staffName required')
+    return { staffId, staffName }
+  },
+  async guardRecipient(to, { companyId, admin }) {
+    const { data, error } = await admin
+      .from('staff_members')
+      .select('id')
+      .eq('company_id', companyId)
+      .eq('email', to)
+      .maybeSingle()
+    if (error) throw new Error(`recipient guard: ${error.message}`)
+    if (!data) throw new Error("recipient not on this company's team")
+  },
+  render(d, { appUrl }) {
+    const magicUrl = `${appUrl}/staff/__MAGIC_LINK__`
+    const first = (d.staffName || '').split(' ')[0] || 'there'
+    const subject = 'Your daily log link'
+    const text = [
+      `Hi ${first},`, ``,
+      `Here is your link to log your day: what got done, anything that slowed you up, who was on site.`, ``,
+      magicUrl, ``,
+      `Same link every day, so you can save it. Nothing to log in to.`, ``,
+      `Eliv8 OS`,
+    ].join('\n')
+    const html = `<p>Hi ${first},</p><p>Here is your link to log your day: what got done, anything that slowed you up, who was on site.</p><p><a href="${magicUrl}">Open your log</a></p><p style="color:#667">Same link every day, so you can save it. Nothing to log in to.</p>`
+    return { subject, text, html }
+  },
+}
+
 // ---- registry --------------------------------------------------------------
 
 // deno-lint-ignore no-explicit-any
@@ -565,6 +607,7 @@ const TEMPLATES: Record<string, Template<any>> = {
   'task-assigned': taskAssigned,
   'user-welcome':  userWelcome,
   'team-invite':   teamInvite,
+  'staff-log-link': staffLogLink,
 }
 
 // ────────────────────────────────────────────────────────────────────────────

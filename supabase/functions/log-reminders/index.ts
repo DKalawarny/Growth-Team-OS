@@ -32,17 +32,34 @@ Deno.serve(async (req: Request) => {
   const expected = (secretRow as { value: string } | null)?.value ?? ''
   if (!expected || given !== expected) return json({ error: 'no' }, 401)
 
-  // ISO weekday: getUTCDay() gives 0=Sun, we want 1=Mon..7=Sun.
-  const now      = new Date()
-  const isoDay   = now.getUTCDay() === 0 ? 7 : now.getUTCDay()
-  const todayYmd = now.toISOString().slice(0, 10)
+  // The cron now runs HOURLY (migration 080). Each crew member has their own
+  // local send hour (log_hour) and their company a timezone, so a night crew
+  // can be nudged at a different time than the day crew. We send to someone
+  // only in the hour that matches their chosen time in their company's zone.
+  const now = new Date()
+  const WD: Record<string, number> = { Sun: 7, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+  const localParts = (tz: string): { isoDay: number; hour: number; ymd: string } | null => {
+    try {
+      const parts = Object.fromEntries(
+        new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short', hour: '2-digit', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit' })
+          .formatToParts(now).map(x => [x.type, x.value]),
+      ) as Record<string, string>
+      let hour = parseInt(parts.hour, 10); if (hour === 24) hour = 0
+      return { isoDay: WD[parts.weekday] ?? 0, hour, ymd: `${parts.year}-${parts.month}-${parts.day}` }
+    } catch { return null }
+  }
 
   const { data: staff, error: staffErr } = await admin
     .from('staff_members')
-    .select('id, name, email, company_id, log_days, log_enabled')
+    .select('id, name, email, company_id, log_days, log_hour, log_enabled')
     .eq('log_enabled', true)
     .not('email', 'is', null)
   if (staffErr) return json({ error: staffErr.message }, 500)
+
+  // Timezone per company (default Mountain), to turn each log_hour into a moment.
+  const tzCompanyIds = [...new Set((staff ?? []).map(s => (s as { company_id: string }).company_id))]
+  const { data: cos } = await admin.from('companies').select('id, timezone').in('id', tzCompanyIds)
+  const tzFor = (cid: string) => ((cos ?? []) as Array<{ id: string; timezone: string | null }>).find(c => c.id === cid)?.timezone || 'America/Edmonton' 
 
   /**
    * 🔴 5 Oct: six reminders a day were going to the demo crew
@@ -55,22 +72,33 @@ Deno.serve(async (req: Request) => {
     /@([^@]+\.)?(example|test|invalid|localhost)$/i.test(e.trim()) ||
     /@example\.(com|net|org)$/i.test(e.trim())
 
-  const due = (staff ?? []).filter(s =>
-    !undeliverable(String((s as { email?: string }).email ?? '')) &&
-    Array.isArray((s as { log_days?: number[] }).log_days) &&
-    (s as { log_days: number[] }).log_days.includes(isoDay))
+  // Due = scheduled for this local weekday AND this local hour is their send time.
+  const due = (staff ?? []).filter(s => {
+    const row = s as { email?: string; log_days?: number[]; log_hour?: number; company_id: string }
+    if (undeliverable(String(row.email ?? ''))) return false
+    if (!Array.isArray(row.log_days)) return false
+    const lp = localParts(tzFor(row.company_id))
+    if (!lp) return false
+    return row.log_days.includes(lp.isoDay) && (row.log_hour ?? 16) === lp.hour
+  })
 
-  if (!due.length) return json({ ok: true, sent: 0, reason: 'nobody scheduled today' })
+  if (!due.length) return json({ ok: true, sent: 0, reason: 'nobody scheduled this hour' })
 
-  // ⚠️ Skip anyone who already wrote today. One query for the whole day rather
-  // than one per person — this runs against every company at once.
+  // ⚠️ Skip anyone who already wrote on their own LOCAL date.
+  const dueIds = (due as Array<{ id: string }>).map(s => s.id)
   const { data: written } = await admin
     .from('daily_logs')
-    .select('staff_member_id')
-    .eq('log_date', todayYmd)
-  const alreadyWrote = new Set((written ?? []).map(r => (r as { staff_member_id: string }).staff_member_id))
-
-  const toSend = due.filter(s => !alreadyWrote.has((s as { id: string }).id))
+    .select('staff_member_id, log_date')
+    .in('staff_member_id', dueIds)
+  const wroteKey = new Set((written ?? []).map(r => {
+    const w = r as { staff_member_id: string; log_date: string }
+    return `${w.staff_member_id}|${w.log_date}`
+  }))
+  const toSend = due.filter(s => {
+    const row = s as { id: string; company_id: string }
+    const lp = localParts(tzFor(row.company_id))
+    return lp && !wroteKey.has(`${row.id}|${lp.ymd}`)
+  })
 
   const site = Deno.env.get('PUBLIC_SITE_URL') ?? 'https://eliv8os.com'
 
@@ -119,13 +147,13 @@ Deno.serve(async (req: Request) => {
           subject: 'Two minutes on today',
           text:
             `Hi ${first},\n\n` +
-            `When you get a minute, jot down how today went — what got done, ` +
+            `When you get a minute, jot down how today went: what got done, ` +
             `anything that slowed you up, who was on site.\n\n${link}\n\n` +
             `Same link every day, so you can save it. Nothing to log in to.\n` +
             `Reply to this email if you need to reach the office.\n`,
           html:
             `<p>Hi ${first},</p>` +
-            `<p>When you get a minute, jot down how today went — what got done, ` +
+            `<p>When you get a minute, jot down how today went: what got done, ` +
             `anything that slowed you up, who was on site.</p>` +
             `<p><a href="${link}">Open today's log</a></p>` +
             `<p style="color:#667">Same link every day, so you can save it. Nothing to log in to.</p>`,
