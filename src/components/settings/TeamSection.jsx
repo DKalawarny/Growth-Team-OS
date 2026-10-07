@@ -36,7 +36,7 @@ const TZ_OPTIONS = [
 export default function TeamSection({ companyId, companyName, ownerName }) {
   const [staff,     setStaff]     = useState([])
   const [loading,   setLoading]   = useState(true)
-  const [form,      setForm]      = useState({ name: '', email: '', role: '' })
+  const [form,      setForm]      = useState({ name: '', email: '', role: '', phone: '' })
   const [saving,    setSaving]    = useState(false)
   const [removing,  setRemoving]  = useState(null)
   const [err,       setErr]       = useState(null)
@@ -81,6 +81,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
       company_id: companyId,
       name:       form.name.trim(),
       email:      form.email.trim() || null,
+      phone:      form.phone.trim() || null,
       role:       form.role.trim()  || null,
     }
 
@@ -93,7 +94,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     if (error) { setSaving(false); setErr(error.message); return }
 
     setStaff(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)))
-    setForm({ name: '', email: '', role: '' })
+    setForm({ name: '', email: '', role: '', phone: '' })
 
     // Welcome email — fire-and-forget. Awaiting it lets us surface a confirm
     // banner ("Welcome email sent to jane@…") but a failure does NOT undo the
@@ -192,7 +193,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   // re-send the welcome (that fires only on add). Optimistic, reverts nothing
   // because a failed update just leaves the old values on a re-fetch.
   async function saveStaff(id, fields) {
-    const clean = { name: (fields.name || '').trim(), email: (fields.email || '').trim() || null, role: (fields.role || '').trim() || null }
+    const clean = { name: (fields.name || '').trim(), email: (fields.email || '').trim() || null, phone: (fields.phone || '').trim() || null, role: (fields.role || '').trim() || null }
     if (!clean.name) return { ok: false }
     setStaff(list => list.map(s => (s.id === id ? { ...s, ...clean } : s)).sort((a, b) => a.name.localeCompare(b.name)))
     const { error } = await supabase.from('staff_members').update(clean).eq('id', id)
@@ -319,6 +320,18 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-ink-600 mb-1.5">
+                  Phone <span className="text-ink-400 font-normal">(for texting the log link)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => setField('phone', e.target.value)}
+                  placeholder="(403) 555-0123"
+                  className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                />
+              </div>
               {err && <p className="text-xs text-red-500">{err}</p>}
               {lastAdd && <AddNotice notice={lastAdd} onDismiss={() => setLastAdd(null)} />}
               <button
@@ -338,7 +351,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
 
 function StaffRow({ staff: s, removing, sending, sentToday, selected, onToggleSelect, onRemove, onSetDays, onSetHour, onSendLink, onSave }) {
   const [editing, setEditing] = useState(false)
-  const [draft, setDraft]     = useState({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' })
+  const [draft, setDraft]     = useState({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '', phone: s.phone ?? '' })
   const [busy, setBusy]       = useState(false)
   const initials = (s.name || s.email || '?')
     .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -361,9 +374,10 @@ function StaffRow({ staff: s, removing, sending, sentToday, selected, onToggleSe
           <input value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} placeholder="Full name" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
           <input value={draft.role} onChange={e => setDraft({ ...draft, role: e.target.value })} placeholder="Role (optional)" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
           <input value={draft.email} onChange={e => setDraft({ ...draft, email: e.target.value })} placeholder="Email (for task notifications)" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <input value={draft.phone} onChange={e => setDraft({ ...draft, phone: e.target.value })} placeholder="Phone (for texting the link)" className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
           <div className="flex items-center gap-2 pt-0.5">
             <button type="button" disabled={busy || !draft.name.trim()} onClick={save} className="px-4 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white text-xs font-bold transition-colors">{busy ? 'Saving\u2026' : 'Save'}</button>
-            <button type="button" disabled={busy} onClick={() => { setEditing(false); setDraft({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '' }) }} className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-700">Cancel</button>
+            <button type="button" disabled={busy} onClick={() => { setEditing(false); setDraft({ name: s.name ?? '', email: s.email ?? '', role: s.role ?? '', phone: s.phone ?? '' }) }} className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-700">Cancel</button>
           </div>
         </div>
       </div>
