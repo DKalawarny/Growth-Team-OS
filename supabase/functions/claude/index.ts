@@ -479,11 +479,14 @@ function buildSystem(
   // Cache semantics are unchanged: one marked block containing prompt+context,
   // then an unmarked volatile block. The cache key is the exact text up to and
   // including the marker, so keeping this order preserves the ~90% saving.
+  // ⭐ ONE punctuation rule for every prompt, both products (Daniel, 5 Oct:
+  // dashes "look AI"). Added here once rather than in thirty prompts, so a
+  // prompt written next month inherits it. Displays also clean what slips by.
+  // Hoisted out of the promptKey branch 7 Oct: the newsletter sends an inline
+  // systemPrompt (no promptKey) and was skipping this, so its drafts kept the
+  // dashes ("Northgate is Done—and…"). Both paths get it now.
+  const NO_DASHES = '\n\nPUNCTUATION: never use an em dash or an en dash between words in anything you write, including inside JSON values. Use a comma, a colon or a full stop instead.'
   if (body.promptKey) {
-    // ⭐ ONE punctuation rule for every prompt, both products (Daniel, 5 Oct:
-    // dashes "look AI"). Added here once rather than in thirty prompts, so a
-    // prompt written next month inherits it. Displays also clean what slips by.
-    const NO_DASHES = '\n\nPUNCTUATION: never use an em dash or an en dash between words in anything you write, including inside JSON values. Use a comma, a colon or a full stop instead.'
     /**
      * ⭐ Eliv8 OS speaks the owner's country (6 Oct, US readiness). The prompts
      * were written with Canadian examples (GST, HST, CRA); a US owner was being
@@ -516,9 +519,11 @@ THE OWNER'S COUNTRY: read it from their location in the business context. Use th
     return blocks
   }
 
-  // Legacy plain-string path. Still accepted so a stale client mid-deploy does
-  // not break, but nothing in the app sends it any more.
-  const text = (body.systemPrompt ?? '') + (body.json ? jsonSuffix : '')
+  // Plain-string path. The newsletter sends its system prompt this way (built
+  // inline in Newsletter.jsx), and a stale client mid-deploy may too. It gets
+  // NO_DASHES like every other prompt; country terms stay on the promptKey
+  // path because they read the business context that path carries.
+  const text = (body.systemPrompt ?? '') + NO_DASHES + (body.json ? jsonSuffix : '')
   return text
 }
 
