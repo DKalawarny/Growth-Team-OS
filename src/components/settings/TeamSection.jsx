@@ -120,13 +120,9 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
 
   return (
     <section className="mt-10 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-ink-50 flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-ink-900">Team</h2>
-          <p className="text-sm text-ink-400 mt-0.5">
-            Add staff members so you can assign and email tasks from the Work Board.
-          </p>
-        </div>
+      <div className="bg-ink-900 px-6 py-4">
+        <div className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 mb-0.5">Field crew</div>
+        <p className="text-xs text-ink-400">Your on-site crew. They get a phone link to log their day and take assigned jobs, no login needed.</p>
       </div>
 
       {loading ? (

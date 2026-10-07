@@ -91,10 +91,10 @@ export default function AdvisorAccessSection({ companyId, userId }) {
       <div className="bg-ink-900 px-6 py-4 flex items-center justify-between gap-3">
         <div>
           <div className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 mb-0.5">
-            Advisor access
+            Outside advisors
           </div>
           <p className="text-xs text-ink-400">
-            Invite a coach or advisor to view your workspace. Read-only, no editing.
+            A coach or accountant you invite to view your workspace. Read-only, no editing.
           </p>
         </div>
         <span className="text-2xl flex-shrink-0">🤝</span>

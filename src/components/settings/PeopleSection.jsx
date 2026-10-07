@@ -116,7 +116,7 @@ export default function PeopleSection({ companyId, userId }) {
     <section className="bg-white border border-ink-100 rounded-xl overflow-hidden shadow-sm">
       <div className="bg-ink-900 px-6 py-4">
         <div className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 mb-0.5">People with access</div>
-        <p className="text-xs text-ink-400">Add someone from inside the business and choose what they can see. You can change it or remove them any time.</p>
+        <p className="text-xs text-ink-400">People who get a login and a role, so they can see parts of your business. Change what they see or remove them any time.</p>
       </div>
 
       <div className="p-6 space-y-6">
@@ -164,14 +164,6 @@ export default function PeopleSection({ companyId, userId }) {
             </div>
           </div>
         )}
-
-        <label className="flex items-start gap-3 border border-ink-100 rounded-lg px-4 py-3 cursor-pointer">
-          <input type="checkbox" checked={costsOn} onChange={e => toggleCosts(e.target.checked)} className="mt-1" />
-          <span>
-            <span className="block text-sm font-semibold text-ink-900">Operations can see job costs</span>
-            <span className="block text-[12px] text-ink-500 leading-relaxed">What each job was quoted, what it cost and what was invoiced. Off means only you, whoever runs the business and the office see them.</span>
-          </span>
-        </label>
 
         <form onSubmit={invite}>
           <div className={label}>Add someone</div>
@@ -235,6 +227,16 @@ export default function PeopleSection({ companyId, userId }) {
             </div>
           </div>
         )}
+      </div>
+      <div className="px-6 pb-6">
+          <div className={label}>Operations access</div>
+          <label className="flex items-start gap-3 border border-ink-100 rounded-lg px-4 py-3 cursor-pointer">
+            <input type="checkbox" checked={costsOn} onChange={e => toggleCosts(e.target.checked)} className="mt-1" />
+            <span>
+              <span className="block text-sm font-semibold text-ink-900">Operations can see job costs</span>
+              <span className="block text-[12px] text-ink-500 leading-relaxed">What each job was quoted, cost and was invoiced. Off means only you, whoever runs the business and the office see them.</span>
+            </span>
+          </label>
       </div>
     </section>
   )
