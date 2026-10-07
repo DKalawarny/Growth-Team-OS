@@ -169,6 +169,7 @@ export default function StaffPortal() {
         token, workOrderId, whatHappened, blockers, hours,
         whoOnSite: day.whoOnSite, safetyNote: day.safetyNote, injury: day.injury,
         injuryDetail: day.injuryDetail, incidentReportFiled: day.incidentReportFiled, flhaDone: day.flhaDone,
+        onSiteStaffIds: day.onSiteStaffIds,
       })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
@@ -347,7 +348,7 @@ export default function StaffPortal() {
     )
   }
 
-  const { staff, company, work_orders, recent_logs } = state.data ?? {}
+  const { staff, company, work_orders, recent_logs, crew } = state.data ?? {}
   const open       = (work_orders ?? []).filter(w => w.status !== 'done')
   const inProgress = (work_orders ?? []).filter(w => w.status === 'in_progress')
   const completed  = (work_orders ?? []).filter(w => w.status === 'done')
@@ -400,6 +401,7 @@ export default function StaffPortal() {
             a general entry (work_order_id = null) so a foreman can still log. */}
         <ShiftEndRecap
           workOrders={inProgress.length > 0 ? inProgress : [{ id: null, title: 'Your day' }]}
+          crew={crew ?? []}
           onSubmitDailyLog={submitDailyLog}
         />
 
@@ -1009,7 +1011,7 @@ function YesNo({ value, onChange }) {
   )
 }
 
-function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
+function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
   const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
@@ -1018,6 +1020,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
   // ⚠️ Day-level, not per-job. Who was on site and whether anyone got hurt are
   // facts about the DAY — asking them once per work order would get three
   // contradictory answers from the same person about the same crew.
+  const [onSiteIds, setOnSiteIds]         = useState(() => new Set())
   const [whoOnSite, setWhoOnSite]         = useState('')
   const [safetyNote, setSafetyNote]       = useState('')
   const [injury, setInjury]               = useState(false)
@@ -1117,7 +1120,7 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // ⚠️ A day-level fact is enough on its own. "Nothing to report on the
       // jobs, but someone got hurt" must not be thrown away because both job
       // boxes were empty.
-      .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0 || flhaDone !== null)
+      .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0 || flhaDone !== null || onSiteIds.size > 0)
       .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported, see the note.' : 'Nothing to add on the work itself.') }))
     if (toSend.length === 0) return
     if (recording) stopRecording()
@@ -1129,13 +1132,14 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
         setDrafts({})
         setBlockerDrafts({})
         setHourDrafts({})
+        setOnSiteIds(new Set())
         setWhoOnSite('')
         setSafetyNote('')
         setInjury(false)
@@ -1223,14 +1227,34 @@ function ShiftEndRecap({ workOrders, onSubmitDailyLog }) {
             work order — asking per job would get three different answers from
             one person about the same crew. */}
         <div className="mb-3 space-y-2">
-          <input
-            type="text"
-            value={whoOnSite}
-            onChange={(e) => setWhoOnSite(e.target.value)}
-            placeholder="Who was on site today? (crew, subs, anyone else)"
-            maxLength={500}
-            className="w-full text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
-          />
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold text-ink-500">Who was on site today?</p>
+            {crew.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {crew.map(c => {
+                  const on = onSiteIds.has(c.id)
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setOnSiteIds(prev => { const n = new Set(prev); n.has(c.id) ? n.delete(c.id) : n.add(c.id); return n })}
+                      className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors ${on ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}
+                    >
+                      {c.name}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            <input
+              type="text"
+              value={whoOnSite}
+              onChange={(e) => setWhoOnSite(e.target.value)}
+              placeholder="Anyone else? Subs, visitors, anyone not on the list"
+              maxLength={500}
+              className="w-full text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+            />
+          </div>
           <textarea
             value={safetyNote}
             onChange={(e) => setSafetyNote(e.target.value)}

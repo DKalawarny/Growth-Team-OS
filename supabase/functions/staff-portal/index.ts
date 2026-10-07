@@ -317,6 +317,13 @@ Deno.serve(async (req) => {
       // This crew member's own recent logs (today + yesterday) so the page can
       // show them back and let the author fix a mistake in place.
       const yday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      // The company's crew, so the recap can offer who-was-on-site as taps.
+      const { data: crew } = await admin
+        .from('staff_members')
+        .select('id, name')
+        .eq('company_id', staff.company_id)
+        .order('name')
+
       const { data: recentLogs } = await admin
         .from('daily_logs')
         .select('id, log_date, work_order_id, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury, edited_at')
@@ -338,6 +345,7 @@ Deno.serve(async (req) => {
         },
         work_orders: workOrdersWithItems,
         recent_logs: recentLogs ?? [],
+        crew: crew ?? [],
       })
     }
 
@@ -540,6 +548,9 @@ Deno.serve(async (req) => {
       const injuryDetail = typeof body.injuryDetail === 'string' ? body.injuryDetail.trim().slice(0, MAX_COMMENT_LEN) : null
       const incidentReportFiled = typeof body.incidentReportFiled === 'boolean' ? body.incidentReportFiled : null
       const flhaDone     = typeof body.flhaDone === 'boolean' ? body.flhaDone : null
+      const onSiteStaffIds = Array.isArray(body.onSiteStaffIds)
+        ? body.onSiteStaffIds.filter((x: unknown) => typeof x === 'string').slice(0, 50)
+        : null
 
       // Optional and deliberately loose — this is context for the owner, not a
       // timesheet. Anything unparseable is simply dropped rather than refused;
@@ -586,6 +597,7 @@ Deno.serve(async (req) => {
         what_happened:   whatHappened,
         blockers:        blockers || null,
         who_on_site:     whoOnSite || null,
+        on_site_staff_ids:     (onSiteStaffIds && onSiteStaffIds.length) ? onSiteStaffIds : null,
         safety_note:     safetyNote || null,
         injury,
         injury_detail:         injury ? (injuryDetail || null) : null,

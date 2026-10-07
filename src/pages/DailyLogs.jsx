@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -398,9 +398,11 @@ export default function DailyLogs() {
                     <p className="text-[12px] text-ink-500 mt-1">Reported by the crew. This is not a WorkSafe report, that still has to be filed.</p>
                   </div>
                 )}
-                {log.who_on_site && (
-                  <p className="text-[13px] text-ink-500">On site: {log.who_on_site}</p>
-                )}
+                {(() => {
+                  const names = (log.on_site_staff_ids ?? []).map(id => staffById.get(id)).filter(Boolean)
+                  const parts = [...names, ...(log.who_on_site ? [log.who_on_site] : [])]
+                  return parts.length ? <p className="text-[13px] text-ink-500">On site: {parts.join(', ')}</p> : null
+                })()}
                 {log.flha_done != null && (
                   <p className={`text-[12px] font-medium ${log.flha_done ? 'text-ink-500' : 'text-amber-700'}`}>
                     FLHA: {log.flha_done ? 'done' : 'not done'}

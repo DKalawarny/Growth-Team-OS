@@ -285,7 +285,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .limit(20),
     supabase
       .from('daily_logs')
-      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, safety_note, injury')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, on_site_staff_ids, safety_note, injury')
       .eq('company_id', companyId)
       .order('log_date', { ascending: false })
       .limit(20),
@@ -655,6 +655,9 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       // — the crew's is what was seen on site, the office note is an
       // interpretation of it, and where they disagree that gap is the finding.
       who_on_site: l.who_on_site ?? null,
+      // ⭐ Structured: who the crew tapped as on site. Resolved to names so
+      // Solomon can reason about who worked where, not just read free text.
+      on_site: (l.on_site_staff_ids ?? []).map(id => (staffRes?.data ?? []).find(m => m.id === id)?.name).filter(Boolean),
       safety:      l.safety_note ?? null,
       // ⚠️ Surfaced plainly. Daniel: "the quicker Solomon knows the better."
       injury:      l.injury === true,
