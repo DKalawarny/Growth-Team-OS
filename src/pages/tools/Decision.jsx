@@ -7,6 +7,7 @@ import { isCapExceeded } from '../../lib/usage'
 import { buildAdvisorContext } from '../../lib/advisorContext'
 import { summarizeContext } from '../../lib/toolContextSummary'
 import DecisionView from '../../components/tools/DecisionView'
+import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import BackToTools from '../../components/tools/BackToTools'
@@ -32,6 +33,20 @@ export default function Decision() {
   const [error, setError]     = useState(null)
   const [capError, setCapError] = useState(null)
   const [contextSummary, setContextSummary] = useState(null)
+
+  // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  useToolDraft({
+    toolId: 'decision',
+    companyId: profile?.company_id,
+    result,
+    payload: { form, contextSummary },
+    onRestore: (d) => {
+      setResult(d.result)
+      if (d.form) setForm(d.form)
+      if (d.contextSummary != null) setContextSummary(d.contextSummary)
+      setStage('result')
+    },
+  })
   const [saving, setSaving]   = useState(false)
 
   const canRun = form.decision.trim().length > 8
@@ -175,7 +190,7 @@ export default function Decision() {
               </button>
               <button
                 type="button"
-                onClick={() => { setStage('form'); setResult(null) }}
+                onClick={() => { setStage('form'); setResult(null); clearToolDraft('decision', profile?.company_id) }}
                 className="px-6 py-3 rounded-[10px] border border-ink-200 hover:border-ink-300 text-ink-900 text-[14.5px] font-semibold transition-colors"
               >
                 Weigh something else

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -56,6 +57,20 @@ export default function Hiring() {
   // Snapshot of which inputs Solomon read at generation time. Persisted on
   // the saved document so re-opening the scorecard still shows what fed it.
   const [contextSummary, setContextSummary] = useState(null)
+
+  // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  useToolDraft({
+    toolId: 'hiring',
+    companyId: profile?.company_id,
+    result,
+    payload: { form, contextSummary },
+    onRestore: (d) => {
+      setResult(d.result)
+      if (d.form) setForm(d.form)
+      if (d.contextSummary != null) setContextSummary(d.contextSummary)
+      setStage('result')
+    },
+  })
 
   const canSubmit = form.role_title.trim() && form.why_now.trim()
 
@@ -229,6 +244,7 @@ export default function Hiring() {
   const handleStartOver = () => {
     setForm(INITIAL_FORM)
     setResult(null)
+    clearToolDraft('hiring', profile?.company_id)
     setMessages([])
     setError(null)
     setStage('form')

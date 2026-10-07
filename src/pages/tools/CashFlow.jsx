@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -66,6 +67,20 @@ export default function CashFlow() {
   const [error,     setError]     = useState(null)
   const [capError,  setCapError]  = useState(null)
   const [contextSummary, setContextSummary] = useState(null)
+
+  // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  useToolDraft({
+    toolId: 'cash-flow',
+    companyId: profile?.company_id,
+    result,
+    payload: { form, contextSummary },
+    onRestore: (d) => {
+      setResult(d.result)
+      if (d.form) setForm(d.form)
+      if (d.contextSummary != null) setContextSummary(d.contextSummary)
+      setStage('result')
+    },
+  })
 
   const updateField = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }))
   const canSubmitManual = form.starting_balance.trim() && form.typical_monthly_revenue.trim()
@@ -257,6 +272,7 @@ export default function CashFlow() {
     setForm(INITIAL_FORM)
     setConcerns('')
     setResult(null)
+    clearToolDraft('cash-flow', profile?.company_id)
     setMsgs([])
     setError(null)
     setStage('form')

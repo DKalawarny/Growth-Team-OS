@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -51,6 +52,20 @@ export default function Rocks() {
   const [error, setError]       = useState(null)
   const [capError, setCapError] = useState(null)
   const [contextSummary, setContextSummary] = useState(null)
+
+  // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  useToolDraft({
+    toolId: 'rocks',
+    companyId: profile?.company_id,
+    result,
+    payload: { form, contextSummary },
+    onRestore: (d) => {
+      setResult(d.result)
+      if (d.form) setForm(d.form)
+      if (d.contextSummary != null) setContextSummary(d.contextSummary)
+      setStage('result')
+    },
+  })
 
   // Focus theme is the only real requirement — everything else has a sensible
   // default or Claude can infer from BUSINESS_CONTEXT. Quarter label is pre-
@@ -203,6 +218,7 @@ export default function Rocks() {
   const handleStartOver = () => {
     setForm(INITIAL_FORM)
     setResult(null)
+    clearToolDraft('rocks', profile?.company_id)
     setMessages([])
     setError(null)
     setStage('form')

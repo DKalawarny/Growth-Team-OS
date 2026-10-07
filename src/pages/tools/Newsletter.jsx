@@ -9,6 +9,7 @@ import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import { summarizeContext } from '../../lib/toolContextSummary'
+import { useToolDraft } from '../../hooks/useToolDraft'
 
 /**
  * Team Newsletter — /tools/newsletter
@@ -44,6 +45,22 @@ export default function Newsletter() {
   // Snapshot of inputs the newsletter saw at generation time. Persisted on
   // the saved document so reopening from the library still shows what fed it.
   const [contextSummary, setContextSummary] = useState(null)
+
+  // ⭐ Keep the last newsletter (incl. your edits) on the page across navigation.
+  useToolDraft({
+    toolId: 'newsletter',
+    companyId: profile?.company_id,
+    result,
+    payload: { period, tone, note, contextSummary },
+    onRestore: (d) => {
+      setResult(d.result)
+      if (d.period) setPeriod(d.period)
+      if (d.tone) setTone(d.tone)
+      if (d.note != null) setNote(d.note)
+      if (d.contextSummary != null) setContextSummary(d.contextSummary)
+      setStage('result')
+    },
+  })
 
   const [milestones, setMilestones] = useState([])
   const [checkins,   setCheckins]   = useState([])
