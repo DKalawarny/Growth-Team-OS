@@ -51,6 +51,21 @@ const CFO_SUGGESTIONS = [
   'What should I ask my accountant this month?',
 ]
 
+// ⭐ 7 Oct — a generated read that was never saved used to vanish on navigation
+// (Daniel: "when i come back its gone, shouldn't it stay up"). Keep the last
+// unsaved read in localStorage per company so returning restores it, Unsaved
+// badge and all. Cleared on save, or when a newer saved read supersedes it.
+const draftKey = (cid) => `eliv8:cfo-draft:${cid}`
+function readDraft(cid) {
+  try { const r = localStorage.getItem(draftKey(cid)); return r ? JSON.parse(r) : null } catch { return null }
+}
+function writeDraft(cid, data) {
+  try { localStorage.setItem(draftKey(cid), JSON.stringify(data)) } catch { /* private mode / quota — ignore */ }
+}
+function clearDraft(cid) {
+  try { localStorage.removeItem(draftKey(cid)) } catch { /* ignore */ }
+}
+
 export default function CFO() {
   const { profile } = useAuth()
   const navigate    = useNavigate()
@@ -155,8 +170,22 @@ export default function CFO() {
         setAllDocs(docs)
         setLatestDoc(docs[0] ?? null)
 
-        // Pre-populate the display with the latest saved read
-        if (docs[0]) {
+        // Restore whichever read is newest: an unsaved draft (kept in
+        // localStorage) or the latest saved doc. A draft only wins when it is
+        // more recent than the newest saved read, so saving still takes over.
+        const draft = readDraft(profile.company_id)
+        const docTime = docs[0] ? Date.parse(docs[0].created_at) : 0
+        if (draft && Number(draft.savedAt) > docTime) {
+          setResult(draft.result)
+          setResultForm(draft.resultForm)
+          setResultDocId(null)
+          setUnsaved(true)
+          setContextSummary(draft.contextSummary ?? null)
+          setMessages([{
+            role:    'assistant',
+            content: "Here's the read you were last looking at. It isn't saved yet, so hit Save to library to keep it, or run a new one below.",
+          }])
+        } else if (docs[0]) {
           const outputData = docs[0].output_data
           // Defensive: handle the edge case where output_data is a JSON string
           const parsed = typeof outputData === 'string'
@@ -247,6 +276,8 @@ export default function CFO() {
       setResultForm({ ...form })
       setResultDocId(null)
       setUnsaved(true)
+      // Remember it so it survives leaving the page before saving.
+      writeDraft(profile.company_id, { result: parsed, resultForm: { ...form }, contextSummary, savedAt: Date.now() })
       setMessages([{
         role:    'assistant',
         content: "Here's the read on your books. If a KPI feels off, tell me the real number and I'll re-derive. You can also swap the KPI set, change the tone, or ask me to explain any line.",
@@ -301,6 +332,7 @@ export default function CFO() {
         setResult(parsed.dashboard)
         setUnsaved(true)
         setResultDocId(null)
+        writeDraft(profile.company_id, { result: parsed.dashboard, resultForm, contextSummary, savedAt: Date.now() })
       }
       setMessages(prev => [...prev, { role: 'assistant', content: parsed?.change_note || 'Updated.' }])
     } catch (err) {
@@ -331,6 +363,7 @@ export default function CFO() {
       if (insertErr) throw insertErr
       setResultDocId(data.id)
       setUnsaved(false)
+      clearDraft(profile.company_id)  // it's in the library now; no draft to restore
       // Refresh doc list
       const { data: docs } = await supabase
         .from('documents')

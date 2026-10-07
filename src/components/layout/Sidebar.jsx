@@ -167,6 +167,12 @@ const mainNav = [
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
   { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },
+  // ⭐ 7 Oct — tools back in the sidebar. Moving them into the Solomon launcher
+  // alone (the "no longer top-level shouting" call) buried them: Daniel could
+  // not find the Team Newsletter at all. "Not having these on the side is doing
+  // it a disservice." One entry to the index (ToolsIndex lists all eleven), so
+  // the sidebar stays uncluttered but every tool is one click away.
+  { to: '/tools',                  label: 'Tools',      icon: 'tools'        },
   // ⭐ Teammates only: for the owner the board lives inside Roadmap, but for
   // Office and Operations it is the main thing they came in for.
   { to: '/board',                  label: 'Work board', icon: 'roadmap', teamOnly: true },
@@ -224,6 +230,10 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
+              // Tools links to the index; without `end` it would also light up
+              // on /tools/cfo (Finances) and /tools/exit-readiness (Succession),
+              // which are their own entries. Exact-match only this one.
+              end={to === '/tools'}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
