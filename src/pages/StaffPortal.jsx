@@ -1196,10 +1196,10 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
 
   return (
     <section className="bg-white border border-ink-200 rounded-xl shadow-sm">
-      <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between bg-gradient-to-r from-brand-50 to-transparent">
         <div className="flex items-center gap-2">
           <span aria-hidden className="text-lg">🌙</span>
-          <h2 className="text-sm font-bold text-ink-900">Today\u2019s log</h2>
+          <h2 className="text-sm font-bold text-ink-900">Today's log</h2>
         </div>
         <button
           type="button"
@@ -1239,7 +1239,8 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
             and whether anyone got hurt are facts about the day, not about a
             work order — asking per job would get three different answers from
             one person about the same crew. */}
-        <div className="mb-3 space-y-2">
+        <div className="mb-3 space-y-2 rounded-xl border border-ink-100 bg-ink-50/40 p-3">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Site &amp; safety</p>
           <div className="space-y-1.5">
             <p className="text-[11px] font-semibold text-ink-500">Who was on site today?</p>
             {crew.length > 0 && (
@@ -1358,6 +1359,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
                 <span className="text-[11px] text-ink-400">on site</span>
               </div>
               <div className="mt-2 pt-2 border-t border-ink-100 space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Progress &amp; cost</p>
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="text-[11px] text-ink-500">On track?</span>
                   <div className="flex gap-1">
