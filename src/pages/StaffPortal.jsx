@@ -400,7 +400,7 @@ export default function StaffPortal() {
         {/* Always a place to log the day. With no assigned job in the system,
             a general entry (work_order_id = null) so a foreman can still log. */}
         <ShiftEndRecap
-          workOrders={inProgress.length > 0 ? inProgress : [{ id: null, title: 'Your day' }]}
+          workOrders={inProgress.length > 0 ? inProgress : [{ id: '__general__', title: 'Your day' }]}
           crew={crew ?? []}
           onSubmitDailyLog={submitDailyLog}
         />
@@ -1132,7 +1132,7 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id === '__general__' ? null : wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
