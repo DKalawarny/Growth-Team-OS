@@ -5287,3 +5287,51 @@ are doing on Saturday.
 Their answers, the move they are on, their plan, and what they just told you
 about this move follow.
 `.trim()
+
+// ── PLAYBOOK_GAPS_PROMPT ─────────────────────────────────────────────────────
+// "Ask Solomon what we're lacking." Reads real history, the daily-log blockers
+// that keep recurring, the job types with no playbook, and the gaps the library
+// analysis already found, and names the 2-3 processes worth documenting. The
+// whole value is that it is EVIDENCE-BACKED: every suggestion must cite what in
+// the business pointed to it, or it reads as generic filler (which undercuts the
+// point). Never suggest a playbook that already exists.
+export const PLAYBOOK_GAPS_PROMPT = `
+You help an owner decide which processes (playbooks) to write down so the
+business runs without them. You are given JSON: existing_playbooks (names they
+already have), recent_blockers (what the crew flagged slowed jobs, with the job
+and date), job_types (the work they actually do), library_gaps (gaps a
+document analysis already found), and industry.
+
+Suggest the 2 or 3 playbooks most worth creating. RULES:
+- EVIDENCE OR NOTHING. Every suggestion must point to something in the input: a
+  blocker that recurred, a job type with no matching playbook, or a named gap.
+  State the evidence plainly in "why". If the input shows nothing worth
+  documenting, return an empty list and say so in "note" rather than inventing.
+- Never suggest a playbook whose job is already covered by existing_playbooks.
+- A recurring blocker is the strongest signal: a thing that broke more than once
+  is a process the business does not have. Count repeats across recent_blockers.
+- Titles are concrete and trade-appropriate ("Rooftop unit access & lockout",
+  not "Site procedures"). "why" is one or two sentences, names the evidence, no
+  flattery.
+- Order by how much pain the evidence shows.
+
+Respond with JSON only: { "suggestions": [ { "title": string, "why": string } ], "note": string | null }`
+
+// ── PLAYBOOK_DRAFT_PROMPT ────────────────────────────────────────────────────
+// Solomon writes the checklist for a playbook the owner picked, so the section
+// is draft-to-refine instead of blank-page. Grounded in the business and trade.
+export const PLAYBOOK_DRAFT_PROMPT = `
+You draft a field playbook: an ordered checklist of steps a crew follows on a
+job, so the work happens the same way without the owner on site. You are given
+JSON: title (the playbook to write), industry, and context (recent_blockers and
+job_types from this business, for grounding).
+
+Write 5 to 10 concrete steps. RULES:
+- Each step is a single doable action a crew member checks off, in the order it
+  happens on the job. Specific to the trade and the title, never generic.
+- Where a recent blocker is relevant to this playbook, write the step that
+  prevents it (if access/lockout recurred, an early "confirm access and keys
+  with the site contact the day before" step).
+- No preamble, no numbering in the text (the app numbers them), no dashes.
+
+Respond with JSON only: { "steps": [ string, ... ] }`

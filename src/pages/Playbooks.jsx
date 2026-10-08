@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { callClaude, SONNET } from '../lib/anthropic'
+import { buildAdvisorContext } from '../lib/advisorContext'
 
 /**
  * Playbooks — /playbooks
@@ -152,6 +154,10 @@ export default function Playbooks() {
   const [selectedId,  setSelectedId]  = useState(null)
   const [busy,        setBusy]        = useState(false)
   const [error,       setError]       = useState(null)
+  const [aiBusy,      setAiBusy]      = useState(false)
+  const [aiError,     setAiError]     = useState(null)
+  const [suggestions, setSuggestions] = useState(null) // { suggestions:[{title,why}], note } | null
+  const [draftTitle,  setDraftTitle]  = useState(null)  // title currently being drafted by Solomon
 
   // The "how it works" banner is dismissable — once the owner has internalised
   // the flow they don't need it taking up space. Persist the choice locally so
@@ -208,6 +214,77 @@ export default function Playbooks() {
   }
 
   const selected = templates.find(t => t.id === selectedId) || null
+
+  // ── Solomon: what should we document, from real history ──────────────────
+  // Reads the daily-log blockers that keep recurring, the jobs actually run,
+  // and the gaps the library analysis found, and names the playbooks worth
+  // writing. Evidence-backed by design — see PLAYBOOK_GAPS_PROMPT.
+  async function buildPlaybookContext() {
+    const ctx = await buildAdvisorContext(companyId, { userId: profile?.id }).catch(() => null)
+    const recent_blockers = (ctx?.daily_logs ?? [])
+      .filter(l => l.blockers)
+      .slice(0, 40)
+      .map(l => ({ text: l.blockers, job: l.job ?? null, date: l.date ?? null }))
+    const job_types = [...new Set((ctx?.recent_work ?? []).map(w => w.title).filter(Boolean))].slice(0, 25)
+    return {
+      industry:           ctx?.business?.industry ?? null,
+      existing_playbooks: templates.map(t => t.name).filter(Boolean),
+      recent_blockers,
+      job_types,
+      library_gaps:       ctx?.library_intelligence?.gaps ?? [],
+    }
+  }
+
+  async function askSolomon() {
+    setAiBusy(true); setAiError(null); setSuggestions(null)
+    try {
+      const context = await buildPlaybookContext()
+      const raw = await callClaude({
+        model: SONNET,
+        promptKey: 'PLAYBOOK_GAPS_PROMPT',
+        messages: [{ role: 'user', content: JSON.stringify(context) }],
+        maxTokens: 1200,
+        json: true,
+      })
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      setSuggestions({
+        suggestions: Array.isArray(parsed?.suggestions) ? parsed.suggestions : [],
+        note: parsed?.note ?? null,
+      })
+    } catch (e) {
+      setAiError(e.message || 'Could not reach Solomon. Try again.')
+    } finally {
+      setAiBusy(false)
+    }
+  }
+
+  async function draftWithSolomon(title) {
+    if (!title) return
+    setDraftTitle(title); setAiError(null)
+    try {
+      const context = await buildPlaybookContext()
+      const raw = await callClaude({
+        model: SONNET,
+        promptKey: 'PLAYBOOK_DRAFT_PROMPT',
+        messages: [{ role: 'user', content: JSON.stringify({
+          title,
+          industry: context.industry,
+          context: { recent_blockers: context.recent_blockers, job_types: context.job_types },
+        }) }],
+        maxTokens: 1500,
+        json: true,
+      })
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      const steps = (Array.isArray(parsed?.steps) ? parsed.steps : []).map(x => String(x).trim()).filter(Boolean)
+      if (!steps.length) throw new Error('Solomon did not return any steps. Try again.')
+      await createFromStarter({ name: title, description: 'Drafted with Solomon', items: steps.map(text => ({ text })) })
+      setSuggestions(prev => prev ? { ...prev, suggestions: prev.suggestions.filter(x => x.title !== title) } : prev)
+    } catch (e) {
+      setAiError(e.message || 'Could not draft that playbook. Try again.')
+    } finally {
+      setDraftTitle(null)
+    }
+  }
 
   // ── Template-level operations ──────────────────────────────────────────────
 
@@ -420,6 +497,47 @@ export default function Playbooks() {
 
           {/* ── Left pane: list of playbooks ─────────────────────────────── */}
           <aside className={`lg:col-span-4 ${selected && 'hidden lg:block'}`}>
+            {/* Ask Solomon — what to document, grounded in real history */}
+            <div className="mb-3 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-ink-100">
+                <p className="text-sm font-semibold text-ink-900">What should we write down?</p>
+                <p className="text-[11px] text-ink-500 mt-0.5 leading-snug">
+                  Solomon reads your job logs, the work you run, and what your documents are missing, and names the playbooks worth having.
+                </p>
+              </div>
+              <div className="px-4 py-3">
+                <button
+                  onClick={askSolomon}
+                  disabled={aiBusy}
+                  className="w-full text-xs font-semibold text-white bg-brand-700 hover:bg-brand-800 rounded-lg py-2 disabled:opacity-50"
+                >
+                  {aiBusy ? 'Solomon is looking…' : suggestions ? 'Ask again' : "Ask Solomon what we're missing"}
+                </button>
+                {aiError && <p className="mt-2 text-[11px] text-red-600">{aiError}</p>}
+                {suggestions && suggestions.suggestions.length === 0 && (
+                  <p className="mt-3 text-[11px] text-ink-500 leading-relaxed">
+                    {suggestions.note || 'Nothing jumps out yet. As your crew logs more jobs, Solomon has more to go on.'}
+                  </p>
+                )}
+                {suggestions && suggestions.suggestions.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {suggestions.suggestions.map((sg, i) => (
+                      <div key={i} className="p-3 border border-ink-150 rounded-lg bg-brand-50/30">
+                        <p className="text-sm font-semibold text-ink-900">{sg.title}</p>
+                        {sg.why && <p className="text-[11px] text-ink-600 mt-1 leading-snug">{sg.why}</p>}
+                        <button
+                          onClick={() => draftWithSolomon(sg.title)}
+                          disabled={!!draftTitle}
+                          className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
+                        >
+                          {draftTitle === sg.title ? 'Drafting…' : 'Draft this with Solomon →'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
 
               <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
