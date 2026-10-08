@@ -1179,7 +1179,6 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
           onClick={() => setExpanded(true)}
           className="w-full bg-white border border-dashed border-ink-300 hover:border-brand-400 hover:bg-brand-50/40 rounded-xl py-3 px-4 transition-colors text-left flex items-center gap-3"
         >
-          <span aria-hidden className="text-xl">🌙</span>
           <div className="flex-1">
             <p className="text-sm font-bold text-ink-900">Today's log</p>
             <p className="text-[11px] text-ink-500 leading-snug">How's today going? Add to it any time, the office reads it tomorrow.</p>
@@ -1194,7 +1193,6 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
     <section className="bg-white border border-ink-200 rounded-xl shadow-sm">
       <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between bg-gradient-to-r from-brand-50 to-transparent">
         <div className="flex items-center gap-2">
-          <span aria-hidden className="text-lg">🌙</span>
           <h2 className="text-sm font-bold text-ink-900">Today's log</h2>
         </div>
         <button
