@@ -264,7 +264,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // advisor turn.
     supabase
       .from('companies')
-      .select('roadmap_built_from')
+      .select('roadmap_built_from, log_metrics')
       .eq('id', companyId)
       .maybeSingle(),
     // ⭐ Daily logs — what actually happened on the jobs, in the crew's words.
@@ -285,7 +285,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .limit(20),
     supabase
       .from('daily_logs')
-      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, on_site_staff_ids, safety_note, injury, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, on_site_staff_ids, safety_note, injury, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note, metrics')
       .eq('company_id', companyId)
       .order('log_date', { ascending: false })
       .limit(20),
@@ -664,6 +664,8 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       percent_complete: l.percent_complete ?? null,
       unplanned_cost: l.unplanned_cost === true,
       unplanned_cost_note: l.unplanned_cost_note ?? null,
+      // Owner-defined numbers, resolved key -> label so Solomon reads them.
+      numbers: l.metrics ? Object.fromEntries(Object.entries(l.metrics).map(([k, v]) => [((coRes?.data?.log_metrics ?? []).find(m => m.key === k)?.label) ?? k, v])) : null,
       safety:      l.safety_note ?? null,
       // ⚠️ Surfaced plainly. Daniel: "the quicker Solomon knows the better."
       injury:      l.injury === true,

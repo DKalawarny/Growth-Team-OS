@@ -171,6 +171,7 @@ export default function StaffPortal() {
         injuryDetail: day.injuryDetail, incidentReportFiled: day.incidentReportFiled, flhaDone: day.flhaDone,
         onSiteStaffIds: day.onSiteStaffIds,
         scheduleStatus: day.scheduleStatus, percentComplete: day.percentComplete, unplannedCost: day.unplannedCost, unplannedCostNote: day.unplannedCostNote,
+        metrics: day.metrics,
       })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
@@ -349,7 +350,7 @@ export default function StaffPortal() {
     )
   }
 
-  const { staff, company, work_orders, recent_logs, crew } = state.data ?? {}
+  const { staff, company, work_orders, recent_logs, crew, metrics_defs } = state.data ?? {}
   const open       = (work_orders ?? []).filter(w => w.status !== 'done')
   const inProgress = (work_orders ?? []).filter(w => w.status === 'in_progress')
   const completed  = (work_orders ?? []).filter(w => w.status === 'done')
@@ -403,6 +404,7 @@ export default function StaffPortal() {
         <ShiftEndRecap
           workOrders={inProgress.length > 0 ? inProgress : [{ id: '__general__', title: 'Your day' }]}
           crew={crew ?? []}
+          metricDefs={metrics_defs ?? []}
           onSubmitDailyLog={submitDailyLog}
         />
 
@@ -1012,7 +1014,7 @@ function YesNo({ value, onChange }) {
   )
 }
 
-function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
+function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLog }) {
   const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
@@ -1022,6 +1024,7 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
   const [pctDrafts, setPctDrafts]         = useState({})   // { [woId]: percent complete }
   const [costDrafts, setCostDrafts]       = useState({})   // { [woId]: unplanned cost yes/no }
   const [costNoteDrafts, setCostNoteDrafts] = useState({})
+  const [metricDrafts, setMetricDrafts] = useState({})   // { [woId]: { [metricKey]: value } }
   // ⚠️ Day-level, not per-job. Who was on site and whether anyone got hurt are
   // facts about the DAY — asking them once per work order would get three
   // contradictory answers from the same person about the same crew.
@@ -1137,7 +1140,7 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id === '__general__' ? null : wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone, scheduleStatus: schedDrafts[wo.id] ?? null, percentComplete: pctDrafts[wo.id] ?? null, unplannedCost: costDrafts[wo.id] ?? null, unplannedCostNote: costNoteDrafts[wo.id] ?? null }))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id === '__general__' ? null : wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone, scheduleStatus: schedDrafts[wo.id] ?? null, percentComplete: pctDrafts[wo.id] ?? null, unplannedCost: costDrafts[wo.id] ?? null, unplannedCostNote: costNoteDrafts[wo.id] ?? null, metrics: metricDrafts[wo.id] ?? null }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
@@ -1148,6 +1151,7 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
         setPctDrafts({})
         setCostDrafts({})
         setCostNoteDrafts({})
+        setMetricDrafts({})
         setOnSiteIds(new Set())
         setWhoOnSite('')
         setSafetyNote('')
@@ -1377,6 +1381,17 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
                 {costDrafts[wo.id] === true && (
                   <textarea value={costNoteDrafts[wo.id] ?? ''} onChange={(e) => setCostNoteDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))} placeholder="Extra material, rework, equipment, standby…" rows={2} maxLength={4000} className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400" />
                 )}
+                {metricDefs.map(def => (
+                  <div key={def.key} className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-ink-500 leading-snug">{def.label}</span>
+                    <input
+                      type="number" inputMode="decimal"
+                      value={metricDrafts[wo.id]?.[def.key] ?? ''}
+                      onChange={(e) => setMetricDrafts(prev => ({ ...prev, [wo.id]: { ...(prev[wo.id] || {}), [def.key]: e.target.value } }))}
+                      className="w-24 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400"
+                    />
+                  </div>
+                ))}
               </div>
             </li>
           ))}

@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
       // Pull the company name so the page header can show "Working for {Acme}".
       const { data: company } = await admin
         .from('companies')
-        .select('id, name')
+        .select('id, name, log_metrics')
         .eq('id', staff.company_id)
         .maybeSingle()
 
@@ -346,6 +346,7 @@ Deno.serve(async (req) => {
         work_orders: workOrdersWithItems,
         recent_logs: recentLogs ?? [],
         crew: crew ?? [],
+        metrics_defs: Array.isArray(company?.log_metrics) ? company.log_metrics : [],
       })
     }
 
@@ -560,6 +561,16 @@ Deno.serve(async (req) => {
       }
       const unplannedCost = typeof body.unplannedCost === 'boolean' ? body.unplannedCost : null
       const unplannedCostNote = typeof body.unplannedCostNote === 'string' ? body.unplannedCostNote.trim().slice(0, MAX_COMMENT_LEN) : null
+      // Owner-defined custom numbers: { key: number }. Keep only finite numbers.
+      let metrics: Record<string, number> | null = null
+      if (body.metrics && typeof body.metrics === 'object') {
+        const clean: Record<string, number> = {}
+        for (const [k, v] of Object.entries(body.metrics)) {
+          const n = Number(v)
+          if (typeof k === 'string' && k && v !== '' && v !== null && Number.isFinite(n)) clean[k.slice(0, 40)] = n
+        }
+        if (Object.keys(clean).length) metrics = clean
+      }
 
       // Optional and deliberately loose — this is context for the owner, not a
       // timesheet. Anything unparseable is simply dropped rather than refused;
@@ -616,6 +627,7 @@ Deno.serve(async (req) => {
         percent_complete:      percentComplete,
         unplanned_cost:        unplannedCost,
         unplanned_cost_note:   unplannedCost ? (unplannedCostNote || null) : null,
+        metrics,
         hours_on_site:   hours,
         updated_at:      new Date().toISOString(),
       }

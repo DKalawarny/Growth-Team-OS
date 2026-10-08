@@ -51,6 +51,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
   const [bulkDays,  setBulkDays]  = useState([1, 2, 3, 4, 5])
   const [bulkHour,  setBulkHour]  = useState(16)
   const [bulkMsg,   setBulkMsg]   = useState('')
+  const [metrics,   setMetrics]   = useState([])
 
   useEffect(() => {
     if (!companyId) return
@@ -64,8 +65,8 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
         setSelected(new Set((data ?? []).filter(s => s.email).map(s => s.id)))
         setLoading(false)
       })
-    supabase.from('companies').select('timezone').eq('id', companyId).maybeSingle()
-      .then(({ data }) => { if (data?.timezone) setTz(data.timezone) })
+    supabase.from('companies').select('timezone, log_metrics').eq('id', companyId).maybeSingle()
+      .then(({ data }) => { if (data?.timezone) setTz(data.timezone); if (Array.isArray(data?.log_metrics)) setMetrics(data.log_metrics) })
   }, [companyId])
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -168,6 +169,14 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     await supabase.from('companies').update({ timezone: v }).eq('id', companyId)
   }
 
+  // Owner-defined daily numbers the crew reports (on top of the universal four).
+  function persistMetrics(list) {
+    supabase.from('companies').update({ log_metrics: list.filter(m => (m.label || '').trim()) }).eq('id', companyId)
+  }
+  const addMetric    = () => setMetrics(m => [...m, { key: 'm_' + Math.random().toString(36).slice(2, 8), label: '' }])
+  const updateMetric = (key, label) => setMetrics(m => m.map(x => (x.key === key ? { ...x, label } : x)))
+  const removeMetric = (key) => setMetrics(m => { const next = m.filter(x => x.key !== key); persistMetrics(next); return next })
+
   // "Today" in the company's timezone, so "Sent today" rolls over at local midnight.
   const localYmd = (d) => {
     try {
@@ -254,6 +263,27 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   {bulkMsg && <span className="text-[11px] text-green-700 font-medium">{bulkMsg}</span>}
                 </div>
                 <p className="text-[11px] text-ink-400 mt-2 leading-relaxed">Tick the people below, set the days and time, then Apply. Untick the night crew and set theirs on their own row.</p>
+              </div>
+              <div className="rounded-xl border border-ink-100 bg-white p-4">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Daily numbers your crew reports</div>
+                <p className="text-[11px] text-ink-400 mb-3">On top of the built-ins (on track, % done, unplanned cost, hours). Add your own, e.g. "Units installed".</p>
+                <div className="space-y-2">
+                  {metrics.map(m => (
+                    <div key={m.key} className="flex items-center gap-2">
+                      <input
+                        value={m.label}
+                        onChange={e => updateMetric(m.key, e.target.value)}
+                        onBlur={() => persistMetrics(metrics)}
+                        placeholder="e.g. Units installed"
+                        className="flex-1 rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                      />
+                      <button type="button" onClick={() => removeMetric(m.key)} className="text-ink-300 hover:text-red-500 p-1.5 flex-shrink-0" title="Remove">✕</button>
+                    </div>
+                  ))}
+                </div>
+                {metrics.length < 6 && (
+                  <button type="button" onClick={addMetric} className="mt-2 text-[12px] font-semibold text-brand-700 hover:text-brand-800">+ Add a number</button>
+                )}
               </div>
             </div>
           )}

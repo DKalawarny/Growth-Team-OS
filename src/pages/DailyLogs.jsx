@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note, metrics')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -99,13 +99,15 @@ export default function DailyLogs() {
 
     // Names are resolved client-side rather than joined, so a deleted staff
     // member leaves the log readable instead of taking it down with them.
-    const [{ data: staff }, { data: orders }] = await Promise.all([
+    const [{ data: staff }, { data: orders }, { data: co }] = await Promise.all([
       supabase.from('staff_members').select('id, name').eq('company_id', profile.company_id),
       supabase.from('work_orders').select('id, title').eq('company_id', profile.company_id),
+      supabase.from('companies').select('log_metrics').eq('id', profile.company_id).maybeSingle(),
     ])
     setJobs(orders ?? [])
     const staffById = new Map((staff ?? []).map(s => [s.id, s.name]))
     const woById    = new Map((orders ?? []).map(o => [o.id, o.title]))
+    const metricLabels = new Map(((co?.log_metrics) ?? []).map(m => [m.key, m.label]))
 
     const { data: noteRows } = await supabase
       .from('office_notes')
@@ -119,6 +121,7 @@ export default function DailyLogs() {
       ...l,
       person: staffById.get(l.staff_member_id) ?? 'Crew',
       job:    woById.get(l.work_order_id) ?? null,
+      numbers: l.metrics ? Object.entries(l.metrics).map(([k, v]) => ({ label: metricLabels.get(k) ?? k, value: v })) : [],
     })))
     setLoading(false)
   }, [profile?.company_id])
@@ -434,6 +437,13 @@ export default function DailyLogs() {
                     {log.unplanned_cost && (
                       <span className="text-red-700 font-medium">Unplanned cost{log.unplanned_cost_note ? `: ${log.unplanned_cost_note}` : ''}</span>
                     )}
+                  </div>
+                )}
+                {log.numbers?.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-ink-600">
+                    {log.numbers.map((n, i) => (
+                      <span key={i}><span className="text-ink-400">{n.label}:</span> <span className="font-semibold">{n.value}</span></span>
+                    ))}
                   </div>
                 )}
 
