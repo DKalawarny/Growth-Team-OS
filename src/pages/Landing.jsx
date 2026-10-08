@@ -335,12 +335,18 @@ function HeroSection() {
           ))}
         </div>
 
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
           <Link
             to="/signup"
             className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
             {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
+          </Link>
+          <Link
+            to="/demo"
+            className="px-10 py-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-base transition-colors"
+          >
+            See it in action
           </Link>
         </div>
 

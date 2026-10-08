@@ -5,114 +5,115 @@ import DecisionView from '../../components/tools/DecisionView'
 import { buildPageMeta, SITE_NAME } from '../../lib/seo'
 
 /**
- * /demo — a walkthrough Daniel can hand to someone without giving them a login.
+ * /demo — a walkthrough anyone can open without a login, so the product can
+ * sell itself over time. Daniel, 8 Oct: keep it clean and universal, no jargon,
+ * a thriving business so it reads as exciting rather than a warning.
  *
  * ⭐ TWO RULES THIS PAGE IS BUILT AROUND.
  *
  * 1. EVERY NUMBER HERE IS INVENTED, AND THE PAGE SAYS SO — twice, in plain
- *    sight, not in a footnote. This session already had to delete a fabricated
- *    founder story from /about that had been live for months. A demo full of
- *    realistic figures is the same trap wearing a different hat: it is only
- *    honest while the reader knows it is an example. Bridgewater Mechanical
- *    does not exist. There are no testimonials on this page and there will not
- *    be any until real customers give real quotes with their real names.
+ *    sight. A demo full of realistic figures is only honest while the reader
+ *    knows it is an example. Evergreen Grounds does not exist. There are no
+ *    testimonials here and there will not be until real customers give real
+ *    quotes with their real names.
  *
  * 2. IT RENDERS THE REAL COMPONENTS. The decision below is the actual
- *    DecisionView from the product, fed seeded data — not a screenshot and not
- *    a mock-up that will drift the first time the real one changes. What a
- *    visitor sees here is what they get when they sign in, which is the only
- *    kind of demo worth showing to someone who will later be a user.
+ *    DecisionView from the product fed seeded data, not a screenshot and not a
+ *    mock that drifts the first time the real one changes. What a visitor sees
+ *    here is what they get when they sign in.
  *
- * The example was chosen to be a mid-size trades business because that is the
- * network Daniel actually has, but the page never claims trades are the niche —
- * the buyer is defined by conviction, not sector. See lib/seo.js.
+ * ⭐ The example is a thriving landscaping company on purpose: everyone
+ *    understands it with no jargon, and the question is about GROWTH, so
+ *    Solomon reads as the sharp advisor who makes a good business bigger
+ *    without being reckless. He still names the real constraint and what he
+ *    cannot see, because an advisor that only flatters is the whole thing this
+ *    product refuses to be. The buyer is defined by conviction, not sector
+ *    (see lib/seo.js); landscaping is just the clearest example to show.
+ *
+ * ⚠️ No em dashes in anything a visitor reads (Daniel, "looks AI").
  */
 
 const DEMO_META = buildPageMeta({
   title:       `See it work — ${SITE_NAME}`,
-  description: 'A worked example: what Solomon says when an owner asks whether to hire, using a fictional company\'s real-shaped numbers.',
+  description: 'A worked example: what Solomon says when a growing owner asks whether to expand, using a fictional company’s real-shaped numbers.',
   path:        '/demo',
 })
 
 // ── The example company ───────────────────────────────────────────────────────
-// Invented. Deliberately NOT Deconstructors — that is a real company Daniel is
-// exiting, and using it here would imply a customer relationship and a
-// endorsement that do not exist.
-// ⚠️ The article before CO.trade is hardcoded as "a" in the copy below. It read
-// "an commercial HVAC…" on the live page until this was caught. If you change
-// `trade` to something vowel-initial, fix the article too — this is prose, not
-// a template engine, and it will not do it for you.
+// Invented. A healthy, growing landscaping and property-maintenance company.
+// "a landscaping" reads correctly; if you change `trade` to a vowel-initial
+// word, fix the article in Step 1, this is prose, not a template engine.
 const CO = {
-  name:     'Bridgewater Mechanical',
-  trade:    'commercial HVAC and refrigeration',
-  where:    'Kamloops, BC',
-  people:   11,
-  revenue:  '$3.4M',
-  margin:   '7%',
+  name:     'Evergreen Grounds',
+  trade:    'landscaping and property maintenance',
+  where:    'Abbotsford, BC',
+  people:   18,
+  revenue:  '$2.8M',
+  margin:   '16%',
 }
 
 const NUMBERS = [
-  { label: 'Revenue, trailing 12',  value: '$3.4M',  note: 'up 18% on last year' },
-  { label: 'Net margin',            value: '7%',     note: 'down from 11%' },
-  { label: 'Cash on hand',          value: '$81k',   note: '5.5 weeks of payroll' },
-  { label: 'Receivables over 60d',  value: '$134k',  note: '61% sits with two GCs' },
+  { label: 'Revenue, trailing 12',   value: '$2.8M',  note: 'up 22% on last year' },
+  { label: 'Net margin',             value: '16%',    note: 'up from 12%' },
+  { label: 'Recurring maintenance',  value: '64%',    note: 'of revenue, renews yearly' },
+  { label: 'Cash on hand',           value: '$240k',  note: 'about 9 weeks of payroll' },
 ]
 
 // The real Advisor conversation shape, abbreviated.
 const CHAT = [
-  { role: 'user', text: 'Should I take on the Riverside contract? It’s $480k over eight months.' },
+  { role: 'user', text: 'We’re growing fast and the commercial side is busy. I want to add a second crew and chase the big strata contracts. Can we pull it off?' },
   {
     role: 'assistant',
-    text: 'Before the yes or no, that contract is 14% of your trailing revenue and Riverside pays on 60-day terms. You are already carrying $134k over 60 days, and $82k of that is one GC.\n\nSo the real question is not whether the work is good. It is whether you can float eight months of labour and materials while your two slowest payers are already sitting on six weeks of your cash.\n\nWhat are their payment terms, and is there a holdback?',
+    text: 'The money says yes, and that is the easy part. Recurring maintenance is 64% of your revenue and it renews, your margin went from 12 to 16 as that book grew, and you have about nine weeks of payroll in the bank. A second crew is backed by income you can count on, not a hope.\n\nSo the question is not whether you can afford it. It is who runs the second crew to the standard that is winning you those renewals. Right now that standard is you.\n\nWho on the crew today could run a site the way you do, and have you asked them?',
   },
-  { role: 'user', text: '60 days, 10% holdback until substantial completion.' },
+  { role: 'user', text: 'Marcus could. He basically runs our biggest site already. I haven’t asked him though.' },
   {
     role: 'assistant',
-    text: 'Then at peak you would be out roughly $95k–$110k before the first cheque clears, and the holdback keeps $48k out of reach until the end.\n\nYou have $81k on hand. That does not work without either a deposit, a draw schedule, or the overdraft, and using the overdraft to fund a contract at 7% margin means the financing cost eats a meaningful slice of the profit.\n\nI would go back to Riverside and ask for a 15% mobilisation deposit and monthly draws. If they say no to both, this contract is a cash-flow problem wearing a revenue costume.\n\nThat is a read on the figures you have given me. Your bookkeeper should confirm the receivables ageing before you sign anything.',
+    text: 'Then that conversation is the first move, before any hiring. Promote Marcus, give him six weeks running the current crew while you step back, and you will know before the March bids whether the quality holds without you on site.\n\nIf it holds, a second crew is just a staffing exercise and the numbers already say go. If it does not, you have learned that for the cost of a conversation instead of a year of payroll.\n\nThe one thing I would not do is crew up and promote at the same time under bid pressure. That is how the standard slips on both crews at once.',
   },
 ]
 
 // Real shape, fed to the real component.
 const DECISION = {
-  decision: 'Whether to hire a second service tech or keep running overtime',
-  stakes:   'Overtime is currently costing about $6,200 a month and is concentrated on two people. A tech is roughly $78k all-in. The question is not really the money, it is whether the work is durable enough to carry a permanent seat.',
+  decision: 'Whether to add a second maintenance crew now, or wait until spring',
+  stakes:   'The commercial maintenance book has grown faster than one crew can service, and two large strata contracts go to bid in March. A second crew is roughly $190k all in for the year. The question is not whether the work is there. It is whether the business can run a second crew to the same standard without the owner on it.',
   angles: [
     {
       name:          'The cash case',
-      leaning:       'against',
-      argument:      'At 7% net margin a $78k seat needs about $1.1M of additional revenue to carry itself before it improves anything. You do not have that booked. You have it hoped for. Overtime is expensive per hour but it is variable, and variable is what a business with 5.5 weeks of cash should be buying right now.',
-      weakest_point: 'This treats the overtime as if it were free of risk. It is not. It is concentrated on two people, and if either leaves the cost of replacing them lands all at once.',
+      leaning:       'for',
+      argument:      'Recurring maintenance is 64% of revenue and it renews, so a second crew is backed by predictable income rather than a forecast. At 16% net and $240k in the bank you can carry the ramp without touching the line of credit. This is about as safe as an expansion gets.',
+      weakest_point: 'It assumes the two strata bids land. If both go elsewhere, you have sized a crew for work that did not arrive, and the ramp cost shows up anyway.',
     },
     {
       name:          'The people case',
-      leaning:       'for',
-      argument:      'Both techs carrying the overtime are past nine months of it. That is the point where good people start taking calls from competitors, and losing either one costs you more than the seat does: a replacement search, six weeks of reduced capacity, and the institutional knowledge that walks out with them.',
-      weakest_point: 'You have not actually asked them how they feel about it. This is inferred from the hours, not from a conversation, and the conversation is free.',
+      leaning:       'mixed',
+      argument:      'What actually gates a second crew is not money, it is a lead who runs a site the way you would. You have one strong candidate in Marcus, but promoting him pulls your best hand off the crew that is already earning the renewals, so the move has a cost on both sides.',
+      weakest_point: 'You have not asked Marcus whether he wants to lead. This is read off how he already runs the big site, not off a conversation, and the conversation is free.',
     },
     {
       name:          'The margin case',
-      leaning:       'mixed',
-      argument:      'Margin fell from 11% to 7% while revenue rose 18%. That pattern usually means the extra work is being won at prices that do not carry the cost of delivering it. Another tech would add capacity to a machine that is currently converting growth into less profit, which is not obviously an improvement.',
-      weakest_point: 'The margin drop might be materials inflation rather than pricing, in which case hiring is neutral to it and this angle is aimed at the wrong problem.',
+      leaning:       'for',
+      argument:      'Margin rose from 12% to 16% as the recurring book grew, because routed maintenance is more profitable per hour than one-off installs. A second crew weighted to maintenance compounds the exact thing already working for you.',
+      weakest_point: 'A new crew runs below the mature margin while its routes fill. Model year one at about 11%, not 16%, or the payback looks better on paper than it will in the first season.',
     },
   ],
-  conflict: 'The cash case and the people case point in opposite directions, and both are right. The tension is real: the safest thing for the balance sheet this quarter is also the thing most likely to cost you a tech next quarter.',
+  conflict: 'The cash and margin cases both say go now. The people case says the real constraint is a single promotion, and making it too fast could cost you the crew that is carrying the renewals. The money is ready before the organisation is.',
   landing: {
-    recommendation: 'Do not hire yet. Have the conversation with both techs this week, and fix the pricing before you add capacity to it.',
-    reasoning:      'The margin drop is the actual problem, a second tech added to 7% work produces more 7% work. Find out whether the drop is pricing or materials first, because that answer changes what the right hire even is. Meanwhile the retention risk is real but it is not yet a resignation, and a direct conversation buys you information for nothing.',
-    my_weakest_point: 'I am assuming you have four to six weeks before the retention risk becomes a resignation. If either tech is already interviewing, this recommendation is wrong and the sequencing should flip.',
+    recommendation: 'Add the crew, but promote and settle Marcus first, and time the hire to the March bids rather than ahead of them.',
+    reasoning:      'You can plainly afford it, so money is not the deciding factor, the crew lead is. Promote Marcus now, give him six weeks running the existing crew with you stepping back, and you will know before March whether the standard holds without you. If it does, the second crew is a staffing exercise. If it does not, you found that out for the price of a conversation.',
+    my_weakest_point: 'I am treating the March bids as the trigger. If a contract comes up sooner, the sequence compresses and you may have to promote and crew up at once, which is the one thing this plan is built to avoid.',
   },
   cannot_see: [
-    'Whether the two techs are actually unhappy, or just tired in a way that passes',
-    'Whether the margin drop is pricing, materials, or job mix. Your books would tell you and I have not seen the job-level costing',
-    'What is in your pipeline past the next eight weeks',
+    'Whether Marcus actually wants to lead, or is happy on the tools',
+    'How the two strata bids are really trending. Your estimator would have a feel for the win odds',
+    'Whether the current crew keeps its renewal rate if its best hand moves up',
   ],
   next_asks: [
-    { ask: 'Pull the last six months of job costing and split margin by job type', why: 'Tells you whether the drop is pricing or a specific kind of work' },
-    { ask: 'Ask both techs directly how long they want to keep this up', why: 'Costs nothing and replaces the biggest assumption in this answer' },
-    { ask: 'Confirm the Riverside terms before it changes the cash picture', why: 'A $480k contract on 60-day terms would change what you can afford' },
+    { ask: 'Ask Marcus this week whether he wants to run a crew', why: 'The whole plan rests on it and the conversation costs nothing' },
+    { ask: 'Put a realistic win probability on the two March bids', why: 'It decides whether you crew up ahead of them or after' },
+    { ask: 'Model the second crew at 11% first-year margin, not 16%', why: 'A new route runs below mature margin until it fills' },
   ],
-  drawn_from: ['Your QuickBooks figures', 'Roadmap milestones', '9 months of overtime records', 'Two earlier conversations about pricing'],
+  drawn_from: ['Your QuickBooks figures', 'The maintenance contract renewals', 'Roadmap milestones', 'Two earlier talks about promoting from the crew'],
 }
 
 export default function Demo() {
@@ -138,9 +139,9 @@ export default function Demo() {
             What it actually looks like<br />when you ask.
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Below is a real walkthrough of the product, the same screens and the
-            same components a signed-in owner sees. The only difference is that
-            the business is made up.
+            Below is a walkthrough of the product, the same screens and the same
+            components a signed-in owner sees. The only difference is that the
+            business is made up.
           </p>
         </header>
 
@@ -157,10 +158,10 @@ export default function Demo() {
         {/* ── The setup ───────────────────────────────────────────────────── */}
         <Step n="1" title="What Solomon already knows">
           <p className="text-gray-700 leading-relaxed mb-5">
-            {CO.name} is a {CO.trade} contractor in {CO.where}, {CO.people} people,
-            about {CO.revenue} a year at {CO.margin} net. The owner connected
-            QuickBooks and answered the setup questions once. Nothing here was
-            re-typed for this conversation.
+            {CO.name} is a {CO.trade} company in {CO.where}, {CO.people} people,
+            about {CO.revenue} a year at {CO.margin} net and growing. The owner
+            connected QuickBooks and answered the setup questions once. Nothing
+            here was re-typed for this conversation.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {NUMBERS.map(n => (
@@ -177,7 +178,7 @@ export default function Demo() {
         <Step
           n="2"
           title="He answers the question underneath the question"
-          blurb="The owner asks about a contract. Solomon starts with the thing that actually decides it, and ends by naming what he has not checked."
+          blurb="The owner asks about growing. Solomon starts from what is actually strong, names the one thing that gates it, and ends by asking the question that decides it."
         >
           <div className="rounded-2xl border border-gray-200 bg-[#F6F8F8] p-4 sm:p-5 flex flex-col gap-3">
             {CHAT.map((m, i) => (
@@ -200,16 +201,16 @@ export default function Demo() {
             ))}
           </div>
           <p className="text-[12px] text-gray-400 mt-3 leading-relaxed">
-            Note the last line of his answer. Solomon names the figure he is
-            relying on and who should check it, because an answer you cannot
-            audit is not much use.
+            He starts from the money, which is strong, then moves straight to the
+            thing that actually decides it. He is not talking you out of growing,
+            he is making the growth hold.
           </p>
         </Step>
 
         {/* ── The decision tool — the REAL component ───────────────────────── */}
         <Step
           n="3"
-          title="On the hard calls, he argues it more than one way"
+          title="On the big calls, he argues it more than one way"
           blurb="This is the actual output, rendered by the same component the product uses. He gives every angle its own weakest point, says where he lands, and lists what he cannot see."
         >
           <div className="rounded-2xl border border-gray-200 bg-[#F6F8F8] p-4 sm:p-6">
@@ -225,10 +226,10 @@ export default function Demo() {
         >
           <div className="rounded-2xl border border-gray-200 bg-white divide-y divide-gray-100">
             {[
-              ['Decision', 'Held off hiring a second tech in August pending job-costing review'],
-              ['Constraint', 'Will not use the overdraft to fund contract work'],
-              ['Person', 'Two service techs carrying sustained overtime since November'],
-              ['Commitment', 'Pricing review before adding any capacity'],
+              ['Decision', 'Promote Marcus to crew lead before adding a second crew'],
+              ['Constraint', 'Will not crew up and promote at the same time under bid pressure'],
+              ['Person', 'Marcus runs the largest maintenance site, strong candidate to lead'],
+              ['Commitment', 'Six weeks with the owner stepping back, to test the standard before March'],
             ].map(([kind, text]) => (
               <div key={text} className="flex gap-4 px-5 py-3.5">
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-brand-700 pt-1 w-20 flex-shrink-0">{kind}</span>
@@ -260,7 +261,7 @@ export default function Demo() {
           <p className="text-[12px] text-gray-400 mt-5">
             See the{' '}
             <Link to="/terms" className="underline hover:text-gray-600">pilot agreement</Link>
-            {' '}·{' '}
+            {' '}&middot;{' '}
             <Link to="/pricing" className="underline hover:text-gray-600">what is included</Link>
           </p>
         </div>
