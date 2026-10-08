@@ -1355,7 +1355,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
                   placeholder="Hours"
                   className="w-24 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
                 />
-                <span className="text-[11px] text-ink-400">on site, optional</span>
+                <span className="text-[11px] text-ink-400">on site</span>
               </div>
               <div className="mt-2 pt-2 border-t border-ink-100 space-y-2">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -1372,7 +1372,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="number" min="0" max="100" inputMode="numeric" value={pctDrafts[wo.id] ?? ''} onChange={(e) => setPctDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))} placeholder="% done" className="w-20 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400" />
-                  <span className="text-[11px] text-ink-400">how far along, optional</span>
+                  <span className="text-[11px] text-ink-400">how far along</span>
                 </div>
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="text-[11px] text-ink-500">Any unplanned cost today?</span>
