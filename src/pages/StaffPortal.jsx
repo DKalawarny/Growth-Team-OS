@@ -371,25 +371,20 @@ export default function StaffPortal() {
 
       <main className="px-5 pt-5 space-y-6">
 
-        {/* Open tasks — these are the things the crew is actively working
-            on. Empty state is encouraging: "you're all caught up" reads
-            better than "no tasks" to someone who just finished a long job. */}
-        <section>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500 mb-2.5">
-            To do {open.length > 0 && <span className="text-ink-400">· {open.length}</span>}
-          </h2>
-          {open.length === 0 ? (
-            <div className="bg-white border border-dashed border-ink-200 rounded-xl p-6 text-center text-sm text-ink-500">
-              You're all caught up. Nothing new from your manager yet.
-            </div>
-          ) : (
+        {/* Open tasks — hidden entirely when nothing is assigned, so a crew
+            member who only uses the daily log never sees an empty shelf. */}
+        {open.length > 0 && (
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500 mb-2.5">
+              To do <span className="text-ink-400">· {open.length}</span>
+            </h2>
             <ul className="space-y-2.5">
               {open.map(w => (
                 <WorkOrderCard key={w.id} order={w} onSetStatus={setStatus} onToggleChecklistItem={toggleChecklistItem} onAddStepComment={addStepComment} />
               ))}
             </ul>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* End-of-shift recap — appears once the crew has at least one
             in-progress job. The crew taps it when they're wrapping up to
