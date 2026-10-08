@@ -361,15 +361,17 @@ export default function StaffPortal() {
       {/* Header — kept short. The crew's name + which company they're
           working for is all the orientation needed. */}
       <header className="bg-white border-b border-ink-200 px-5 py-4 sticky top-0 z-10">
-        <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">
-          {company?.name ? `Working for ${company.name}` : 'Your tasks'}
-        </p>
-        <h1 className="text-lg font-bold text-ink-900 leading-snug mt-0.5">
-          Hi {staff?.name?.split(' ')[0] || 'team'}
-        </h1>
+        <div className="max-w-xl mx-auto w-full">
+          <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">
+            {company?.name ? `Working for ${company.name}` : 'Your tasks'}
+          </p>
+          <h1 className="text-lg font-bold text-ink-900 leading-snug mt-0.5">
+            Hi {staff?.name?.split(' ')[0] || 'team'}
+          </h1>
+        </div>
       </header>
 
-      <main className="px-5 pt-5 space-y-6">
+      <main className="px-5 pt-5 space-y-6 max-w-xl mx-auto w-full">
 
         {/* Open tasks — hidden entirely when nothing is assigned, so a crew
             member who only uses the daily log never sees an empty shelf. */}
@@ -1000,11 +1002,10 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * crew member moves through their thoughts at end-of-shift.
  */
 function YesNo({ value, onChange }) {
-  const base = 'text-[11px] font-semibold px-3 py-1 rounded-md border transition-colors'
   return (
-    <div className="flex items-center gap-1.5 flex-shrink-0">
-      <button type="button" onClick={() => onChange(true)} className={`${base} ${value === true ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>Yes</button>
-      <button type="button" onClick={() => onChange(false)} className={`${base} ${value === false ? 'bg-ink-700 text-white border-ink-700' : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>No</button>
+    <div className="inline-flex rounded-lg bg-ink-100 p-0.5 flex-shrink-0">
+      <button type="button" onClick={() => onChange(true)} className={`text-[11px] font-semibold px-3.5 py-1 rounded-md transition-all ${value === true ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500 hover:text-ink-800'}`}>Yes</button>
+      <button type="button" onClick={() => onChange(false)} className={`text-[11px] font-semibold px-3.5 py-1 rounded-md transition-all ${value === false ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500 hover:text-ink-800'}`}>No</button>
     </div>
   )
 }
@@ -1357,12 +1358,12 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
                 <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Progress &amp; cost</p>
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <span className="text-[11px] text-ink-500">On track?</span>
-                  <div className="flex gap-1">
+                  <div className="inline-flex rounded-lg bg-ink-100 p-0.5">
                     {[['ahead', 'Ahead'], ['on', 'On track'], ['behind', 'Behind']].map(([v, l]) => {
                       const on = schedDrafts[wo.id] === v
                       return (
                         <button key={v} type="button" onClick={() => setSchedDrafts(prev => ({ ...prev, [wo.id]: on ? null : v }))}
-                          className={`text-[11px] font-semibold px-2 py-1 rounded-md border transition-colors ${on ? (v === 'behind' ? 'bg-red-600 text-white border-red-600' : 'bg-teal-600 text-white border-teal-600') : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>{l}</button>
+                          className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all ${on ? (v === 'behind' ? 'bg-red-500 text-white shadow-sm' : 'bg-white text-ink-900 shadow-sm') : 'text-ink-500 hover:text-ink-800'}`}>{l}</button>
                       )
                     })}
                   </div>
