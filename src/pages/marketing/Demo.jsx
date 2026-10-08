@@ -248,23 +248,25 @@ export default function Demo() {
              the conviction lives in behaviour; /about is where it is findable. */}
         <section className="mt-16 rounded-2xl border border-gray-200 bg-gray-50 p-7 sm:p-9">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-4 leading-tight">
-            Why it answers like this
+            Why it cares about more than the money
           </h2>
           <div className="space-y-4 text-[16px] leading-[1.7] text-gray-700">
             <p>
-              Most business advice treats the company as a machine for producing a
-              number, and everything else, the wages, the estimates, whether it is a
-              decent place to work, as overhead on the way there.
+              Most business tools treat your company like a machine for making a
+              number, and treat your people, your reputation, your peace, as the
+              cost of getting there.
             </p>
             <p>
-              Solomon holds you to your margins as hard as any CFO would. It will also
-              tell you what the job you went back and fixed for free actually cost you,
-              and whether the people who work for you still want to be here in a year.
+              Solomon won&rsquo;t. The number matters, and it will be as hard-nosed
+              about your margins as anyone you&rsquo;d pay. But it also watches the
+              things that never fit in a column: the people who show up for you, the
+              corners you wouldn&rsquo;t cut, whether this is still a good place to
+              spend a life.
             </p>
             <p className="text-gray-900 font-medium">
-              It will not tell you that running the business this way makes you more
-              money. Nobody can promise that. It will tell you what it costs, and
-              whether you can afford it.
+              It won&rsquo;t tell you that running it this way makes you more money,
+              nobody honestly can. It&rsquo;ll tell you what it costs, and help you
+              build something you&rsquo;d be proud to hand on.
             </p>
           </div>
           <Link to="/about" className="inline-block mt-6 text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
