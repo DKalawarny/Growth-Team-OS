@@ -285,7 +285,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .limit(20),
     supabase
       .from('daily_logs')
-      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, on_site_staff_ids, safety_note, injury')
+      .select('log_date, what_happened, blockers, hours_on_site, staff_member_id, work_order_id, pm_note, reviewed_at, who_on_site, on_site_staff_ids, safety_note, injury, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note')
       .eq('company_id', companyId)
       .order('log_date', { ascending: false })
       .limit(20),
@@ -658,6 +658,12 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       // ⭐ Structured: who the crew tapped as on site. Resolved to names so
       // Solomon can reason about who worked where, not just read free text.
       on_site: (l.on_site_staff_ids ?? []).map(id => (staffRes?.data ?? []).find(m => m.id === id)?.name).filter(Boolean),
+      // ⭐ Cost + schedule signals, paired with the job money above. The danger
+      // pattern is behind + unplanned cost on the same job two days running.
+      schedule: l.schedule_status ?? null,          // ahead | on | behind
+      percent_complete: l.percent_complete ?? null,
+      unplanned_cost: l.unplanned_cost === true,
+      unplanned_cost_note: l.unplanned_cost_note ?? null,
       safety:      l.safety_note ?? null,
       // ⚠️ Surfaced plainly. Daniel: "the quicker Solomon knows the better."
       injury:      l.injury === true,

@@ -91,7 +91,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(100)
@@ -421,6 +421,19 @@ export default function DailyLogs() {
                   <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Got in the way</p>
                     <p className="text-[14px] text-ink-800 mt-1 leading-relaxed whitespace-pre-wrap">{log.blockers}</p>
+                  </div>
+                )}
+                {(log.schedule_status || log.percent_complete != null || log.unplanned_cost) && (
+                  <div className="flex flex-wrap items-center gap-2 text-[12px]">
+                    {log.schedule_status && (
+                      <span className={`px-2 py-0.5 rounded-full font-semibold ${log.schedule_status === 'behind' ? 'bg-red-100 text-red-700' : log.schedule_status === 'ahead' ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-600'}`}>
+                        {log.schedule_status === 'behind' ? 'Behind' : log.schedule_status === 'ahead' ? 'Ahead' : 'On track'}
+                      </span>
+                    )}
+                    {log.percent_complete != null && <span className="text-ink-500">{log.percent_complete}% done</span>}
+                    {log.unplanned_cost && (
+                      <span className="text-red-700 font-medium">Unplanned cost{log.unplanned_cost_note ? `: ${log.unplanned_cost_note}` : ''}</span>
+                    )}
                   </div>
                 )}
 

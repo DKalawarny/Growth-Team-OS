@@ -170,6 +170,7 @@ export default function StaffPortal() {
         whoOnSite: day.whoOnSite, safetyNote: day.safetyNote, injury: day.injury,
         injuryDetail: day.injuryDetail, incidentReportFiled: day.incidentReportFiled, flhaDone: day.flhaDone,
         onSiteStaffIds: day.onSiteStaffIds,
+        scheduleStatus: day.scheduleStatus, percentComplete: day.percentComplete, unplannedCost: day.unplannedCost, unplannedCostNote: day.unplannedCostNote,
       })
       return res?.ok ? { ok: true } : { ok: false }
     } catch {
@@ -1017,6 +1018,10 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
   const [blockerDrafts, setBlockerDrafts] = useState({})   // { [workOrderId]: what got in the way }
   const [hourDrafts, setHourDrafts]       = useState({})   // { [workOrderId]: hours on site }
+  const [schedDrafts, setSchedDrafts]     = useState({})   // { [woId]: 'ahead'|'on'|'behind' }
+  const [pctDrafts, setPctDrafts]         = useState({})   // { [woId]: percent complete }
+  const [costDrafts, setCostDrafts]       = useState({})   // { [woId]: unplanned cost yes/no }
+  const [costNoteDrafts, setCostNoteDrafts] = useState({})
   // ⚠️ Day-level, not per-job. Who was on site and whether anyone got hurt are
   // facts about the DAY — asking them once per work order would get three
   // contradictory answers from the same person about the same crew.
@@ -1132,13 +1137,17 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
       // into a single error message rather than per-WO callouts; this is
       // an end-of-shift convenience flow, not a place to triage.
       const results = await Promise.all(
-        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id === '__general__' ? null : wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone }))
+        toSend.map(({ wo, text, blockers, hours }) => onSubmitDailyLog(wo.id === '__general__' ? null : wo.id, text, blockers, hours, { whoOnSite, onSiteStaffIds: [...onSiteIds], safetyNote, injury, injuryDetail, incidentReportFiled: reportFiled, flhaDone, scheduleStatus: schedDrafts[wo.id] ?? null, percentComplete: pctDrafts[wo.id] ?? null, unplannedCost: costDrafts[wo.id] ?? null, unplannedCostNote: costNoteDrafts[wo.id] ?? null }))
       )
       const failed = results.filter(r => !r?.ok)
       if (failed.length === 0) {
         setDrafts({})
         setBlockerDrafts({})
         setHourDrafts({})
+        setSchedDrafts({})
+        setPctDrafts({})
+        setCostDrafts({})
+        setCostNoteDrafts({})
         setOnSiteIds(new Set())
         setWhoOnSite('')
         setSafetyNote('')
@@ -1343,6 +1352,31 @@ function ShiftEndRecap({ workOrders, crew = [], onSubmitDailyLog }) {
                   className="w-24 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
                 />
                 <span className="text-[11px] text-ink-400">on site, optional</span>
+              </div>
+              <div className="mt-2 pt-2 border-t border-ink-100 space-y-2">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-[11px] text-ink-500">On track?</span>
+                  <div className="flex gap-1">
+                    {[['ahead', 'Ahead'], ['on', 'On track'], ['behind', 'Behind']].map(([v, l]) => {
+                      const on = schedDrafts[wo.id] === v
+                      return (
+                        <button key={v} type="button" onClick={() => setSchedDrafts(prev => ({ ...prev, [wo.id]: on ? null : v }))}
+                          className={`text-[11px] font-semibold px-2 py-1 rounded-md border transition-colors ${on ? (v === 'behind' ? 'bg-red-600 text-white border-red-600' : 'bg-teal-600 text-white border-teal-600') : 'bg-white text-ink-600 border-ink-200 hover:bg-ink-50'}`}>{l}</button>
+                      )
+                    })}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="number" min="0" max="100" inputMode="numeric" value={pctDrafts[wo.id] ?? ''} onChange={(e) => setPctDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))} placeholder="% done" className="w-20 text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400" />
+                  <span className="text-[11px] text-ink-400">how far along, optional</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-[11px] text-ink-500">Any unplanned cost today?</span>
+                  <YesNo value={costDrafts[wo.id] ?? null} onChange={(v) => setCostDrafts(prev => ({ ...prev, [wo.id]: v }))} />
+                </div>
+                {costDrafts[wo.id] === true && (
+                  <textarea value={costNoteDrafts[wo.id] ?? ''} onChange={(e) => setCostNoteDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))} placeholder="Extra material, rework, equipment, standby…" rows={2} maxLength={4000} className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400" />
+                )}
               </div>
             </li>
           ))}

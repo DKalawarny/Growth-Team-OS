@@ -551,6 +551,15 @@ Deno.serve(async (req) => {
       const onSiteStaffIds = Array.isArray(body.onSiteStaffIds)
         ? body.onSiteStaffIds.filter((x: unknown) => typeof x === 'string').slice(0, 50)
         : null
+      // Cost + schedule signals (per job). Loose parsing: context, not a timesheet.
+      const scheduleStatus = ['ahead', 'on', 'behind'].includes(body.scheduleStatus) ? body.scheduleStatus : null
+      let percentComplete: number | null = null
+      if (body.percentComplete !== undefined && body.percentComplete !== null && body.percentComplete !== '') {
+        const n = Math.round(Number(body.percentComplete))
+        if (Number.isFinite(n) && n >= 0 && n <= 100) percentComplete = n
+      }
+      const unplannedCost = typeof body.unplannedCost === 'boolean' ? body.unplannedCost : null
+      const unplannedCostNote = typeof body.unplannedCostNote === 'string' ? body.unplannedCostNote.trim().slice(0, MAX_COMMENT_LEN) : null
 
       // Optional and deliberately loose — this is context for the owner, not a
       // timesheet. Anything unparseable is simply dropped rather than refused;
@@ -603,6 +612,10 @@ Deno.serve(async (req) => {
         injury_detail:         injury ? (injuryDetail || null) : null,
         incident_report_filed: injury ? incidentReportFiled : null,
         flha_done:             flhaDone,
+        schedule_status:       scheduleStatus,
+        percent_complete:      percentComplete,
+        unplanned_cost:        unplannedCost,
+        unplanned_cost_note:   unplannedCost ? (unplannedCostNote || null) : null,
         hours_on_site:   hours,
         updated_at:      new Date().toISOString(),
       }
