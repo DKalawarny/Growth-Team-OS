@@ -778,6 +778,11 @@ function RecentLogRow({ log, jobTitle, onEdit }) {
           <p className="text-[13px] text-ink-800 leading-snug">{log.what_happened}</p>
           {log.blockers && <p className="text-[12px] text-ink-500 mt-1 leading-snug">Got in the way: {log.blockers}</p>}
           {log.hours_on_site != null && <p className="text-[12px] text-ink-400 mt-0.5">{log.hours_on_site}h on site</p>}
+          {log.office_note && (
+            <div className="mt-2 rounded-md bg-brand-50 border border-brand-100 px-2.5 py-2 text-[12px] text-ink-700 leading-snug">
+              <span className="font-semibold text-brand-700">From the office:</span> {log.office_note}
+            </div>
+          )}
         </>
       ) : (
         <div className="space-y-2 mt-1">

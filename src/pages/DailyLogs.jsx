@@ -108,6 +108,7 @@ export default function DailyLogs() {
   const [logs, setLogs]       = useState([])
   const [loading, setLoading] = useState(true)
   const [drafts, setDrafts]   = useState({})   // { [logId]: text }
+  const [shareDrafts, setShareDrafts] = useState({}) // { [logId]: bool } crew-visible toggle
   const [saving, setSaving]   = useState(null) // logId currently saving
 
   // Office notes — the day-to-day things that are not about any one job.
@@ -129,7 +130,7 @@ export default function DailyLogs() {
     if (!profile?.company_id) return
     const { data, error } = await supabase
       .from('daily_logs')
-      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note, metrics')
+      .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, pm_note_shared, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note, metrics')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
       .limit(limit)
@@ -172,14 +173,16 @@ export default function DailyLogs() {
     const { error } = await supabase
       .from('daily_logs')
       .update({
-        pm_note:     note || null,
-        reviewed_by: profile.id,
-        reviewed_at: new Date().toISOString(),
+        pm_note:        note || null,
+        pm_note_shared: shareDrafts[log.id] ?? (log.pm_note_shared ?? true),
+        reviewed_by:    profile.id,
+        reviewed_at:    new Date().toISOString(),
       })
       .eq('id', log.id)
     setSaving(null)
     if (!error) {
       setDrafts(d => { const n = { ...d }; delete n[log.id]; return n })
+      setShareDrafts(d => { const n = { ...d }; delete n[log.id]; return n })
       load()
     }
   }
@@ -432,7 +435,8 @@ export default function DailyLogs() {
       <div className="mt-6 space-y-4">
         {(() => { let lastBucket = null; return shownLogs.map(log => {
           const draft = drafts[log.id] ?? log.pm_note ?? ''
-          const dirty = draft.trim() !== (log.pm_note ?? '').trim()
+          const shareWithCrew = shareDrafts[log.id] ?? (log.pm_note_shared ?? true)
+          const dirty = draft.trim() !== (log.pm_note ?? '').trim() || shareWithCrew !== (log.pm_note_shared ?? true)
           const bucket = dateBucket(log.log_date)
           const showHeader = bucket !== lastBucket
           lastBucket = bucket
@@ -530,9 +534,20 @@ export default function DailyLogs() {
                     value={draft}
                     onChange={e => setDrafts(d => ({ ...d, [log.id]: e.target.value }))}
                     rows={2}
-                    placeholder="Anything the owner should know that isn't in the log above."
+                    placeholder="A note on this job. The crew sees it unless you keep it private."
                     className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
                   />
+                  <label className="mt-2 flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={shareWithCrew}
+                      onChange={e => setShareDrafts(d => ({ ...d, [log.id]: e.target.checked }))}
+                      className="w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-400 border-ink-300"
+                    />
+                    <span className="text-[11px] text-ink-500">
+                      {shareWithCrew ? 'The crew sees this on their job' : 'Private, only you and Solomon'}
+                    </span>
+                  </label>
                   {/* ⚠️ 2 Sep — this rendered a DISABLED button labelled "Read"
                       once a note was saved, which reads as an action you are
                       not allowed to take. It was a status wearing a button's

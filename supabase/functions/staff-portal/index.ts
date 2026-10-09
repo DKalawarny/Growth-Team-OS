@@ -326,7 +326,7 @@ Deno.serve(async (req) => {
 
       const { data: recentLogs } = await admin
         .from('daily_logs')
-        .select('id, log_date, work_order_id, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury, edited_at')
+        .select('id, log_date, work_order_id, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury, edited_at, pm_note, pm_note_shared')
         .eq('company_id', staff.company_id)
         .eq('staff_member_id', staff.id)
         .gte('log_date', yday)
@@ -344,7 +344,12 @@ Deno.serve(async (req) => {
           name: company?.name ?? null,
         },
         work_orders: workOrdersWithItems,
-        recent_logs: recentLogs ?? [],
+        recent_logs: (recentLogs ?? []).map((l) => {
+          const row = l as Record<string, unknown>
+          const shared = row.pm_note_shared === true && !!row.pm_note
+          const { pm_note: _pn, pm_note_shared: _ps, ...rest } = row
+          return { ...rest, office_note: shared ? row.pm_note : null }
+        }),
         crew: crew ?? [],
         metrics_defs: Array.isArray(company?.log_metrics) ? company.log_metrics : [],
       })
