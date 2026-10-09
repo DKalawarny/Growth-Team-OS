@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { Fragment, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 
@@ -25,6 +25,19 @@ import { useAuth } from '../hooks/useAuth'
 // ⚠️ 2 Sep — dates rendered as raw "2026-09-01". An owner scanning a week of
 // logs is asking "was that yesterday or last Tuesday", and an ISO string makes
 // him do the arithmetic every row.
+function dateBucket(iso) {
+  if (!iso) return 'Undated'
+  const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso)
+  const now = new Date()
+  const mid = x => new Date(x.getFullYear(), x.getMonth(), x.getDate())
+  const days = Math.round((mid(now) - mid(d)) / 86400000)
+  if (days <= 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return 'Earlier this week'
+  if (d.getFullYear() === now.getFullYear()) return d.toLocaleString('en-CA', { month: 'long' })
+  return d.toLocaleString('en-CA', { month: 'long', year: 'numeric' })
+}
+
 function humanDate(iso) {
   if (!iso) return ''
   const d = new Date(`${iso}T00:00:00`)
@@ -86,6 +99,8 @@ export default function DailyLogs() {
   // is a small cruelty — you would have to remember which half you were
   // looking in, which is the thing you came here because you had forgotten.
   const [q, setQ] = useState('')
+  const [limit, setLimit] = useState(100)
+  const [jobFilter, setJobFilter] = useState('')
 
   const load = useCallback(async () => {
     if (!profile?.company_id) return
@@ -94,7 +109,7 @@ export default function DailyLogs() {
       .select('id, log_date, what_happened, blockers, hours_on_site, pm_note, reviewed_at, edited_at, staff_member_id, work_order_id, who_on_site, safety_note, injury, injury_detail, incident_report_filed, flha_done, on_site_staff_ids, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note, metrics')
       .eq('company_id', profile.company_id)
       .order('log_date', { ascending: false })
-      .limit(100)
+      .limit(limit)
     if (error) { setLoading(false); return }
 
     // Names are resolved client-side rather than joined, so a deleted staff
@@ -124,7 +139,7 @@ export default function DailyLogs() {
       numbers: l.metrics ? Object.entries(l.metrics).map(([k, v]) => ({ label: metricLabels.get(k) ?? k, value: v })) : [],
     })))
     setLoading(false)
-  }, [profile?.company_id])
+  }, [profile?.company_id, limit])
 
   useEffect(() => { load() }, [load])
 
@@ -179,7 +194,8 @@ export default function DailyLogs() {
   const needle   = q.trim().toLowerCase()
   const hit      = (...vals) => !needle || vals.some(v => String(v ?? '').toLowerCase().includes(needle))
   const shownNotes = notes.filter(n => hit(n.note, n.note_date))
-  const shownLogs  = logs.filter(l => hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date, l.who_on_site, l.safety_note))
+  const logJobs    = [...new Set(logs.map(l => l.job).filter(Boolean))].sort()
+  const shownLogs  = logs.filter(l => (!jobFilter || l.job === jobFilter) && hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date, l.who_on_site, l.safety_note))
 
   if (loading) {
     return <div className="p-8 text-sm text-ink-500">Loading the logs…</div>
@@ -212,6 +228,16 @@ export default function DailyLogs() {
         placeholder="Search everything on this page: a word, a name, a job"
         className="mt-4 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
       />
+      {logJobs.length > 0 && (
+        <select
+          value={jobFilter}
+          onChange={e => setJobFilter(e.target.value)}
+          className="mt-3 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300"
+        >
+          <option value="">All jobs</option>
+          {logJobs.map(j => <option key={j} value={j}>{j}</option>)}
+        </select>
+      )}
 
       {/* ⚠️ Office notes sit ABOVE the crew logs on purpose. This is the box the
           person at the desk actually reaches for — the crew's logs arrive on
@@ -363,11 +389,18 @@ export default function DailyLogs() {
       )}
 
       <div className="mt-6 space-y-4">
-        {shownLogs.map(log => {
+        {(() => { let lastBucket = null; return shownLogs.map(log => {
           const draft = drafts[log.id] ?? log.pm_note ?? ''
           const dirty = draft.trim() !== (log.pm_note ?? '').trim()
+          const bucket = dateBucket(log.log_date)
+          const showHeader = bucket !== lastBucket
+          lastBucket = bucket
           return (
-            <div key={log.id} className="rounded-xl border border-ink-100 bg-white overflow-hidden">
+            <Fragment key={log.id}>
+              {showHeader && (
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-400 pt-3 first:pt-0">{bucket}</h3>
+              )}
+            <div className="rounded-xl border border-ink-100 bg-white overflow-hidden">
               <div className="px-5 py-3 border-b border-ink-100 flex items-center justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
                   <span className="text-sm font-semibold text-ink-900">{log.person}</span>
@@ -484,8 +517,18 @@ export default function DailyLogs() {
                 </div>
               </div>
             </div>
+            </Fragment>
           )
-        })}
+        }) })()}
+        {logs.length >= limit && (
+          <button
+            type="button"
+            onClick={() => setLimit(l => l + 100)}
+            className="w-full mt-2 py-2.5 rounded-lg border border-ink-200 text-sm font-semibold text-ink-600 hover:bg-ink-50 transition-colors"
+          >
+            Load older logs
+          </button>
+        )}
       </div>
     </div>
   )
