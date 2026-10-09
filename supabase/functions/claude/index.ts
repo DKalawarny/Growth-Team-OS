@@ -600,7 +600,10 @@ Deno.serve(async (req) => {
     // The public demo account is read-only: never spend AI on it, no matter
     // what a visitor or bot sends. The UI already blocks this; this is the
     // backstop that makes the demo free and abuse-proof.
-    if (user.companyId === 'de900000-0000-4000-8000-000000000001') {
+    // Every demo company (template + per-visitor clones) is marked is_demo.
+    // Never spend AI on them, no matter what a visitor or bot sends.
+    const { data: demoCo } = await serviceClient().from('companies').select('is_demo').eq('id', user.companyId).maybeSingle()
+    if (demoCo?.is_demo) {
       return json({ error: 'This is a read-only demo. Start a free account to run Solomon on your own business.' }, 403)
     }
     const body = await req.json().catch(() => ({})) as {

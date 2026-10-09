@@ -8,7 +8,7 @@ import { isDemoCompany, DEMO_BUSINESS } from '../../lib/demo'
  */
 export default function DemoBanner() {
   const { company } = useAuth()
-  if (!isDemoCompany(company?.id)) return null
+  if (!isDemoCompany(company)) return null
 
   async function startOwn() {
     await supabase.auth.signOut().catch(() => {})

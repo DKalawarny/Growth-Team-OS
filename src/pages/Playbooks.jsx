@@ -145,7 +145,7 @@ const STARTERS = [
 ]
 
 export default function SOPs() {
-  const { profile } = useAuth()
+  const { profile, company } = useAuth()
   const companyId = profile?.company_id
 
   // Templates with items nested (PostgREST relation: items:work_order_template_items(*))
@@ -238,7 +238,7 @@ export default function SOPs() {
   }
 
   async function askSolomon() {
-    if (isDemoCompany(companyId)) {
+    if (isDemoCompany(company)) {
       // Demo: show Solomon's answer (canned, from the seeded logs), not a wall.
       setAiError(null)
       setSuggestions({ suggestions: DEMO_SOP_SUGGESTIONS.map(({ title, why }) => ({ title, why })), note: null })
@@ -268,7 +268,7 @@ export default function SOPs() {
 
   async function draftWithSolomon(title) {
     if (!title) return
-    if (isDemoCompany(companyId)) {
+    if (isDemoCompany(company)) {
       const match = DEMO_SOP_SUGGESTIONS.find(x => x.title === title)
       setDraftTitle(title); setAiError(null)
       try {

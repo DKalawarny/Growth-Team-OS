@@ -18,7 +18,9 @@
 export const DEMO_COMPANY_ID = 'de900000-0000-4000-8000-000000000001'
 export const DEMO_BUSINESS   = 'Evergreen Grounds'
 
-export const isDemoCompany = id => id === DEMO_COMPANY_ID
+// Every demo instance (the template + each per-visitor clone) carries
+// companies.is_demo = true. Pass the company row, not an id.
+export const isDemoCompany = company => !!company?.is_demo
 
 /**
  * Canned SOP suggestions shown when a demo visitor clicks "Ask Solomon what

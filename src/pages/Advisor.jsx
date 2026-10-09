@@ -330,7 +330,7 @@ export default function Advisor() {
 
     // Demo shows a seeded conversation; live chat is for a real account
     // (also refused at the edge, so it never costs anything here).
-    if (isDemoCompany(company?.id)) {
+    if (isDemoCompany(company)) {
       setError('This is a read-only demo. Start your own free account to ask Solomon about your business.')
       return
     }
