@@ -535,7 +535,7 @@ function LoadingView() {
           Cash Flow
         </div>
         <h2 className="text-2xl font-bold text-white tracking-tight">Your 13-week projection</h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 20–30 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 20 to 30 seconds</p>
       </div>
       <div className="w-full max-w-xs space-y-1">
         {CASH_STEPS.map((step, i) => {

@@ -735,7 +735,7 @@ function CFOLoadingView({ periodLabel }) {
         <h2 className="text-2xl font-bold text-white tracking-tight">
           {periodLabel || 'Your financial read'}
         </h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 20–40 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 20 to 40 seconds</p>
       </div>
 
       {/* Step list */}

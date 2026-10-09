@@ -360,7 +360,7 @@ function RegeneratingScreen() {
         <h2 className="text-2xl font-bold text-ink-900 mb-3 tracking-tight">
           Regenerating your roadmap…
         </h2>
-        <p className="text-ink-400 text-sm max-w-xs mx-auto">This takes 10–20 seconds.</p>
+        <p className="text-ink-400 text-sm max-w-xs mx-auto">This takes 10 to 20 seconds.</p>
       </div>
     </div>
   )

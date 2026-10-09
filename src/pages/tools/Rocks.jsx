@@ -387,7 +387,7 @@ function LoadingView({ quarter }) {
           Rocks Tracker
         </div>
         <h2 className="text-2xl font-bold text-white tracking-tight">{quarter || 'Your quarter'}</h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 20–35 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 20 to 35 seconds</p>
       </div>
       <div className="w-full max-w-xs space-y-1">
         {ROCKS_STEPS.map((step, i) => {

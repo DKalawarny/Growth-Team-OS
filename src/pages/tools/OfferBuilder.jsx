@@ -444,7 +444,7 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
               Build my pricing →
             </button>
             <Link to="/tools" className="text-sm text-ink-400 hover:text-ink-600">Cancel</Link>
-            <span className="ml-auto text-xs text-ink-400">Takes about 20–30 seconds</span>
+            <span className="ml-auto text-xs text-ink-400">Takes about 20 to 30 seconds</span>
           </div>
         </form>
 
@@ -494,7 +494,7 @@ function LoadingView({ name }) {
           Offer Builder
         </div>
         <h2 className="text-2xl font-bold text-white tracking-tight">{name || 'Your offer'}</h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 20–35 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 20 to 35 seconds</p>
       </div>
       <div className="w-full max-w-xs space-y-1">
         {OFFER_STEPS.map((step, i) => {

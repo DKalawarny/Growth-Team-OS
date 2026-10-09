@@ -422,7 +422,7 @@ export default function Pricing() {
               </div>
               <div className="text-right">
                 <p className="text-brand-400 font-black text-2xl">{SHOW_PUBLIC_PRICE ? <>${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></> : <span className="text-lg">Free in pilot</span>}</p>
-                <p className="text-white/30 text-xs mt-0.5">vs. $1,080–$3,850/mo separately</p>
+                <p className="text-white/30 text-xs mt-0.5">vs. $1,080 to $3,850/mo separately</p>
               </div>
             </div>
           </div>

@@ -449,7 +449,7 @@ function LoadingView({ role }) {
         <h2 className="text-2xl font-bold text-white tracking-tight">
           {role || 'Your next hire'}
         </h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 15–25 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 15 to 25 seconds</p>
       </div>
 
       {/* Step list */}

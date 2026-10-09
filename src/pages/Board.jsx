@@ -1348,7 +1348,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
               >
                 <div className="text-xl mb-1" aria-hidden>📎</div>
                 <div className="text-xs font-semibold text-ink-700">{attBusy ? 'Uploading…' : 'Drop files here, or click to browse'}</div>
-                <div className="text-[10px] text-ink-400 mt-0.5">Floor plans, instructions, photos — up to {TASK_ATTACH_MAX_MB} MB each</div>
+                <div className="text-[10px] text-ink-400 mt-0.5">Floor plans, instructions, photos, up to {TASK_ATTACH_MAX_MB} MB each</div>
                 <input ref={attInput} type="file" multiple className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
               </div>
               {attErr && <p className="text-[11px] text-red-600 mt-1">⚠ {attErr}</p>}

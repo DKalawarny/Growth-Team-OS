@@ -649,7 +649,7 @@ function LoadingView({ name }) {
         <h2 className="text-2xl font-bold text-white tracking-tight">
           {name || 'Your business'}
         </h2>
-        <p className="text-sm text-ink-500 mt-1.5">Usually 30–60 seconds</p>
+        <p className="text-sm text-ink-500 mt-1.5">Usually 30 to 60 seconds</p>
       </div>
 
       {/* Step list */}
