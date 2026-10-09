@@ -5,9 +5,9 @@ describe('correctableAnswers', () => {
   it('lists the facts the plan turns on, with the intake\'s own labels', () => {
     const list = correctableAnswers({ mustPay: '2500', enough: '8000' })
     const must = list.find(f => f.key === 'mustPay')
-    expect(must.label).toBe('What has to go out every month, whatever happens')
+    expect(must.label).toBe('What do you have to pay every month, no matter what?')
     expect(must.value).toBe('2500')
-    expect(list.find(f => f.key === 'enough').label).toBe('What would you like it to bring in each month?')
+    expect(list.find(f => f.key === 'enough').label).toBe('How much would you like to bring in each month?')
   })
   it('an unanswered fact is still listed, so it can be filled in', () => {
     expect(correctableAnswers({}).find(f => f.key === 'savings').value).toBe('')
