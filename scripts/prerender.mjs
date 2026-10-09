@@ -61,7 +61,7 @@ const ROUTES = [
   ...ANSWERS.map(a => ({ path: `/answers/${a.slug}`, titleContains: a.question.slice(0, 30) })),
   { path: '/',                titleContains: 'advisor for owners who care how' },
   { path: '/pricing',         titleContains: 'Pricing — Eliv8 OS' },
-  { path: '/demo',            titleContains: 'See it work' },
+  { path: '/tour',            titleContains: 'See it work' },
   { path: '/about',           titleContains: 'About Eliv8 OS' },
   { path: '/security',        titleContains: 'Security & data handling' },
   { path: '/privacy',         titleContains: 'Privacy policy' },
