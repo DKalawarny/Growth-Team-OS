@@ -19,7 +19,7 @@ export default function AdminBackfill() {
 
   async function handleRun() {
     if (!profile?.company_id || !profile?.id) {
-      setError('Not logged in, open the app first, then navigate here.')
+      setError('You're not logged in. Open the app first, then come back here.')
       return
     }
 
