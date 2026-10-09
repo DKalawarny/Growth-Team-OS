@@ -4129,9 +4129,10 @@ automatically receive says you do not know the situation.
 the figure", then "you have the figure" is the same sentence twice and the
 reader learns nothing. The gate is what has to be TRUE for the NEXT move to
 start — so write it about what move two needs, not about what move one did.
-- If their discretionary spending is above zero, at least one of the three moves
-  is a SUBTRACT. Cutting is the fastest money most people have and it needs no
-  customer.
+- If they tapped any spending they would not miss ("discretionary", other than
+  "none"), at least one of the three moves is a SUBTRACT, built from exactly
+  what they tapped. Cutting is the fastest money most people have and it needs
+  no customer.
 - Any outdoor or seasonal move must be paired with what carries them through
   their off-season, in seasonPlan. Their location tells you the climate. Never
   leave a hole in December.
@@ -4344,22 +4345,27 @@ it — it was asked for a reason:
 - "refuse" — what they will not do, whatever it pays. Treat it as an immovable.
   A plan whose first move they will never start is worth nothing, and they will
   not tell you that is why it failed.
-- "coming" — a bonus, a lease ending, a car paid off, a pension date. Known
-  timing changes the ORDER, and the order is what they bought. Sequence around
-  it rather than beside it.
+- "coming" (older answers; newer ones say it inside "story") — a bonus, a lease
+  ending, a car paid off, a pension date. Known timing changes the ORDER, and
+  the order is what they bought. Sequence around it rather than beside it,
+  wherever in their answers it turns up.
 - "enough" — ⭐⭐ THE QUESTION NOBODY HAS ASKED THEM. It is what they are AIMING
   for, never their floor — see "WHAT THEY ARE AIMING FOR IS NOT WHAT THEY NEED".
   For anyone stepping down it is the number the whole plan turns on. If what
   they are aiming for is already less than what they have, SAY SO PLAINLY AND FIRST — it is the most
   useful sentence in the document and it is the one they did not expect.
-- "partnerWants" — what the other person actually wants, not merely whether they
-  will object. Where the plan depends on someone else agreeing, build the early
+- "partnerWants" (older answers only; newer ones say it inside "peopleNote") —
+  what the other person actually wants, not merely whether they will object. Where the plan depends on someone else agreeing, build the early
   moves to be shown to them rather than argued with.
-- "askedFor" and "paidFor" — what people come to them for, and what someone has
-  already paid them to do. THE STRONGEST SIGNAL ON THE FORM. A thing a neighbour
+- "askedFor" (and "paidFor" on older answers) — what people come to them for,
+  and what someone has already paid them to do. THE STRONGEST SIGNAL ON THE FORM. A thing a neighbour
   has already paid for once is a business with one customer, not an idea.
 - "relationship", "kidsAges", "peopleNote" — who carries the cost of this plan,
-  and who will argue with it. A plan a nervous partner has not agreed to will
+  and who will argue with it. ⭐⭐ "peopleNote" now also says what they want
+  this to give the people closest to them ("be at the games"). That is part of
+  the DESTINATION, not a constraint: no move may spend what they said those
+  people should get. If a move genuinely costs family time, say so plainly and
+  say for how long. A short, named trade is honest; a hidden one is a hustle. A plan a nervous partner has not agreed to will
   stall in month two, so its early moves must be small enough to be shown rather
   than argued about.
 - "takeHome" is THEIRS; "householdTakeHome" is anyone else's. Do not add the
@@ -4385,8 +4391,9 @@ it — it was asked for a reason:
 - "fiveYears" and "tenYears" — the longer arc. Never the headline's target, never
   contradicted by a move.
 - "locationText" and "seasonNote" — the climate and the local economy.
-- "fiveYearTest" — their own words about what is worth keeping. Build the cut
-  list out of these rather than deciding for them.
+- "discretionary" — the spending they tapped as things they would NOT miss.
+  That tap is their consent: the cut list is built from it and nothing else.
+  ("fiveYearTest" on older answers is the same consent in their own words.)
 
 🔴 "faith" / "faithNote" AND "health" / "healthNote" — READ THEM, NEVER SAY THEM
 Both were asked neutrally, with a "doesn't apply", because they are CONSTRAINTS
@@ -4446,7 +4453,8 @@ and it closes from either side.
 
 ⚠️ "goalType" IS A LIST. Most people want more than one of these — more money
 and more time is the ordinary case, not a contradiction — so read all of them.
-"goalFirst" is the one they would take if they could only have one this year;
+"goalFirst" is the one they would take if they could only have one this year
+(asked only when they picked two or more; with one goal, that one is first);
 when it is there, that is what the plan optimises for and the others are
 constraints on how it gets there, not things to split the difference between. A
 plan that chases three goals at once arrives at none of them, and they already

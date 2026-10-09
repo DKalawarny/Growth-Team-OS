@@ -48,6 +48,9 @@ const THEIR_WORDS_KEYS = [...new Set([
   ...WAYOUT_SCREENS.flatMap(sc => sc.fields ?? []).filter(f => f.kind === 'text').map(f => f.key),
   WAYOUT_OPEN?.field?.key,
   'out', 'seasonNote', 'worstVersion', 'fromToward',
+  // ⚠️ Merged away on 9 Oct but still in older sessions, so a quote from one of
+  // them has to stay verifiable.
+  'partnerWants', 'paidFor', 'fiveYearTest', 'coming',
 ].filter(Boolean))]
 
 export function enforceMapContract(map, answers) {

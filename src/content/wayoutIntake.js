@@ -304,23 +304,19 @@ export const WAYOUT_SCREENS = [
         ],
       },
       {
-        // ⭐ We asked who would FIGHT it and never what they WANT. For someone
-        // stepping down, the whole plan routes through their partner, and
-        // knowing only that she exists is not enough to plan around her.
-        key: 'partnerWants',
-        // ⚠️ The label currently hedges — "IF there's someone else in this" — which
-        // is the workaround for not having conditions. It is a question now, not
-        // a hedge.
-        showIf: a => a.relationship && a.relationship !== 'single',
-        kind: 'text',
-        label: 'If there’s someone else in this, what do they want?',
-        placeholder: 'Not what they’d object to, what they’d actually like.',
-        required: false,
-      },
-      {
+        /* ⭐⭐ ONE BOX FOR THE PEOPLE, 9 OCT. It was two: "what does your partner
+           want?" and "who will fight this plan?". Both treated family as an
+           obstacle to plan around, which is how a hustle app thinks. Daniel
+           asked for a family question "to keep in line with not being a hustle
+           app", and for a shorter intake, so this asks what the plan is FOR
+           them and who will push back, in one answer. Key stays `peopleNote`
+           (the chapter flow reuses it); older sessions may also hold
+           `partnerWants`, and the prompt still reads it. */
         key: 'peopleNote',
         kind: 'text',
-        label: 'Who in your life will fight this plan, and does that matter?',
+        label: 'The people closest to you: what do you want this to give them, and will anyone push back?',
+        hint: 'If it is only you, say what it gives you back.',
+        placeholder: 'Be at the games. My wife is nervous about money, my dad thinks I’m crazy.',
         required: false,
       },
     ],
@@ -443,15 +439,12 @@ export const WAYOUT_SCREENS = [
         // of the screen — everyone has been asked for help with something — and
         // they are what the seen card is usually built from, because they are
         // the person's own words rather than our labels.
+        // ⚠️ ONE BOX SINCE 9 OCT; it was two ("ask you for help" and "paid
+        // for, even once"). Older sessions still hold `paidFor`.
         key: 'askedFor',
         kind: 'text',
-        label: 'What do people ask you for help with?',
-        required: false,
-      },
-      {
-        key: 'paidFor',
-        kind: 'text',
-        label: 'What have you been paid for, even once?',
+        label: 'What do people ask you for help with, or have paid you for, even once?',
+        placeholder: 'Fixing stuff. Hauling. A neighbour paid me twice to wash his driveway.',
         required: false,
       },
     ],
@@ -588,8 +581,12 @@ export const WAYOUT_SCREENS = [
       {
         key: 'discretionary',
         kind: 'chips',
-        label: 'Spending that isn’t must-pay',
-        hint: 'Nothing here gets cut without you saying so.',
+        /* ⭐ THE TAP IS THE CONSENT, 9 OCT. It was two steps: tap what you
+           spend on, then write "which of those would you actually miss?". One
+           tap now says the same thing, and says it more plainly: a picked item
+           is one they said can go. Older sessions hold `fiveYearTest` instead. */
+        label: 'Spending that isn’t must-pay. Tap the ones you wouldn’t miss.',
+        hint: 'Only what you tap can go on the cut list. Nothing else gets touched.',
         allowCustom: true,
         required: false,
         options: [
@@ -602,25 +599,8 @@ export const WAYOUT_SCREENS = [
           // Not everyone has slack. Saying so out loud matters here: the cut
           // list is where most plans find their first money, and someone with
           // nothing to cut should be told that is an answer, not a failure.
-          { key: 'none', label: 'None of this. It’s all must-pay', exclusive: true },
+          { key: 'none', label: 'I’d miss all of it, or there isn’t any', exclusive: true },
         ],
-      },
-      {
-        // 🔴 It asked "does it get you to the goal?" — on screen four, when the
-        // goal is not asked until screen six. People were being tested against
-        // something they had not been told yet.
-        key: 'fiveYearTest',
-        // ⚠️ "Which of those would you actually miss?" refers to the chips above.
-        // With nothing picked there is no "those".
-        showIf: a => (a.discretionary ?? []).length > 0,
-        kind: 'text',
-        // ⭐ The five-to-ten-year test, asked as one question rather than as a
-        // grid per item. A grid turns this into data entry and people abandon
-        // it; asked once, in their own words, it is the sentence the cut list
-        // gets built from.
-        label: 'Which of those would you actually miss?',
-        hint: 'Not which ones you could justify, which ones you’d feel the loss of in a year. The rest is usually the fastest money anyone has.',
-        required: false,
       },
     ],
   },
@@ -714,15 +694,6 @@ export const WAYOUT_SCREENS = [
         // that stops it being written.
         required: true,
         emptyMessage: 'One thing. It shapes what gets crossed off.',
-      },
-      {
-        // ⭐ Known timing changes the ORDER, and the order is the product. A
-        // lease ending in April or a car paid off in June moves everything.
-        key: 'coming',
-        kind: 'text',
-        label: 'Anything already coming that changes the picture?',
-        placeholder: 'A bonus, a lease ending, a car finally paid off, a pension date.',
-        required: false,
       },
     ],
   },
@@ -879,6 +850,9 @@ export const WAYOUT_SCREENS = [
         // the thing being sold. Asking which comes first is not a limitation —
         // it is the product's own premise applied to the goals.
         key: 'goalFirst',
+        // ⚠️ Only when they picked two or more (9 Oct, shortening). With one
+        // goal there is nothing to put first.
+        showIf: a => Array.isArray(a.goalType) && a.goalType.length > 1,
         kind: 'choice',
         label: 'If you could only have one of them this year, which?',
         required: false,
@@ -964,12 +938,14 @@ export const WAYOUT_SCREENS = [
  */
 export const WAYOUT_OPEN = {
   question: 'Anything else?',
-  lead: 'The questions were narrow on purpose. This is where you say the thing they missed.',
+  lead: 'The questions were narrow on purpose. This is the context around them: the things no question asked that change what the plan should be.',
   field: {
     key: 'story',
     kind: 'text',
     label: 'What else should I know about your situation?',
-    placeholder: 'Whatever matters. What went wrong before, what you are carrying, what you have already tried, what you would never do again.',
+    // ⚠️ Since 9 Oct this also carries what used to be its own box, "anything
+    // already coming that changes the picture?" (`coming`).
+    placeholder: 'Whatever matters. Something coming that changes things: a raise, a lease ending, a car paid off. What went wrong before, what you are carrying.',
     required: true,
     nudge: true,
     nudgeMessage: 'Anything more you can add here makes the plan sharper. Press See the plan again if that is everything.',

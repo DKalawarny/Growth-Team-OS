@@ -243,10 +243,22 @@ describe('intake asks only what applies', () => {
     expect(count(NOTHING_APPLIES)).toBeLessThan(count(EVERYTHING_APPLIES))
   })
 
-  it('never asks a single person what their partner wants', () => {
-    const s2 = WAYOUT_SCREENS.find(sc => sc.fields.some(f => f.key === 'partnerWants'))
-    expect(visible(s2, NOTHING_APPLIES).map(f => f.key)).not.toContain('partnerWants')
-    expect(visible(s2, EVERYTHING_APPLIES).map(f => f.key)).toContain('partnerWants')
+  // ⚠️ `partnerWants` merged into `peopleNote` on 9 Oct. The people box is shown
+  // to everyone, so it has to read right for somebody on their own.
+  it('asks about the people closest in a way that works for someone single', () => {
+    const f = WAYOUT_SCREENS.flatMap(sc => sc.fields).find(x => x.key === 'peopleNote')
+    expect(f.showIf).toBeUndefined()
+    expect(f.label).not.toMatch(/partner|wife|husband/i)
+    expect(f.hint).toMatch(/only you/i)
+    expect(WAYOUT_SCREENS.flatMap(sc => sc.fields).some(x => x.key === 'partnerWants')).toBe(false)
+  })
+
+  it('asks which goal comes first only when there is more than one', () => {
+    const s6 = WAYOUT_SCREENS.find(sc => sc.fields.some(f => f.key === 'goalFirst'))
+    const keys = a => visible(s6, a).map(f => f.key)
+    expect(keys({ goalType: [{ key: 'time' }] })).not.toContain('goalFirst')
+    expect(keys({ goalType: 'time' })).not.toContain('goalFirst')
+    expect(keys({ goalType: [{ key: 'time' }, { key: 'money' }] })).toContain('goalFirst')
   })
 
   it('never asks about a practice somebody said does not apply', () => {
