@@ -925,7 +925,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
       <div className="p-8 max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-ink-900 mb-2 tracking-tight">Your roadmap</h1>
         <div className="bg-white border border-dashed border-ink-200 rounded-xl p-8 text-center mt-6">
-          <p className="text-ink-500">No milestones yet, finish onboarding to generate yours.</p>
+          <p className="text-ink-500">No milestones yet. Finish onboarding and yours show up.</p>
         </div>
       </div>
     )
@@ -1807,7 +1807,7 @@ function GanttView({
   if (!dateRange || milestones.every(m => !m.start_date || !m.end_date)) {
     return (
       <div className="bg-white border border-dashed border-ink-200 rounded-2xl p-8 text-center text-sm text-ink-500">
-        No timeline data yet, regenerate your roadmap from Settings to add dates.
+        No dates yet. Rebuild your roadmap in Settings to add them.
       </div>
     )
   }
