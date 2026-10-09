@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import TeamSection from '../components/settings/TeamSection'
 
 /**
  * DailyLogs — the office's view of what the crew wrote at the end of the day.
@@ -36,6 +37,25 @@ function dateBucket(iso) {
   if (days < 7) return 'Earlier this week'
   if (d.getFullYear() === now.getFullYear()) return d.toLocaleString('en-CA', { month: 'long' })
   return d.toLocaleString('en-CA', { month: 'long', year: 'numeric' })
+}
+
+function fullDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso)
+  return d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+// A stable colour per crew member so the eye can track one person down the feed
+// instead of getting lost in a wall of identical cards (Daniel, 8 Oct).
+const CREW_COLORS = ['#2f8f6b', '#2563eb', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#65a30d', '#c2410c']
+function personColor(name) {
+  const str = String(name || '')
+  let h = 0
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0
+  return CREW_COLORS[h % CREW_COLORS.length]
+}
+function initials(name) {
+  return String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => (w[0] || '').toUpperCase()).join('') || '?'
 }
 
 function humanDate(iso) {
@@ -81,7 +101,10 @@ function repeatedBlockers(logs) {
 }
 
 export default function DailyLogs() {
-  const { profile } = useAuth()
+  const { profile, company } = useAuth()
+  const ownerName   = profile?.full_name || profile?.name || profile?.email?.split('@')[0] || 'Your manager'
+  const companyName = company?.name || 'the team'
+  const [showCrew, setShowCrew] = useState(false)
   const [logs, setLogs]       = useState([])
   const [loading, setLoading] = useState(true)
   const [drafts, setDrafts]   = useState({})   // { [logId]: text }
@@ -221,6 +244,24 @@ export default function DailyLogs() {
           Matches the note, the crew's account, the blockers and the office's
           note — i.e. everything anyone typed — because a searcher does not know
           or care which field their half-remembered phrase landed in. */}
+      {/* Field crew & reminders — moved here from Settings so the crew setup
+          (reminder times, the numbers they report, the roster) lives with the
+          logs. People/roles stay in Settings (Daniel, 8 Oct). */}
+      <div className="mt-5">
+        <button
+          onClick={() => setShowCrew(v => !v)}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${showCrew ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
+          Field crew &amp; reminders
+        </button>
+        {showCrew && (
+          <div className="mt-3">
+            <TeamSection companyId={profile?.company_id} companyName={companyName} ownerName={ownerName} />
+          </div>
+        )}
+      </div>
+
       <input
         type="search"
         value={q}
@@ -400,15 +441,16 @@ export default function DailyLogs() {
               {showHeader && (
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-400 pt-3 first:pt-0">{bucket}</h3>
               )}
-            <div className="rounded-xl border border-ink-100 bg-white overflow-hidden">
+            <div className="rounded-xl border border-ink-100 border-l-4 bg-white overflow-hidden" style={{ borderLeftColor: personColor(log.person) }}>
               <div className="px-5 py-3 border-b border-ink-100 flex items-center justify-between gap-3 flex-wrap">
-                <div className="min-w-0">
+                <div className="min-w-0 flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0" style={{ background: personColor(log.person) }}>{initials(log.person)}</span>
                   <span className="text-sm font-semibold text-ink-900">{log.person}</span>
                   {log.job && <span className="text-[13px] text-ink-500"> · {log.job}</span>}
                 </div>
                 <div className="flex items-center gap-3 text-[12px] text-ink-400">
                   {log.hours_on_site != null && <span>{log.hours_on_site}h on site</span>}
-                  <span title={log.log_date}>{humanDate(log.log_date)}</span>
+                  <span title={log.log_date} className="font-medium text-ink-600">{fullDate(log.log_date)}</span>
                   {log.edited_at && <span className="text-amber-600 font-medium" title={`Edited by the crew ${new Date(log.edited_at).toLocaleString()}`}>edited</span>}
                   {log.reviewed_at && <span className="text-brand-600 font-semibold">read</span>}
                 </div>
