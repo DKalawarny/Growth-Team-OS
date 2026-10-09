@@ -9,7 +9,7 @@ on conflict (id) do update set name=excluded.name, plan_tier=excluded.plan_tier,
   plan_status=excluded.plan_status, trial_ends_at=excluded.trial_ends_at, is_personal=false;
 
 insert into profiles (id, company_id, role, name, email, custom_permissions)
-values ('f1eb0b1f-be17-4ade-b013-e706ea825d0e','de900000-0000-4000-8000-000000000001','owner','Alex Rivera','demo@eliv8os.com','{}')
+values ('f1eb0b1f-be17-4ade-b013-e706ea825d0e','de900000-0000-4000-8000-000000000001','owner','Alex Carter','demo@eliv8os.com','{}')
 on conflict (id) do update set company_id=excluded.company_id, role='owner', name=excluded.name, email=excluded.email;
 
 insert into business_profiles (company_id, business_name, industry, location, team_size, last_revenue, current_revenue, profit, hours_per_week, biggest_challenge, primary_goal, goal_timeline, vision_3yr, financial_settings, version_history)
@@ -47,10 +47,10 @@ delete from chat_messages     where company_id='de900000-0000-4000-8000-00000000
 -- ── Staff ──────────────────────────────────────────────────────────────────
 insert into staff_members (id, company_id, name, role) values
  ('de900000-0000-4000-8001-000000000001','de900000-0000-4000-8000-000000000001','Marcus Bell','Lead hand'),
- ('de900000-0000-4000-8001-000000000002','de900000-0000-4000-8000-000000000001','Dani Cho','Crew'),
- ('de900000-0000-4000-8001-000000000003','de900000-0000-4000-8000-000000000001','Priya Nair','Crew'),
- ('de900000-0000-4000-8001-000000000004','de900000-0000-4000-8000-000000000001','Tom Reyes','Crew'),
- ('de900000-0000-4000-8001-000000000005','de900000-0000-4000-8000-000000000001','Sam Oduya','Seasonal');
+ ('de900000-0000-4000-8001-000000000002','de900000-0000-4000-8000-000000000001','Dave Miller','Crew'),
+ ('de900000-0000-4000-8001-000000000003','de900000-0000-4000-8000-000000000001','Sarah Jenkins','Crew'),
+ ('de900000-0000-4000-8001-000000000004','de900000-0000-4000-8000-000000000001','Tom Walker','Crew'),
+ ('de900000-0000-4000-8001-000000000005','de900000-0000-4000-8000-000000000001','Chris Porter','Seasonal');
 
 -- ── Milestones (roadmap) ─────────────────────────────────────────────────────
 insert into milestones (company_id, title, description, timeframe, category, sort_order, progress_percent, completed, actions, books) values
@@ -98,9 +98,9 @@ insert into work_orders (id, company_id, staff_member_id, milestone_id, title, s
 
 -- ── Daily logs (crew account, incl. the blockers Solomon learns from) ─────────
 insert into daily_logs (company_id, staff_member_id, work_order_id, log_date, what_happened, blockers, hours_on_site, who_on_site, safety_note, injury) values
- ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001','de900000-0000-4000-8003-000000000001', current_date - 12,'Spring cleanup at Maple Plaza done, beds edged and mulched, site photographed.','Gate was locked when we arrived, building manager did not have the key, lost about 40 minutes.',7.5,'Marcus, Dani','All clear, wet surfaces flagged to the client.',false),
- ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002','de900000-0000-4000-8003-000000000002', current_date - 6,'Oakridge weekly maintenance, full route completed.',null,6.0,'Dani, Priya',null,false),
- ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000003','de900000-0000-4000-8003-000000000003', current_date - 4,'Riverbend bed refresh finished a day early, client happy.','Could not confirm which zones to prune, no one on site to ask, guessed on two beds.',5.5,'Priya, Tom',null,false),
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001','de900000-0000-4000-8003-000000000001', current_date - 12,'Spring cleanup at Maple Plaza done, beds edged and mulched, site photographed.','Gate was locked when we arrived, building manager did not have the key, lost about 40 minutes.',7.5,'Marcus, Dave','All clear, wet surfaces flagged to the client.',false),
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002','de900000-0000-4000-8003-000000000002', current_date - 6,'Oakridge weekly maintenance, full route completed.',null,6.0,'Dave, Sarah',null,false),
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000003','de900000-0000-4000-8003-000000000003', current_date - 4,'Riverbend bed refresh finished a day early, client happy.','Could not confirm which zones to prune, no one on site to ask, guessed on two beds.',5.5,'Sarah, Tom',null,false),
  ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001',null, current_date - 1,'Walked the Center Street site for the onboarding, measured and photographed.',null,2.0,'Marcus',null,false);
 
 -- ── Office notes ─────────────────────────────────────────────────────────────
