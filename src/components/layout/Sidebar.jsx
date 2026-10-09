@@ -163,6 +163,7 @@ const mainNav = [
   { to: '/advisor',                label: 'Solomon',    icon: 'advisor'      },
   { to: '/roadmap',                label: 'Roadmap',    icon: 'roadmap'      },
   { to: '/playbooks',              label: 'SOPs',  icon: 'SOPs'    },
+  { to: '/board',                  label: 'Jobs',       icon: 'board'        },
   { to: '/logs',                   label: 'Daily logs', icon: 'SOPs'    },
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
@@ -173,9 +174,6 @@ const mainNav = [
   // it a disservice." One entry to the index (ToolsIndex lists all eleven), so
   // the sidebar stays uncluttered but every tool is one click away.
   { to: '/tools',                  label: 'Tools',      icon: 'tools'        },
-  // ⭐ Teammates only: for the owner the board lives inside Roadmap, but for
-  // Office and Operations it is the main thing they came in for.
-  { to: '/board',                  label: 'Work board', icon: 'roadmap', teamOnly: true },
 ]
 
 /** The items this role can actually open — see lib/access.js. */

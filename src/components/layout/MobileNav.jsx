@@ -87,14 +87,14 @@ const MAIN_NAV = [
   { to: '/documents',            label: 'Documents'  },
   { to: '/tools/exit-readiness', label: 'Succession' },
   { to: '/logs',                 label: 'Daily logs', teamOnly: true },
-  { to: '/board',                label: 'Work board', teamOnly: true },
+  { to: '/board',                label: 'Jobs' },
 ]
 
 // ⭐ The tabs a teammate gets where the owner's are not theirs (lib/access.js).
 const TEAM_TABS = [
   {
     to: '/board',
-    label: 'Work board',
+    label: 'Jobs',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
         <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>
