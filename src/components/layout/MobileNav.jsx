@@ -61,7 +61,7 @@ const TABS = [
     // you change one list, change all three: this, MAIN_NAV, and the desktop
     // Sidebar. Three copies of an information architecture is how it drifts.
     to: '/playbooks',
-    label: 'Playbooks',
+    label: 'SOPs',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
         <path d="M4 4.5A1.5 1.5 0 015.5 3H18a1 1 0 011 1v15a1 1 0 01-1 1H5.5A1.5 1.5 0 014 18.5z"/>
@@ -82,7 +82,7 @@ const MAIN_NAV = [
   { to: '/dashboard',            label: 'Home'       },
   { to: '/advisor',              label: 'Solomon'    },
   { to: '/roadmap',              label: 'Roadmap'    },
-  { to: '/playbooks',            label: 'Playbooks'  },
+  { to: '/playbooks',            label: 'SOPs'  },
   { to: '/tools/cfo',            label: 'Finances'   },
   { to: '/documents',            label: 'Documents'  },
   { to: '/tools/exit-readiness', label: 'Succession' },

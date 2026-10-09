@@ -84,7 +84,7 @@ const COMPETITORS = {
     growthOSWins: [
       'AI advisor that knows your business. Jobber has no equivalent',
       'CFO dashboard, cash flow forecasting, hiring planner, strategic tools Jobber doesn\'t build',
-      'Succession planning and written playbooks',
+      'Succession planning and written SOPs',
       SHOW_PUBLIC_PRICE ? `Flat $${PRICE_MONTHLY_USD}/month for everything` : 'One flat price for everything. No tiers, no per-seat',
     ],
     competitorWins: [
@@ -155,7 +155,7 @@ const COMPETITORS = {
       'AI advisor that thinks about strategy, not just project tracking',
       'Far cheaper than the bookkeeper or fractional CFO it stands beside ($400–1,100/month)',
       'No 2-week onboarding required',
-      'Hiring, decisions, playbooks and succession built in',
+      'Hiring, decisions, SOPs and succession built in',
     ],
     competitorWins: [
       'Materially deeper project management features for larger builders',

@@ -81,7 +81,7 @@ export default function Board() {
   const [staff,            setStaff]            = useState([])   // external staff_members
   const [workOrders,       setWorkOrders]        = useState([])
   const [milestones,       setMilestones]        = useState([])
-  // Active playbooks for the "Start from playbook" picker in the create modal.
+  // Active SOPs for the "Start from SOP" picker in the create modal.
   // Each row carries its items inline so we can spawn the checklist in one
   // round-trip after the WO is inserted — no second fetch needed.
   const [templates,        setTemplates]         = useState([])
@@ -123,7 +123,7 @@ export default function Board() {
   }, [companyId])
 
   // When the page is opened from a Roadmap "Work order" link OR from the
-  // Playbooks page's "Use this playbook" CTA, auto-open the new-order modal
+  // SOPs page's "Use this SOP" CTA, auto-open the new-order modal
   // pre-filled. Wait until loading is done so milestones + templates are in
   // the dropdowns.
   useEffect(() => {
@@ -134,13 +134,13 @@ export default function Board() {
     const playbookId = searchParams.get('playbook_id')
     if (!msId && !msTitle && !task && !playbookId) return
 
-    // Pre-fill the title from the playbook name when arriving from Playbooks
+    // Pre-fill the title from the SOP name when arriving from SOPs
     // and there's no explicit task hint — saves the owner one input. The user
     // can overwrite it before saving.
     let titleHint = task ?? ''
     if (!titleHint && playbookId) {
       const tpl = templates.find(t => t.id === playbookId)
-      if (tpl?.name && tpl.name !== 'Untitled playbook') titleHint = tpl.name
+      if (tpl?.name && tpl.name !== 'Untitled SOP') titleHint = tpl.name
     }
 
     setEditingOrder({
@@ -163,7 +163,7 @@ export default function Board() {
       supabase.from('staff_members').select('*').eq('company_id', companyId).order('name'),
       supabase.from('work_orders').select(`*, ${AMOUNTS_EMBED}`).eq('company_id', companyId).order('created_at', { ascending: false }),
       supabase.from('milestones').select('id, title, source').eq('company_id', companyId).eq('completed', false).order('sort_order', { ascending: true }),
-      // Playbooks — load with items nested so we can spawn the checklist
+      // SOPs — load with items nested so we can spawn the checklist
       // in one go on WO create. Failing silently (e.g. before migration 020
       // is applied) means the picker just won't appear — the rest of the
       // page keeps working.
@@ -230,8 +230,8 @@ export default function Board() {
       milestone_id: data.milestone_id || null,
       status:       data.status,
       ...(staff_member_id && !staffSetupNeeded ? { staff_member_id } : {}),
-      // template_id is set when the user picked a playbook in the create modal.
-      // It's a back-reference for reporting ("what % of WOs use a playbook?")
+      // template_id is set when the user picked a SOP in the create modal.
+      // It's a back-reference for reporting ("what % of WOs use a SOP?")
       // and lets us style the WO card differently if we want to flag it.
       ...(data.template_id ? { template_id: data.template_id } : {}),
     }
@@ -269,7 +269,7 @@ export default function Board() {
       if (!error && row && seeCosts) await saveJobAmounts({ workOrderId: row.id, companyId, ...amounts })
       if (!error && row) {
         setWorkOrders(prev => [{ ...row, quoted_amount: seeCosts ? amounts.quoted : null, cost_amount: seeCosts ? amounts.cost : null, invoiced_amount: seeCosts ? amounts.invoiced : null }, ...prev])
-        // ── Spawn checklist items from the chosen playbook ────────────────
+        // ── Spawn checklist items from the chosen SOP ────────────────
         // The copy is deliberate (see migration 020): editing the template
         // later mustn't change in-flight checklists. We fire-and-forget on
         // failure here — the WO is the user's primary action, and the items
@@ -287,7 +287,7 @@ export default function Board() {
   }
 
   /**
-   * Copy every step of a playbook template onto a freshly-created work
+   * Copy every step of a SOP template onto a freshly-created work
    * order as checklist_items. Pulled from the in-memory `templates` array
    * so we don't double-fetch.
    *
@@ -393,7 +393,7 @@ export default function Board() {
     // This is the field-level write-back stream: crew leaving notes against
     // specific steps from the staff portal. Owner reads them here in the
     // edit modal to close the loop ("crew flagged the dust barrier step
-    // was missing tape — let me add that to the playbook").
+    // was missing tape — let me add that to the SOP").
     //
     // We resolve author names client-side from the lists we already have
     // in memory (staff + appUsers in the parent component pass through
@@ -938,7 +938,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
     // template_id is only meaningful on create; we hide the picker on edit.
     // Setting one and submitting will spawn its steps as checklist items on
     // the new WO (see spawnChecklistFromTemplate in the parent). Honoured
-    // when prefilled via ?playbook_id=<id> from the Playbooks page CTA.
+    // when prefilled via ?playbook_id=<id> from the SOPs page CTA.
     template_id:  order?.template_id ?? '',
     // ⚠️ Always optional. A job must remain creatable with all three blank —
     // the moment one is required this stops being a job record and becomes an
@@ -1030,16 +1030,16 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
               className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none" />
           </div>
 
-          {/* Playbook picker — only on create, only if any active playbooks exist.
+          {/* SOP picker — only on create, only if any active SOPs exist.
               Picking one spawns its steps as a checklist on the new WO. */}
           {isCreate && templates.length > 0 && (
             <div>
               <label className="block text-xs font-semibold text-ink-600 mb-1.5">
-                Start from a playbook <span className="text-ink-400 font-normal">(optional)</span>
+                Start from a SOP <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <select value={form.template_id} onChange={e => set('template_id', e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No playbook, blank work order</option>
+                <option value="">No SOP, blank work order</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name} {t.items?.length ? `(${t.items.length} steps)` : ''}
@@ -1257,7 +1257,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                       {/* Field notes from the crew — the loop-closing read.
                           These are what the crew posted from the staff portal
                           against this specific step. Owner reads them here
-                          and can decide whether the underlying playbook
+                          and can decide whether the underlying SOP
                           should learn from what they're saying. */}
                       {comments.length > 0 && (
                         <ul className="mt-2 ml-6 space-y-1 border-l-2 border-brand-200 pl-2">

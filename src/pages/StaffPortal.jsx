@@ -546,7 +546,7 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
           crew marks the job done; this banner is the persistent re-open
           path in case they dismissed without saving. This is the highest-
           value comment for Solomon long-term: "what would you tell the
-          next foreman" generates the most actionable playbook deltas. */}
+          next foreman" generates the most actionable SOP deltas. */}
       {needsJobClose && (
         <button
           type="button"
@@ -717,9 +717,9 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
  *
  * Renders the comment history for a single checklist step and gives the
  * crew a textarea + voice button to add a new note. This is the field-
- * level write-back channel that lets playbooks get smarter over time:
+ * level write-back channel that lets SOPs get smarter over time:
  * once enough crews flag the same friction on the same kind of step,
- * the platform can surface it as a suggested playbook improvement.
+ * the platform can surface it as a suggested SOP improvement.
  *
  * Voice-to-text uses the browser-native SpeechRecognition API. There's
  * no server-side audio: the browser does the transcription locally and
@@ -988,7 +988,7 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * reflection has no single-step anchor". It was pinning a note about the whole
  * day onto an unrelated step because there was nowhere else to put it — and
  * the filter it needed (`checklist_items?.[0]`) silently dropped the recap
- * entirely for any job with no playbook attached, which are often the jobs
+ * entirely for any job with no SOP attached, which are often the jobs
  * worth hearing about.
  *
  * daily_logs (035) is that missing place. Same form, same voice input, same
@@ -1115,7 +1115,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
       }))
       // ⚠️ No longer requires a checklist item. It used to — because the note
       // had to be pinned to one — which silently dropped the recap for any job
-      // without a playbook attached. Those are often the jobs worth hearing
+      // without a SOP attached. Those are often the jobs worth hearing
       // about.
       // ⚠️ A blocker on its own still counts. "Nothing got done, waited two
       // hours for access" is the most useful log of the lot, and requiring the

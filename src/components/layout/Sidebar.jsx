@@ -100,7 +100,7 @@ function Icon({ name, className = 'w-[18px] h-[18px]' }) {
         <rect x="16" y="3" width="5" height="15" rx="1.5"/>
       </svg>
     )
-    case 'playbooks': return (
+    case 'SOPs': return (
       <svg className={base} {...props}>
         {/* Clipboard with checklist lines — reads as "process / SOP" at small size */}
         <rect x="5" y="4" width="14" height="17" rx="2"/>
@@ -151,7 +151,7 @@ function Icon({ name, className = 'w-[18px] h-[18px]' }) {
 //
 //   Roadmap    now owns the plan, quarterly priorities, trajectories, the
 //              board and the calendar — every "what are we doing and when"
-//   Playbooks  the replace-yourself process library
+//   SOPs  the replace-yourself process library
 //   Finances   CFO dashboard + cash flow
 //   Documents  the library, plus compliance renewals
 //   Succession was Exit Readiness; what gets left behind, not what it sells for
@@ -162,8 +162,8 @@ const mainNav = [
   { to: '/dashboard',              label: 'Home',       icon: 'dashboard'    },
   { to: '/advisor',                label: 'Solomon',    icon: 'advisor'      },
   { to: '/roadmap',                label: 'Roadmap',    icon: 'roadmap'      },
-  { to: '/playbooks',              label: 'Playbooks',  icon: 'playbooks'    },
-  { to: '/logs',                   label: 'Daily logs', icon: 'playbooks'    },
+  { to: '/playbooks',              label: 'SOPs',  icon: 'SOPs'    },
+  { to: '/logs',                   label: 'Daily logs', icon: 'SOPs'    },
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
   { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },

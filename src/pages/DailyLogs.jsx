@@ -19,7 +19,7 @@ import { useAuth } from '../hooks/useAuth'
  *
  * ⚠️ Daniel, 2 Sep: "I don't think the PM needs Solomon for the chat." So this
  * page is deliberately self-contained — it reads daily_logs and nothing else.
- * When roles land, a PM gets this, the board and playbooks, and neither the
+ * When roles land, a PM gets this, the board and SOPs, and neither the
  * advisor nor the numbers.
  */
 // ⚠️ 2 Sep — dates rendered as raw "2026-09-01". An owner scanning a week of

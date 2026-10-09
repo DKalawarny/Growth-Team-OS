@@ -30,7 +30,7 @@ const FAQ = [
   },
   {
     q: 'Why is there a 10-runs-per-month cap on tools?',
-    a: `Tools (Cash Flow, Hiring Scorecards, Playbooks, etc.) each make an AI call that costs real money to run. The cap is what stops those costs running away. It is not there to slow you down. If you need more, email me and I will raise it, usually the same day.`,
+    a: `Tools (Cash Flow, Hiring Scorecards, SOPs, etc.) each make an AI call that costs real money to run. The cap is what stops those costs running away. It is not there to slow you down. If you need more, email me and I will raise it, usually the same day.`,
   },
   {
     q: 'Do I need QuickBooks to use Eliv8 OS?',

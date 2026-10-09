@@ -42,7 +42,7 @@ const TRADES = {
     examples: [
       'Solomon flagging a 14-day cash gap from a slow-paying commercial client before payroll week',
       'A scope sheet for a kitchen reno that includes the actual material list, not a generic template',
-      'A written playbook for the callout you do fifty times a year, so it stops living only in your head',
+      'A written SOP for the callout you do fifty times a year, so it stops living only in your head',
     ],
     cta: 'Built for plumbing contractors and shop owners',
   },
@@ -80,7 +80,7 @@ const TRADES = {
     examples: [
       'A 13-week cash forecast that knows your Q1 dip is coming',
       'Solomon helping you decide: another tech, or pricing changes first?',
-      'A playbook for the seasonal maintenance run, written down once and handed to a tech',
+      'A SOP for the seasonal maintenance run, written down once and handed to a tech',
     ],
     cta: 'Built for HVAC, heating, and cooling contractors',
   },
@@ -151,7 +151,7 @@ export default function TradePage() {
 
   const meta = buildPageMeta({
     title:       `Eliv8 OS for ${data.label}, an advisor who knows ${data.h1Trade}`,
-    description: `An AI business advisor for owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written playbooks, compliance and succession, and a finished document every time. Currently free while in private pilot.`,
+    description: `An AI business advisor for owners running ${data.properNoun} businesses. Cash flow forecasting, hiring, hard decisions, written SOPs, compliance and succession, and a finished document every time. Currently free while in private pilot.`,
     path:        `/for/${trade}`,
   })
 
@@ -266,7 +266,7 @@ export default function TradePage() {
               ['💡', 'Solomon, AI advisor'],
               ['📈', 'CFO Dashboard'],
               ['📊', 'Cash Flow Forecast'],
-              ['📖', 'Playbooks'],
+              ['📖', 'SOPs'],
               ['💰', 'Offer Builder + cost guide'],
               ['🎯', 'Hiring Planner'],
               ['🦺', 'Safety & Compliance'],

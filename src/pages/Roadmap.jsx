@@ -184,7 +184,7 @@ export default function Roadmap() {
   // page reload required).
   const [ordersRefreshTick, setOrdersRefreshTick] = useState(0)
   const [teamMembers, setTeamMembers]           = useState([])    // profiles + staff for assignment picker
-  // Active playbooks for the "Start from playbook" picker in the quick WO modal.
+  // Active SOPs for the "Start from SOP" picker in the quick WO modal.
   // Each row carries its items inline so we can spawn the checklist in one
   // round-trip after the WO inserts. Empty array if migration 020 isn't applied.
   const [templates,   setTemplates]             = useState([])
@@ -382,8 +382,8 @@ export default function Roadmap() {
     return () => { cancelled = true }
   }, [profile?.company_id])
 
-  // Load playbooks (with their steps nested) so the QuickWorkOrderModal can
-  // offer "Start from playbook" and spawn the checklist on insert. Silent
+  // Load SOPs (with their steps nested) so the QuickWorkOrderModal can
+  // offer "Start from SOP" and spawn the checklist on insert. Silent
   // failure on missing table — the picker just won't appear until migration
   // 020 is applied.
   useEffect(() => {
@@ -2492,7 +2492,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
   // display AND lets the owner clear it, which is why the guard goes too.
   const [due_date,     setDueDate]     = useState(draft.existingDueDate ?? '')
   // template_id is only meaningful on the INSERT path (the picker is hidden
-  // on reassign). When set, the chosen playbook's steps copy onto the new
+  // on reassign). When set, the chosen SOP's steps copy onto the new
   // WO as checklist items.
   const [template_id,  setTemplateId]  = useState('')
   const [saving, setSaving] = useState(false)
@@ -2556,7 +2556,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
         priority:     'medium',
         status:       'backlog',
         milestone_id: draft.milestoneId,
-        // template_id is set when the owner picked a playbook below; nullable
+        // template_id is set when the owner picked a SOP below; nullable
         // column, harmless when empty.
         ...(template_id ? { template_id } : {}),
       }
@@ -2578,7 +2578,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
       }
       error = res.error
 
-      // Spawn checklist items from the chosen playbook. Fire-and-forget on
+      // Spawn checklist items from the chosen SOP. Fire-and-forget on
       // failure — the WO itself is the user's primary action, and the items
       // can be re-spawned manually if needed.
       if (!error && template_id && res.data?.id) {
@@ -2695,17 +2695,17 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
               className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300" />
           </div>
 
-          {/* Playbook picker — create-only. Reassign doesn't re-spawn items;
+          {/* SOP picker — create-only. Reassign doesn't re-spawn items;
               the existing checklist stays put. Hidden entirely if no active
-              playbooks exist (or migration 020 isn't applied). */}
+              SOPs exist (or migration 020 isn't applied). */}
           {!isReassign && templates.length > 0 && (
             <div>
               <label className="block text-xs font-semibold text-ink-600 mb-1.5">
-                Start from a playbook <span className="text-ink-400 font-normal">(optional)</span>
+                Start from a SOP <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <select value={template_id} onChange={e => setTemplateId(e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No playbook, blank work order</option>
+                <option value="">No SOP, blank work order</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name}{t.items?.length ? ` (${t.items.length} steps)` : ''}

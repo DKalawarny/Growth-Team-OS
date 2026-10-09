@@ -37,8 +37,8 @@ const PRICING_META = buildPageMeta({
     ? `Pricing — Eliv8 OS · $${PRICE_MONTHLY_USD}/month for the AI advisor and every tool`
     : 'Pricing — Eliv8 OS · free while in private pilot',
   description: SHOW_PUBLIC_PRICE
-    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, an advisor who reads your actual numbers, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
-    : 'Eliv8 OS is in private pilot and free to use: Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, playbooks, compliance and succession. We are setting the price with the first owners using it. No card required.',
+    ? `Eliv8 OS pricing: $${PRICE_MONTHLY_USD}/month or $${PRICE_ANNUAL_USD}/year for Solomon, an advisor who reads your actual numbers, plus finances, cash flow forecasting, hiring, decisions, SOPs, compliance, and succession. ${TRIAL_DAYS}-day free trial, no credit card required.`
+    : 'Eliv8 OS is in private pilot and free to use: Solomon the advisor, plus finances, cash flow forecasting, hiring, decisions, SOPs, compliance and succession. We are setting the price with the first owners using it. No card required.',
   path:        '/pricing',
 })
 
@@ -86,7 +86,7 @@ const FEATURE_GROUPS = [
     color: 'gray',
     features: [
       { name: 'Roadmap', desc: 'A milestone-by-milestone plan from where you are to where you are going, with the slipped ones surfaced honestly rather than buried.' },
-      { name: 'Playbooks', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
+      { name: 'SOPs', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
       { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones, so the advice tracks how you are actually doing. Not just how the numbers are.' },
       { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
       { name: 'Documents', desc: 'Everything Eliv8 OS writes for you, saved and searchable.' },
@@ -125,7 +125,7 @@ const FAQS = [
   },
   {
     q: 'What exactly counts as a "report"?',
-    a: 'One finished piece of work: a cash-flow forecast, a hiring scorecard, a written playbook. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
+    a: 'One finished piece of work: a cash-flow forecast, a hiring scorecard, a written SOP. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
   },
   {
     q: 'What if I need more than 10 reports per tool?',

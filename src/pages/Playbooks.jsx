@@ -6,11 +6,11 @@ import { callClaude, SONNET } from '../lib/anthropic'
 import { buildAdvisorContext } from '../lib/advisorContext'
 
 /**
- * Playbooks — /playbooks
+ * SOPs — /playbooks
  *
- * The owner's process library. Each playbook is a named list of steps for a
+ * The owner's process library. Each SOP is a named list of steps for a
  * repeating job ("Standard demo job", "Site walkthrough", "Trailer inspection").
- * When a work order is created from a playbook, those steps copy across as
+ * When a work order is created from a SOP, those steps copy across as
  * checklist items the crew ticks off — including from the magic-link staff
  * portal on a phone in the field.
  *
@@ -18,8 +18,8 @@ import { buildAdvisorContext } from '../lib/advisorContext'
  * structured rows the crew works through, so the owner stops fielding
  * the job record — what the work involves, and what happened on it.
  *
- * Layout: two-pane. Left = list of playbooks + "+ New". Right = editor for
- * the selected one. On mobile, picking a playbook swaps the panes.
+ * Layout: two-pane. Left = list of SOPs + "+ New". Right = editor for
+ * the selected one. On mobile, picking a SOP swaps the panes.
  *
  * Data shape lives in migration 020. Templates + items are managed here;
  * checklist instances are spawned at WO-create time and rendered elsewhere
@@ -42,7 +42,7 @@ import { buildAdvisorContext } from '../lib/advisorContext'
 //
 // Safety language deliberately stays informal here. FLHA and formal
 // incident reporting live in the CRM's safety module (see migration 021).
-// What's in these playbooks are operational checklists, not compliance
+// What's in these SOPs are operational checklists, not compliance
 // artifacts.
 const STARTERS = [
   {
@@ -143,7 +143,7 @@ const STARTERS = [
   },
 ]
 
-export default function Playbooks() {
+export default function SOPs() {
   const { profile } = useAuth()
   const companyId = profile?.company_id
 
@@ -218,7 +218,7 @@ export default function Playbooks() {
 
   // ── Solomon: what should we document, from real history ──────────────────
   // Reads the daily-log blockers that keep recurring, the jobs actually run,
-  // and the gaps the library analysis found, and names the playbooks worth
+  // and the gaps the library analysis found, and names the SOPs worth
   // writing. Evidence-backed by design — see PLAYBOOK_GAPS_PROMPT.
   async function buildPlaybookContext() {
     const ctx = await buildAdvisorContext(companyId, { userId: profile?.id }).catch(() => null)
@@ -282,7 +282,7 @@ export default function Playbooks() {
       setAskOpen(false) // tuck the panel away once they have used it
       setSuggestions(prev => prev ? { ...prev, suggestions: prev.suggestions.filter(x => x.title !== title) } : prev)
     } catch (e) {
-      setAiError(e.message || 'Could not draft that playbook. Try again.')
+      setAiError(e.message || 'Could not draft that SOP. Try again.')
     } finally {
       setDraftTitle(null)
     }
@@ -294,7 +294,7 @@ export default function Playbooks() {
     setBusy(true); setError(null)
     const { data, error: err } = await supabase
       .from('work_order_templates')
-      .insert({ company_id: companyId, name: 'Untitled playbook' })
+      .insert({ company_id: companyId, name: 'Untitled SOP' })
       .select(`id, name, description, archived_at, created_at, updated_at,
                items:work_order_template_items(id, position, text, notes, required, created_at)`)
       .single()
@@ -361,7 +361,7 @@ export default function Playbooks() {
   }
 
   async function archiveTemplate(id) {
-    if (!confirm('Archive this playbook? Existing work orders that used it keep their checklists; new ones can no longer pick it.')) return
+    if (!confirm('Archive this SOP? Existing work orders that used it keep their checklists; new ones can no longer pick it.')) return
     setBusy(true); setError(null)
     const { error: err } = await supabase
       .from('work_order_templates')
@@ -518,7 +518,7 @@ export default function Playbooks() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          {/* ── Left pane: list of playbooks ─────────────────────────────── */}
+          {/* ── Left pane: list of SOPs ─────────────────────────────── */}
           <aside className={`lg:col-span-3 ${selected && 'hidden lg:block'}`}>
             {/* Ask Solomon — collapsible so it does not crowd the list (Daniel, 8 Oct) */}
             <div className="mb-3 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
@@ -534,7 +534,7 @@ export default function Playbooks() {
               {askOpen && (
                 <div className="px-4 pb-4 border-t border-ink-100 pt-3">
                   <p className="text-[11px] text-ink-500 mb-3 leading-snug">
-                    Solomon reads your job logs, the work you run, and what your documents are missing, and names the playbooks worth having.
+                    Solomon reads your job logs, the work you run, and what your documents are missing, and names the SOPs worth having.
                   </p>
                   <button
                     onClick={askSolomon}
@@ -574,7 +574,7 @@ export default function Playbooks() {
 
               <div className="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500">
-                  Playbooks <span className="text-ink-400">· {templates.length}</span>
+                  SOPs <span className="text-ink-400">· {templates.length}</span>
                 </h2>
                 <button
                   onClick={createTemplate}
@@ -630,7 +630,7 @@ export default function Playbooks() {
                         }`}
                       >
                         <p className="text-sm font-semibold text-ink-900 truncate">
-                          {t.name || 'Untitled playbook'}
+                          {t.name || 'Untitled SOP'}
                         </p>
                         <p className="text-[11px] text-ink-500 mt-0.5">
                           {t.items.length} step{t.items.length === 1 ? '' : 's'}
@@ -645,7 +645,7 @@ export default function Playbooks() {
 
             {/* Hint */}
             <p className="mt-3 text-[11px] text-ink-500 leading-relaxed px-1">
-              Each playbook becomes a checklist on the work order. Crew ticks off
+              Each SOP becomes a checklist on the work order. Crew ticks off
               steps as they go, from the office or the staff portal.
             </p>
           </aside>
@@ -678,8 +678,8 @@ export default function Playbooks() {
                 </h3>
                 <p className="text-xs text-ink-500 max-w-sm mx-auto leading-relaxed">
                   {templates.length === 0
-                    ? 'Pick a starter on the left, or start blank. Each playbook becomes a checklist your crew works through in the field.'
-                    : 'Pick a playbook on the left to edit it, or create a new one.'}
+                    ? 'Pick a starter on the left, or start blank. Each SOP becomes a checklist your crew works through in the field.'
+                    : 'Pick a SOP on the left to edit it, or create a new one.'}
                 </p>
               </div>
             )}
@@ -698,7 +698,7 @@ function PageHeader() {
       <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">
         Process Library
       </div>
-      <h1 className="text-xl font-bold text-ink-900">Playbooks</h1>
+      <h1 className="text-xl font-bold text-ink-900">SOPs</h1>
       {/* ⚠️ 1 Sep — this used to say "your crew gets a checklist on every work
           order — no more 'what's next?' calls". Daniel, looking at this page:
           "it's almost a totally different thing to what we are building, we
@@ -744,7 +744,7 @@ function HowItWorksBanner({ onDismiss }) {
     <div className="mb-6 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
       <div className="px-5 py-3 border-b border-ink-100 flex items-center justify-between">
         <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">
-          How playbooks work
+          How SOPs work
         </h2>
         <button
           onClick={onDismiss}
@@ -762,7 +762,7 @@ function HowItWorksBanner({ onDismiss }) {
         <HowStep
           n="2"
           title="Attach it to a job"
-          body="When a job comes up, pick the matching playbook. Its steps copy across, so the same work gets done the same way whoever is on it."
+          body="When a job comes up, pick the matching SOP. Its steps copy across, so the same work gets done the same way whoever is on it."
         />
         <HowStep
           n="3"
@@ -812,7 +812,7 @@ function PlaybookEditor({
   const [name, setName] = useState(template.name)
   const [description, setDescription] = useState(template.description ?? '')
 
-  // Reset local state when a different playbook is selected
+  // Reset local state when a different SOP is selected
   useEffect(() => {
     setName(template.name)
     setDescription(template.description ?? '')
@@ -820,7 +820,7 @@ function PlaybookEditor({
 
   function commitName() {
     if (name === template.name) return
-    onUpdateTemplate({ name: name.trim() || 'Untitled playbook' })
+    onUpdateTemplate({ name: name.trim() || 'Untitled SOP' })
   }
   function commitDescription() {
     if (description === (template.description ?? '')) return
@@ -852,10 +852,10 @@ function PlaybookEditor({
     const w = window.open('', '_blank')
     if (!w) return
     w.document.write(
-      '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(template.name || 'Playbook') + '</title>' +
+      '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(template.name || 'SOP') + '</title>' +
       '<style>body{font:16px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;color:#1b2422;max-width:640px;margin:48px auto;padding:0 24px}' +
       'h1{font-size:22px;margin:0 0 4px}.desc{color:#5b6b67;margin:0 0 24px;font-size:14px}ol{padding-left:22px}li{margin:0 0 12px}.foot{margin-top:36px;color:#9aa6a3;font-size:11px}</style>' +
-      '</head><body><h1>' + esc(template.name || 'Playbook') + '</h1>' +
+      '</head><body><h1>' + esc(template.name || 'SOP') + '</h1>' +
       (template.description ? '<p class="desc">' + esc(template.description) + '</p>' : '') +
       '<ol>' + steps.map(st => '<li>' + esc(st.text) + '</li>').join('') + '</ol>' +
       '<p class="foot">Eliv8 OS</p></body></html>'
@@ -873,7 +873,7 @@ function PlaybookEditor({
           onClick={onBack}
           className="lg:hidden mb-2 text-xs font-semibold text-ink-500 hover:text-ink-700"
         >
-          ← Back to playbooks
+          ← Back to SOPs
         </button>
 
         <input
@@ -881,7 +881,7 @@ function PlaybookEditor({
           onChange={e => setName(e.target.value)}
           onBlur={commitName}
           onKeyDown={e => e.key === 'Enter' && e.currentTarget.blur()}
-          placeholder="Playbook name"
+          placeholder="SOP name"
           className="w-full text-base font-bold text-ink-900 bg-transparent border-0 px-0 py-0.5 focus:outline-none focus:ring-0 placeholder:text-ink-300"
         />
 
@@ -889,7 +889,7 @@ function PlaybookEditor({
           value={description}
           onChange={e => setDescription(e.target.value)}
           onBlur={commitDescription}
-          placeholder="What this playbook is for (optional)"
+          placeholder="What this SOP is for (optional)"
           rows={1}
           className="mt-1 w-full text-xs text-ink-600 bg-transparent border-0 px-0 py-0.5 resize-none focus:outline-none focus:ring-0 placeholder:text-ink-400"
         />
@@ -935,23 +935,23 @@ function PlaybookEditor({
 
       {/* Footer — actions */}
       <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/50 flex items-center justify-between flex-wrap gap-2">
-        {/* Bridge to the place the playbook actually gets used. Without this
+        {/* Bridge to the place the SOP actually gets used. Without this
             the owner has to remember to go to /board, click +New, AND remember
-            to pick the right playbook in the dropdown — too many steps to
+            to pick the right SOP in the dropdown — too many steps to
             close the loop. Query param is honoured by Board.jsx's existing
             search-param handler (same pattern Roadmap uses for ms_id). */}
         <Link
           to={`/board?playbook_id=${template.id}`}
           className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
         >
-          Use this playbook on a new work order →
+          Use this SOP on a new work order →
         </Link>
         <button
           onClick={onArchive}
           disabled={busy}
           className="text-xs font-semibold text-red-700 hover:text-red-800 disabled:opacity-50"
         >
-          Archive playbook
+          Archive SOP
         </button>
       </div>
     </div>
@@ -967,7 +967,7 @@ function PlaybookEditor({
  * "REQ" badge on required+unchecked steps, notes shown below.
  *
  * Tapping is purely local — the demo state resets every time the underlying
- * items list changes (different playbook selected, step added/removed) so the
+ * items list changes (different SOP selected, step added/removed) so the
  * preview never lies about what the real crew has actually done.
  */
 function CrewPreview({ items }) {

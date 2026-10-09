@@ -816,7 +816,7 @@ function PriceSection() {
               'Succession planning',
               'Growth roadmap',
               'Weekly check-ins',
-              'Playbooks',
+              'SOPs',
               'Work board',
               'Cited regulatory answers',
               'Document library',

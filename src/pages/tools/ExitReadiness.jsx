@@ -41,7 +41,7 @@ const INITIAL_FORM = {
   recurring_pct:          '',  // recurring/contracted share of revenue (0-100 or description)
   top_customer_pct:       '',  // % of revenue from the largest customer
   differentiation:        '',  // why customers pick you vs alternatives
-  systems_state:          '',  // SOPs / playbooks / team training
+  systems_state:          '',  // SOPs / SOPs / team training
   exit_timeline:          '',  // when do you want to sell / transition?
   deal_breaker:           '',  // optional — anything a buyer would see as a no-go
 }
@@ -428,7 +428,7 @@ const EXIT_STEPS = [
   { label: 'Scoring recurring revenue',         sub: 'Retainers and contracts add a valuation premium', delay: 11000 },
   { label: 'Checking customer concentration',   sub: 'Buyer risk flags and how exposed you are', delay: 18000 },
   { label: 'Rating your systems',               sub: 'From "in my head" to fully documented', delay: 24000 },
-  { label: 'Building your exit playbook',       sub: 'Prioritised fixes that move the needle most', delay: 30000 },
+  { label: 'Building your exit SOP',       sub: 'Prioritised fixes that move the needle most', delay: 30000 },
 ]
 
 function LoadingView({ wantsToSell }) {
