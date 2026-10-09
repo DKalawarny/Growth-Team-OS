@@ -35,7 +35,7 @@ export default function Handoff({ answers = {}, onTell }) {
 
   async function share() {
     setBusy(true); setMsg('')
-    try { await saveHandoff('unstuck', text); setShared({ body: text }); setMsg('Shared. Only these lines went across, and you can change them any time.') }
+    try { await saveHandoff('unstuck', text); setShared({ body: text }); setMsg('Shared. Only these lines were sent. You can change them any time.') }
     catch (e) { setMsg(e.message) }
     finally { setBusy(false) }
   }
@@ -47,7 +47,7 @@ export default function Handoff({ answers = {}, onTell }) {
         <aside className="wayout__bridge wayout__r">
           <span className="wayout__offerkick">From your business on Eliv8 OS</span>
           <p>“{fromBiz.body}”</p>
-          <button type="button" className="wayout__again" onClick={() => onTell(fromBiz.body)}>Tell my plan this</button>
+          <button type="button" className="wayout__again" onClick={() => onTell(fromBiz.body)}>Add this to my plan</button>
         </aside>
       )}
       {owner && (

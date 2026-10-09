@@ -85,7 +85,7 @@ function Asking({ move, questions, busy, onSubmit }) {
             FOLLOWS their input — and the rest name the sections of the week
             about to arrive. */}
         <Working foot="Up to a minute." lines={[
-          'Reading what you just told me.',
+          'Reading what you told us.',
           'Working out the week.',
           'Finding what usually goes wrong.',
           'Writing it down.',
@@ -95,7 +95,7 @@ function Asking({ move, questions, busy, onSubmit }) {
   }
 
   return (
-    <WayoutShell title="Before I write this">
+    <WayoutShell title="A few questions first">
       {/* ⚠️ Same reason as the playbook's crumb — this screen asks two questions
           and then commits to writing a week, and until now the only exit was the
           browser's back button. */}
@@ -103,7 +103,7 @@ function Asking({ move, questions, busy, onSubmit }) {
         <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
       </p>
       <p className="wayout__q">
-        {questions.length > 1 ? `${questions.length} things before I write it.` : 'One thing before I write it.'}
+        {questions.length > 1 ? `${questions.length} quick questions first.` : 'One quick question first.'}
       </p>
       <p className="wayout__lead">
         {/* 🔴 "the week I write — weird again." It read "what you say here changes
@@ -117,8 +117,8 @@ function Asking({ move, questions, busy, onSubmit }) {
             that makes a reader check everything else. */}
         {move?.title ? `You are starting: ${move.title}. ` : ''}
         {questions.length === 1
-          ? 'This one changes what the plan says, not just how it reads.'
-          : 'These change what the plan says, not just how it reads.'}
+          ? 'Your answer changes what the steps say.'
+          : 'Your answers change what the steps say.'}
       </p>
 
       {questions.map((q, i) => (
@@ -150,7 +150,7 @@ function Asking({ move, questions, busy, onSubmit }) {
             className="wayout__textarea"
             value={answers[`${i}:note`] ?? ''}
             onChange={e => setAnswers(a => ({ ...a, [`${i}:note`]: e.target.value }))}
-            placeholder={q.options?.length ? 'Anything that does not fit the buttons.' : 'A sentence is plenty.'}
+            placeholder={q.options?.length ? 'Anything that does not fit the buttons.' : 'A sentence is enough.'}
           />
         </div>
       ))}
@@ -159,7 +159,7 @@ function Asking({ move, questions, busy, onSubmit }) {
         Write it
       </button>
       <p className="wayout__hint">
-        Skip anything you would rather not answer. It gets written either way.
+        Skip anything you would rather not answer. We will write your steps either way.
       </p>
     </WayoutShell>
   )
@@ -195,7 +195,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed, region = null }) {
 
   return (
     <div className="wayout__ask">
-      <h3 className="wayout__label">Ask about this one</h3>
+      <h3 className="wayout__label">Questions about this move? Ask here.</h3>
 
       {/* 🔴 THE BEST ANSWERS IN THE PRODUCT WERE TRAPPED IN A THREAD. Daniel, on
           a reply about FIRPTA and flip holding periods: "this should have a pin
@@ -223,7 +223,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed, region = null }) {
               onClick={() => onPin(m.content)}
               disabled={pinned === m.content}
             >
-              {pinned === m.content ? '✓ On the plan' : 'Pin this to the plan'}
+              {pinned === m.content ? '✓ Saved to your plan' : 'Save this to my plan'}
             </button>
           )}
         </div>
@@ -236,9 +236,7 @@ function AskBox({ thread, onAsk, onPin, pinned, seed, region = null }) {
         // move is somebody using this instead of doing the thing, and saying so
         // plainly is more useful than another answer would be.
         <p className="wayout__hint">
-          That is a dozen questions on this one move. The next real answer is
-          probably on the other side of trying it, come back when it has met
-          the world and tell me what happened.
+          You have asked a lot about this move. The best next step is to try it. Then come back and tell us what happened.
         </p>
       ) : (
         <>
@@ -459,7 +457,7 @@ function PlayMove({ order }) {
   // back to it rather than making them feel refused.
   if (locked) {
     return (
-      <WayoutShell title="Not this one yet">
+      <WayoutShell title="Finish the move before this one">
         <p className="wayout__q">Move {order - 1} comes first.</p>
         <p className="wayout__lead">
           {move?.title
@@ -610,9 +608,9 @@ function PlayMove({ order }) {
             <b>Done.</b>{' '}
             {order < 3
               ? <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/play/${order + 1}`)}>Open move {order + 1}</button>
-              : <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/done`)}>That was the last one</button>}
+              : <button type="button" className="wayout__again" onClick={() => navigate(`${WAYOUT_BASE}/done`)}>I have finished all three</button>}
             {' · '}
-            <button type="button" className="wayout__again" onClick={() => toggleDone(false)}>Not yet, actually</button>
+            <button type="button" className="wayout__again" onClick={() => toggleDone(false)}>Undo, not done yet</button>
           </p>
         ) : (
           <>
@@ -624,7 +622,7 @@ function PlayMove({ order }) {
                 says what happens rather than what state you are in. */}
             <p className="wayout__gatecheck">{play.done_when}</p>
             <button className="wayout__btn wayout__btn--sun" onClick={() => toggleDone(true)}>
-              {order < 3 ? `That's true, open move ${order + 1}` : 'That’s true, I’ve done all three'}
+              {order < 3 ? `Yes, I have done this. Open move ${order + 1}` : 'Yes, I have done all three'}
             </button>
             <p className="wayout__hint">
               Only when it is actually true. Move {order < 3 ? order + 1 : 3} is written for where you

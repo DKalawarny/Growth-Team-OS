@@ -56,10 +56,10 @@ import { loadOrCreateSession, loadProgress, recordOutcome, startNextChapter } fr
  * only answer that teaches us anything.
  */
 const OPTIONS = [
-  { key: 'landed',  label: 'I’m there. That’s my life now',   hint: 'The thing you were aiming at actually happened. The next question is where now.' },
-  { key: 'partly',  label: 'Closer. Not there yet.',           hint: 'Real ground gained. The route from here is not the one you were given at the start.' },
-  { key: 'no',      label: 'I did it all and it didn’t land',  hint: 'The most useful thing you can tell us, and the next plan will not contain that route.' },
-  { key: 'changed', label: 'I’m after something else now',     hint: 'Everything true about your situation carries over. The destination is yours to reset.' },
+  { key: 'landed',  label: 'I’m there. That’s my life now',   hint: 'You reached your goal. Next, you decide what you want now.' },
+  { key: 'partly',  label: 'Closer. Not there yet.',           hint: 'You made progress. Your next plan starts from where you are now.' },
+  { key: 'no',      label: 'I did it all and it didn’t land',  hint: 'That is useful to know. Your next plan will try a different way.' },
+  { key: 'changed', label: 'I’m after something else now',     hint: 'Everything you told us about your life carries over. You pick a new goal.' },
 ]
 
 /**
@@ -77,24 +77,20 @@ const OPTIONS = [
  */
 const NEXT = {
   landed: {
-    cta: 'Set the next one',
-    line: 'That was the destination. The next plan starts from a different question'
-      + 'where now, and only you can answer it.',
+    cta: 'Set a new goal',
+    line: 'You reached your goal. Your next plan starts with a new question: what now? Only you can answer it.',
   },
   partly: {
-    cta: 'Re-plan the rest from here',
-    line: 'Same destination. You are closer to it than you were, so the route from '
-      + 'here is not the route you were given at the start.',
+    cta: 'Plan the rest from where I am',
+    line: 'Same goal. You are closer now, so your next plan starts from where you are.',
   },
   no: {
-    cta: 'A different route to the same place',
-    line: 'The destination stands. That route did not work, and the next plan will '
-      + 'not contain it.',
+    cta: 'Try a different way to the same goal',
+    line: 'Your goal stays the same. That way did not work, so your next plan will try something different.',
   },
   changed: {
-    cta: 'Start the new one',
-    line: 'New destination. Everything already known about you carries over, your '
-      + 'town, your hours, what you will not do.',
+    cta: 'Start my new plan',
+    line: 'A new goal. Everything you told us carries over: your town, your hours, what you will not do.',
   },
 }
 
@@ -233,14 +229,11 @@ export default function Done() {
             order was the hard part.
           </p>
           <p className="wayout__lead">
-            Those moves were built for this year and they are spent. What is not
-            spent is that you now know exactly what your own follow-through looks
-            like, which is the one thing the questions could never have told
-            you, and the reason the next plan can be bolder than this one was.
+            Those three moves are done. You now know you can follow a plan through to the end. That means your next plan can aim higher.
           </p>
         </div>
       ) : (
-        <p className="wayout__q">Where did it get to?</p>
+        <p className="wayout__q">How far did you get?</p>
       )}
 
       {/* Their own moves, in their own words. Not a summary of what we did — a
@@ -261,11 +254,9 @@ export default function Done() {
           second reads as a check-up, the first as the hinge into what comes
           next. One answer here decides what the next plan is built from, and
           the question should say so. */}
-      <h2 className="wayout__nowh">So where does that leave you?</h2>
+      <h2 className="wayout__nowh">Where are you now?</h2>
       <p className="wayout__lead">
-        One answer, and it decides everything about the next one. Whether this
-        moved anything is the one thing only you know, and the one thing
-        nobody ever asks.
+        Pick the one that fits. Your answer decides what your next plan is about.
       </p>
 
       <div className="wayout__chips" style={{ marginTop: 22 }}>
@@ -286,7 +277,7 @@ export default function Done() {
       {picked && (
         <>
           <label className="wayout__label" htmlFor="wayout-outcome-note" style={{ marginTop: 20 }}>
-            Anything worth saying about it?
+            Anything you want to add?
           </label>
           <textarea
             id="wayout-outcome-note"
@@ -308,7 +299,7 @@ export default function Done() {
               straightforward." This one is quieter now, and once it is sent it
               stops being a button at all. */}
           {saved ? (
-            <p className="wayout__sent">✓ Saved. Read by a person, and it changes what gets built next.</p>
+            <p className="wayout__sent">✓ Saved. We read every reply, and it changes what we build next.</p>
           ) : (
             <button className="wayout__btn wayout__btn--quiet" onClick={submit} disabled={sending}>
               {sending ? 'One moment…' : 'Send it'}

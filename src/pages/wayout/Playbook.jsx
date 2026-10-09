@@ -88,7 +88,7 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
           ⚠️ At the TOP, where somebody decides to leave — not at the end, which
           is where somebody has already given up looking. */}
       <p className="wayout__crumb">
-        <Link to={`${WAYOUT_BASE}/plan`}>← The whole plan</Link>
+        <Link to={`${WAYOUT_BASE}/plan`}>← Back to your plan</Link>
       </p>
       {/* ⚠️ Inside the page, under the way back — it used to render above the
           site header, detached from everything. */}
@@ -162,7 +162,7 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
               on a logo, a name and a magnetic sign and never knock on a door. */}
           {play.dont_need_yet?.length > 0 && (
             <div>
-              <Section label="Skip for now" onSection={onSection} />
+              <Section label="Not needed yet" onSection={onSection} />
               <ul className="wayout__list wayout__list--skip">
                 {play.dont_need_yet.map((t, i) => <li key={i}>{t}</li>)}
               </ul>
@@ -173,7 +173,7 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
 
       {play.goes_wrong?.length > 0 && (
         <div className="wayout__block">
-          <Section label="What usually happens" onSection={onSection} />
+          <Section label="What usually goes wrong" onSection={onSection} />
           <div className="wayout__cut">
             {play.goes_wrong.map((g, i) => (
               <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
@@ -231,11 +231,11 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
       {(play.done_when || play.opens) && (
         <div className="wayout__after">
           {play.done_when && (
-            <p className="wayout__done"><b>Done when:</b> {play.done_when}</p>
+            <p className="wayout__done"><b>You are done when:</b> {play.done_when}</p>
           )}
           {play.opens && (
             <div className="wayout__opens">
-              <b>And then</b>
+              <b>What happens next</b>
               <p>{play.opens}</p>
             </div>
           )}

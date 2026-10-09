@@ -54,7 +54,7 @@ export default function WayoutShell({
   return (
     <div className="wayout">
       <Helmet>
-        <title>{title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
+        <title>{title ? `${title} · ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
         {noindex && <meta name="robots" content="noindex, nofollow" />}
         {/* 🔴 THE INHERITED CANONICAL POINTED AT THE ELIV8 HOMEPAGE. index.html
@@ -81,14 +81,14 @@ export default function WayoutShell({
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content={WAYOUT_NAME_TITLE} />
         <meta property="og:url" content={WAYOUT_SITE_URL} />
-        <meta property="og:title" content={title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta property="og:title" content={title ? `${title} · ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
         <meta property="og:description" content={WAYOUT_TAGLINE} />
         <meta property="og:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={WAYOUT_SITE_URL} />
-        <meta name="twitter:title" content={title ? `${title} — ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta name="twitter:title" content={title ? `${title} · ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
         <meta name="twitter:description" content={WAYOUT_TAGLINE} />
         <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />

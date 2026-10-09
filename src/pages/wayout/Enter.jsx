@@ -52,12 +52,12 @@ import { humanError } from '../../lib/wayout/humanError'
  */
 function headingFor(next) {
   if (next.endsWith('/plan')) return 'Your plan needs an account.'
-  return 'Before the questions.'
+  return 'First, make a free account.'
 }
 
 function leadFor(next) {
   if (next.endsWith('/plan')) {
-    return 'So the plan is still here tomorrow, and on your phone rather than just this browser.'
+    return 'An account keeps your plan safe, so you can open it tomorrow or on your phone.'
   }
   // ⚠️ "Six questions" meant something different here than on the landing page —
   // there it is the six taps, here it was the six intake screens. Two different
@@ -268,7 +268,7 @@ export default function Enter() {
               and turned out to have one is neither new nor returning, and telling
               them either is wrong. */}
           <h1>
-            {known ? 'You already have one.'
+            {known ? 'You already have an account.'
               : mode === 'in' ? 'Welcome back.'
               : headingFor(next)}
           </h1>
@@ -384,7 +384,7 @@ export default function Enter() {
           )}
           {linkSent && (
             <p className="wayout__notice">
-              Check your email, the link signs you straight in. It works once, for an hour.
+              Check your email. The link signs you in. You can use it once, within an hour.
             </p>
           )}
 

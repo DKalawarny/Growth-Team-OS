@@ -108,8 +108,7 @@ export default function PlanThread({
     <section className="wayout__card wayout__thread">
       <h3 className="wayout__label">Something changed?</h3>
       <p className="wayout__threadlead">
-        Your plan is built on what was true when you answered. When that stops
-        being true, say so here and we will show you what it moves.
+        Your plan is based on your answers. If something in your life changes, tell us here and we will show you how it changes your plan.
       </p>
 
       {/* ⭐⭐ THE VERSIONS, NOT THE TRANSCRIPT. Daniel: "this should just show
@@ -149,7 +148,7 @@ export default function PlanThread({
         <div className="wayout__versioncut">
           {/* ⚠️ Not "Crossed off" — the plan's own list a scroll below has that
               name, and two lists with one name read as one. */}
-          <p className="wayout__versionshead">Versions you set aside</p>
+          <p className="wayout__versionshead">Versions you did not pick</p>
           {plans.filter(v => v.crossed).map(v => (
             <div key={v.key} className="wayout__versioncutrow">
               <s>V{v.n} “{v.about ?? 'Rewritten'}”</s>
@@ -177,9 +176,9 @@ export default function PlanThread({
       {drafting && (
         <div className={`wayout__draft${pending ? ' is-building' : ''}`} role={pending ? 'status' : undefined}>
           <div className="wayout__drafthead">
-            <p className="wayout__versionhead">New idea · will be V{nextN}</p>
+            <p className="wayout__versionhead">New idea · will become version {nextN}</p>
             {onDropDraft && !quiet && (
-              <button type="button" className="wayout__versionx" aria-label="Drop this idea" onClick={() => setDropping(true)}>
+              <button type="button" className="wayout__versionx" aria-label="Delete this idea" onClick={() => setDropping(true)}>
                 ×
               </button>
             )}
@@ -202,20 +201,20 @@ export default function PlanThread({
           {pending ? (
             <div className="wayout__draftwait">
               <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
-              <span>Building V{nextN}. Up to a minute. Your plan stays as it is until it is ready.</span>
+              <span>Making version {nextN}. This takes up to a minute. Your plan stays the same until then.</span>
             </div>
           ) : !quiet && onRedo && (lastReply || corrected) && !lastReply?.crisis && (
             <div className="wayout__draftact">
-              {moved && <p className="wayout__draftmoved">{moved.whatChanged ?? 'That changes the order.'}</p>}
+              {moved && <p className="wayout__draftmoved">{moved.whatChanged ?? 'That changes the order of your moves.'}</p>}
               {!moved && asked && (
-                <p className="wayout__draftnote">It asked you something. Answer below to sharpen it first, or make it now.</p>
+                <p className="wayout__draftnote">There is a question for you above. Answer it below for a better result, or make the new version now.</p>
               )}
               <button
                 type="button"
                 className={`wayout__btn ${moved ? 'wayout__btn--sun' : 'wayout__btn--quiet'}`}
                 onClick={onRedo}
               >
-                Make it V{nextN}
+                Make version {nextN}
               </button>
             </div>
           )}
@@ -227,9 +226,9 @@ export default function PlanThread({
       {onDropDraft && (
         <Confirm
           open={dropping}
-          title="Drop this idea?"
-          body="What you said and the reply go. Your plan does not change."
-          yes="Drop it"
+          title="Delete this idea?"
+          body="What you wrote and our reply will be deleted. Your plan stays the same."
+          yes="Delete it"
           onYes={() => { setDropping(false); onDropDraft() }}
           onNo={() => setDropping(false)}
         />
@@ -237,15 +236,13 @@ export default function PlanThread({
 
       {spent ? (
         <p className="wayout__hint">
-          That is a lot of back and forth on one plan. Whatever is next is
-          probably on the other side of doing move one.
+          You have changed this plan a lot. The best next step now is to start move 1.
         </p>
       ) : last?.stalling ? (
         // ⚠️ Not a lock. They can still type — the screen simply stops asking
         // for more, which is the difference between a limit and a telling-off.
         <p className="wayout__hint">
-          Nothing here has changed the plan for a while. The next real answer is
-          on the other side of trying it.
+          Your plan has not changed in a while. The best way forward now is to try your next move.
         </p>
       ) : null}
 
@@ -270,7 +267,7 @@ export default function PlanThread({
       {!spent && (
         <div className="wayout__threadsay">
           <label className="wayout__label" htmlFor="wayout-thread">
-            {drafting ? 'Add to this idea' : plans.length || lastMine > -1 ? 'Something new changed?' : 'What changed?'}
+            {drafting ? 'Add to this idea' : plans.length || lastMine > -1 ? 'Has something else changed?' : 'What changed?'}
           </label>
           <textarea
             id="wayout-thread"
@@ -317,7 +314,7 @@ export function VersionSwitch({
   const doomed = plans.find(v => v.key === asking)
   return (
     <div className="wayout__versions" id="wayout-versions" role="group" aria-label="Which version of your plan is showing">
-      <p className="wayout__versionshead">Version showing</p>
+      <p className="wayout__versionshead">The version you are looking at</p>
       <div className="wayout__versionsrow">
         {plans.map(v => (
           <span key={v.key} className={`wayout__versionchip${showing === v.key ? ' is-on' : ''}`}>
@@ -352,8 +349,8 @@ export function VersionSwitch({
           title={doomed ? `Delete ${doomed.label}?` : ''}
           quote={doomed?.about ? `Rewritten around “${doomed.about}”` : null}
           body={doomed && showing === doomed.key
-            ? 'Its plan cannot be brought back, and your plan steps back to the version before it.'
-            : 'Its plan cannot be brought back.'}
+            ? 'This version will be deleted for good. You will see the version before it.'
+            : 'This version will be deleted for good.'}
           yes="Delete it"
           onYes={() => { const k = doomed.key; setAsking(null); onRemove(k) }}
           onNo={() => setAsking(null)}
@@ -361,9 +358,9 @@ export function VersionSwitch({
       )}
       <p className="wayout__versionnote">
           {showing == null
-            ? 'Your plan was rebuilt from your answers since. None of these is showing.'
+            ? 'You answered the questions again after these, so none of these versions is showing now.'
             : showing === -1
-              ? 'The plan from your answers, before anything you said below.'
+              ? 'Your first plan, made from your answers.'
               : on?.about ? `Rewritten around “${on.about.replace(/[.!?]+$/, '')}”.` : null}
       </p>
 
@@ -377,14 +374,14 @@ export function VersionSwitch({
           {choosing ? (
             <div className="wayout__draftwait" role="status">
               <div className="wayout__working" aria-hidden="true"><i /><i /><i /></div>
-              <span>Comparing your versions against what you told us.</span>
+              <span>Comparing your versions with your answers.</span>
             </div>
           ) : (
             <>
               <button type="button" className="wayout__btn wayout__btn--quiet" disabled={disabled} onClick={onChoose}>
                 Help me choose
               </button>
-              <span className="wayout__choosenote">Compares them against what you told us. Twice a day.</span>
+              <span className="wayout__choosenote">We compare your versions with your answers. You can do this twice a day.</span>
             </>
           )}
           {chooseErr && <p className="wayout__error">{humanError(chooseErr)}</p>}
@@ -452,7 +449,7 @@ function Choice({ plans, choice, onGoWith, disabled }) {
   const reasons = Object.fromEntries((choice.versions ?? []).map(v => [v.key, v.costs]))
   return (
     <div className="wayout__choice">
-      <p className="wayout__versionshead">Which fits what you told us</p>
+      <p className="wayout__versionshead">Which version fits you best</p>
       {picked && <p className="wayout__choicepick">Closest fit: <b>{picked.label}</b></p>}
       {choice.why && <p className="wayout__choicewhy">{choice.why}</p>}
       <ul className="wayout__choicelist">

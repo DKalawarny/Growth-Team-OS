@@ -129,7 +129,7 @@ export default function Chapter() {
     <WayoutShell title={`Chapter ${chapter}`} wide>
       <div className="wayout__chapter">
         <p className="wayout__chapterkick">Chapter {chapter}</p>
-        <h1 className="wayout__chapterh">A different plan, for who you are now.</h1>
+        <h1 className="wayout__chapterh">What has changed since your last plan?</h1>
         {outcome && CHAPTER_LEAD[outcome] && (
           <p className="wayout__chapterlead">{CHAPTER_LEAD[outcome]}</p>
         )}
@@ -148,7 +148,7 @@ export default function Chapter() {
             <q>{firstSentences(tidyQuote(first.answers.out))}</q>
             {chain.length > 1 && (
               <Link className="wayout__originlink" to={`${WAYOUT_BASE}/history`}>
-                See the whole way here →
+                See all your progress →
               </Link>
             )}
           </div>
@@ -180,11 +180,10 @@ export default function Chapter() {
         {errors._save && <p className="wayout__error">{errors._save}</p>}
 
         <button className="wayout__btn wayout__btn--sun" onClick={submit} disabled={saving}>
-          {saving ? 'One moment…' : 'Build this one'}
+          {saving ? 'One moment…' : 'Build my next plan'}
         </button>
         <p className="wayout__chapterfine">
-          Everything else you told us is still here: your town, your hours, what
-          you will not do. Only what moved gets asked again.
+          We still have everything else you told us: your town, your hours, what you will not do. We only ask about what has changed.
         </p>
       </div>
     </WayoutShell>

@@ -37,11 +37,11 @@ export const CHAPTER_SCREEN = {
       key: 'chapterChanged',
       kind: 'text',
       label: 'What actually changed?',
-      hint: 'Since the last plan. The facts, not the feeling: what is different about your week, your money or the people around you.',
+      hint: 'Since your last plan. What is different about your week, your money or the people around you?',
       placeholder: 'The debt is gone. Same hours as before. One less person at home.',
       dictate: true,
       required: true,
-      emptyMessage: 'A couple of lines. This is the one that shapes the rest.',
+      emptyMessage: 'Please write a line or two. This answer shapes your next plan.',
     },
     {
       /**
@@ -53,13 +53,13 @@ export const CHAPTER_SCREEN = {
       key: 'chapterLearned',
       kind: 'text',
       label: 'What do you know now that you didn’t when you started?',
-      hint: 'Anything the doing taught you: about the work, the numbers, or what you will actually put up with.',
+      hint: 'What did you learn by doing it? About the work, the money, or what you are willing to put up with.',
       placeholder: 'I will not do the admin side of it. And everything takes longer than people say.',
       dictate: true,
       required: false,
     },
-    { key: 'takeHome', kind: 'number', label: 'Coming in each month now', hint: 'After tax. Roughly.', required: true, emptyMessage: 'A rough number is fine.' },
-    { key: 'mustPay',  kind: 'number', label: 'Going out each month now', hint: 'Everything that has to be paid.', required: true, emptyMessage: 'A rough number is fine.' },
+    { key: 'takeHome', kind: 'number', label: 'How much do you take home each month now?', hint: 'After tax. Roughly.', required: true, emptyMessage: 'A rough number is fine.' },
+    { key: 'mustPay',  kind: 'number', label: 'What do you have to pay every month now?', hint: 'Everything that has to be paid.', required: true, emptyMessage: 'A rough number is fine.' },
 
     /**
      * 🔴🔴 THE TWO MONEY LINES A PLAN IS MOST LIKELY TO HAVE CHANGED, AND THEY
@@ -79,13 +79,13 @@ export const CHAPTER_SCREEN = {
      * somebody who skips them is no worse off than they were before.
      */
     { key: 'housingCost', kind: 'number', label: 'Of that, how much is housing now?', hint: 'Rent or mortgage plus tax, insurance, heat and hydro. If you sold or moved, this is the line that changed most.', required: false },
-    { key: 'debt', kind: 'text', label: 'What you owe now, and what it costs you', hint: 'Balances and rates. Paid something off since last time? Say so. It changes what the plan can be bold about.', dictate: true, required: false },
+    { key: 'debt', kind: 'text', label: 'Do you owe money now? Roughly how much, and at what interest rate?', hint: 'Paid something off since last time? Tell us. It changes how big a risk your plan can take.', dictate: true, required: false },
     /* 🔴 "what could you reach today? does that mean savings?" — it did, and
        nobody should have to ask. The label avoided the word "savings" because
        some people have none and it can sting; the cost was that nobody knew
        what was being asked. ⭐ Name the thing; let the hint carry the
        reassurance. */
-    { key: 'savings',  kind: 'number', label: 'Savings you could get to today', hint: 'Cash you could actually reach without a penalty. Zero is an answer.', required: false },
+    { key: 'savings',  kind: 'number', label: 'How much savings could you get to today?', hint: 'Cash you could actually reach without a penalty. Zero is an answer.', required: false },
   ],
 
   /**
@@ -140,7 +140,7 @@ export const CHAPTER_SCREEN = {
       key: 'peopleNote',
       kind: 'text',
       label: 'Who is at home now, and what changed?',
-      hint: 'A partner, kids, somebody who moved in or out. It decides what a plan is allowed to ask of your week.',
+      hint: 'A partner, kids, someone who moved in or out. It changes how much time your plan can ask for.',
       dictate: true,
       required: false,
       showIf: a => picked(a, 'who'),
@@ -148,7 +148,7 @@ export const CHAPTER_SCREEN = {
     {
       key: 'hoursPerWeek',
       kind: 'choice',
-      label: 'How many hours a week could you put into it now?',
+      label: 'How many spare hours a week could you put toward this now?',
       required: false,
       options: [
         { key: 'few',   label: 'A couple, if that' },
@@ -219,7 +219,7 @@ export const CHAPTER_SCREEN = {
       key: 'tuesday',
       kind: 'text',
       label: 'And a year from here, what does a normal day look like?',
-      hint: 'Optional. The sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
+      hint: 'Optional. Fill this in if your idea of a normal day has changed.',
       placeholder: 'Same town, fewer hours, and home when the kids get in.',
       dictate: true,
       required: false,
@@ -241,8 +241,8 @@ export const CHAPTER_SCREEN = {
 const DESTINATION_LABEL = {
   landed:  'You got there. So where do you want to get to now?',
   changed: 'So where do you want to get to now?',
-  partly:  'You are closer. Is that still where you are headed, or has it moved?',
-  no:      'That route did not work. Is that still where you want to get to?',
+  partly:  'You are closer. Is your goal still the same, or has it changed?',
+  no:      'That way did not work. Is your goal still the same?',
 }
 
 /** Was this one of the things they said had moved? */
@@ -274,8 +274,8 @@ export function visibleChapterFields(outcome, answers) {
  * work and watched it fail.
  */
 export const CHAPTER_LEAD = {
-  landed:  'You got there. So this one starts from a different question, where now.',
-  changed: 'You want something else now. Everything true about your situation carries over; the destination is yours to reset.',
-  partly:  'Same destination, closer to it. The route from here is not the route you were given at the start.',
-  no:      'That route did not work. The destination stands, and the next plan will not contain it.',
+  landed:  'You reached your goal. This plan starts with a new question: what do you want now?',
+  changed: 'You want something else now. Everything you told us about your life carries over. You pick the new goal.',
+  partly:  'Same goal, and you are closer to it. This plan starts from where you are now.',
+  no:      'That way did not work. Your goal stays the same, and this plan will try something different.',
 }

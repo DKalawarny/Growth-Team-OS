@@ -1,3 +1,4 @@
+import { WAYOUT_TOTAL_TIME } from '../lib/wayout/brand'
 /**
  * The way out — the free diagnostic (SPEC §7).
  *
@@ -152,7 +153,8 @@ export const DIAGNOSTIC_OPENING = {
    */
   highlight: 'four ways out',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
-  body: 'A handful of questions and you’ll know which one is yours, and exactly why the other three aren’t, whether getting out means earning more or needing less. Keep going from there and it becomes the plan. About twenty minutes, start to finish.',
+  // ⚠️ The time promise lives in brand.js; it was written out here and drifts.
+  body: `Answer a few questions and we will show you which way fits you, and why the other three do not. Keep going and we build your full plan. ${WAYOUT_TOTAL_TIME[0].toUpperCase()}${WAYOUT_TOTAL_TIME.slice(1)}, start to finish.`,
   cta: 'Show me which one',
   // ⭐⭐ THE WHOLE POSITION, ON THE FIRST PAGE. Daniel: "just being straight,
   // first page, no bait and switch." "This part is free" implies other parts
@@ -169,13 +171,13 @@ export const DIAGNOSTIC_QUESTIONS = [
     key: 'goalType',
     // ⭐ The kicker is what stops six screens reading as one form repeated —
     // each question gets a reason to exist before it is asked.
-    kicker: 'First, the point of all this',
+    kicker: 'First, what you want',
     // 🔴 SINGLE-SELECT WAS WRONG AND IT WAS THE FIRST THING ANYONE SAW. Wanting
     // more time AND more money is the normal case, not an edge case — forcing
     // one gives a wrong answer and tells the person on screen one that this
     // thing does not understand ordinary life.
     multi: true,
-    question: 'What are you actually after?',
+    question: 'What do you want most? Tap any.',
     hint: 'Pick as many as are true.',
     options: [
       { key: 'money',       label: 'More money' },
@@ -188,8 +190,8 @@ export const DIAGNOSTIC_QUESTIONS = [
     key: 'horizon',
     // ⭐ The kicker is what stops six screens reading as one form repeated —
     // each question gets a reason to exist before it is asked.
-    kicker: 'The clock',
-    question: 'How long are you giving it?',
+    kicker: 'Your timeline',
+    question: 'How soon do you want things to be different?',
     options: [
       { key: '6m', label: '6 months' },
       { key: '1y', label: '1 year' },
@@ -201,10 +203,10 @@ export const DIAGNOSTIC_QUESTIONS = [
     key: 'immovable',
     // ⭐ The kicker is what stops six screens reading as one form repeated —
     // each question gets a reason to exist before it is asked.
-    kicker: 'The things that are not up for debate',
+    kicker: 'What has to stay the same',
     multi: true,
     question: 'What can’t move?',
-    hint: 'Pick any that are true. The plan gets built around these.',
+    hint: 'Tap any that are true. We build your plan around these.',
     options: [
       { key: 'kids',    label: 'Kids or custody' },
       { key: 'partner', label: 'A partner’s job' },
@@ -222,7 +224,7 @@ export const DIAGNOSTIC_QUESTIONS = [
     // each question gets a reason to exist before it is asked.
     kicker: 'What you are working with',
     multi: true,
-    question: 'What have you already got?',
+    question: 'What do you already have that could make money? Tap any.',
     hint: 'Pick any that apply.',
     options: [
       { key: 'vehicle',  label: 'A vehicle or tools' },
@@ -242,10 +244,10 @@ export const DIAGNOSTIC_QUESTIONS = [
     key: 'money',
     // ⭐ The kicker is what stops six screens reading as one form repeated —
     // each question gets a reason to exist before it is asked.
-    kicker: 'The room you have',
-    question: 'After the bills, what’s left in a month?',
+    kicker: 'Your money',
+    question: 'After you pay your bills, how much is left each month?',
     options: [
-      { key: 'negative', label: 'Nothing. It doesn’t stretch' },
+      { key: 'negative', label: 'Nothing. I run short' },
       { key: 'tight',    label: 'A little' },
       { key: 'some',     label: 'A few hundred' },
       { key: 'lots',     label: 'More than a thousand' },
@@ -297,10 +299,10 @@ export const DIAGNOSTIC_QUESTIONS = [
  * actually speak to.
  */
 export const DIAGNOSTIC_NOTE = {
-  question: 'Anything the taps missed?',
+  question: 'Anything else we should know?',
   label: 'In a sentence, what’s actually going on?',
   placeholder: 'Sold a business, economy turned, five kids, new job abroad…',
-  hint: 'Optional. The full version asks properly.',
+  hint: 'Optional. The longer questions later go into more detail.',
 }
 
 /**

@@ -79,9 +79,7 @@ export default function Reset() {
         <div className="wayout__col">
           {status === 'waiting' ? (
             <p className="wayout__notice">
-              Open this page from the link in the email. That’s what lets it set
-              a new password. If you typed the address in by hand, go back to the
-              email and tap the link.
+              Please open this page from the link in your email. If you typed the address yourself, go back to the email and tap the link.
             </p>
           ) : (
             <form onSubmit={submit}>
@@ -104,7 +102,7 @@ export default function Reset() {
               <p className="wayout__hint">Eight characters or more.</p>
               {error && <p className="wayout__error">{error}</p>}
               <button className="wayout__btn" type="submit" disabled={busy}>
-                {busy ? 'One moment…' : 'Set it'}
+                {busy ? 'One moment…' : 'Save new password'}
               </button>
             </form>
           )}

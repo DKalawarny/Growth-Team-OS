@@ -36,8 +36,8 @@ import { forReaders } from '../../lib/wayout/mapContract'
  */
 const OUTCOME_LABEL = {
   landed:  'You got there',
-  partly:  'Closer, not there',
-  no:      'Did the work, it did not land',
+  partly:  'Closer, not there yet',
+  no:      'You did it all, but it did not work',
   changed: 'You wanted something else',
 }
 
@@ -85,9 +85,9 @@ export default function History() {
   const when = d => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
-    <WayoutShell title="The whole way here" wide>
-      <p className="wayout__crumb"><Link to={`${WAYOUT_BASE}/plan`}>← The plan you are on</Link></p>
-      <h1 className="wayout__bigq">The whole way here.</h1>
+    <WayoutShell title="Your progress" wide>
+      <p className="wayout__crumb"><Link to={`${WAYOUT_BASE}/plan`}>← Back to your plan</Link></p>
+      <h1 className="wayout__bigq">Your progress so far.</h1>
 
       {/* ⭐⭐ THE DISTANCE, IN THEIR OWN FIGURES — and it is the strongest thing
           this page can say precisely because it says nothing.
@@ -103,7 +103,7 @@ export default function History() {
           record, it is running a campaign. */}
       {moved && (
         <div className="wayout__moved">
-          <span className="wayout__label">Left at the end of the month, in your own numbers</span>
+          <span className="wayout__label">What you have left each month, from your own numbers</span>
           <div className="wayout__movedrow">
             <div>
               <b>{money(moved.then)}</b>
@@ -148,14 +148,14 @@ export default function History() {
           anything behind it yet. */}
       {first?.answers?.out && (
         <div className="wayout__origin wayout__origin--light">
-          <span>What you said you wanted, at the very beginning</span>
+          <span>What you wanted when you started</span>
           <q>{firstSentences(tidyQuote(first.answers.out), 260)}</q>
         </div>
       )}
 
       {latestWant && (
         <div className="wayout__origin wayout__origin--light wayout__origin--now">
-          <span>What you are aiming at now</span>
+          <span>What you want now</span>
           <q>{firstSentences(tidyQuote(latestWant), 260)}</q>
         </div>
       )}
@@ -195,7 +195,7 @@ export default function History() {
           an adjective laid on top of it. */}
       {cuts.length > 0 && (
         <div className="wayout__leftalone">
-          <h2 className="wayout__sectionh">What you decided to leave alone</h2>
+          <h2 className="wayout__sectionh">Ideas you chose not to do</h2>
           <div className="wayout__cut">
             {cuts.map((c, i) => (
               <div className="wayout__cutrow" key={i} style={{ cursor: 'default' }}>
