@@ -217,9 +217,12 @@ function RequireWayout({ children }) {
 }
 
 function RedirectIfAuthed({ children }) {
-  const { session, profile, loading } = useAuth()
+  const { session, profile, company, loading } = useAuth()
   if (loading) return <LoadingScreen />
-  if (session && profile) return <Navigate to="/dashboard" replace />
+  // A DEMO session must not hijack the marketing root/login/signup — a visitor
+  // touring the demo should still see the landing at eliv8os.com and be able to
+  // reach signup to convert. Only real owners get bounced to their dashboard.
+  if (session && profile && !company?.is_demo) return <Navigate to="/dashboard" replace />
   return children
 }
 

@@ -22,9 +22,9 @@ export default function DemoBanner() {
       </span>
       <button
         onClick={startOwn}
-        className="font-bold underline underline-offset-2 hover:text-white/90 whitespace-nowrap"
+        className="font-bold px-3.5 py-1 rounded-full bg-white text-brand-700 hover:bg-white/90 whitespace-nowrap shadow-sm"
       >
-        Start your own free &rarr;
+        Get Eliv8 for your business &rarr;
       </button>
     </div>
   )
