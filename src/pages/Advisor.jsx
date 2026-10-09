@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { isDemoCompany } from '../lib/demo'
 import { callClaude, streamClaudeTurn, SONNET, HAIKU } from '../lib/anthropic'
 import { SOLOMON_TOOLS, runSolomonTool, describeToolUse } from '../lib/solomonTools'
 import { prepareChatImage, chatImageUrl, saveChatImageToLibrary, isImageFile, ACCEPTED_IMAGE_TYPES } from '../lib/chatImages'
@@ -326,6 +327,13 @@ export default function Advisor() {
     // alongside it would mean an owner holding up a quote has to caption his
     // own photograph before Solomon will look at it.
     if ((!text && !attachment) || sending || !profile?.company_id) return
+
+    // Demo shows a seeded conversation; live chat is for a real account
+    // (also refused at the edge, so it never costs anything here).
+    if (isDemoCompany(company?.id)) {
+      setError('This is a read-only demo. Start your own free account to ask Solomon about your business.')
+      return
+    }
 
     setError(null)
     setSending(true)

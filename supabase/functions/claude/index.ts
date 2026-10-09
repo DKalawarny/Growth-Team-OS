@@ -596,6 +596,13 @@ Deno.serve(async (req) => {
 
   try {
     const user = await authedUser(req)
+
+    // The public demo account is read-only: never spend AI on it, no matter
+    // what a visitor or bot sends. The UI already blocks this; this is the
+    // backstop that makes the demo free and abuse-proof.
+    if (user.companyId === 'de900000-0000-4000-8000-000000000001') {
+      return json({ error: 'demo_read_only' }, 403)
+    }
     const body = await req.json().catch(() => ({})) as {
       systemPrompt?: string
       systemBlocks?: unknown[]

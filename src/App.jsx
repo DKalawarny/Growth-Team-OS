@@ -20,6 +20,7 @@ const Security      = lazy(() => import('./pages/marketing/Security'))
 const Privacy       = lazy(() => import('./pages/marketing/Privacy'))
 const Terms         = lazy(() => import('./pages/marketing/Terms'))
 const Demo          = lazy(() => import('./pages/marketing/Demo'))
+const DemoEntry     = lazy(() => import('./pages/DemoEntry'))
 const Comparison    = lazy(() => import('./pages/marketing/Comparison'))
 const TradePage     = lazy(() => import('./pages/marketing/TradePage'))
 const FreeGbpAudit  = lazy(() => import('./pages/marketing/FreeGbpAudit'))
@@ -346,7 +347,8 @@ export default function App() {
             /about is Eliv8's on the shared site. */}
         <Route path="/why"            element={<LazyRoute><WayoutWhy /></LazyRoute>} />
         <Route path="/wayout/why"     element={<LazyRoute><WayoutWhy /></LazyRoute>} />
-        <Route path="/demo"     element={<LazyRoute><Demo /></LazyRoute>} />
+        <Route path="/demo"     element={<LazyRoute><DemoEntry /></LazyRoute>} />
+        <Route path="/tour"     element={<LazyRoute><Demo /></LazyRoute>} />
 
         {/* Comparison pages — same component, slug-driven */}
         <Route path="/vs/:competitor" element={<LazyRoute><Comparison /></LazyRoute>} />

@@ -5,6 +5,7 @@ import MobileNav     from './MobileNav'
 import AdvisorBanner from './AdvisorBanner'
 import PreviewBanner from './PreviewBanner'
 import TrialBanner   from '../billing/TrialBanner'
+import DemoBanner    from './DemoBanner'
 
 /**
  * AppLayoutChrome — sidebar + mobile nav + banners + content slot.
@@ -57,6 +58,7 @@ export default function AppLayoutChrome({ children }) {
         <main ref={scrollRef} className="flex-1 overflow-y-auto bg-ink-50 flex flex-col">
           {/* AdvisorBanner shows a gold strip when an advisor is viewing a
               client workspace. Hidden for regular owners. */}
+          <DemoBanner />
           <AdvisorBanner />
           {/* ⭐ The owner previewing a teammate's view. */}
           <PreviewBanner />
