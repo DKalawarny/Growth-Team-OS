@@ -1018,10 +1018,6 @@ function CrewPreview({ items }) {
     })
   }
 
-  const doneCount    = items.filter(i => demoChecked.has(i.id)).length
-  const requiredLeft = items.filter(i => i.required && !demoChecked.has(i.id)).length
-  const pct          = items.length ? Math.round((doneCount / items.length) * 100) : 0
-
   return (
     <div className="border-t border-ink-100 bg-ink-50/40 px-5 py-4">
       <div className="flex items-center justify-between mb-2">
@@ -1035,25 +1031,8 @@ function CrewPreview({ items }) {
 
       {/* The checklist itself, styled to match StaffPortal's renderer. */}
       <div className="bg-white border border-ink-200 rounded-xl p-4 shadow-sm">
-        {/* Header: count + required badge */}
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-xs font-bold text-ink-900">
-            Checklist <span className="text-ink-400">· {doneCount} of {items.length}</span>
-          </p>
-          {requiredLeft > 0 && (
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-800">
-              {requiredLeft} required left
-            </span>
-          )}
-        </div>
-
-        {/* Progress bar */}
-        <div className="h-1.5 bg-ink-100 rounded-full overflow-hidden mb-3">
-          <div
-            className="h-full bg-emerald-500 transition-all duration-300"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        {/* A written procedure, not a tracked job — the steps the crew follows. */}
+        <p className="text-xs font-bold text-ink-900 mb-3">The steps your crew follows</p>
 
         {/* Items */}
         <ul className="space-y-1.5">
@@ -1084,11 +1063,6 @@ function CrewPreview({ items }) {
                       <p className={`text-sm leading-snug ${isDone ? 'text-ink-500 line-through' : 'text-ink-900'}`}>
                         {item.text || <span className="italic text-ink-400">(unnamed step)</span>}
                       </p>
-                      {item.required && !isDone && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 tracking-wide flex-shrink-0">
-                          REQ
-                        </span>
-                      )}
                     </div>
                     {item.notes && (
                       <p className="text-[11px] text-ink-500 mt-0.5 leading-relaxed">
@@ -1104,8 +1078,7 @@ function CrewPreview({ items }) {
       </div>
 
       <p className="mt-2 text-[10px] text-ink-400 leading-relaxed">
-        On the real job, ticks save instantly and you see live progress
-        on the Board.
+        This is the checklist your crew works through on the job.
       </p>
     </div>
   )
