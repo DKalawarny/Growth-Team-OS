@@ -230,7 +230,7 @@ export const WAYOUT_SCREENS = [
     id: 's2',
     section: 'Who it has to work for',
     why: 'Your plan has to work for the people in your life too, so a few quick questions about you and them.',
-    question: 'About you and the people around you.',
+    question: 'Tell us about you and the people around you.',
     reflectAfter: false,
     fields: [
       // 🔴 THE PLAN IS ADDRESSED TO THEM AND WE WERE INVENTING BOTH OF THESE.
@@ -473,7 +473,7 @@ export const WAYOUT_SCREENS = [
      * point of the screen rather than as the form defending itself.
      */
     why: 'Rough numbers are fine. Your plan is built from these figures.',
-    question: 'Your money, roughly.',
+    question: 'What comes in and what goes out?',
     reflectAfter: false,
     fields: [
       {
