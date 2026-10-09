@@ -556,7 +556,7 @@ export default function CFO() {
               <div className="text-4xl mb-3 opacity-30">📊</div>
               <h2 className="text-base font-bold text-ink-800 mb-1">No financial reads yet</h2>
               <p className="text-sm text-ink-400 mb-4 max-w-sm mx-auto">
-                Generate your first CFO dashboard below: pick a period, add any context, and get a plain-English read of your numbers.
+                Your month in plain English. Pick a period, add anything on your mind, and get your read of the numbers.
               </p>
               <button
                 type="button"
@@ -594,7 +594,7 @@ export default function CFO() {
                 <div className="text-3xl flex-shrink-0">📂</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-brand-900">Upload your P&amp;L or bank statement first</div>
-                  <p className="text-xs text-brand-800 mt-0.5">Without a financial doc every KPI is an estimate. With one, the numbers are real.</p>
+                  <p className="text-xs text-brand-800 mt-0.5">Without your numbers, every figure here is a guess. Add your financials and they turn real.</p>
                 </div>
                 <div className="text-brand-600 text-xl flex-shrink-0 self-center group-hover:translate-x-0.5 transition-transform">→</div>
               </Link>
@@ -806,7 +806,7 @@ function QBOBadge({ integration, snapshots, syncing, onSync }) {
         <div className="w-9 h-9 rounded-lg bg-[#2CA01C] flex items-center justify-center text-white font-bold text-xs flex-shrink-0">qb</div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-ink-800">Connect QuickBooks for live numbers</div>
-          <p className="text-xs text-ink-500 mt-0.5">One-click OAuth, P&amp;L and balance sheet flow in automatically.</p>
+          <p className="text-xs text-ink-500 mt-0.5">Connect in one click. Your P&amp;L and balance sheet flow in automatically.</p>
         </div>
         <div className="text-ink-400 text-lg flex-shrink-0 self-center group-hover:translate-x-0.5 transition-transform">→</div>
       </Link>
@@ -827,7 +827,7 @@ function QBOBadge({ integration, snapshots, syncing, onSync }) {
             Using {newest.period_label} · {snapshots.length} report{snapshots.length !== 1 ? 's' : ''} · synced {formatRelative(newest.synced_at)}
           </p>
         ) : (
-          <p className="text-xs text-green-800 mt-0.5">No reports yet. Click sync to pull your latest P&amp;L.</p>
+          <p className="text-xs text-green-800 mt-0.5">Nothing here yet. Connect your books and your latest P&amp;L shows up.</p>
         )}
       </div>
       <button
