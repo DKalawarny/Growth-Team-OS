@@ -229,6 +229,12 @@ export default function Landing() {
                 {pl.headline} <mark>{pl.mark}</mark>
               </div>
 
+              {/* ⭐ 9 Oct: mirrors the real plan, where the first thing under the
+                  headline is the next step, then the numbers as a starting line. */}
+              {(() => { const m = pl.moves.find(([, , now]) => now) ?? pl.moves[0]; return (
+                <p className="wayout__starthere"><b>Start here</b><span>{m[0]}<em>{m[1]}</em></span></p>
+              ) })()}
+              <p className="wayout__label wayout__herostarting">Where you’re starting</p>
               <div className="wayout__stats">
                 {pl.stats.map(st => (
                   <div className="wayout__stat" key={st[0]}>
@@ -319,8 +325,9 @@ export default function Landing() {
                   "it's still all over this page." Said once it is an offer. */}
               <h3>The questions that build the plan</h3>
               <p>
-                The rent, the debt, the hours, the people it affects, in your own
-                words and your own figures, because that is what the plan is made of.
+                The rent, the debt, the hours, the people it affects, and where you
+                want to be in a year, five and ten, in your own words and your own
+                figures, because that is what the plan is made of.
               </p>
             </div>
             <div>
@@ -342,7 +349,7 @@ export default function Landing() {
           <h2 className="wayout__pitchh">Advice is cheap. Order is the hard part.</h2>
           <p className="wayout__pitchlead">
             You’ve already been told to budget, hustle and be patient. None of that
-            tells you what to do on Saturday morning.
+            tells you what to do this week.
           </p>
           <div className="wayout__three">
             <div>
@@ -531,10 +538,12 @@ export default function Landing() {
             page — what it costs them to try, what they walk away holding, and
             whose the answers are. All three are already true here, and none of
             them had ever been said together.
-            ⚠️ "Saturday morning" is deliberate: it is the page's own phrase
-            from "Advice is cheap" — none of that tells you what to do on
-            Saturday morning — and closing on the promise the argument opened
-            with is the difference between a close and a second introduction. */}
+            ⚠️ "This week" is deliberate: it is the page's own phrase from
+            "Advice is cheap", and closing on the promise the argument opened
+            with is the difference between a close and a second introduction.
+            🔴 It was "Saturday morning" until 9 Oct. Once plans began protecting
+            a family's Saturday, using it as the picture of when you get to work
+            quietly said hustle. */}
         <section className="wayout__close">
           <h2 className="wayout__pitchh">The first move is the only one you have to pick.</h2>
           <p className="wayout__pitchlead">
@@ -546,8 +555,8 @@ export default function Landing() {
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
             Answer the questions, make an account to keep what comes back, read it.
-            No card, and your answers stay yours. Then you will know what Saturday
-            morning is for.
+            No card, and your answers stay yours. Then you will know what this week
+            is for.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>

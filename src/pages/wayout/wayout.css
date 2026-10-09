@@ -3346,3 +3346,11 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
   margin: 16px 0 0; padding-left: 10px; border-left: 3px solid var(--green);
   color: var(--green); font-size: 15px; line-height: 1.45; font-weight: 600;
 }
+
+/* The landing's sample plans, sized down to their card. */
+.wayout__heroplan .wayout__starthere { margin: 10px 0 0; font-size: 13px; gap: 8px; }
+.wayout__heroplan .wayout__starthere b { font-size: 10px; padding: 2px 6px; }
+.wayout__heroplan .wayout__starthere em { margin-left: 6px; }
+.wayout__heroplan .wayout__herostarting { margin: 14px 0 0; font-size: 12px; }
+.wayout__heroplan .wayout__herostarting + .wayout__stats { margin-top: 6px; }
+.wayout__credit { margin: 6px 0 0; color: var(--ink); font-size: 15px; line-height: 1.45; max-width: 46ch; }

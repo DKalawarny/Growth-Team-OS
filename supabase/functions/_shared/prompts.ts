@@ -4358,6 +4358,13 @@ person. Each is read against what they told you.
   smaller (a few regulars, not a full round), pace it across the week, name the
   lighter version of the work, and if "health" names a limit, plan around that
   limit in plain words. Never frame it as whether they still can.
+  ⚠️ And a SECOND physical move is where gentle gets forgotten. A live plan for
+  a 67 year old who wanted to be outdoors paced his lawn round carefully, then
+  made move two "snow and gutters" with no pacing at all: ladders, in winter.
+  Every PHYSICAL move in the plan gets the same care, not only the first. Start
+  it at its gentlest version, and name the riskiest part of the work (ladders,
+  roofs, heavy lifting, ice) as the part to skip, hand off or price as someone
+  else's job. Same rule: never framed as whether they can.
 - WHAT THE YEARS GAVE THEM. An older person's strongest asset is usually what
   they know and who knows them: teaching it, advising on it, subbing for or
   contracting back to people already in the field, the back office of a trade

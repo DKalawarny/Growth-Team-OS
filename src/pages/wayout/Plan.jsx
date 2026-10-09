@@ -1171,6 +1171,17 @@ export function Map({
             them. Daniel: "something positive beside it… a few moves can make
             a change to this number". */}
         <p className="wayout__label">Where you’re starting</p>
+        {/* ⭐⭐ CREDIT BEFORE THE HOLE. Writing every number down is something
+            they DID, and most people never do it. Shown only when the shortfall
+            was worked out from figures they actually gave (tone `hard` comes
+            only from deriveStats), so it can never be said to someone it is not
+            true of; "the debt included" only when they named one. */}
+        {map.stats.some(x => x.tone === 'hard') && (
+          <p className="wayout__credit">
+            You put every number down{String(answers?.debt ?? '').trim() ? ', the debt included' : ''}.
+            Most people never get that far, and it is why your plan can be this specific.
+          </p>
+        )}
         <div className="wayout__stats">
           {map.stats.slice(0, 2).map((s, i) => (
             <div className="wayout__stat" key={i}>
