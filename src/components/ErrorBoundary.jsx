@@ -7,72 +7,94 @@ import { reportError } from '../lib/monitoring'
  * Without this, a single throw in a child component (a `.map` on undefined,
  * a `JSON.parse` on bad data, a Claude response shape we didn't expect)
  * unmounts the entire React tree and leaves the user staring at a blank
- * white page. That's worse than any error message — they don't know if
- * the app is broken, their internet died, or they should try again.
+ * white page.
  *
- * The boundary catches the throw, logs it (we read this from the Supabase
- * function logs / browser console while the user is still alive), and shows
- * a calm fallback that tells the user (a) what happened, (b) that we
- * captured it, (c) what to do next. The two CTAs are deliberate:
+ * ⭐ CHUNK ERRORS AUTO-HEAL. The most common error a live visitor hits is not
+ * a bug in our code at all: it is a code-split chunk that 404'd because we
+ * deployed while they had the app open, so the hashed filename their page
+ * references no longer exists and the SPA fallback hands back index.html
+ * ("'text/html' is not a valid JavaScript MIME type", "Failed to fetch
+ * dynamically imported module", ...). The fix is always the same, reload to
+ * pick up the new index and the new chunk names. So on a chunk error we do
+ * that automatically, once, instead of showing a stranger a scary screen.
+ * A sessionStorage timestamp guards against a reload loop: if a fresh load
+ * still throws a chunk error within the window, we stop auto-reloading and
+ * show the fallback (the deploy is genuinely broken, not stale).
  *
- *   "Reload"  — most useful for transient state corruption (a Suspense
- *               chunk that 404'd, a localStorage value gone weird). Cheap
- *               first move and works for 90% of cases.
- *   "Go home" — when reload doesn't fix it, get them off the broken route.
- *               They can still navigate to Settings, Documents, etc. from
- *               the dashboard.
+ * For every OTHER error we show a calm fallback with Reload / Go to dashboard.
  *
- * We don't try to be too clever — no "submit a bug report" form, no
- * automatic Sentry call (we don't ship Sentry yet). The console.error +
- * the page itself is enough until someone emails support with a
- * screenshot.
- *
- * Placement: in App.jsx, wrap <Routes> so every page benefits. Wrapping
- * outside <BrowserRouter> would lose the router context and break the
- * "Go home" button.
- *
- * Class component (not hooks) because React's error-boundary API still
- * requires `componentDidCatch` / `getDerivedStateFromError`. There's no
- * hook equivalent as of React 19.
+ * Class component because React's error-boundary API still requires
+ * componentDidCatch / getDerivedStateFromError (no hook equivalent in React 19).
+ * Placement: wraps <Routes> in App.jsx, inside <BrowserRouter> so "Go home" works.
  */
+
+// A dynamic-import / chunk-load failure, by any of the messages browsers use.
+function isChunkError(error) {
+  const msg = String(error?.message || error || '')
+  return (
+    msg.includes('valid JavaScript MIME type') ||
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('error loading dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('Unable to preload CSS') ||
+    error?.name === 'ChunkLoadError'
+  )
+}
+
+const RELOAD_KEY    = 'eliv8:chunkReloadAt'
+const RELOAD_WINDOW = 30_000 // don't auto-reload more than once per 30s
+
+function canAutoReload() {
+  try {
+    const last = Number(sessionStorage.getItem(RELOAD_KEY) || 0)
+    if (Date.now() - last < RELOAD_WINDOW) return false
+    sessionStorage.setItem(RELOAD_KEY, String(Date.now()))
+    return true
+  } catch {
+    // No sessionStorage (private mode): allow one reload, accept the small
+    // loop risk over leaving the visitor stuck on a stale page.
+    return true
+  }
+}
+
 export default class ErrorBoundary extends Component {
-  state = { error: null }
+  state = { error: null, reloading: false }
 
   static getDerivedStateFromError(error) {
-    // Run on the render phase the moment a descendant throws.
-    // Return a state patch — anything non-null in `error` flips the UI
-    // to the fallback on the next render.
     return { error }
   }
 
   componentDidCatch(error, info) {
-    // Runs after the fallback has rendered. This is the telemetry point the
-    // file has been pointing at since it was written — now wired.
-    //
-    // The console.error stays. It costs nothing when nothing is wrong, and on
-    // a screen-share it is the fastest way to read a stack.
     reportError(error, { componentStack: info?.componentStack })
     // eslint-disable-next-line no-console
     console.error('[ErrorBoundary] uncaught render error:', error, info?.componentStack)
+
+    // Stale chunk after a deploy: quietly reload to the new version, once.
+    if (isChunkError(error) && canAutoReload()) {
+      this.setState({ reloading: true })
+      window.location.reload()
+    }
   }
 
-  handleReload = () => {
-    // Hard reload — clears suspense caches, re-fetches chunks, drops any
-    // corrupted in-memory state. Cheaper than a router push for the
-    // "something snapped, try a fresh page" case.
-    window.location.reload()
-  }
-
-  handleGoHome = () => {
-    // Use a hard nav instead of router.push because (a) we're outside
-    // any router hooks here, (b) we want to discard the bad render tree
-    // anyway, and (c) /dashboard's RequireAuth will bounce them to
-    // /login if their session expired in the meantime.
-    window.location.assign('/dashboard')
-  }
+  handleReload = () => { window.location.reload() }
+  handleGoHome = () => { window.location.assign('/dashboard') }
 
   render() {
-    if (!this.state.error) return this.props.children
+    const { error, reloading } = this.state
+    if (!error) return this.props.children
+
+    // Auto-reloading after a stale-chunk error: show a calm updating state,
+    // never the error text, since the page is about to refresh itself.
+    if (reloading) {
+      return (
+        <div className="min-h-screen bg-ink-50 flex items-center justify-center px-6">
+          <div className="text-center">
+            <div className="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-ink-600 text-sm">Updating to the latest version&hellip;</p>
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className="min-h-screen bg-ink-50 flex items-center justify-center px-6 py-12">
@@ -87,13 +109,9 @@ export default class ErrorBoundary extends Component {
             from there.
           </p>
 
-          {/* Error message — kept small + monospace. Useful when a user
-              screenshots it for support, but not so prominent it scares
-              them. We deliberately don't render the stack trace; the
-              first line of error.message is enough signal. */}
-          {this.state.error?.message && (
+          {error?.message && (
             <pre className="text-[11px] text-ink-400 font-mono bg-ink-50 border border-ink-100 rounded-lg p-3 mb-6 text-left whitespace-pre-wrap break-all">
-              {this.state.error.message}
+              {error.message}
             </pre>
           )}
 
