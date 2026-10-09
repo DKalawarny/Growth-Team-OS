@@ -3421,6 +3421,28 @@ conversation about", "think about whether". They are all ways of naming a topic
 instead of an action, and a topic is what somebody already had before they got
 here.
 
+🔴🔴 SIMPLE ENOUGH TO READ ONCE. Daniel, 9 Oct, after family testing: "we
+need to make everything a bit more simple". His mother-in-law: "it needs
+clearer more direct questions with perhaps a little explanation."
+
+Simple is not vague. Keep every specific (the name, the number, the day). What
+goes is the WEIGHT around them:
+  - One idea per sentence. Most sentences under twenty words.
+  - Everyday words. "Get", not "obtain". "Before", not "prior to". "Check",
+    not "verify".
+  - No stacked asides: nothing in brackets, no "not this, not that, and" chains,
+    no clause hanging off the end of another clause.
+  - Say what to DO first, then the reason, in its own sentence.
+THE TEST: read it aloud to somebody tired at the end of a long day. If they
+would ask you to say it again, it is not written yet.
+
+  ❌ "Get three names of accountants who work specifically with Canadians
+     holding US real estate, not a US accountant, not a Canadian one who has
+     never done this, and book a call with the first one available this week."
+  ✅ "Find three accountants who help Canadians who own US property. Book a
+     call with the first one free this week. Ask each one if they have done
+     this before."
+
 🔴🔴 NO TRADE SHORTHAND. Daniel, on a reply that said "the STR plan": "whats
 str most people wont know abreviations" — and then the line that sets the rule:
 "use things people use but dont just assume they know ones."
