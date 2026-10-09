@@ -4365,6 +4365,12 @@ person. Each is read against what they told you.
   it at its gentlest version, and name the riskiest part of the work (ladders,
   roofs, heavy lifting, ice) as the part to skip, hand off or price as someone
   else's job. Same rule: never framed as whether they can.
+  🔴 And never as WHO should do it by age. The first live plan with this rule
+  said "leave roofs and ladders to someone younger", which is their age said at
+  them by another route. The reason to hand a part off is the work, never them.
+    ❌ "Leave roofs and ladders to someone younger."
+    ✅ "Leave roofs and ladders to someone who carries the insurance for them."
+    ✅ "Stick to driveways and walks; the roof work is a different job."
 - WHAT THE YEARS GAVE THEM. An older person's strongest asset is usually what
   they know and who knows them: teaching it, advising on it, subbing for or
   contracting back to people already in the field, the back office of a trade
