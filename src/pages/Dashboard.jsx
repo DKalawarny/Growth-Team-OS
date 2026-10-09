@@ -257,13 +257,13 @@ export default function Dashboard() {
               </Link>
             )}
             {dash.openNotes.length > 0 && (
-              <Link to="/logs" className="text-[15px] text-ink-900 hover:text-brand-700">
+              <Link to="/logs#office-notes" className="text-[15px] text-ink-900 hover:text-brand-700">
                 <span className="font-semibold">{dash.openNotes.length}</span> thing{dash.openNotes.length === 1 ? '' : 's'} on your list
               </Link>
             )}
             {dash.liveJobs > 0 && (
               <Link to="/board" className="text-[15px] text-ink-900 hover:text-brand-700">
-                <span className="font-semibold">{dash.liveJobs}</span> job{dash.liveJobs === 1 ? '' : 's'} on
+                <span className="font-semibold">{dash.liveJobs}</span> task{dash.liveJobs === 1 ? '' : 's'} on the board
               </Link>
             )}
           </section>
@@ -370,7 +370,7 @@ export default function Dashboard() {
               ? 'Solomon reads your plan and your numbers before he says anything.'
               : "Sit down with Solomon when you're ready. He'll keep."}
           </p>
-          <Link to="/checkins" className="text-[14px] font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+          <Link to="/checkins" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 text-white text-[14px] font-semibold hover:bg-brand-700 transition-colors">
             {daysSinceLastCheckin === null ? 'Log your first check-in →' : "Start this week's check-in →"}
           </Link>
         </div>

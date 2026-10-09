@@ -167,6 +167,15 @@ export default function DailyLogs() {
 
   useEffect(() => { load() }, [load])
 
+  // Deep-link from the dashboard "things on your list" counter: scroll to the
+  // notes box so that counter lands somewhere distinct from the logs counter.
+  useEffect(() => {
+    if (window.location.hash === '#office-notes') {
+      const t = setTimeout(() => document.getElementById('office-notes')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350)
+      return () => clearTimeout(t)
+    }
+  }, [])
+
   const saveNote = async (log) => {
     const note = (drafts[log.id] ?? log.pm_note ?? '').trim()
     setSaving(log.id)
@@ -291,7 +300,7 @@ export default function DailyLogs() {
           logs yet: Daniel asked "where is the area for the PM to make notes?"
           precisely because the per-log note field only renders once a log
           exists, so with an empty list the whole feature was invisible. */}
-      <div className="mt-6 rounded-xl border border-ink-100 bg-white overflow-hidden">
+      <div id="office-notes" className="mt-6 rounded-xl border border-ink-100 bg-white overflow-hidden scroll-mt-20">
         <div className="px-5 py-3 border-b border-ink-100">
           <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your list</h2>
           <p className="text-[12px] text-ink-400 mt-0.5">

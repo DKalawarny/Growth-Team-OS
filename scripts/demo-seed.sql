@@ -153,4 +153,11 @@ update milestones set actions='["Get the books current and reconciled monthly","
 update office_notes set note=replace(note,'new site playbook','new site SOP')
  where company_id='de900000-0000-4000-8000-000000000001' and note like '%new site playbook%';
 
+-- Multi-assignee showcase: two jobs crewed by more than one person, so the
+-- board shows stacked avatars (Daniel: show a task assigned to people).
+update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-000000000001','de900000-0000-4000-8001-000000000002']::uuid[]
+ where id='de900000-0000-4000-8003-000000000002';
+update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-000000000001','de900000-0000-4000-8001-000000000003']::uuid[]
+ where id='de900000-0000-4000-8003-000000000004';
+
 commit;

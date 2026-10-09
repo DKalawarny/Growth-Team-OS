@@ -60,8 +60,9 @@ begin
 
   -- work orders
   create temp table _m_wo on commit drop as select id old_id, gen_random_uuid() new_id from work_orders where company_id = src;
-  insert into work_orders (id, company_id, created_by, staff_member_id, title, description, status, priority, due_date, milestone_id, created_at, template_id)
-  select mw.new_id, new_co, p_user, ms.new_id, w.title, w.description, w.status, w.priority, w.due_date, mm.new_id, w.created_at, mt.new_id
+  insert into work_orders (id, company_id, created_by, staff_member_id, title, description, status, priority, due_date, milestone_id, created_at, template_id, assigned_staff_ids)
+  select mw.new_id, new_co, p_user, ms.new_id, w.title, w.description, w.status, w.priority, w.due_date, mm.new_id, w.created_at, mt.new_id,
+         (select array_agg(ms2.new_id) from _m_staff ms2 where ms2.old_id = any(coalesce(w.assigned_staff_ids, '{}'::uuid[])))
     from work_orders w
     join _m_wo mw on mw.old_id = w.id
     left join _m_staff ms on ms.old_id = w.staff_member_id

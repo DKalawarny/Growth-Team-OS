@@ -347,7 +347,8 @@ export default function Board() {
     await supabase.from('work_orders').update({ status: newStatus }).eq('id', orderId)
   }
 
-  async function handleDelete(orderId) {
+  async function handleDelete(orderId, title) {
+    if (!window.confirm(`Delete "${title || 'this task'}"? This cannot be undone.`)) return
     setWorkOrders(prev => prev.filter(o => o.id !== orderId))
     await supabase.from('work_orders').delete().eq('id', orderId)
   }
@@ -726,7 +727,7 @@ alter table public.work_orders
                         milestone={milestoneMap[order.milestone_id]}
                         onEdit={() => openEdit(order)}
                         onMove={s => handleMove(order.id, s)}
-                        onDelete={() => handleDelete(order.id)}
+                        onDelete={() => handleDelete(order.id, order.title)}
                         onDragStart={() => setDragId(order.id)}
                         onEmail={() => handleEmailTask(order)}
                       />
