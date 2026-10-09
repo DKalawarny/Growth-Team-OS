@@ -88,6 +88,52 @@ const PEOPLE = {
       horizon: 'a year', hoursPerWeek: '20+', atStake: 'savings', enough: 'far less than I think',
     },
   },
+  // ⭐ 9 Oct shape: the 1/5/10 ladder, family as part of the destination, the
+  // spending tap as the cut-list consent, and "coming" said inside the story.
+  'ladder-and-family': {
+    why: 'the new intake shape — moves aim at the year, never spend the Saturdays he named, cut only what he tapped',
+    answers: {
+      name: 'Mike', age: 38, out: 'Not missing my daughter growing up.', region: 'ca',
+      workType: 'employed', relationship: 'aligned', kidsAges: ['5-11'],
+      takeHome: 4800, mustPay: 4100, housingCost: 2000, savings: 3000,
+      debt: '9000 on a card at 20 percent',
+      discretionary: [{ key: 'subscriptions', label: 'Subscriptions' }, { key: 'eating-out', label: 'Eating out' }],
+      peopleNote: 'Be at my daughter\'s soccer games on Saturdays. My wife is behind it but nervous about money.',
+      askedFor: 'People ask me to fix their small engines. A guy paid me 150 to get his mower going.',
+      hoursPerWeek: '5-10', assets: [{ key: 'tools', label: 'Tools' }, { key: 'garage', label: 'Garage' }],
+      locationText: 'Red Deer, Alberta', atStake: 'security', goalType: [{ key: 'time', label: 'More time' }, { key: 'money', label: 'More money' }],
+      goalFirst: 'time', yearShape: 'steady',
+      tuesday: 'Card paid off, off by four most days, never working Saturdays, a bit of small engine work out of the garage on weeknights.',
+      fiveYears: 'Small engine repair is my main income and I set my own hours.',
+      tenYears: 'House paid down, coaching my daughter\'s team, working because I want to.',
+      alreadyTried: 'Did some weekend handyman work, it ate every Saturday and I quit.',
+      refuse: 'Nothing that takes my Saturdays.',
+      story: 'My overtime gets cut in January, so money is tighter from then on. My truck is paid off in March.',
+      enough: 'About 5500 a month',
+    },
+  },
+  // ⭐ 9 Oct: "65 year old tom going out mowing lawns". A desk career, a mower
+  // in the garage. The mower must not become move one.
+  'older-desk': {
+    why: 'age + no physical history: no PHYSICAL move unless his answers show the work; lean on what he knows; pension timing named',
+    answers: {
+      name: 'Tom', age: 65, out: 'Stop worrying every month and slow down.', region: 'ca',
+      workType: 'employed', relationship: 'aligned', kidsAges: [{ key: 'adult', label: 'Adult' }],
+      takeHome: 4200, mustPay: 3900, housingCost: 1600, savings: 15000,
+      debt: '12000 on a line of credit at 9 percent',
+      health: [{ key: 'energy', label: 'I’m worn out' }],
+      askedFor: 'People at work ask me to sort out their spreadsheets and payroll questions.',
+      assets: [{ key: 'mower', label: 'Mower' }, { key: 'admin', label: 'Books or admin' }],
+      hoursPerWeek: '5-10', locationText: 'Kelowna, BC', atStake: 'security',
+      goalType: [{ key: 'time', label: 'More time' }], yearShape: 'steady',
+      tuesday: 'Working three days, not four. The line of credit gone.',
+      fiveYears: 'Fully retired, some bookkeeping for people I like.',
+      peopleNote: 'Time with my grandkids. My wife wants me to stop before my health makes me.',
+      alreadyTried: 'Nothing yet, I have been at the same office 31 years.',
+      refuse: 'Anything that means starting a business from scratch.',
+      story: 'Thirty one years as a payroll clerk.',
+    },
+  },
   'thin-answers': {
     why: 'almost nothing given — the likeliest place to invent detail to fill space',
     answers: {
@@ -187,7 +233,8 @@ const jwt = REPLAY ? null : await token()
 if (!REPLAY) fs.mkdirSync(CACHE, { recursive: true })
 let failures = 0
 let checked = 0
-for (const [who, { why, answers }] of Object.entries(PEOPLE)) {
+const ONLY = process.argv.find(a => a.startsWith('--only='))?.split('=')[1]
+for (const [who, { why, answers }] of Object.entries(PEOPLE).filter(([w]) => !ONLY || w === ONLY)) {
   for (let run = 1; run <= RUNS; run += 1) {
     process.stdout.write(`\n${who}${RUNS > 1 ? ` (run ${run})` : ''} — ${why}\n`)
     try {

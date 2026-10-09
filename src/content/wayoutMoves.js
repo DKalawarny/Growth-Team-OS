@@ -36,6 +36,7 @@ export const WAYOUT_MOVES = [
   // ── Truck / trailer ──────────────────────────────────────────────────────
   {
     key: 'hauling',
+    physical: true,
     direction: 'earn',
     reaches: 'supplement',
     title: 'Hauling and dump runs',
@@ -50,6 +51,7 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'junk-removal',
+    physical: true,
     direction: 'earn',
     reaches: 'replaces-a-wage',
     title: 'Junk removal',
@@ -64,6 +66,7 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'small-moves',
+    physical: true,
     direction: 'earn',
     reaches: 'supplement',
     title: 'Small moves and single-item deliveries',
@@ -80,6 +83,7 @@ export const WAYOUT_MOVES = [
   // ── Pressure washer ──────────────────────────────────────────────────────
   {
     key: 'pressure-washing',
+    physical: true,
     direction: 'earn',
     reaches: 'replaces-a-wage',
     title: 'Pressure washing driveways, siding and decks',
@@ -96,6 +100,7 @@ export const WAYOUT_MOVES = [
   // ── Mower / tools ────────────────────────────────────────────────────────
   {
     key: 'lawns',
+    physical: true,
     direction: 'earn',
     reaches: 'replaces-a-wage',
     title: 'Weekly lawn rounds',
@@ -110,6 +115,7 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'snow-gutters-lights',
+    physical: true,
     direction: 'earn',
     reaches: 'replaces-a-wage',
     title: 'Snow clearing, gutters and holiday lights',
@@ -124,6 +130,7 @@ export const WAYOUT_MOVES = [
   },
   {
     key: 'handyman',
+    physical: true,
     direction: 'earn',
     reaches: 'replaces-a-wage',
     title: 'Small repairs people keep putting off',
@@ -855,6 +862,10 @@ export function movesLibraryForPrompt() {
       `  grows into: ${m.growsInto}`,
       `  season: ${m.seasons}`,
     ]
+    // ⭐ 9 Oct, Daniel: "you not going to have 65 year old tom going out mowing
+    // lawns on the side". Effort says how much TIME a move eats; this says it
+    // asks a lot of the BODY, which is what age and health answers weigh.
+    if (m.physical) bits.push('  PHYSICAL. Hard on the body: weigh against their age and health (see AGE).')
     if (m.subtract) bits.push(`  SUBTRACT. five-year test: ${m.fiveYearTest}`)
     if (m.needsProfessional) bits.push(`  ⚠️ must be flagged: talk to ${m.needsProfessional}`)
     if (m.blockedByImmovables) bits.push('  🔴 RULED OUT by any immovable that keeps them where they are.')
