@@ -22,7 +22,7 @@ export default function PushToBoardButton({ title, variant = 'default', label })
     return (
       <Link
         to={href}
-        title="Add this to your Work Board"
+        title="Add this to your Jobs"
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 hover:border-brand-300 transition-colors"
       >
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
@@ -38,7 +38,7 @@ export default function PushToBoardButton({ title, variant = 'default', label })
   return (
     <Link
       to={href}
-      title="Add this to your Work Board"
+      title="Add this to your Jobs"
       className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-ink-400 hover:text-brand-600 transition-colors flex-shrink-0"
     >
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">

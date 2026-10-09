@@ -46,11 +46,11 @@ const FAQ = [
   },
   {
     q: 'How do I add my employees / techs?',
-    a: 'Settings → Team & access → Team card. Add their name, email, and role. They\'ll show up on the Work Board so you can assign tasks and email them updates. Adding staff does not create logins for them. Only people you invite as advisors can sign in.',
+    a: 'Settings → Team & access → Team card. Add their name, email, and role. They\'ll show up on the Jobs so you can assign tasks and email them updates. Adding staff does not create logins for them. Only people you invite as advisors can sign in.',
   },
   {
     q: 'What\'s the difference between a milestone and a task?',
-    a: 'Milestones live on your Growth Roadmap. They\'re the big chunks (e.g. "Hire a foreman", "Launch service area in Airdrie"). Tasks live on the Work Board. They\'re the day-to-day work that gets you there ("Post job ad", "Call three references"). Milestones tell you where you\'re going. Tasks tell you what to do today.',
+    a: 'Milestones live on your Growth Roadmap. They\'re the big chunks (e.g. "Hire a foreman", "Launch service area in Airdrie"). Tasks live on the Jobs. They\'re the day-to-day work that gets you there ("Post job ad", "Call three references"). Milestones tell you where you\'re going. Tasks tell you what to do today.',
   },
   {
     q: 'Can I cancel anytime?',
@@ -145,7 +145,7 @@ const TOOL_GUIDES = [
     ],
   },
   {
-    name:   'Work Board',
+    name:   'Jobs',
     href:   '/board',
     short:  'Kanban for the day-to-day work: assign tasks, email staff, track WIP.',
     steps: [
@@ -433,7 +433,7 @@ function RoadmapGuide() {
         <p className="text-xs font-semibold text-ink-500 mb-2">How to assign work</p>
         <ol className="text-sm text-ink-600 leading-relaxed list-decimal pl-5 space-y-1.5">
           <li>Click a milestone row to expand it.</li>
-          <li>Each action step under "How to tackle this" has a "+ Work order" button on hover.</li>
+          <li>Each action step under "How to tackle this" has a "+ Job" button on hover.</li>
           <li>Click it → pick the person → set a due date if you want → "Add to board".</li>
           <li>
             If you pick a Team staff member, they get an email with a link to a mobile page showing just their

@@ -63,7 +63,7 @@ export async function sendStaffWelcome({ to, staffName, companyName, ownerName }
 }
 
 /**
- * Notify a staff member that they've been assigned a work order. The email
+ * Notify a staff member that they've been assigned a job. The email
  * contains a magic-link to /staff/{token} so they can open the task on
  * their phone without logging in.
  *

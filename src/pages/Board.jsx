@@ -6,7 +6,7 @@ import { sendTaskAssigned } from '../lib/email'
 import { AMOUNTS_EMBED, withAmounts, canSeeJobCosts, saveJobAmounts } from '../lib/jobAmounts'
 
 /**
- * Work Board — /board
+ * Jobs — /board
  *
  * 4-column kanban: Backlog → In Progress → Review → Done
  * Cards are draggable between columns. Each card can be assigned to either:
@@ -110,14 +110,14 @@ export default function Board() {
   ]
   const memberByCid = Object.fromEntries(allMembers.map(m => [m._cid, m]))
 
-  // Which combined ID a work order is assigned to
+  // Which combined ID a job is assigned to
   function getAssigneeCid(order) {
     if (order.staff_member_id) return `s:${order.staff_member_id}`
     if (order.assigned_to)     return `p:${order.assigned_to}`
     return null
   }
 
-  // All the people on a work order (crew + an app user), as assignee cids.
+  // All the people on a job (crew + an app user), as assignee cids.
   function getAssigneeCids(order) {
     const cids = []
     for (const id of (order.assigned_staff_ids ?? [])) cids.push(`s:${id}`)
@@ -131,7 +131,7 @@ export default function Board() {
     loadAll()
   }, [companyId])
 
-  // When the page is opened from a Roadmap "Work order" link OR from the
+  // When the page is opened from a Roadmap "Job" link OR from the
   // SOPs page's "Use this SOP" CTA, auto-open the new-order modal
   // pre-filled. Wait until loading is done so milestones + templates are in
   // the dropdowns.
@@ -321,7 +321,7 @@ export default function Board() {
    * Fire-and-forget task-assigned email to a staff member. Looks up the
    * staff row from the in-memory list (already loaded by loadAll), skips
    * silently if no email is on file. Errors are logged but don't surface
-   * — the work order save is the user's primary action.
+   * — the job save is the user's primary action.
    */
   function notifyStaffAssignee({ staff_member_id, payload }) {
     const staffRow = staff.find(s => s.id === staff_member_id)
@@ -360,7 +360,7 @@ export default function Board() {
     const lines = [
       `Hi ${name},`,
       '',
-      `You've been assigned a task on the Work Board:`,
+      `You've been assigned a task on the Jobs:`,
       '',
       `📋 ${order.title}`,
     ]
@@ -536,8 +536,8 @@ export default function Board() {
     return (
       <div className="min-h-screen bg-ink-50">
         <div className="bg-white border-b border-ink-100 px-4 sm:px-8 py-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Work Board</div>
-          <h1 className="text-xl font-bold text-ink-900">Work Board</h1>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Jobs</div>
+          <h1 className="text-xl font-bold text-ink-900">Jobs</h1>
         </div>
         <div className="max-w-2xl mx-auto px-4 sm:px-8 py-12">
           <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-8 text-center">
@@ -547,7 +547,7 @@ export default function Board() {
               Run this SQL in your Supabase dashboard → SQL Editor, then click the button below.
             </p>
             <pre className="text-left text-[11px] bg-ink-900 text-green-400 rounded-xl p-4 overflow-x-auto leading-relaxed whitespace-pre-wrap">
-{`-- Work orders table
+{`-- Jobs table
 create table public.work_orders (
   id uuid default gen_random_uuid() primary key,
   company_id uuid references public.companies(id)
@@ -566,7 +566,7 @@ create table public.work_orders (
   updated_at timestamptz default now()
 );
 alter table public.work_orders enable row level security;
-create policy "Company members can manage work orders"
+create policy "Company members can manage jobs"
 on public.work_orders for all
 using (company_id = (
   select company_id from public.profiles
@@ -591,7 +591,7 @@ using (company_id = (
   where id = auth.uid()
 ));
 
--- Link work orders → staff members
+-- Link jobs → staff members
 alter table public.work_orders
   add constraint work_orders_staff_member_fk
   foreign key (staff_member_id)
@@ -617,12 +617,12 @@ alter table public.work_orders
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Work Board</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">Work Board</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Jobs</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Jobs</h1>
           </div>
           {/* Action cluster — collapses gracefully on mobile:
               - Field flags + Manage team hide their text labels (icon-only)
-              - New work order shows a "+" only on the smallest screens
+              - New job shows a "+" only on the smallest screens
               The flag count badge stays visible on every breakpoint since
               it's the whole point of the button. */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -653,12 +653,12 @@ alter table public.work_orders
               <span className="hidden sm:inline">Manage crew</span>
             </Link>
             <button type="button" onClick={() => openNew()}
-              aria-label="New work order"
+              aria-label="New job"
               className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
                 <path d="M8 3v10M3 8h10" strokeLinecap="round" />
               </svg>
-              <span className="hidden sm:inline">New work order</span>
+              <span className="hidden sm:inline">New job</span>
             </button>
           </div>
         </div>
@@ -690,7 +690,7 @@ alter table public.work_orders
           </button>
         ))}
         <span className="text-[11px] text-ink-400 ml-1">
-          {filtered.length} work order{filtered.length !== 1 ? 's' : ''}
+          {filtered.length} job{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
 
@@ -752,7 +752,7 @@ alter table public.work_orders
         </div>
       </div>
 
-      {/* Work order modal */}
+      {/* Job modal */}
       {showModal && (
         <WorkOrderModal
           seeCosts={seeCosts}
@@ -797,7 +797,7 @@ alter table public.work_orders
   )
 }
 
-// ── Work order card ───────────────────────────────────────────────────────────
+// ── Job card ───────────────────────────────────────────────────────────
 
 function WorkOrderCard({ order, members = [], milestone, onEdit, onMove, onDelete, onDragStart, onEmail }) {
   const member = members[0] ?? null
@@ -911,7 +911,7 @@ function WorkOrderCard({ order, members = [], milestone, onEdit, onMove, onDelet
   )
 }
 
-// ── Work order modal ──────────────────────────────────────────────────────────
+// ── Job modal ──────────────────────────────────────────────────────────
 
 function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose, seeCosts = true }) {
   // ⚠️ 2 Sep — the two halves of a job record never referenced each other.
@@ -977,7 +977,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
 
         <div className="bg-ink-900 px-6 py-4 flex items-center justify-between">
           <span className="text-sm font-bold text-white">
-            {form.id ? 'Edit work order' : 'New work order'}
+            {form.id ? 'Edit job' : 'New job'}
           </span>
           <button type="button" onClick={onClose} className="text-ink-500 hover:text-white transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
@@ -1048,7 +1048,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
               </label>
               <select value={form.template_id} onChange={e => set('template_id', e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No SOP, blank work order</option>
+                <option value="">No SOP, blank job</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name} {t.items?.length ? `(${t.items.length} steps)` : ''}
@@ -1060,7 +1060,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 const n   = tpl?.items?.length ?? 0
                 return (
                   <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
-                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this work order. The crew can tick them off from the board or the staff portal.
+                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this job. The crew can tick them off from the board or the staff portal.
                   </p>
                 )
               })()}
@@ -1316,7 +1316,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
             </button>
             <button type="submit" disabled={!form.title.trim() || saving}
               className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white text-sm font-bold transition-colors">
-              {saving ? 'Saving…' : form.id ? 'Save changes' : 'Create work order'}
+              {saving ? 'Saving…' : form.id ? 'Save changes' : 'Create job'}
             </button>
           </div>
         </form>
@@ -1330,7 +1330,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
  *
  * Slides in from the right. Lists every comment with prompt_type='near_miss'
  * for this company, newest first. Each row shows author + WO context + the
- * flagged note, with a one-click jump back to the work order's edit modal.
+ * flagged note, with a one-click jump back to the job's edit modal.
  *
  * What this is: an inbox of things the crew thought the office should
  * know about — tool gaps, surprise hazards, scope creep, near-misses,
@@ -1384,7 +1384,7 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
               <p className="text-xs text-ink-500 max-w-xs mx-auto leading-relaxed">
                 When the crew taps "Flag for office" on a step from the staff
                 portal, the note shows up here so it doesn't get buried in a
-                specific work order.
+                specific job.
               </p>
             </div>
           ) : (
@@ -1409,7 +1409,7 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
                         onClick={() => onOpenWorkOrder(f.work_order_id)}
                         className="font-semibold text-brand-700 hover:text-brand-800 underline-offset-2 hover:underline"
                       >
-                        {wo?.title || 'Open work order'}
+                        {wo?.title || 'Open job'}
                       </button>
                     </div>
                     <p className="text-sm text-ink-900 leading-snug whitespace-pre-wrap">{f.text}</p>

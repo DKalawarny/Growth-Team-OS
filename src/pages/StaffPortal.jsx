@@ -989,7 +989,7 @@ function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placehol
  * Submit fires one daily log per non-empty textarea, in parallel.
  *
  * ⚠️ 2 Sep — this used to write a STEP COMMENT anchored to the first checklist
- * item of the work order, with a comment admitting why: "workflow-level
+ * item of the job, with a comment admitting why: "workflow-level
  * reflection has no single-step anchor". It was pinning a note about the whole
  * day onto an unrelated step because there was nowhere else to put it — and
  * the filter it needed (`checklist_items?.[0]`) silently dropped the recap
@@ -1027,7 +1027,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
   const [costNoteDrafts, setCostNoteDrafts] = useState({})
   const [metricDrafts, setMetricDrafts] = useState({})   // { [woId]: { [metricKey]: value } }
   // ⚠️ Day-level, not per-job. Who was on site and whether anyone got hurt are
-  // facts about the DAY — asking them once per work order would get three
+  // facts about the DAY — asking them once per job would get three
   // contradictory answers from the same person about the same crew.
   const [onSiteIds, setOnSiteIds]         = useState(() => new Set())
   const [whoOnSite, setWhoOnSite]         = useState('')
@@ -1236,7 +1236,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
 
         {/* ⚠️ Asked ONCE for the day, above the per-job boxes. Who was on site
             and whether anyone got hurt are facts about the day, not about a
-            work order — asking per job would get three different answers from
+            job — asking per job would get three different answers from
             one person about the same crew. */}
         <div className="mb-3 space-y-2 rounded-xl border border-ink-100 bg-ink-50/40 p-3">
           <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Site &amp; safety</p>

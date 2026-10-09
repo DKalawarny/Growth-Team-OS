@@ -44,8 +44,8 @@ export const ROLE_LABEL = {
 /** One line each, shown when the owner picks a role for someone. */
 export const ROLE_DESCRIPTION = {
   admin:   'Everything you see, except billing, deleting the workspace, and managing people.',
-  cfo:     'Finances, documents and the work board. Not Solomon, the roadmap or succession.',
-  manager: 'The work board, daily logs, playbooks and safety. No finances or Solomon.',
+  cfo:     'Finances, documents and the jobs board. Not Solomon, the roadmap or succession.',
+  manager: 'The jobs board, daily logs, playbooks and safety. No finances or Solomon.',
 }
 
 /** The roles an owner can give someone, in the order they are offered. */

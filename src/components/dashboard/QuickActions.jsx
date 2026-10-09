@@ -5,7 +5,7 @@ const ALL_DESTINATIONS = [
   { key: 'advisor',      to: '/advisor',      icon: '🤖', title: 'Solomon',             blurb: 'AI business advisor'     },
   { key: 'roadmap',      to: '/roadmap',      icon: '🗺️', title: 'Roadmap',             blurb: 'Milestones & pace'       },
   { key: 'calendar',     to: '/calendar',     icon: '📅', title: 'Calendar',            blurb: 'Daily work planner'      },
-  { key: 'board',        to: '/board',        icon: '📋', title: 'Work Board',          blurb: 'Tasks & work orders'     },
+  { key: 'board',        to: '/board',        icon: '📋', title: 'Jobs',          blurb: 'Tasks & jobs'     },
   { key: 'checkins',     to: '/checkins',     icon: '📝', title: 'Check-in',            blurb: 'Log daily progress'      },
   { key: 'library',      to: '/documents',    icon: '📚', title: 'Library',             blurb: 'Documents & files'       },
   { key: 'cfo',          to: '/tools/cfo',    icon: '💼', title: 'CFO Dashboard',       blurb: 'Cash flow & financials'  },

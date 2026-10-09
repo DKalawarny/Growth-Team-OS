@@ -52,7 +52,7 @@ const TABS = [
     ),
   },
   {
-    // ⚠️ This was '/board' — Work Board — which the desktop sidebar does not
+    // ⚠️ This was '/board' — Jobs — which the desktop sidebar does not
     // list at all. The MAIN_NAV drawer below was corrected in an earlier pass
     // (see its note); this tab bar is a SECOND list in the same file and was
     // missed, so a phone still promoted a surface the product had dropped.
@@ -76,7 +76,7 @@ const TABS = [
 // The same seven surfaces as the desktop sidebar, in the same order and with
 // the same plain names. This list had drifted badly — it still carried the
 // pre-restructure twelve (Dashboard, Calendar, Check-ins, Library, Growth
-// Trajectories, Work Board, Analytics) long after the desktop nav moved on,
+// Trajectories, Jobs, Analytics) long after the desktop nav moved on,
 // so the whole restructure was invisible on a phone. Change both together.
 const MAIN_NAV = [
   { to: '/dashboard',            label: 'Home'       },

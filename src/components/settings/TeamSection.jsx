@@ -4,7 +4,7 @@ import { sendStaffWelcome, sendStaffLogLink } from '../../lib/email'
 
 /**
  * TeamSection — add staff members so they can be assigned tasks on the
- * Work Board and emailed when work changes hands.
+ * Jobs and emailed when work changes hands.
  *
  * When a new staff member is added WITH an email address, we fire a
  * welcome email via the send-email Edge Function. The email is

@@ -11,7 +11,7 @@ import { isDemoCompany, DEMO_SOP_SUGGESTIONS } from '../lib/demo'
  *
  * The owner's process library. Each SOP is a named list of steps for a
  * repeating job ("Standard demo job", "Site walkthrough", "Trailer inspection").
- * When a work order is created from a SOP, those steps copy across as
+ * When a job is created from a SOP, those steps copy across as
  * checklist items the crew ticks off — including from the magic-link staff
  * portal on a phone in the field.
  *
@@ -113,7 +113,7 @@ const STARTERS = [
     description: 'For quotes without itemised scope, capture the detail before the crew rolls.',
     items: [
       { text: 'Read the quote + contract',                required: true,  notes: 'Bulk-priced quotes often skip detail. Pull out what you can: rooms, square footage, special conditions.' },
-      { text: 'Write up detailed scope on this work order', required: true, notes: 'GATING STEP. The bookkeeper can\'t open a PO and the crew can\'t execute until this is filled in. Edit the work order description with the room-by-room scope, exclusions, and any client-provides items.' },
+      { text: 'Write up detailed scope on this job', required: true, notes: 'GATING STEP. The bookkeeper can\'t open a PO and the crew can\'t execute until this is filled in. Edit the job description with the room-by-room scope, exclusions, and any client-provides items.' },
       { text: 'Confirm scope with the client (call or site visit)', required: true, notes: 'Bulk-priced jobs are where surprise change-orders happen. Confirm in writing.' },
       { text: 'Photograph existing conditions',           required: true,  notes: 'Especially anywhere outside the obvious scope. Bulk pricing assumes everything goes per spec.' },
       { text: 'Order materials + book bin',               required: false },
@@ -150,8 +150,6 @@ export default function SOPs() {
 
   // Templates with items nested (PostgREST relation: items:work_order_template_items(*))
   const [templates,   setTemplates]   = useState([])
-  const [archived,    setArchived]    = useState([])
-  const [showArchived, setShowArchived] = useState(false)
   const [loading,     setLoading]     = useState(true)
   const [setupNeeded, setSetupNeeded] = useState(false)
   const [selectedId,  setSelectedId]  = useState(null)
@@ -379,39 +377,14 @@ export default function SOPs() {
     }
   }
 
-  async function archiveTemplate(id) {
-    if (!confirm('Archive this SOP? Existing work orders that used it keep their checklists; new ones can no longer pick it.')) return
+  async function deleteTemplate(id) {
+    if (!confirm('Delete this SOP? Jobs that already used it keep their checklists. This cannot be undone.')) return
     setBusy(true); setError(null)
-    const { error: err } = await supabase
-      .from('work_order_templates')
-      .update({ archived_at: new Date().toISOString() })
-      .eq('id', id)
+    const { error: err } = await supabase.from('work_order_templates').delete().eq('id', id)
     setBusy(false)
     if (err) { setError(err.message); return }
     setTemplates(prev => prev.filter(t => t.id !== id))
     if (selectedId === id) setSelectedId(null)
-    if (showArchived) loadArchived()
-  }
-
-  async function loadArchived() {
-    if (!companyId) return
-    const { data } = await supabase
-      .from('work_order_templates')
-      .select('id, name')
-      .eq('company_id', companyId)
-      .not('archived_at', 'is', null)
-      .order('updated_at', { ascending: false })
-    setArchived(data ?? [])
-  }
-
-  async function unarchiveTemplate(id) {
-    const { error: err } = await supabase
-      .from('work_order_templates')
-      .update({ archived_at: null })
-      .eq('id', id)
-    if (err) { setError(err.message); return }
-    setArchived(a => a.filter(x => x.id !== id))
-    loadTemplates()
   }
 
   // ── Item-level operations ──────────────────────────────────────────────────
@@ -464,7 +437,7 @@ export default function SOPs() {
 
   // Replace ALL steps from the text-block editor: delete the rows and re-insert
   // from the lines. Simple + correct for a small list, and nothing persistent
-  // references a template item id (work orders copy the steps at creation).
+  // references a template item id (jobs copy the steps at creation).
   async function replaceItems(templateId, texts) {
     setBusy(true); setError(null)
     const { error: delErr } = await supabase
@@ -686,38 +659,10 @@ export default function SOPs() {
 
             {/* Hint */}
             <p className="mt-3 text-[11px] text-ink-500 leading-relaxed px-1">
-              Each SOP becomes a checklist on the work order. Crew ticks off
+              Each SOP becomes a checklist on the job. Crew ticks off
               steps as they go, from the office or the staff portal.
             </p>
 
-            {/* Archived SOPs — hidden from the list but recoverable */}
-            <button
-              onClick={() => { const n = !showArchived; setShowArchived(n); if (n) loadArchived() }}
-              className="mt-3 text-[11px] font-semibold text-ink-500 hover:text-ink-700 px-1"
-            >
-              {showArchived ? 'Hide archived' : 'View archived'}
-            </button>
-            {showArchived && (
-              <div className="mt-2 border-t border-ink-100 pt-2">
-                {archived.length === 0 ? (
-                  <p className="px-1 text-[11px] text-ink-400">No archived SOPs.</p>
-                ) : (
-                  <ul className="divide-y divide-ink-100">
-                    {archived.map(t => (
-                      <li key={t.id} className="flex items-center justify-between gap-2 px-1 py-2">
-                        <span className="text-[13px] text-ink-500 truncate">{t.name || 'Untitled SOP'}</span>
-                        <button
-                          onClick={() => unarchiveTemplate(t.id)}
-                          className="text-[11px] font-semibold text-brand-700 hover:text-brand-800 flex-shrink-0"
-                        >
-                          Restore
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
           </aside>
 
           {/* ── Right pane: editor ────────────────────────────────────────── */}
@@ -727,7 +672,7 @@ export default function SOPs() {
                 template={selected}
                 onBack={() => setSelectedId(null)}
                 onUpdateTemplate={patch => updateTemplate(selected.id, patch)}
-                onArchive={() => archiveTemplate(selected.id)}
+                onDelete={() => deleteTemplate(selected.id)}
                 onAddItem={() => addItem(selected.id)}
                 onUpdateItem={(itemId, patch) => updateItem(selected.id, itemId, patch)}
                 onRemoveItem={itemId => removeItem(selected.id, itemId)}
@@ -870,7 +815,7 @@ function PlaybookEditor({
   template,
   onBack,
   onUpdateTemplate,
-  onArchive,
+  onDelete,
   onAddItem,
   onUpdateItem,
   onRemoveItem,
@@ -1014,14 +959,14 @@ function PlaybookEditor({
           to={`/board?playbook_id=${template.id}`}
           className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
         >
-          Use this SOP on a new work order →
+          Use this SOP on a new job →
         </Link>
         <button
-          onClick={onArchive}
+          onClick={onDelete}
           disabled={busy}
           className="text-xs font-semibold text-red-700 hover:text-red-800 disabled:opacity-50"
         >
-          Archive SOP
+          Delete SOP
         </button>
       </div>
     </div>
@@ -1159,7 +1104,7 @@ function CrewPreview({ items }) {
       </div>
 
       <p className="mt-2 text-[10px] text-ink-400 leading-relaxed">
-        On the real work order, ticks save instantly and you see live progress
+        On the real job, ticks save instantly and you see live progress
         on the Board.
       </p>
     </div>

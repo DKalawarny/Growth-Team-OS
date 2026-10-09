@@ -272,7 +272,7 @@ export default function TradePage() {
               ['🦺', 'Safety & Compliance'],
               ['🧩', 'Org Chart Planner'],
               ['🗺️', 'Growth Roadmap'],
-              ['📋', 'Work Board'],
+              ['📋', 'Jobs'],
               ['✅', 'Weekly Check-ins'],
               ['📚', 'Document Library'],
             ].map(([icon, name], i) => (

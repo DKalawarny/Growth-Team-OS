@@ -6,7 +6,7 @@ import PeopleSection        from '../../components/settings/PeopleSection'
  * TeamSettings — everyone with access to this workspace.
  *
  * Two cards:
- *   1. Team — staff members who can be assigned tasks on the Work Board.
+ *   1. Team — staff members who can be assigned tasks on the Jobs.
  *      These are people INSIDE the business.
  *   2. Advisor access — read-only invites for coaches, accountants, mentors.
  *      These are people OUTSIDE the business who need visibility.

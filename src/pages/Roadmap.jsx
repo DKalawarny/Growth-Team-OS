@@ -172,12 +172,12 @@ export default function Roadmap() {
   const [loading, setLoading]       = useState(true)
   const [assigneesByMilestone, setAssigneesByMilestone] = useState(new Map())
   // Per-action-step assignees: key = `${milestone_id}::${action_step_text}` → person
-  // Keyed off the work order's `title` column (which is set to the action step
-  // text when a work order is created from the inline "+ Work order" button).
+  // Keyed off the job's `title` column (which is set to the action step
+  // text when a job is created from the inline "+ Job" button).
   const [actionAssigneesByKey, setActionAssigneesByKey] = useState(new Map())
   // Companion map: same key → work_order id. Lets the modal UPDATE the
   // existing row when an action is reassigned, instead of inserting a
-  // duplicate work order every time the owner picks a new person.
+  // duplicate job every time the owner picks a new person.
   const [actionWorkOrderIdByKey, setActionWorkOrderIdByKey] = useState(new Map())
   // Bumped after a successful modal save so the orders loader re-runs and
   // the per-action map reflects the new assignment immediately (no full
@@ -333,14 +333,14 @@ export default function Roadmap() {
                      : o.staff_member_id ? { ...staffMap[o.staff_member_id],   _t: 'staff'   }
                      : null
 
-        // Per-action-step index — uses the work order's title, which the
-        // inline "+ Work order" button sets to the exact action step text.
+        // Per-action-step index — uses the job's title, which the
+        // inline "+ Job" button sets to the exact action step text.
         // We record the id even if there's no person assigned yet, so a
-        // reassignment of an existing-but-unassigned work order also takes
+        // reassignment of an existing-but-unassigned job also takes
         // the UPDATE path.
         if (o.title) {
           // ⚠️ 1 Sep — this stored only the id, so the reassign modal had no
-          // way to show the due date already on the work order. See the state
+          // way to show the due date already on the job. See the state
           // initialiser in the modal for what that cost.
           woIdMap.set(`${o.milestone_id}::${o.title}`, { id: o.id, due_date: o.due_date ?? null })
         }
@@ -608,7 +608,7 @@ export default function Roadmap() {
 
   // Open the quick work-order popup from a roadmap row
   function handleOpenWorkOrder(milestoneId, milestoneTitle, taskTitle = '') {
-    // If a work order already exists for this exact action step, pass its
+    // If a job already exists for this exact action step, pass its
     // id into the draft — the modal will UPDATE instead of inserting a
     // duplicate. The key matches what the orders loader builds.
     const key = `${milestoneId}::${taskTitle || milestoneTitle}`
@@ -2258,7 +2258,7 @@ function MilestoneRow({
           Assignees — display only. Two sources stacked in this order:
             1. work_orders rows on this milestone (`assignees` prop, built
                from work_orders.assigned_to / staff_member_id). This is the
-               common case — "+ Work order" puts people here.
+               common case — "+ Job" puts people here.
             2. The legacy milestone-level `assignee_cid` (one person per
                milestone, set via a different UI). Shown only when there
                are no work-order assignees, so we don't duplicate names.
@@ -2307,12 +2307,12 @@ function MilestoneRow({
           </Tooltip>
         ) : null}
 
-        {/* Work order — on hover */}
+        {/* Job — on hover */}
         <button
           type="button"
           onClick={e => { e.stopPropagation(); onOpenWorkOrder?.(milestone.id, milestone.title, '') }}
           className="opacity-0 group-hover/row:opacity-100 transition-opacity w-7 h-7 rounded-full flex items-center justify-center border border-ink-200 hover:border-brand-300 hover:text-brand-600 text-ink-400 bg-white flex-shrink-0"
-          title="Create a work order"
+          title="Create a job"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
@@ -2391,9 +2391,9 @@ function MilestoneRow({
               <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-2">How to tackle this</div>
               <ol className="space-y-2">
                 {actions.map((a, i) => {
-                  // Look up who (if anyone) has a work order on this exact
+                  // Look up who (if anyone) has a job on this exact
                   // action step. Falls through to null when the action hasn't
-                  // been turned into a work order yet — most steps start unassigned.
+                  // been turned into a job yet — most steps start unassigned.
                   const actionAssignee = actionAssigneesByKey.get(`${milestone.id}::${a}`) ?? null
                   return (
                     <li key={i} className="flex items-start gap-2.5 text-ink-800 group/action">
@@ -2421,9 +2421,9 @@ function MilestoneRow({
                         type="button"
                         onClick={e => { e.stopPropagation(); onOpenWorkOrder?.(milestone.id, milestone.title, a) }}
                         className="flex-shrink-0 opacity-0 group-hover/action:opacity-100 transition-opacity text-[10px] font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5"
-                        title="Create a work order for this action"
+                        title="Create a job for this action"
                       >
-                        {actionAssignee ? 'Reassign' : '+ Work order'}
+                        {actionAssignee ? 'Reassign' : '+ Job'}
                       </button>
                     </li>
                   )
@@ -2481,7 +2481,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
   // on this action step instead of "No one yet" when they reopen the modal.
   const [assignee_cid, setAssigneeCid] = useState(draft.existingAssigneeCid || '')
   // ⚠️ 1 Sep — this was useState(''), so the field opened BLANK every time,
-  // including when reassigning a work order that already had a due date.
+  // including when reassigning a job that already had a due date.
   // Daniel: "date dont save". It did save — the update path has always written
   // it — but reopening showed nothing, so it looked like it had not.
   //
@@ -2521,7 +2521,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
     let staffColumnMissing = false
 
     if (isReassign) {
-      // ---- UPDATE path: existing work order, owner is reassigning ----
+      // ---- UPDATE path: existing job, owner is reassigning ----
       // Set both columns explicitly so switching between profile and staff
       // assignees clears the other one. due_date is now written unconditionally
       // because the field is prefilled with the real value — so an empty box is
@@ -2546,7 +2546,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
       }
       error = res.error
     } else {
-      // ---- INSERT path: brand new work order for this action ----
+      // ---- INSERT path: brand new job for this action ----
       const base = {
         company_id:   profile.company_id,
         created_by:   profile.id,
@@ -2638,7 +2638,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-widest">
-            {isReassign ? 'Reassign work order' : 'Work order'}
+            {isReassign ? 'Reassign job' : 'Job'}
           </p>
           <button type="button" onClick={() => onClose(false)}
             className="text-ink-400 hover:text-ink-700 text-lg leading-none">✕</button>
@@ -2705,7 +2705,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
               </label>
               <select value={template_id} onChange={e => setTemplateId(e.target.value)}
                 className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">No SOP, blank work order</option>
+                <option value="">No SOP, blank job</option>
                 {templates.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name}{t.items?.length ? ` (${t.items.length} steps)` : ''}
@@ -2717,7 +2717,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
                 const n   = tpl?.items?.length ?? 0
                 return (
                   <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
-                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this work order.
+                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this job.
                   </p>
                 )
               })()}
