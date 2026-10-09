@@ -208,7 +208,7 @@ Deno.serve(async (req) => {
       const { data: workOrders, error: woErr } = await admin
         .from('work_orders')
         .select('id, title, description, status, priority, due_date, created_at, milestone_id')
-        .eq('staff_member_id', staff.id)
+        .or(`staff_member_id.eq.${staff.id},assigned_staff_ids.cs.{${staff.id}}`)
         .eq('company_id', staff.company_id) // belt + suspenders, mirrors the cid check
         .order('due_date',   { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })

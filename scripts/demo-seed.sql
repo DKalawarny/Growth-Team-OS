@@ -92,7 +92,7 @@ insert into work_order_template_items (template_id, position, text, required) va
 -- ── Work orders (jobs, with money) ───────────────────────────────────────────
 insert into work_orders (id, company_id, staff_member_id, milestone_id, title, status, priority, created_at) values
  ('de900000-0000-4000-8003-000000000001','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001',null,'Maple Plaza strata, spring cleanup','done','medium', now() - interval '12 days'),
- ('de900000-0000-4000-8003-000000000002','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002',null,'Oakridge commercial, weekly maintenance','doing','medium', now() - interval '6 days'),
+ ('de900000-0000-4000-8003-000000000002','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002',null,'Oakridge commercial, weekly maintenance','in_progress','medium', now() - interval '6 days'),
  ('de900000-0000-4000-8003-000000000003','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000003',null,'Riverbend townhomes, bed refresh','done','low', now() - interval '4 days'),
  ('de900000-0000-4000-8003-000000000004','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001',null,'Center Street office, new site onboarding','backlog','high', now() - interval '1 day');
 

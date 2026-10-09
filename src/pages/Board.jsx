@@ -117,6 +117,15 @@ export default function Board() {
     return null
   }
 
+  // All the people on a work order (crew + an app user), as assignee cids.
+  function getAssigneeCids(order) {
+    const cids = []
+    for (const id of (order.assigned_staff_ids ?? [])) cids.push(`s:${id}`)
+    if (order.staff_member_id && !cids.includes(`s:${order.staff_member_id}`)) cids.push(`s:${order.staff_member_id}`)
+    if (order.assigned_to) cids.push(`p:${order.assigned_to}`)
+    return cids
+  }
+
   useEffect(() => {
     if (!companyId) return
     loadAll()
@@ -206,10 +215,11 @@ export default function Board() {
 
   async function handleSave(data) {
     // Decode the prefixed combined ID back to the right FK
-    let assigned_to    = null
-    let staff_member_id = null
-    if (data.assignee_cid?.startsWith('p:')) assigned_to    = data.assignee_cid.slice(2)
-    if (data.assignee_cid?.startsWith('s:')) staff_member_id = data.assignee_cid.slice(2)
+    const cids = Array.isArray(data.assignee_cids) ? data.assignee_cids : []
+    const staffIds   = [...new Set(cids.filter(c => c.startsWith('s:')).map(c => c.slice(2)))]
+    const profileIds = cids.filter(c => c.startsWith('p:')).map(c => c.slice(2))
+    const assigned_to     = profileIds[0] ?? null
+    const staff_member_id = staffIds[0] ?? null
 
     // Only include staff_member_id when the user picked a staff member
     // AND the column is confirmed to exist — avoids a silent Postgres error
@@ -230,6 +240,7 @@ export default function Board() {
       milestone_id: data.milestone_id || null,
       status:       data.status,
       ...(staff_member_id && !staffSetupNeeded ? { staff_member_id } : {}),
+      ...(!staffSetupNeeded ? { assigned_staff_ids: staffIds } : {}),
       // template_id is set when the user picked a SOP in the create modal.
       // It's a back-reference for reporting ("what % of WOs use a SOP?")
       // and lets us style the WO card differently if we want to flag it.
@@ -240,10 +251,10 @@ export default function Board() {
     // staff_member changed on edit. Only used to decide whether to fire the
     // task-assigned email — we don't want to re-spam someone every time a
     // title or due-date gets tweaked.
-    const previousStaffId = data.id
-      ? workOrders.find(o => o.id === data.id)?.staff_member_id ?? null
-      : null
-    const assigneeChanged = previousStaffId !== staff_member_id
+    const previousStaffIds = data.id
+      ? (workOrders.find(o => o.id === data.id)?.assigned_staff_ids ?? [])
+      : []
+    const newStaffIds = staffIds.filter(id => !previousStaffIds.includes(id))
 
     if (data.id) {
       const { error } = await supabase.from('work_orders').update(payload).eq('id', data.id)
@@ -252,9 +263,7 @@ export default function Board() {
         setWorkOrders(prev => prev.map(o =>
           o.id === data.id ? { ...o, ...payload, ...(seeCosts ? { quoted_amount: amounts.quoted, cost_amount: amounts.cost, invoiced_amount: amounts.invoiced } : {}) } : o
         ))
-        if (staff_member_id && assigneeChanged) {
-          notifyStaffAssignee({ staff_member_id, payload })
-        }
+        newStaffIds.forEach(sid => notifyStaffAssignee({ staff_member_id: sid, payload }))
       }
       setShowModal(false); setEditingOrder(null)
       return error?.message ?? null
@@ -278,9 +287,7 @@ export default function Board() {
           await spawnChecklistFromTemplate(row.id, data.template_id)
         }
         setShowModal(false); setEditingOrder(null)
-        if (staff_member_id) {
-          notifyStaffAssignee({ staff_member_id, payload })
-        }
+        newStaffIds.forEach(sid => notifyStaffAssignee({ staff_member_id: sid, payload }))
       }
       return error?.message ?? null
     }
@@ -366,7 +373,7 @@ export default function Board() {
 
   function openNew(status = 'backlog')  { setEditingOrder({ status }); setChecklistItems([]); setShowModal(true) }
   function openEdit(order)              {
-    setEditingOrder({ ...order, assignee_cid: getAssigneeCid(order) })
+    setEditingOrder({ ...order, assignee_cids: getAssigneeCids(order) })
     setChecklistItems([])              // clear stale items from a previous edit
     setShowModal(true)
     loadChecklistItems(order.id)
@@ -503,7 +510,7 @@ export default function Board() {
   function onDrop(status)               { if (dragId) { handleMove(dragId, status); setDragId(null) } }
 
   const filtered     = filterCid
-    ? workOrders.filter(o => getAssigneeCid(o) === filterCid)
+    ? workOrders.filter(o => getAssigneeCids(o).includes(filterCid))
     : workOrders
   const milestoneMap = Object.fromEntries(milestones.map(m => [m.id, m]))
 
@@ -709,13 +716,12 @@ alter table public.work_orders
                 {/* Cards */}
                 <div className="space-y-3 flex-1 min-h-[100px]">
                   {cards.map(order => {
-                    const cid    = getAssigneeCid(order)
-                    const member = cid ? memberByCid[cid] ?? null : null
+                    const members = getAssigneeCids(order).map(c => memberByCid[c]).filter(Boolean)
                     return (
                       <WorkOrderCard
                         key={order.id}
                         order={order}
-                        member={member}
+                        members={members}
                         milestone={milestoneMap[order.milestone_id]}
                         onEdit={() => openEdit(order)}
                         onMove={s => handleMove(order.id, s)}
@@ -793,7 +799,8 @@ alter table public.work_orders
 
 // ── Work order card ───────────────────────────────────────────────────────────
 
-function WorkOrderCard({ order, member, milestone, onEdit, onMove, onDelete, onDragStart, onEmail }) {
+function WorkOrderCard({ order, members = [], milestone, onEdit, onMove, onDelete, onDragStart, onEmail }) {
+  const member = members[0] ?? null
   const priority = PRIORITY_MAP[order.priority] ?? PRIORITY_MAP.medium
   const colIdx   = COLUMN_KEYS.indexOf(order.status)
   const overdue  = isOverdue(order.due_date)
@@ -851,11 +858,13 @@ function WorkOrderCard({ order, member, milestone, onEdit, onMove, onDelete, onD
         {/* Footer: assignee + email button + due date */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            {member ? (
+            {members.length > 0 ? (
               <>
-                <Avatar member={member} size="sm" />
+                <div className="flex -space-x-1.5 flex-shrink-0">
+                  {members.slice(0, 3).map((m, i) => <Avatar key={i} member={m} size="sm" />)}
+                </div>
                 <span className="text-[11px] font-medium text-ink-600 truncate">
-                  {member.name || member.email}
+                  {member.name || member.email}{members.length > 1 ? ` +${members.length - 1}` : ''}
                 </span>
                 {hasEmail && (
                   <button type="button" onClick={onEmail}
@@ -930,7 +939,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
     id:           order?.id           ?? null,
     title:        order?.title        ?? '',
     description:  order?.description  ?? '',
-    assignee_cid: order?.assignee_cid ?? '',
+    assignee_cids: order?.assignee_cids ?? [],
     due_date:     order?.due_date     ?? '',
     priority:     order?.priority     ?? 'medium',
     milestone_id: order?.milestone_id ?? '',
@@ -1061,29 +1070,29 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
           {/* Assign to — shows both app users and staff */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-600 mb-1.5">Assign to</label>
-              <select value={form.assignee_cid} onChange={e => set('assignee_cid', e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-300">
-                <option value="">Unassigned</option>
-                {appUsers.length > 0 && (
-                  <optgroup label="App users">
-                    {appUsers.map(m => (
-                      <option key={`p:${m.id}`} value={`p:${m.id}`}>
-                        {m.name || m.email}
-                      </option>
-                    ))}
-                  </optgroup>
+              <label className="block text-xs font-semibold text-ink-600 mb-1.5">Assign to <span className="font-normal text-ink-400">· one or more</span></label>
+              <div className="rounded-xl border border-ink-200 max-h-36 overflow-y-auto divide-y divide-ink-100">
+                {[...appUsers.map(m => ({ cid: `p:${m.id}`, label: m.name || m.email })),
+                  ...staff.map(st => ({ cid: `s:${st.id}`, label: st.name }))].map(({ cid, label }) => {
+                  const on = (form.assignee_cids ?? []).includes(cid)
+                  return (
+                    <label key={cid} className="flex items-center gap-2 px-3 py-2 text-sm text-ink-800 cursor-pointer hover:bg-ink-50">
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={() => set('assignee_cids', on
+                          ? (form.assignee_cids ?? []).filter(c => c !== cid)
+                          : [...(form.assignee_cids ?? []), cid])}
+                        className="w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-400 border-ink-300"
+                      />
+                      {label}
+                    </label>
+                  )
+                })}
+                {appUsers.length + staff.length === 0 && (
+                  <p className="px-3 py-2 text-xs text-ink-400">No one to assign yet. Add crew on the Daily logs page.</p>
                 )}
-                {staff.length > 0 && (
-                  <optgroup label="Team staff">
-                    {staff.map(s => (
-                      <option key={`s:${s.id}`} value={`s:${s.id}`}>
-                        {s.name}{s.email ? `, ${s.email}` : ''}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold text-ink-600 mb-1.5">Column</label>
