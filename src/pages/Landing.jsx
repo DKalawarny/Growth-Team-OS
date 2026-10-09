@@ -123,6 +123,43 @@ const CHAT_LINES = [
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+// ── What you'd use it for ───────────────────────────────────────
+// Concrete owner moments, high on the page, so a visitor sees their own
+// situation before any claim about the product. Added 9 Oct (Daniel: the
+// landing needed more of a use case). Each line maps to a real capability
+// (hiring, cash flow, succession, pricing) — no feature named, just the moment.
+
+function UseCasesSection() {
+  const cases = [
+    { when: 'You’re weighing whether you can afford to hire.',
+      does: 'Solomon reads your real numbers and says what the hire costs, and whether the work is there to carry it.' },
+    { when: 'A tight cash week is coming.',
+      does: 'Thirteen weeks out, so payroll week never arrives as a surprise.' },
+    { when: 'You want to know it could run without you.',
+      does: 'An honest read on what would have to be true for someone else to run it, and how far off that is.' },
+    { when: 'You’re pricing a job and not sure where to land.',
+      does: 'What the work is genuinely worth. Neither gouging nor leaving money on the table.' },
+  ]
+  return (
+    <section className="bg-gray-50 py-20 border-y border-gray-100">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="text-center mb-10">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-600 mb-3">What you’d use it for</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">The decisions you’d rather not make alone.</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {cases.map((c, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 text-left">
+              <p className="font-bold text-gray-900 mb-1.5 leading-snug">{c.when}</p>
+              <p className="text-sm text-gray-500 leading-relaxed">{c.does}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
@@ -169,6 +206,7 @@ export default function Landing() {
           problem, and restating it for 67 lines is the page not trusting its
           own headline. */}
       <HeroSection />
+      <UseCasesSection />
       <SolomonSection />
       <FollowsUpSection />
       <WhatHeKnowsSection />
@@ -778,56 +816,7 @@ function PriceSection() {
             </>
           )}
 
-          {/* ⚠️ 30 Aug — this used to read "All 10+ tools", which Daniel queried:
-              he could not tell what the ten were. Two problems with that line.
-              It named nothing, so it was the only cell on the card carrying no
-              information. And it was not true — src/lib/tools.js has 12 entries,
-              but `exit-readiness` and `rocks-tracker` are hidden:true (they do
-              not fit the home-services wedge) and `solomon` is a virtual entry
-              for the document library, so a new owner finds NINE tools in
-              /tools. Advertising "10+" overstated the product to the exact
-              degree this product refuses to.
-
-              What is listed below is every tool actually discoverable in the
-              app, plus the surfaces that are not tools. If you un-hide the two
-              tools in tools.js, add them here — and not before.
-
-              ⚠️ CORRECTION, same day: `hidden: true` does NOT mean unreachable.
-              exit-readiness is hidden from the /tools GRID but is a top-level
-              sidebar item labelled "Succession" (Sidebar.jsx:167, MobileNav.jsx:87)
-              and /pricing sells it, so owners do find it and it is listed here.
-              rocks-tracker is the genuinely retired one — the sidebar comment
-              records that Roadmap absorbed quarterly priorities. So: check the
-              NAV before concluding a hidden tool is unreachable, not just the
-              grid. */}
-          <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">
-            {[
-              'Solomon AI advisor',
-              'QuickBooks sync',
-              'CFO dashboard',
-              '13-week cash flow',
-              'Offer & pricing builder',
-              'Hiring planner',
-              'Org chart',
-              'Team newsletter',
-              'Safety & compliance',
-              'Local & AI visibility',
-              'Work through a decision',
-              'Succession planning',
-              'Growth roadmap',
-              'Weekly check-ins',
-              'SOPs',
-              'Work board',
-              'Cited regulatory answers',
-              'Document library',
-            ].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-white/70">
-                <span className="text-brand-400 font-bold flex-shrink-0">✓</span>
-                {f}
-              </div>
-            ))}
-          </div>
-
+          
           <Link
             to="/signup"
             className="inline-block px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors"
