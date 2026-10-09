@@ -104,7 +104,7 @@ export default function DailyLogs() {
   const { profile, company } = useAuth()
   const ownerName   = profile?.full_name || profile?.name || profile?.email?.split('@')[0] || 'Your manager'
   const companyName = company?.name || 'the team'
-  const [showCrew, setShowCrew] = useState(false)
+  const [showCrew, setShowCrew] = useState(() => { try { return new URLSearchParams(window.location.search).get('crew') === '1' } catch { return false } })
   const [logs, setLogs]       = useState([])
   const [loading, setLoading] = useState(true)
   const [drafts, setDrafts]   = useState({})   // { [logId]: text }

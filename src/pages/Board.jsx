@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -636,14 +636,14 @@ alter table public.work_orders
                 </span>
               )}
             </button>
-            <Link to="/settings"
-              aria-label="Manage team"
+            <Link to="/logs?crew=1"
+              aria-label="Manage crew"
               className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 hover:text-white text-sm font-semibold transition-colors border border-ink-700">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="7" cy="7" r="3"/><path d="M1 18c0-3.3 2.7-6 6-6h.5"/>
                 <circle cx="14" cy="12" r="3"/><path d="M11 18c0-1.7 1.3-3 3-3s3 1.3 3 3"/>
               </svg>
-              <span className="hidden sm:inline">Manage team</span>
+              <span className="hidden sm:inline">Manage crew</span>
             </Link>
             <button type="button" onClick={() => openNew()}
               aria-label="New work order"
