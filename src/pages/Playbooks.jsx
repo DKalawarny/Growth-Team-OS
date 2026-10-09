@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { callClaude, SONNET } from '../lib/anthropic'
 import { buildAdvisorContext } from '../lib/advisorContext'
+import { isDemoCompany, DEMO_SOP_SUGGESTIONS } from '../lib/demo'
 
 /**
  * SOPs — /playbooks
@@ -237,6 +238,12 @@ export default function SOPs() {
   }
 
   async function askSolomon() {
+    if (isDemoCompany(companyId)) {
+      // Demo: show Solomon's answer (canned, from the seeded logs), not a wall.
+      setAiError(null)
+      setSuggestions({ suggestions: DEMO_SOP_SUGGESTIONS.map(({ title, why }) => ({ title, why })), note: null })
+      return
+    }
     setAiBusy(true); setAiError(null); setSuggestions(null)
     try {
       const context = await buildPlaybookContext()
@@ -261,6 +268,16 @@ export default function SOPs() {
 
   async function draftWithSolomon(title) {
     if (!title) return
+    if (isDemoCompany(companyId)) {
+      const match = DEMO_SOP_SUGGESTIONS.find(x => x.title === title)
+      setDraftTitle(title); setAiError(null)
+      try {
+        await createFromStarter({ name: title, description: 'Drafted with Solomon', items: (match?.steps ?? []).map(text => ({ text })) })
+        setSuggestions(prev => prev ? { ...prev, suggestions: prev.suggestions.filter(x => x.title !== title) } : prev)
+        setAskOpen(false)
+      } catch (e) { setAiError(e.message || 'Could not draft that SOP.') } finally { setDraftTitle(null) }
+      return
+    }
     setDraftTitle(title); setAiError(null)
     try {
       const context = await buildPlaybookContext()

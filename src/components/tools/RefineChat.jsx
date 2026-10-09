@@ -40,8 +40,14 @@ export default function RefineChat({
   const [draft, setDraft] = useState('')
   const endRef            = useRef(null)
 
-  // Keep the chat pinned to the newest message so long threads don't hide it.
+  // Keep the chat pinned to the newest message so long threads don't hide it,
+  // but NOT on first mount: the tool pages now render a saved result on open,
+  // and scrolling on mount yanked the whole page down to this box (Daniel,
+  // 8 Oct: "every section opens to the middle"). Only scroll once a refine
+  // actually happens.
+  const didMount = useRef(false)
   useEffect(() => {
+    if (!didMount.current) { didMount.current = true; return }
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages.length, refining])
 
