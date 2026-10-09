@@ -601,7 +601,7 @@ Deno.serve(async (req) => {
     // what a visitor or bot sends. The UI already blocks this; this is the
     // backstop that makes the demo free and abuse-proof.
     if (user.companyId === 'de900000-0000-4000-8000-000000000001') {
-      return json({ error: 'demo_read_only' }, 403)
+      return json({ error: 'This is a read-only demo. Start a free account to run Solomon on your own business.' }, 403)
     }
     const body = await req.json().catch(() => ({})) as {
       systemPrompt?: string

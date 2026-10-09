@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
+import { useToolDraft, clearToolDraft, readToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -69,6 +69,27 @@ export default function CashFlow() {
   const [contextSummary, setContextSummary] = useState(null)
 
   // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  // Show the latest saved read on open (like CFO), so a returning owner and the
+  // demo see the produced plan, not a blank form. A local draft wins if present.
+  useEffect(() => {
+    if (!profile?.company_id) return
+    if (readToolDraft('cash-flow', profile.company_id)?.result) return
+    let cancelled = false
+    supabase
+      .from('documents')
+      .select('output_data')
+      .eq('company_id', profile.company_id)
+      .eq('tool_id', 'cash-flow')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data?.output_data) { setResult(data.output_data); setStage('result') }
+      })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.company_id])
+
   useToolDraft({
     toolId: 'cash-flow',
     companyId: profile?.company_id,

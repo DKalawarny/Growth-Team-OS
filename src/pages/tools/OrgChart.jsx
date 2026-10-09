@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
+import { useToolDraft, clearToolDraft, readToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -57,6 +57,28 @@ export default function OrgChart() {
   const [contextSummary, setContextSummary] = useState(null)
 
   // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  // Show the latest saved result on open (like the CFO page), so a returning
+  // owner, and the demo, sees what this tool produced rather than a blank form.
+  // A local draft (unsaved in-progress work) still takes precedence.
+  useEffect(() => {
+    if (!profile?.company_id) return
+    if (readToolDraft('org-chart', profile.company_id)?.result) return
+    let cancelled = false
+    supabase
+      .from('documents')
+      .select('output_data')
+      .eq('company_id', profile.company_id)
+      .eq('tool_id', 'org-chart')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data?.output_data) { setResult(data.output_data); setStage('result') }
+      })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.company_id])
+
   useToolDraft({
     toolId: 'org-chart',
     companyId: profile?.company_id,

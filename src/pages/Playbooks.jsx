@@ -421,6 +421,27 @@ export default function Playbooks() {
     if (err) { setError(err.message); loadTemplates() }
   }
 
+  // Replace ALL steps from the text-block editor: delete the rows and re-insert
+  // from the lines. Simple + correct for a small list, and nothing persistent
+  // references a template item id (work orders copy the steps at creation).
+  async function replaceItems(templateId, texts) {
+    setBusy(true); setError(null)
+    const { error: delErr } = await supabase
+      .from('work_order_template_items').delete().eq('template_id', templateId)
+    if (delErr) { setError(delErr.message); setBusy(false); loadTemplates(); return }
+    let items = []
+    if (texts.length) {
+      const rows = texts.map((text, idx) => ({ template_id: templateId, position: idx + 1, text, required: true }))
+      const { data, error } = await supabase
+        .from('work_order_template_items').insert(rows)
+        .select('id, position, text, notes, required, created_at')
+      if (error) { setError(error.message); setBusy(false); loadTemplates(); return }
+      items = (data || []).slice().sort((a, b) => a.position - b.position)
+    }
+    setBusy(false)
+    setTemplates(prev => prev.map(t => (t.id === templateId ? { ...t, items } : t)))
+  }
+
   // Swap an item with its neighbour. We persist BOTH positions so the order
   // is durable — relying only on local sort means a refresh would lose it.
   async function moveItem(templateId, itemId, direction) {
@@ -641,6 +662,7 @@ export default function Playbooks() {
                 onUpdateItem={(itemId, patch) => updateItem(selected.id, itemId, patch)}
                 onRemoveItem={itemId => removeItem(selected.id, itemId)}
                 onMoveItem={(itemId, direction) => moveItem(selected.id, itemId, direction)}
+                onReplaceItems={texts => replaceItems(selected.id, texts)}
                 busy={busy}
               />
             ) : (
@@ -783,6 +805,7 @@ function PlaybookEditor({
   onUpdateItem,
   onRemoveItem,
   onMoveItem,
+  onReplaceItems,
   busy,
 }) {
   // Local controlled state for the name/description so we can debounce the save
@@ -802,6 +825,43 @@ function PlaybookEditor({
   function commitDescription() {
     if (description === (template.description ?? '')) return
     onUpdateTemplate({ description: description.trim() || null })
+  }
+
+  // Steps edit as ONE block, one per line (Daniel, 8 Oct). Per-step Required
+  // and Notes are dropped for simple authoring: type, paste, reorder lines, and
+  // it saves on blur by replacing the item rows from the lines.
+  const itemsText = (template.items ?? []).slice().sort((a, b) => a.position - b.position).map(i => i.text).join('\n')
+  const [stepsText, setStepsText]     = useState(itemsText)
+  const [savingSteps, setSavingSteps] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { setStepsText(itemsText) }, [template.id])
+
+  async function commitSteps() {
+    const lines   = stepsText.split('\n').map(x => x.trim()).filter(Boolean)
+    const current = (template.items ?? []).slice().sort((a, b) => a.position - b.position).map(i => i.text)
+    if (lines.join('\n') === current.join('\n')) return
+    setSavingSteps(true)
+    await onReplaceItems(lines)
+    setSavingSteps(false)
+  }
+
+  function printPlaybook() {
+    const steps = (template.items ?? []).slice().sort((a, b) => a.position - b.position)
+    const esc = x => String(x ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+    const w = window.open('', '_blank')
+    if (!w) return
+    w.document.write(
+      '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(template.name || 'Playbook') + '</title>' +
+      '<style>body{font:16px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;color:#1b2422;max-width:640px;margin:48px auto;padding:0 24px}' +
+      'h1{font-size:22px;margin:0 0 4px}.desc{color:#5b6b67;margin:0 0 24px;font-size:14px}ol{padding-left:22px}li{margin:0 0 12px}.foot{margin-top:36px;color:#9aa6a3;font-size:11px}</style>' +
+      '</head><body><h1>' + esc(template.name || 'Playbook') + '</h1>' +
+      (template.description ? '<p class="desc">' + esc(template.description) + '</p>' : '') +
+      '<ol>' + steps.map(st => '<li>' + esc(st.text) + '</li>').join('') + '</ol>' +
+      '<p class="foot">Eliv8 OS</p></body></html>'
+    )
+    w.document.close(); w.focus()
+    setTimeout(() => { try { w.print() } catch { /* ignore */ } }, 300)
   }
 
   return (
@@ -835,83 +895,43 @@ function PlaybookEditor({
         />
       </div>
 
-      {/* Steps */}
+      {/* Steps — edit as one block, one per line (Daniel, 8 Oct) */}
       <div className="px-5 py-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-bold uppercase tracking-wider text-ink-500">
-            Steps <span className="text-ink-400">· {template.items.length}</span>
+            Steps <span className="text-ink-400">· {stepsText.split('\n').filter(l => l.trim()).length}</span>
           </h3>
-        </div>
-
-        {template.items.length === 0 ? (
-          <div className="border border-dashed border-ink-200 rounded-lg p-6 text-center">
-            <p className="text-sm text-ink-500 mb-3">No steps yet.</p>
-            <button
-              onClick={onAddItem}
-              disabled={busy}
-              className="text-sm font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
-            >
-              + Add the first step
-            </button>
-          </div>
-        ) : (
-          <ul className="border border-ink-150 rounded-lg divide-y divide-ink-100 overflow-hidden">
-            {template.items.map((item, idx) => (
-              <StepRow
-                key={item.id}
-                item={item}
-                index={idx}
-                isFirst={idx === 0}
-                isLast={idx === template.items.length - 1}
-                onUpdate={patch => onUpdateItem(item.id, patch)}
-                onRemove={() => onRemoveItem(item.id)}
-                onMove={direction => onMoveItem(item.id, direction)}
-                busy={busy}
-              />
-            ))}
-          </ul>
-        )}
-
-        {template.items.length > 0 && (
           <button
-            onClick={onAddItem}
-            disabled={busy}
-            className="mt-3 w-full border border-dashed border-ink-200 rounded-lg py-2.5 text-sm font-semibold text-ink-500 hover:bg-ink-50 hover:text-ink-700 transition-colors disabled:opacity-50"
+            onClick={printPlaybook}
+            className="text-xs font-semibold text-brand-700 hover:text-brand-800"
           >
-            + Add step
+            Print / Save as PDF
           </button>
-        )}
-
-        {/* Inline explainer — clarifies what the toggles on each step actually
-            mean. Lives inside the editor so it's right where the toggles are,
-            not buried in a help page nobody opens. */}
-        {template.items.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-ink-100 text-[11px] text-ink-500 leading-relaxed">
-            <p>
-              <span className="font-semibold text-ink-700">Required</span> steps
-              get flagged on the work order if the crew tries to close out
-              without ticking them.
-              {' '}
-              <span className="font-semibold text-ink-700">Notes</span> show
-              under each step in the crew's checklist. Use them for the "why"
-              behind a step or any gotchas to watch for.
-            </p>
-          </div>
-        )}
+        </div>
+        <p className="text-[11px] text-ink-500 mb-2 leading-snug">
+          One step per line. Edit freely, it saves when you click away.
+        </p>
+        <textarea
+          value={stepsText}
+          onChange={e => setStepsText(e.target.value)}
+          onBlur={commitSteps}
+          placeholder={"Walk the property and confirm the scope\nPhotograph the site before starting\nConfirm access, gate codes and keys\n..."}
+          rows={Math.max(6, stepsText.split('\n').length)}
+          className="w-full text-sm text-ink-900 bg-white border border-ink-150 rounded-lg px-3 py-2.5 leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-300 resize-y"
+        />
+        {savingSteps && <p className="mt-1 text-[11px] text-ink-400">Saving…</p>}
       </div>
 
-      {/* ── Crew preview ────────────────────────────────────────────────────
-          The single biggest source of "I don't get the benefit" feedback was
-          that the editor shows the OWNER's input view but nothing about what
-          the CREW will actually see. Without a visible payoff on this page,
-          the owner has to imagine the lifecycle.
-
-          This panel renders the playbook exactly as the staff portal will
-          paint it on the crew's phone — progress bar, checkboxes, "REQ" badges,
-          done strikethrough. Tapping is local-only (resets on playbook change)
-          so the owner can FEEL what the crew feels without polluting real data.
-          Matches the StaffPortal styling so what they see here is what they ship. */}
-      <CrewPreview items={template.items} />
+      {/* Crew preview — collapsed by default so the editor stays clean */}
+      <div className="px-5 pb-1">
+        <button
+          onClick={() => setShowPreview(v => !v)}
+          className="text-xs font-semibold text-ink-500 hover:text-ink-700"
+        >
+          {showPreview ? 'Hide crew preview ▾' : 'Preview what your crew sees ▸'}
+        </button>
+      </div>
+      {showPreview && <CrewPreview items={template.items} />}
 
       {/* Footer — actions */}
       <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/50 flex items-center justify-between flex-wrap gap-2">
@@ -1073,113 +1093,5 @@ function CrewPreview({ items }) {
         on the Board.
       </p>
     </div>
-  )
-}
-
-function StepRow({ item, index, isFirst, isLast, onUpdate, onRemove, onMove, busy }) {
-  const [text, setText] = useState(item.text)
-  const [notes, setNotes] = useState(item.notes ?? '')
-  const [showNotes, setShowNotes] = useState(!!item.notes)
-  const taRef = useRef(null)
-
-  useEffect(() => { setText(item.text) }, [item.id, item.text])
-  useEffect(() => { setNotes(item.notes ?? '') }, [item.id, item.notes])
-
-  // Auto-grow the step field so long steps WRAP and read in full, instead of
-  // being clipped by a single-line input (Daniel, 8 Oct: steps were cut off).
-  function autosize() {
-    const el = taRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = el.scrollHeight + 'px'
-  }
-  useEffect(() => { autosize() }, [text])
-
-  function commitText() {
-    if (text === item.text) return
-    onUpdate({ text: text.trim() })
-  }
-  function commitNotes() {
-    if (notes === (item.notes ?? '')) return
-    onUpdate({ notes: notes.trim() || null })
-  }
-
-  return (
-    <li className="group flex items-start gap-3 px-3 py-2.5 hover:bg-ink-50/60 focus-within:bg-ink-50/60 transition-colors">
-      <span className="mt-1 w-5 flex-shrink-0 text-right text-xs font-bold text-ink-300 tabular-nums select-none">
-        {index + 1}
-      </span>
-
-      <div className="flex-1 min-w-0">
-        <textarea
-          ref={taRef}
-          value={text}
-          onChange={e => setText(e.target.value)}
-          onBlur={commitText}
-          placeholder="Step description"
-          rows={1}
-          className="w-full resize-none overflow-hidden text-sm text-ink-900 bg-transparent border-0 px-0 py-0.5 leading-relaxed focus:outline-none focus:ring-0 placeholder:text-ink-300"
-        />
-
-        {showNotes && (
-          <textarea
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            onBlur={commitNotes}
-            placeholder="Optional notes shown under the step"
-            rows={2}
-            className="mt-1 w-full text-xs text-ink-600 bg-ink-50 border border-ink-100 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-300 placeholder:text-ink-400 resize-y"
-          />
-        )}
-
-        {/* Secondary controls stay out of the way until you are on the step. */}
-        <div className="flex items-center gap-3 mt-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-          {!showNotes && (
-            <button
-              onClick={() => setShowNotes(true)}
-              className="text-[11px] text-ink-500 hover:text-ink-700 font-medium"
-            >
-              + Add notes
-            </button>
-          )}
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={item.required}
-              onChange={e => onUpdate({ required: e.target.checked })}
-              className="w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-400 border-ink-300"
-            />
-            <span className="text-[11px] text-ink-500 font-medium select-none">Required</span>
-          </label>
-          <button
-            onClick={onRemove}
-            disabled={busy}
-            className="text-[11px] font-medium text-red-500 hover:text-red-700 disabled:opacity-50"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-
-      {/* Reorder, also tucked until hover or focus. */}
-      <div className="flex flex-col gap-0.5 pt-0.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-        <button
-          onClick={() => onMove('up')}
-          disabled={isFirst || busy}
-          className="w-5 h-5 flex items-center justify-center text-ink-400 hover:text-ink-700 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Move up"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><polyline points="18 15 12 9 6 15"/></svg>
-        </button>
-        <button
-          onClick={() => onMove('down')}
-          disabled={isLast || busy}
-          className="w-5 h-5 flex items-center justify-center text-ink-400 hover:text-ink-700 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Move down"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-      </div>
-    </li>
   )
 }
