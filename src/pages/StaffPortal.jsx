@@ -803,7 +803,7 @@ function RecentLogRow({ log, jobTitle, onEdit }) {
 function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placeholder = 'Add a note for the office or next crew...', autoFocus = false }) {
   const [draft, setDraft]         = useState('')
   const [voiceUsed, setVoiceUsed] = useState(false)
-  const [recording, setRecording] = useState(false)
+  const [micField, setMicField] = useState(null)
   const [sending, setSending]     = useState(false)
   const [error, setError]         = useState(null)
   const recognitionRef            = useRef(null)
@@ -1015,6 +1015,20 @@ function YesNo({ value, onChange }) {
   )
 }
 
+function FieldMic({ active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={active ? 'Stop dictation' : 'Dictate into this box'}
+      title={active ? 'Stop dictation' : 'Talk instead of type'}
+      className={`flex-shrink-0 w-7 h-7 rounded-md border flex items-center justify-center text-[13px] transition-colors ${active ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-white border-ink-200 hover:bg-ink-50'}`}
+    >
+      <span aria-hidden>🎤</span>
+    </button>
+  )
+}
+
 function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLog }) {
   const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
@@ -1047,7 +1061,6 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
   const [error, setError]         = useState(null)
   const [success, setSuccess]     = useState(false)
   const recognitionRef            = useRef(null)
-  const focusedWoIdRef            = useRef(null)             // last textarea the crew focused
 
   const SpeechRecognition = useMemo(
     () => (typeof window !== 'undefined'
@@ -1061,53 +1074,48 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
     return () => { try { recognitionRef.current?.stop() } catch { /* noop */ } }
   }, [])
 
-  const startRecording = () => {
-    if (!voiceSupported || recording) return
+  // One recognition at a time, routed to the field whose 🎤 was tapped, so the
+  // crew dictates into the exact box they mean — no "last textarea you tapped"
+  // guessing. micField holds the key of the box currently recording.
+  const stopMic = () => { try { recognitionRef.current?.stop() } catch { /* noop */ } ; setMicField(null) }
+  const toggleMic = (fieldKey, append) => {
+    if (!voiceSupported) return
+    if (micField === fieldKey) { stopMic(); return }              // tapping the live mic stops it
+    try { recognitionRef.current?.stop() } catch { /* noop */ }   // switching fields: stop the old one
     const recognition = new SpeechRecognition()
     recognition.continuous     = true
     recognition.interimResults = false
     recognition.lang           = 'en-US'
-
     recognition.onresult = (event) => {
       let chunk = ''
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) chunk += event.results[i][0].transcript + ' '
       }
-      if (!chunk.trim()) return
-      // Route to the most recently focused WO textarea. Fallback: first WO.
-      const targetWo = focusedWoIdRef.current ?? workOrders[0]?.id
-      if (!targetWo) return
-      setDrafts(prev => ({
-        ...prev,
-        [targetWo]: (prev[targetWo] ? prev[targetWo].trimEnd() + ' ' : '') + chunk.trim(),
-      }))
-      setVoiceWoIds(prev => new Set(prev).add(targetWo))
+      if (chunk.trim()) append(chunk.trim())
     }
     recognition.onerror = (e) => {
-      console.warn('[staff-portal] shift-end recognition error:', e.error)
+      console.warn('[staff-portal] recognition error:', e.error)
       setError(
         e.error === 'not-allowed' || e.error === 'service-not-allowed'
           ? 'Mic permission was denied. Tap the lock icon in your browser to allow it.'
           : 'Voice input had a hiccup. Try again, or type the note.'
       )
-      setRecording(false)
+      setMicField(f => (f === fieldKey ? null : f))
     }
-    recognition.onend = () => setRecording(false)
-
+    recognition.onend = () => setMicField(f => (f === fieldKey ? null : f))
     try {
       recognition.start()
       recognitionRef.current = recognition
-      setRecording(true)
+      setMicField(fieldKey)
       setError(null)
     } catch (err) {
-      console.warn('[staff-portal] shift-end start failed', err)
+      console.warn('[staff-portal] recognition start failed', err)
       setError('Could not start voice input on this browser.')
     }
   }
-  const stopRecording = () => {
-    try { recognitionRef.current?.stop() } catch { /* noop */ }
-    setRecording(false)
-  }
+  const appendInto  = (setter) => (chunk) => setter(prev => (prev ? prev.trimEnd() + ' ' : '') + chunk)
+  const appendDraft = (woId) => (chunk) => setDrafts(prev => ({ ...prev, [woId]: (prev[woId] ? prev[woId].trimEnd() + ' ' : '') + chunk }))
+  const appendBlk   = (woId) => (chunk) => setBlockerDrafts(prev => ({ ...prev, [woId]: (prev[woId] ? prev[woId].trimEnd() + ' ' : '') + chunk }))
 
   const submit = async () => {
     if (sending) return
@@ -1216,24 +1224,6 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
             : 'Anything slow you down on these jobs today? Leave a note per job, the office reads these tomorrow morning.'}
         </p>
 
-        {voiceSupported && (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={recording ? stopRecording : startRecording}
-              disabled={sending}
-              className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 ${
-                recording
-                  ? 'bg-red-50 text-red-700 border-red-200 animate-pulse'
-                  : 'bg-white text-ink-700 border-ink-200 hover:bg-ink-50'
-              }`}
-            >
-              <span aria-hidden>🎤</span>
-              {recording ? 'Stop' : 'Voice, talks into the last textarea you tapped'}
-            </button>
-          </div>
-        )}
-
         {/* ⚠️ Asked ONCE for the day, above the per-job boxes. Who was on site
             and whether anyone got hurt are facts about the day, not about a
             job — asking per job would get three different answers from
@@ -1268,14 +1258,17 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
               className="w-full text-[12px] px-2 py-1.5 bg-white border border-ink-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
             />
           </div>
-          <textarea
-            value={safetyNote}
-            onChange={(e) => setSafetyNote(e.target.value)}
-            placeholder="Anything unsafe or a near miss? Even if nothing came of it."
-            rows={2}
-            maxLength={4000}
-            className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
-          />
+          <div className="relative">
+            <textarea
+              value={safetyNote}
+              onChange={(e) => setSafetyNote(e.target.value)}
+              placeholder="Anything unsafe or a near miss? Even if nothing came of it."
+              rows={2}
+              maxLength={4000}
+              className="w-full text-[12px] leading-snug px-2 py-1.5 pr-10 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+            />
+            {voiceSupported && <div className="absolute bottom-1.5 right-1.5"><FieldMic active={micField === 'safety'} onClick={() => toggleMic('safety', appendInto(setSafetyNote))} /></div>}
+          </div>
           <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md border border-ink-150 bg-white">
             <span className="text-[12px] text-ink-700 leading-snug">Field level hazard assessment done today?</span>
             <YesNo value={flhaDone} onChange={setFlhaDone} />
@@ -1297,14 +1290,17 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
           </label>
           {injury && (
             <div className="space-y-2 pl-2 border-l-2 border-red-200">
-              <textarea
-                value={injuryDetail}
-                onChange={(e) => setInjuryDetail(e.target.value)}
-                placeholder="What happened?"
-                rows={2}
-                maxLength={4000}
-                className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-red-300 placeholder:text-ink-400"
-              />
+              <div className="relative">
+                <textarea
+                  value={injuryDetail}
+                  onChange={(e) => setInjuryDetail(e.target.value)}
+                  placeholder="What happened?"
+                  rows={2}
+                  maxLength={4000}
+                  className="w-full text-[12px] leading-snug px-2 py-1.5 pr-10 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-red-300 placeholder:text-ink-400"
+                />
+                {voiceSupported && <div className="absolute bottom-1.5 right-1.5"><FieldMic active={micField === 'injury'} onClick={() => toggleMic('injury', appendInto(setInjuryDetail))} /></div>}
+              </div>
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[12px] text-ink-700 leading-snug">Was an incident report filled out?</span>
                 <YesNo value={reportFiled} onChange={setReportFiled} />
@@ -1329,24 +1325,28 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
                   questions and merging them buries the second. What happened is
                   the record; what got in the way is the thing worth fixing, and
                   the one that shows a pattern when it repeats. */}
-              <textarea
-                value={drafts[wo.id] ?? ''}
-                onChange={(e) => setDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
-                onFocus={() => { focusedWoIdRef.current = wo.id }}
-                placeholder="What got done?"
-                rows={2}
-                maxLength={4000}
-                className="w-full text-[12px] leading-snug px-2 py-1.5 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
-              />
-              <textarea
-                value={blockerDrafts[wo.id] ?? ''}
-                onChange={(e) => setBlockerDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
-                onFocus={() => { focusedWoIdRef.current = wo.id }}
-                placeholder="Anything slow you down? Locked door, missing part, waiting on another trade…"
-                rows={2}
-                maxLength={4000}
-                className="mt-1.5 w-full text-[12px] leading-snug px-2 py-1.5 bg-amber-50/60 border border-amber-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-ink-400"
-              />
+              <div className="relative">
+                <textarea
+                  value={drafts[wo.id] ?? ''}
+                  onChange={(e) => setDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
+                  placeholder="What got done?"
+                  rows={2}
+                  maxLength={4000}
+                  className="w-full text-[12px] leading-snug px-2 py-1.5 pr-10 bg-white border border-ink-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-brand-400 placeholder:text-ink-400"
+                />
+                {voiceSupported && <div className="absolute bottom-1.5 right-1.5"><FieldMic active={micField === `what:${wo.id}`} onClick={() => toggleMic(`what:${wo.id}`, appendDraft(wo.id))} /></div>}
+              </div>
+              <div className="relative mt-1.5">
+                <textarea
+                  value={blockerDrafts[wo.id] ?? ''}
+                  onChange={(e) => setBlockerDrafts(prev => ({ ...prev, [wo.id]: e.target.value }))}
+                  placeholder="Anything slow you down? Locked door, missing part, waiting on another trade…"
+                  rows={2}
+                  maxLength={4000}
+                  className="w-full text-[12px] leading-snug px-2 py-1.5 pr-10 bg-amber-50/60 border border-amber-200 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-ink-400"
+                />
+                {voiceSupported && <div className="absolute bottom-1.5 right-1.5"><FieldMic active={micField === `blockers:${wo.id}`} onClick={() => toggleMic(`blockers:${wo.id}`, appendBlk(wo.id))} /></div>}
+              </div>
               <div className="mt-1.5 flex items-center gap-2">
                 <input
                   type="number" min="0" max="24" step="0.5" inputMode="decimal"
