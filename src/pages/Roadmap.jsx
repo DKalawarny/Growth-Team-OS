@@ -2875,6 +2875,7 @@ function MilestoneAttachments({ milestoneId, milestoneTitle, milestoneCategory }
               The SOP, report, contract, or document you produced. Solomon will read it and learn from it.
             </div>
             <div className="text-[10px] text-ink-400 mt-1">PDF, Excel, CSV, TXT, Markdown · up to 10 MB</div>
+            <div className="text-[10px] text-amber-600 mt-1">Keep your own copy. Solomon reads this one, but it is not your only backup.</div>
           </button>
         )}
 
@@ -2895,6 +2896,7 @@ function MilestoneAttachments({ milestoneId, milestoneTitle, milestoneCategory }
               <div className="text-2xl mb-1" aria-hidden>📥</div>
               <div className="text-xs font-semibold text-ink-700">Drop a file here, or click to browse</div>
               <div className="text-[10px] text-ink-400 mt-0.5">PDF, Excel, CSV, TXT, Markdown · up to 10 MB</div>
+            <div className="text-[10px] text-amber-600 mt-1">Keep your own copy. Solomon reads this one, but it is not your only backup.</div>
               <input
                 ref={inputRef}
                 type="file"

@@ -441,6 +441,9 @@ export default function UploadDialog({ onClose, onUploaded, initialFiles = [] })
           )}
         </div>
 
+        <div className="px-5 py-2 text-[11px] text-amber-600 border-t border-ink-100">
+          Keep your own copy. We store this so Solomon can read it, but it is not your only backup.
+        </div>
         {/* Footer */}
         <div className="px-5 py-4 border-t border-ink-100 bg-ink-50/40 flex items-center justify-end gap-2">
           <button
