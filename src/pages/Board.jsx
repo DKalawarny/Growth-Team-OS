@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { sendTaskAssigned } from '../lib/email'
 import { AMOUNTS_EMBED, withAmounts, canSeeJobCosts, saveJobAmounts } from '../lib/jobAmounts'
+import { listTaskAttachments, uploadTaskAttachment, deleteTaskAttachment, openTaskAttachment, TASK_ATTACH_MAX_MB } from '../lib/taskAttachments'
 
 /**
  * Jobs — /board
@@ -756,6 +757,8 @@ alter table public.work_orders
       {showModal && (
         <WorkOrderModal
           seeCosts={seeCosts}
+          companyId={companyId}
+          userId={profile?.id}
           order={editingOrder}
           appUsers={appUsers}
           staff={staff}
@@ -913,7 +916,7 @@ function WorkOrderCard({ order, members = [], milestone, onEdit, onMove, onDelet
 
 // ── Job modal ──────────────────────────────────────────────────────────
 
-function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose, seeCosts = true }) {
+function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], checklistItems = [], onToggleChecklistItem, onSave, onClose, seeCosts = true, companyId, userId }) {
   // ⚠️ 2 Sep — the two halves of a job record never referenced each other.
   // /logs was a flat stream and the Board showed jobs; standing on Northgate
   // you could not see what the crew wrote about it, and reading a log you could
@@ -932,6 +935,34 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
       .then(({ data }) => { if (!cancelled) setJobLogs(data ?? []) })
     return () => { cancelled = true }
   }, [order?.id])
+
+  // Files that ride along with this task (a floor plan, one-off instructions).
+  // Not the library, not Solomon's — just a file attached to the task.
+  const [atts, setAtts]       = useState([])
+  const [attBusy, setAttBusy] = useState(false)
+  const [attDrag, setAttDrag] = useState(false)
+  const [attErr, setAttErr]   = useState(null)
+  const attInput = useRef(null)
+  useEffect(() => {
+    if (!order?.id) { setAtts([]); return }
+    let cancelled = false
+    listTaskAttachments(order.id).then(a => { if (!cancelled) setAtts(a) }).catch(() => {})
+    return () => { cancelled = true }
+  }, [order?.id])
+  async function addFiles(fileList) {
+    const files = Array.from(fileList || [])
+    if (!files.length || !order?.id) return
+    setAttBusy(true); setAttErr(null)
+    for (const file of files) {
+      try { const row = await uploadTaskAttachment({ file, companyId, workOrderId: order.id, userId }); setAtts(prev => [row, ...prev]) }
+      catch (e) { setAttErr(e.message || 'Upload failed') }
+    }
+    setAttBusy(false)
+  }
+  async function removeAtt(att) {
+    setAtts(prev => prev.filter(a => a.id !== att.id))
+    try { await deleteTaskAttachment(att) } catch { /* ignore */ }
+  }
 
   const fromRoadmap = !!(order?._ms_hint || order?.milestone_id) && !order?.id
   const isCreate    = !order?.id
@@ -977,7 +1008,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
 
         <div className="bg-ink-900 px-6 py-4 flex items-center justify-between">
           <span className="text-sm font-bold text-white">
-            {form.id ? 'Edit job' : 'New task'}
+            {form.id ? 'Edit task' : 'New task'}
           </span>
           <button type="button" onClick={onClose} className="text-ink-500 hover:text-white transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
@@ -1303,6 +1334,41 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
             </div>
           )}
 
+          {!isCreate && (
+            <div>
+              <label className="block text-xs font-semibold text-ink-600 mb-1.5">
+                Attachments <span className="font-normal text-ink-400">optional</span>
+              </label>
+              <div
+                onDragOver={e => { e.preventDefault(); setAttDrag(true) }}
+                onDragLeave={() => setAttDrag(false)}
+                onDrop={e => { e.preventDefault(); setAttDrag(false); addFiles(e.dataTransfer.files) }}
+                onClick={() => !attBusy && attInput.current?.click()}
+                className={`cursor-pointer rounded-xl border-2 border-dashed px-4 py-5 text-center transition-colors ${attDrag ? 'border-brand-400 bg-brand-50' : 'border-ink-200 hover:border-ink-300'} ${attBusy ? 'opacity-60 pointer-events-none' : ''}`}
+              >
+                <div className="text-xl mb-1" aria-hidden>📎</div>
+                <div className="text-xs font-semibold text-ink-700">{attBusy ? 'Uploading…' : 'Drop files here, or click to browse'}</div>
+                <div className="text-[10px] text-ink-400 mt-0.5">Floor plans, instructions, photos — up to {TASK_ATTACH_MAX_MB} MB each</div>
+                <input ref={attInput} type="file" multiple className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+              </div>
+              {attErr && <p className="text-[11px] text-red-600 mt-1">⚠ {attErr}</p>}
+              {atts.length > 0 && (
+                <ul className="mt-2 space-y-1.5">
+                  {atts.map(a => (
+                    <li key={a.id} className="flex items-center gap-2 rounded-lg border border-ink-150 bg-white px-3 py-2">
+                      <span aria-hidden>📄</span>
+                      <button type="button" onClick={() => openTaskAttachment(a)} className="flex-1 min-w-0 text-left text-sm text-brand-700 hover:underline truncate">
+                        {a.title || 'File'}
+                      </button>
+                      <span className="text-[10px] text-ink-400 flex-shrink-0">{a.size_bytes ? `${(a.size_bytes/1024/1024).toFixed(1)} MB` : ''}</span>
+                      <button type="button" onClick={() => removeAtt(a)} className="text-ink-300 hover:text-red-500 text-xs flex-shrink-0" aria-label="Remove">✕</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           {saveErr && (
             <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">
               ⚠ {saveErr}
@@ -1316,7 +1382,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
             </button>
             <button type="submit" disabled={!form.title.trim() || saving}
               className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white text-sm font-bold transition-colors">
-              {saving ? 'Saving…' : form.id ? 'Save changes' : 'Create job'}
+              {saving ? 'Saving…' : form.id ? 'Save changes' : 'Create task'}
             </button>
           </div>
         </form>
