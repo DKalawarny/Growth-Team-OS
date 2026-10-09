@@ -159,5 +159,9 @@ update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-00000
  where id='de900000-0000-4000-8003-000000000002';
 update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-000000000001','de900000-0000-4000-8001-000000000003']::uuid[]
  where id='de900000-0000-4000-8003-000000000004';
+-- Roadmap assignment showcase: link two crewed jobs to milestones so each
+-- milestone row shows who is on it (Daniel: show a milestone assigned to someone).
+update work_orders set milestone_id = (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew') where id='de900000-0000-4000-8003-000000000004';
+update work_orders set milestone_id = (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Add a second maintenance crew') where id='de900000-0000-4000-8003-000000000002';
 
 commit;
