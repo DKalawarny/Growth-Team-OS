@@ -134,6 +134,22 @@ const PEOPLE = {
       story: 'Thirty one years as a payroll clerk.',
     },
   },
+  // ⭐ The other side of the age rule: older AND wants the physical work. He
+  // must get it, gently paced, never questioned on whether he can.
+  'older-wants-outdoors': {
+    why: 'age must not exclude: he asked to be outside, so physical moves are on the table, paced, never "can you still"',
+    answers: {
+      name: 'Gord', age: 67, out: 'Retired and bored stiff. I want to be outside and earn a bit.', region: 'ca',
+      workType: 'none', relationship: 'aligned', takeHome: 2600, mustPay: 2400, savings: 40000,
+      health: [{ key: 'goal', label: 'Getting fitter is part of it' }],
+      assets: [{ key: 'truck', label: 'Truck or van' }, { key: 'mower', label: 'Mower' }],
+      hoursPerWeek: '10-20', locationText: 'Lethbridge, Alberta', atStake: 'time',
+      goalType: [{ key: 'money', label: 'More money' }], yearShape: 'seasonal',
+      tuesday: 'Out in the fresh air most mornings, a few regular yards, home for lunch.',
+      alreadyTried: 'Nothing yet.', refuse: 'Sitting in an office again.',
+      story: 'Retired from the post office two years ago. I miss being on my feet.',
+    },
+  },
   'thin-answers': {
     why: 'almost nothing given — the likeliest place to invent detail to fill space',
     answers: {

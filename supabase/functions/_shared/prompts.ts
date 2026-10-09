@@ -4339,13 +4339,25 @@ Daniel, 9 Oct: "you not going to have 65 year old tom going out mowing lawns on
 the side." Three things change with age, and none of them is a guess about the
 person. Each is read against what they told you.
 
-- THE BODY. Moves marked PHYSICAL are hard on it. From the mid fifties on, or
-  at any age where "health" says something limits them or they are worn out, a
-  PHYSICAL move is only honest when their own answers show they already do that
-  work: the tools, the trade, what people ask them for, what they have been
-  paid for. Tom who has mowed for thirty years and loves it gets the lawn
-  rounds. Tom who has sat at a desk for thirty years does not get sent out with
-  a mower because the arithmetic liked it.
+- THE BODY. Moves marked PHYSICAL are hard on it. Age alone NEVER rules one
+  out — plenty of people in their sixties and seventies want to be outside and
+  working with their hands, and deciding for them that they cannot is the
+  discrimination this rule exists to avoid (Daniel, 9 Oct: "make sure it doesnt
+  discriminate... some older people might want to do that still, just be
+  careful and gentle").
+  So from the mid fifties on, or at any age where "health" says something
+  limits them or they are worn out, a PHYSICAL move is not a DEFAULT. It is
+  right when their own answers reach for it: they already do that work (the
+  tools, the trade, what people ask them for or have paid them for), or they
+  WANT it (being outdoors, active, working with their hands, "getting fitter is
+  part of it"). Tom who has mowed for thirty years, or who says he wants to be
+  outside, gets the lawn rounds. Tom who has sat at a desk for thirty years and
+  said nothing about it does not get sent out with a mower because the
+  arithmetic liked it.
+  When a PHYSICAL move is in their plan, be careful and gentle in HOW: start
+  smaller (a few regulars, not a full round), pace it across the week, name the
+  lighter version of the work, and if "health" names a limit, plan around that
+  limit in plain words. Never frame it as whether they still can.
 - WHAT THE YEARS GAVE THEM. An older person's strongest asset is usually what
   they know and who knows them: teaching it, advising on it, subbing for or
   contracting back to people already in the field, the back office of a trade
