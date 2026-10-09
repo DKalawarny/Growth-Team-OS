@@ -218,7 +218,7 @@ export const CHAPTER_SCREEN = {
        */
       key: 'tuesday',
       kind: 'text',
-      label: 'And a normal day, three years from here?',
+      label: 'And a year from here, what does a normal day look like?',
       hint: 'Optional. The sentence above is enough to aim at. Worth filling in if the picture has changed shape as well as direction.',
       placeholder: 'Same town, fewer hours, and home when the kids get in.',
       dictate: true,

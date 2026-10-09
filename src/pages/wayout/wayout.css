@@ -469,6 +469,17 @@
   margin: 8px 0 0;
   font-weight: 600;
 }
+/* ⭐ The "say a bit more" note. Not red: nothing is wrong, and Next still
+   works. Green, the product's working colour, with a rule so it reads as a
+   word from us rather than a validation failure. */
+.wayout__nudge {
+  color: var(--green);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--green);
+}
 
 /* ── Chips ──────────────────────────────────────────────────────────────── */
 .wayout__chips { display: flex; flex-wrap: wrap; gap: 11px; }
@@ -3296,3 +3307,21 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 .wayout .wayout__why > p.wayout__whycta { margin: 36px 0 0; }
 .wayout .wayout__whycta .wayout__btn { display: inline-block; width: auto; padding: 16px 40px; margin: 0; }
 .wayout__handoffbox { display: block; width: 100%; margin: 4px 0 10px; padding: 12px 14px; font: inherit; font-size: 15px; line-height: 1.5; border: 1px solid var(--line, #d9d3c4); border-radius: 10px; background: #fff; resize: vertical; }
+
+/* ⭐ The 1 / 5 / 10 ladder above the moves. Their words, so set as reading
+   text, not display type; the rung label carries the time. */
+.wayout__ladder { margin: 28px 0 8px; }
+.wayout__ladder ol { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.wayout__ladder li {
+  display: grid;
+  grid-template-columns: 7.5em 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--tint);
+  border-radius: 10px;
+}
+.wayout__ladder li span { color: var(--soft); font-size: 14px; font-weight: 600; padding-top: 2px; }
+.wayout__ladder li p { margin: 0; color: var(--ink); line-height: 1.45; }
+@media (max-width: 520px) {
+  .wayout__ladder li { grid-template-columns: 1fr; gap: 4px; }
+}

@@ -690,6 +690,8 @@ export const WAYOUT_SCREENS = [
         // can do — proven when the second-plan work shipped and a refused raise
         // came straight back in chapter two until the history was fed in.
         required: true,
+        nudge: true,
+        nudgeMessage: 'A little more here helps. What happened and why it stopped keeps the plan from suggesting it again, and if it is nothing yet, what has been in the way.',
         emptyMessage: 'Even “nothing yet” tells the plan something.',
       },
       {
@@ -729,7 +731,7 @@ export const WAYOUT_SCREENS = [
   {
     id: 's6',
     section: 'Where it ends up',
-    why: 'The destination, in your words. The plan is written backwards from here, so the more specific you are, the less generic it can be.',
+    why: 'Your way out, in your words: one year, five and ten. The plan is written backwards from here, so the more specific you are, the less generic it can be.',
     question: 'Where does this end up?',
     reflectAfter: false,
     fields: [
@@ -779,26 +781,42 @@ export const WAYOUT_SCREENS = [
          */
         key: 'tuesday',
         kind: 'text',
-        label: 'Three years from now, what does a normal day look like? Where are you, doing what, with who?',
-        hint: 'This is the one that shapes everything else, so take a minute. An ordinary weekday, not a holiday: what you get up for, who is around, what you are doing by mid-morning.',
-        placeholder: 'Still working, but not six days. Home when the kids get in. Not driving an hour each way.',
+        /* ⭐⭐ THE FIRST RUNG OF A LADDER, 9 OCT. Daniel, after family testing:
+           "its suppose to give a way out so do we ask that question what is your
+           way out whats your end goal 1,5,10 year". This was ONE picture at
+           three years; it is now the one-year rung, and the three moves aim at
+           it. Five and ten sit below it as the longer arc the moves must not
+           work against. The key stays `tuesday` so the prompts, the chapter
+           flow and every stored session keep reading it as the destination. */
+        label: 'A year from now, what’s different? Where are you, doing what, with who?',
+        hint: 'This is the one the plan aims at, so take a minute. An ordinary day, not a holiday: what you get up for, who is around, what you are doing by mid-morning.',
+        placeholder: 'Out of debt. Not working Saturdays. Home when the kids get in.',
         required: true,
         emptyMessage: 'A few lines is enough.',
+        nudge: true,
+        nudgeMessage: 'Say a bit more if you can. The whole plan aims at this one, so the more of the day you describe, the more the plan is yours.',
       },
       {
-        key: 'horizon',
-        kind: 'choice',
-        label: 'How long before you want to be there?',
-        hint: 'Not a deadline. It tells the plan whether to take the fast rough route or the slower one that lasts.',
-        required: true,
-        emptyMessage: 'Pick one.',
-        options: [
-          { key: '6m', label: '6 months' },
-          { key: '1y', label: '1 year' },
-          { key: '3y', label: '3 years' },
-          { key: '5y', label: '5+ years' },
-        ],
+        key: 'fiveYears',
+        kind: 'text',
+        label: 'And five years from now?',
+        hint: 'Rougher is fine. It keeps the first year from pointing the wrong way.',
+        placeholder: 'Running my own crew. Home by four. Not renting any more.',
+        required: false,
       },
+      {
+        key: 'tenYears',
+        kind: 'text',
+        label: 'Ten years?',
+        hint: 'The far end of it. What all of this is actually for.',
+        placeholder: 'Kids through school, house paid off, working because I want to.',
+        required: false,
+      },
+      /* ⚠️ `horizon` ("how long before you want to be there?") LEFT THIS SCREEN
+         ON 9 OCT. With the ladder the rungs ARE the timing, and a 6m/1y/3y/5y
+         pick under "a year from now" asked the same thing twice and could
+         contradict it. The diagnostic still carries one in when they gave it,
+         and the prompt reads it as how fast the first rung has to show. */
       {
         // ⭐ THE AXIS THAT WAS MISSING ENTIRELY, and the product did worse than
         // ignore it: the map check FLAGGED a plan as broken when someone in a
@@ -953,6 +971,8 @@ export const WAYOUT_OPEN = {
     label: 'What else should I know about your situation?',
     placeholder: 'Whatever matters. What went wrong before, what you are carrying, what you have already tried, what you would never do again.',
     required: true,
+    nudge: true,
+    nudgeMessage: 'Anything more you can add here makes the plan sharper. Press See the plan again if that is everything.',
     emptyMessage: 'A few words is enough, but this one is not a formality.',
   },
   hint: 'Take as long as you want. Nobody reads this but the plan.',

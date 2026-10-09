@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
 import { Field, Dictate } from './fields'
-import { isAnswered } from '../../lib/wayout/validate'
+import { isAnswered, isThin } from '../../lib/wayout/validate'
 import { WAYOUT_OPENING, WAYOUT_OPEN, WAYOUT_SCREENS, WAYOUT_TOTAL_SCREENS } from '../../content/wayoutIntake'
 import { loadOrCreateSession, saveAnswers, markComplete, reflect, adoptDraftInto } from '../../lib/wayout/session'
 import { saveDraft, loadDraft, draftBelongsToSomeoneElse, markHandoff } from '../../lib/wayout/draft'
@@ -39,6 +39,10 @@ export default function Intake({ preview = false, previewReflections = null }) {
   const [answers, setAnswers]   = useState({})
   const [session, setSession]   = useState(null)
   const [errors, setErrors]     = useState({})
+  // ⭐ "Say a bit more" notes, shown ONCE per field. Asked keys are remembered
+  // so the second press of Next always goes through: a nudge, never a wall.
+  const [nudges, setNudges]     = useState({})
+  const nudged = useRef(new Set())
   const [loading, setLoading]   = useState(!preview)
   const [saving, setSaving]     = useState(false)
   const [loadError, setLoadError] = useState('')
@@ -197,6 +201,18 @@ export default function Intake({ preview = false, previewReflections = null }) {
     // Clear the inline error the moment they answer, rather than making them
     // press Next again to find out they fixed it.
     setErrors(e => (e[key] ? { ...e, [key]: undefined } : e))
+    setNudges(n => (n[key] && !isThin({ nudge: true }, value) ? { ...n, [key]: undefined } : n))
+  }
+
+  /** The thin answers on this step not yet nudged. Marks them asked. */
+  function nudgeThin(fields) {
+    const thin = {}
+    for (const f of fields) {
+      if (!nudged.current.has(f.key) && isThin(f, answers[f.key])) thin[f.key] = f.nudgeMessage
+    }
+    for (const k of Object.keys(thin)) nudged.current.add(k)
+    setNudges(thin)
+    return Object.keys(thin).length > 0
   }
 
   /**
@@ -266,7 +282,12 @@ export default function Intake({ preview = false, previewReflections = null }) {
         if (!isAnswered(f, answers[f.key])) missing[f.key] = f.emptyMessage ?? 'Add an answer.'
       }
       if (Object.keys(missing).length) { setErrors(missing); return }
+      if (nudgeThin(visibleFields(screen, answers))) return
       kickOffReflection(screen)
+    } else if (step > WAYOUT_TOTAL_SCREENS) {
+      const f = WAYOUT_OPEN.field
+      if (!isAnswered(f, answers[f.key])) { setErrors({ [f.key]: f.emptyMessage }); return }
+      if (nudgeThin([f])) return
     }
 
     if (preview) {
@@ -313,6 +334,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
 
   function back() {
     setErrors({})
+    setNudges({})
     setStep(s => Math.max(0, s - 1))
   }
 
@@ -407,6 +429,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
             </div>
             {WAYOUT_OPEN.hint && <p className="wayout__hint wayout__rise wayout__r4">{WAYOUT_OPEN.hint}</p>}
             {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+            {nudges[f.key] && <p className="wayout__nudge" role="status">{nudges[f.key]}</p>}
             {errors._save && <p className="wayout__error">{errors._save}</p>}
 
             <button className="wayout__btn wayout__rise wayout__r4" onClick={next} disabled={saving}>
@@ -474,6 +497,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
                 <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} currency={currencyFor(answers.region).symbol} />
                 {f.hint && <p className="wayout__hint">{f.hint}</p>}
                 {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
+                {nudges[f.key] && <p className="wayout__nudge" role="status">{nudges[f.key]}</p>}
               </div>
             ))}
           </div>

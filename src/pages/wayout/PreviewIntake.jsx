@@ -25,7 +25,7 @@ import Intake from './Intake'
 const SAMPLE_REFLECTIONS = {
   s1: 'Shared custody, kids in town. So this plan stays within driving distance and doesn’t ask you to trade your Wednesdays.',
   s3: 'A truck and a pressure washer, both already paid for. That means move one costs you a Saturday, not a loan.',
-  s5: 'Three years, and you’d give up space before stability. So this builds slowly enough that nothing has to be sold.',
+  s5: 'You’d give up space before stability. So this builds slowly enough that nothing has to be sold.',
 }
 
 export default function PreviewIntake() {

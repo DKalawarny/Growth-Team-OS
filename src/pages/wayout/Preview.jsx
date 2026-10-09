@@ -21,6 +21,13 @@ import { Map } from './Plan'
  * can be compared against design/way-out/design-reference.html directly.
  */
 
+// The 1 / 5 / 10 ladder the plan page shows above the moves, in a person's words.
+const SAMPLE_LADDER = {
+  tuesday: 'Up at seven, drop the kids, work my own day, done by four.',
+  fiveYears: 'Two trucks and someone I trust running the second one.',
+  tenYears: 'House paid off. Working because I want to, not because I have to.',
+}
+
 const SAMPLE = {
   headline: 'Out of the warehouse in twelve months.',
   highlight: 'twelve months',
@@ -73,5 +80,5 @@ const SAMPLE = {
 }
 
 export default function Preview() {
-  return <Map map={SAMPLE} />
+  return <Map map={SAMPLE} answers={SAMPLE_LADDER} />
 }

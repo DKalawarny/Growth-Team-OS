@@ -22,3 +22,25 @@ export function isAnswered(field, value) {
   if (typeof value === 'number') return true
   return value != null
 }
+
+/**
+ * ⭐⭐ "MORE INFO THE BETTER OR ITS USELESS." Daniel, 9 Oct, after two family
+ * members tested it and one said the outcome was good "if people put in what I
+ * did, or even just a bit more". The plan is written from these answers, so a
+ * three word answer to a question the plan aims at gets a generic plan back.
+ *
+ * ⚠️ This NEVER blocks. A field marked `nudge` that has an answer but a thin
+ * one gets a single note on Next; pressing Next again goes on. Empty is the
+ * `required` check's job, not this one's, so an optional field left blank is
+ * never nudged.
+ *
+ * ⚠️ Counted in WORDS that carry a letter or digit, so "- - -" or a row of
+ * full stops does not count as an answer.
+ */
+export const THIN_WORDS = 6
+
+export function isThin(field, value) {
+  if (!field?.nudge || typeof value !== 'string') return false
+  const words = value.trim().split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w))
+  return words.length > 0 && words.length < THIN_WORDS
+}

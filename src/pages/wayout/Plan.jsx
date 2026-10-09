@@ -1170,6 +1170,25 @@ export function Map({
       </div>
       </div>
 
+      {/* ⭐⭐ YOUR WAY OUT, IN YOUR WORDS. Daniel, 9 Oct: "planning app isnt
+          really the plan, its suppose to give a way out". The headline names
+          the first rung; this is the whole ladder, verbatim from what they
+          typed, so the moves below read as steps toward something they said.
+          ⚠️ Only when a longer rung exists. A session from before the ladder
+          has `tuesday` as a three year day, and labelling it "In a year" would
+          put words in their mouth. */}
+      {(answers?.fiveYears?.trim() || answers?.tenYears?.trim()) && (
+        <section className="wayout__ladder wayout__r" style={at(2.1)} aria-label="Your way out">
+          <h3 className="wayout__label">Your way out</h3>
+          <ol>
+            {[['In a year', answers.tuesday], ['In five years', answers.fiveYears], ['In ten years', answers.tenYears]]
+              .filter(([, v]) => String(v ?? '').trim())
+              .map(([when, v]) => (
+                <li key={when}><span>{when}</span><p>{tidyQuote(String(v).trim())}</p></li>
+              ))}
+          </ol>
+        </section>
+      )}
       {/* ⭐⭐ THE WAY INTO THE HISTORY, and only once there is a history to see.
           On a first plan this link would point at a page that can only say
           "nothing here yet", which is worse than no link. */}
