@@ -577,9 +577,12 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
     // product's life, which is what makes the moves library affordable. One
     // per-person line in it busts the cache for everybody.
     const past = history ? historyForPrompt(history) : ''
+    // ⚠️ `_carried` is the intake's own bookkeeping ("answered in the free
+    // taps"), not something they told us. Never sent.
+    const said = JSON.stringify(answers, (k, v) => (k === '_carried' ? undefined : v), 2)
     const content = attempt === 1
-      ? past + JSON.stringify(answers, null, 2)
-      : `${past}${JSON.stringify(answers, null, 2)}\n\n`
+      ? past + said
+      : `${past}${said}\n\n`
         + `REJECTED, ATTEMPT ${attempt - 1}. They have not seen it. What was wrong:\n`
         + `${problems.map(p => `  - ${p}`).join('\n')}\n\n`
         // ⚠️ SAY WHAT TO DO, NOT ONLY WHAT WAS WRONG. The first version of this

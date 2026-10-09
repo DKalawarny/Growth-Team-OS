@@ -98,6 +98,20 @@ export const WAYOUT_SCREENS = [
         ],
       },
       {
+        // ⚠️ 9 Oct: moved here from screen five, straight after the country, so
+        // "where do you live" is asked once and reads as one question.
+        key: 'locationText',
+        // ⭐ A written answer somebody might rather say out loud. Opt-in, so a
+        // microphone never turns up beside a name or an age.
+        dictate: true,
+        kind: 'shorttext',
+        label: 'What town or area do you live in?',
+        hint: 'If your work is somewhere else or online, say that too. Your area and its seasons change what is possible.',
+        placeholder: 'Nanaimo BC · remote, clients in the US · two weeks on in Alberta',
+        required: true,
+        emptyMessage: 'Roughly is fine.',
+      },
+      {
         key: 'immovables',
         kind: 'chips',
         // ⚠️ 9 Oct: had NO label, so the chips floated under the screen title with
@@ -111,7 +125,7 @@ export const WAYOUT_SCREENS = [
           { key: 'custody', label: 'Shared custody' },
           { key: 'parent', label: 'Aging parent' },
           { key: 'partner-job', label: 'Partner’s job' },
-          { key: 'health', label: 'Health needs care' },
+          { key: 'health', label: 'Caring for someone who is unwell' },
           { key: 'lease', label: 'Lease / mortgage' },
           { key: 'legal', label: 'A legal agreement' },
           { key: 'partners', label: 'Business partners' },
@@ -187,6 +201,7 @@ export const WAYOUT_SCREENS = [
         // listening, on the screen where being listened to matters most.
         showIf: a => a.faith === 'yes' || (a.faith ?? []).includes?.('yes'),
         kind: 'shorttext',
+        label: 'Which one, and what part of your week does it take?',
         placeholder: 'Which, and anything in your week it holds',
         required: false,
       },
@@ -219,6 +234,7 @@ export const WAYOUT_SCREENS = [
           return picked.some(x => (x.key ?? x) !== 'na')
         },
         kind: 'shorttext',
+        label: 'Anything your plan should know about it?',
         placeholder: 'Only as much as you want to say',
         required: false,
       },
@@ -241,8 +257,7 @@ export const WAYOUT_SCREENS = [
       {
         key: 'name',
         kind: 'shorttext',
-        label: 'What should I call you?',
-        placeholder: 'First name is fine',
+        label: 'What’s your first name?',
         required: true,
         emptyMessage: 'Just a first name.',
       },
@@ -293,12 +308,14 @@ export const WAYOUT_SCREENS = [
       },
       {
         key: 'kidsAges',
+        // ⚠️ 9 Oct: kids were asked twice ("Kids at home" on screen one, then
+        // "Do you have kids?"). Now only the ages, and only when they said so.
+        showIf: a => (a.immovables ?? []).some(x => ['kids-home', 'custody'].includes(x?.key ?? x)),
         allowCustom: true,
         kind: 'chips',
-        label: 'Do you have kids? Tap their ages.',
+        label: 'How old are your kids?',
         required: false,
         options: [
-          { key: 'none', label: 'None' },
           { key: '0-4', label: '0–4' },
           { key: '5-11', label: '5–11' },
           { key: '12-17', label: '12–17' },
@@ -421,11 +438,10 @@ export const WAYOUT_SCREENS = [
             ],
           },
           {
-            label: 'Time and people',
+            // ⚠️ 9 Oct: Evenings / Weekends / School hours left this list. The
+            // hours question above already asks about spare time.
+            label: 'People who could send you work',
             options: [
-              { key: 'evenings', label: 'Evenings' },
-              { key: 'weekends', label: 'Weekends' },
-              { key: 'school-hours', label: 'School hours' },
               { key: 'sub-work', label: 'Someone who’d sub me work' },
               { key: 'employer', label: 'An employer who’d contract me' },
               { key: 'audience', label: 'A group or following' },
@@ -647,18 +663,6 @@ export const WAYOUT_SCREENS = [
           { key: 'health', label: 'Your health and fitness' },
           { key: 'community', label: 'A community you’re part of' },
         ],
-      },
-      {
-        key: 'locationText',
-        // ⭐ A written answer somebody might rather say out loud. Opt-in, so a
-        // microphone never turns up beside a name or an age.
-        dictate: true,
-        kind: 'shorttext',
-        label: 'Where do you live? If your work is somewhere else or online, say so.',
-        hint: 'Your area and its seasons change what is possible.',
-        placeholder: 'Nanaimo BC · remote, clients in the US · two weeks on in Alberta',
-        required: true,
-        emptyMessage: 'Roughly is fine.',
       },
       {
         // ⭐ Without this the plan can confidently hand someone the exact thing
@@ -946,7 +950,7 @@ export const WAYOUT_OPEN = {
   field: {
     key: 'story',
     kind: 'text',
-    label: 'What else should I know about your situation?',
+    label: 'What else should your plan know about your situation?',
     // ⚠️ Since 9 Oct this also carries what used to be its own box, "anything
     // already coming that changes the picture?" (`coming`).
     placeholder: 'Whatever matters. Something coming that changes things: a raise, a lease ending, a car paid off. What went wrong before, what you are carrying.',

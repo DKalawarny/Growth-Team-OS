@@ -158,6 +158,9 @@ export default function Diagnostic() {
     // not asked the same thing twice thirty seconds apart.
     if (where) carried.region = where
     if (Object.keys(carried).length) {
+      // ⭐ 9 Oct: remembered so the intake can say "you answered this at the
+      // start" instead of asking it again as if for the first time.
+      carried._carried = Object.keys(carried)
       const existing = loadDraft()
       saveDraft({ ...carried, ...(existing?.answers ?? {}) }, existing?.step ?? 0)
     }

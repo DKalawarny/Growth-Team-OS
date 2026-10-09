@@ -40,10 +40,12 @@ describe('every answer leads somewhere', () => {
     // screen whose whole job is telling them they have more than they think.
     const groups = screen('s3').fields.find(f => f.key === 'assets').groups.map(g => g.label)
     expect(groups).toContain('What you can do')
-    expect(groups).toContain('Time and people')
+    expect(groups).toContain('People who could send you work')
 
+    // ⚠️ Evenings / weekends / school hours left this list on 9 Oct: the hours
+    // question on the same screen already asks for spare time.
     const keys = optionsOf(screen('s3').fields.find(f => f.key === 'assets')).map(o => o.key)
-    for (const needsNoProperty of ['evenings', 'weekends', 'school-hours', 'teaching', 'admin', 'employer']) {
+    for (const needsNoProperty of ['computers', 'teaching', 'admin', 'employer', 'sub-work']) {
       expect(keys).toContain(needsNoProperty)
     }
   })

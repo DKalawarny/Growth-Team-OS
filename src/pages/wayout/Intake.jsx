@@ -494,6 +494,11 @@ export default function Intake({ preview = false, previewReflections = null }) {
             {visibleFields(screen, answers).map(f => (
               <div key={f.key}>
                 {f.label && <label className="wayout__label">{f.label}</label>}
+                {/* ⭐ 9 Oct: carried from the free taps. Said, so it does not read
+                    as the same question asked twice. */}
+                {(answers._carried ?? []).includes(f.key) && (
+                  <p className="wayout__carried">From your first answers. Add anything they missed.</p>
+                )}
                 <Field field={f} value={answers[f.key]} onChange={v => setValue(f.key, v)} currency={currencyFor(answers.region).symbol} />
                 {f.hint && <p className="wayout__hint">{f.hint}</p>}
                 {errors[f.key] && <p className="wayout__error">{errors[f.key]}</p>}
