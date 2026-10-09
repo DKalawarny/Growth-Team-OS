@@ -537,15 +537,17 @@ function PlayMove({ order }) {
           auto update?" Auto-regenerating would spend a generation every time
           the page is opened and rewrite instructions somebody may be halfway
           through following. Making the state visible costs neither. */}
-      <div className={stale ? 'wayout__superseded' : undefined}>
-      <Playbook play={play} index={order} notice={stale ? (
+      <Playbook play={play} index={order} superseded={stale} notice={stale ? (
         <div className="wayout__stale">
           <p>
-            Your plan changed after this was written, so this is the play for the
-            move you had before{moveNow ? <> not <b>{moveNow}</b></> : null}.{' '}
+            Your plan has changed since this walkthrough was written, so these are
+            the steps for your old move {order}.
+            {moveNow ? <> Your move {order} is now <b>{moveNow}</b>.</> : null}
+          </p>
+          <p>
             <button
               type="button"
-              className="wayout__again"
+              className="wayout__btn"
               onClick={async () => { setPlay(null); setStale(false); setMoveNow(null); busy.current = false
                 try {
                   const s = await loadOrCreateSession()
@@ -556,7 +558,7 @@ function PlayMove({ order }) {
                 } catch (err) { setError(err.message) }
               }}
             >
-              Write it for the new one
+              Write the walkthrough for this move
             </button>
           </p>
         </div>
@@ -648,7 +650,6 @@ function PlayMove({ order }) {
         </p>
       </div>
       </Playbook>
-      </div>
     </>
   )
 }

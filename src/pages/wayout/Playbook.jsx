@@ -74,7 +74,7 @@ function Section({ label, onSection }) {
  * something has gone wrong. Collapsing it removed about a fifth of the height
  * without touching the feel. Not applied — his call.
  */
-export default function Playbook({ play, index = 1, children, onSection, notice = null }) {
+export default function Playbook({ play, index = 1, children, onSection, notice = null, superseded = false }) {
   if (!play) return null
 
   return (
@@ -93,6 +93,12 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
       {/* ⚠️ Inside the page, under the way back — it used to render above the
           site header, detached from everything. */}
       {notice}
+      {/* ⚠️ 9 Oct, Daniel: "whys it like this". The fade used to wrap the WHOLE
+          page from Play.jsx, so the Menu, the way back and the "write it for
+          the new one" button all looked switched off. Only the old
+          instructions fade now; the notice and its button stay at full
+          strength because they are the way forward. */}
+      <div className={superseded ? 'wayout__superseded' : undefined}>
       <p className="wayout__who">Move {index} · how to actually do it</p>
       {/* ⭐⭐ THE YELLOW STROKE BELONGS HERE TOO. Daniel, on getting the old
           design back: "no yellow highlight of the title back". He was right and
@@ -240,6 +246,7 @@ export default function Playbook({ play, index = 1, children, onSection, notice 
 
       <p className="wayout__disclaimer">{play.disclaimer}</p>
       {children}
+      </div>
     </WayoutShell>
   )
 }

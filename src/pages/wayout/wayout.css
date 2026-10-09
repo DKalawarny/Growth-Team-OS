@@ -1131,6 +1131,7 @@ div:first-child > .wayout__group { margin-top: 14px; }
   font-size: 15px; line-height: 1.5; color: var(--soft);
 }
 .wayout__stale p { margin: 0; }
+.wayout__stale p + p { margin-top: 12px; }
 
 /* Ask for the plan again. Deliberately a link, not a button — rebuilding is
    always available and never the thing you are being steered towards. */
@@ -2067,14 +2068,9 @@ h1.wayout__heroline {
    through following. What it should do instead is LOOK superseded, which costs
    nothing and is the honest state. Readable, not hidden: the week they already
    spent on this is theirs. */
-.wayout__superseded { position: relative; opacity: .62; filter: saturate(.55); }
-.wayout__superseded::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(
-    -45deg, transparent 0 22px, rgba(107, 117, 97, .045) 22px 44px);
-  pointer-events: none;
-}
+/* 🔴 9 Oct: the diagonal hatching is gone. Daniel read it as broken ("whys it
+   like this... with the lines"), and the fade plus the notice already say it. */
+.wayout__superseded { opacity: .62; filter: saturate(.55); }
 
 /* ── Situation pages — the only findable surface ────────────────────────
    ⚠️ Reading pages, not app screens. Wider measure, bigger type, and the
