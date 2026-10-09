@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useToolDraft, clearToolDraft } from '../../hooks/useToolDraft'
+import { useToolDraft, clearToolDraft, readToolDraft } from '../../hooks/useToolDraft'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -54,6 +54,27 @@ export default function Rocks() {
   const [contextSummary, setContextSummary] = useState(null)
 
   // ⭐ Keep the last read on the page across navigation (useToolDraft).
+  // Show the latest saved result on open (like CFO), so a returning owner and
+  // the demo see a filled example instead of a blank form. Local draft wins.
+  useEffect(() => {
+    if (!profile?.company_id) return
+    if (readToolDraft('rocks', profile.company_id)?.result) return
+    let cancelled = false
+    supabase
+      .from('documents')
+      .select('output_data')
+      .eq('company_id', profile.company_id)
+      .eq('tool_id', 'rocks-tracker')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data?.output_data) { setResult(data.output_data); setStage('result') }
+      })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.company_id])
+
   useToolDraft({
     toolId: 'rocks',
     companyId: profile?.company_id,

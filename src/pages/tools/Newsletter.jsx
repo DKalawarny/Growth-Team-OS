@@ -9,7 +9,7 @@ import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import { summarizeContext } from '../../lib/toolContextSummary'
-import { useToolDraft } from '../../hooks/useToolDraft'
+import { useToolDraft, readToolDraft } from '../../hooks/useToolDraft'
 
 /**
  * Team Newsletter — /tools/newsletter
@@ -47,6 +47,27 @@ export default function Newsletter() {
   const [contextSummary, setContextSummary] = useState(null)
 
   // ⭐ Keep the last newsletter (incl. your edits) on the page across navigation.
+  // Show the latest saved result on open (like CFO), so a returning owner and
+  // the demo see a filled example instead of a blank form. Local draft wins.
+  useEffect(() => {
+    if (!profile?.company_id) return
+    if (readToolDraft('newsletter', profile.company_id)?.result) return
+    let cancelled = false
+    supabase
+      .from('documents')
+      .select('output_data')
+      .eq('company_id', profile.company_id)
+      .eq('tool_id', 'team-newsletter')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data?.output_data) { setResult(data.output_data); setStage('result') }
+      })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.company_id])
+
   useToolDraft({
     toolId: 'newsletter',
     companyId: profile?.company_id,

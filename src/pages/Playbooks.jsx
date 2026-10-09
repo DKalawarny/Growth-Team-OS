@@ -959,7 +959,7 @@ function PlaybookEditor({
           to={`/board?playbook_id=${template.id}`}
           className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
         >
-          Use this SOP on a new job →
+          Use this SOP on a new task →
         </Link>
         <button
           onClick={onDelete}

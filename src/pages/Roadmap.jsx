@@ -173,7 +173,7 @@ export default function Roadmap() {
   const [assigneesByMilestone, setAssigneesByMilestone] = useState(new Map())
   // Per-action-step assignees: key = `${milestone_id}::${action_step_text}` → person
   // Keyed off the job's `title` column (which is set to the action step
-  // text when a job is created from the inline "+ Job" button).
+  // text when a job is created from the inline "+ Task" button).
   const [actionAssigneesByKey, setActionAssigneesByKey] = useState(new Map())
   // Companion map: same key → work_order id. Lets the modal UPDATE the
   // existing row when an action is reassigned, instead of inserting a
@@ -334,7 +334,7 @@ export default function Roadmap() {
                      : null
 
         // Per-action-step index — uses the job's title, which the
-        // inline "+ Job" button sets to the exact action step text.
+        // inline "+ Task" button sets to the exact action step text.
         // We record the id even if there's no person assigned yet, so a
         // reassignment of an existing-but-unassigned job also takes
         // the UPDATE path.
@@ -2258,7 +2258,7 @@ function MilestoneRow({
           Assignees — display only. Two sources stacked in this order:
             1. work_orders rows on this milestone (`assignees` prop, built
                from work_orders.assigned_to / staff_member_id). This is the
-               common case — "+ Job" puts people here.
+               common case — "+ Task" puts people here.
             2. The legacy milestone-level `assignee_cid` (one person per
                milestone, set via a different UI). Shown only when there
                are no work-order assignees, so we don't duplicate names.
@@ -2423,7 +2423,7 @@ function MilestoneRow({
                         className="flex-shrink-0 opacity-0 group-hover/action:opacity-100 transition-opacity text-[10px] font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5"
                         title="Create a job for this action"
                       >
-                        {actionAssignee ? 'Reassign' : '+ Job'}
+                        {actionAssignee ? 'Reassign' : '+ Task'}
                       </button>
                     </li>
                   )

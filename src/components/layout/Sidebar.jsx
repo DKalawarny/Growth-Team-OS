@@ -163,7 +163,7 @@ const mainNav = [
   { to: '/advisor',                label: 'Solomon',    icon: 'advisor'      },
   { to: '/roadmap',                label: 'Roadmap',    icon: 'roadmap'      },
   { to: '/playbooks',              label: 'SOPs',  icon: 'SOPs'    },
-  { to: '/board',                  label: 'Jobs',       icon: 'board'        },
+  { to: '/board',                  label: 'Tasks',       icon: 'board'        },
   { to: '/logs',                   label: 'Daily logs', icon: 'SOPs'    },
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },

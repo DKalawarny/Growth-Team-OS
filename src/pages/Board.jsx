@@ -360,7 +360,7 @@ export default function Board() {
     const lines = [
       `Hi ${name},`,
       '',
-      `You've been assigned a task on the Jobs:`,
+      `You've been assigned a task:`,
       '',
       `📋 ${order.title}`,
     ]
@@ -536,8 +536,8 @@ export default function Board() {
     return (
       <div className="min-h-screen bg-ink-50">
         <div className="bg-white border-b border-ink-100 px-4 sm:px-8 py-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Jobs</div>
-          <h1 className="text-xl font-bold text-ink-900">Jobs</h1>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Tasks</div>
+          <h1 className="text-xl font-bold text-ink-900">Tasks</h1>
         </div>
         <div className="max-w-2xl mx-auto px-4 sm:px-8 py-12">
           <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-8 text-center">
@@ -617,12 +617,12 @@ alter table public.work_orders
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Jobs</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">Jobs</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-700 mb-0.5">Tasks</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Tasks</h1>
           </div>
           {/* Action cluster — collapses gracefully on mobile:
               - Field flags + Manage team hide their text labels (icon-only)
-              - New job shows a "+" only on the smallest screens
+              - New task shows a "+" only on the smallest screens
               The flag count badge stays visible on every breakpoint since
               it's the whole point of the button. */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -653,12 +653,12 @@ alter table public.work_orders
               <span className="hidden sm:inline">Manage crew</span>
             </Link>
             <button type="button" onClick={() => openNew()}
-              aria-label="New job"
+              aria-label="New task"
               className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
                 <path d="M8 3v10M3 8h10" strokeLinecap="round" />
               </svg>
-              <span className="hidden sm:inline">New job</span>
+              <span className="hidden sm:inline">New task</span>
             </button>
           </div>
         </div>
@@ -977,7 +977,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
 
         <div className="bg-ink-900 px-6 py-4 flex items-center justify-between">
           <span className="text-sm font-bold text-white">
-            {form.id ? 'Edit job' : 'New job'}
+            {form.id ? 'Edit job' : 'New task'}
           </span>
           <button type="button" onClick={onClose} className="text-ink-500 hover:text-white transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
