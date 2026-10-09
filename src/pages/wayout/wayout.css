@@ -3325,3 +3325,24 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 @media (max-width: 520px) {
   .wayout__ladder li { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* ⭐ 9 Oct: the way out before the hole. "Start here" sits under the headline,
+   the numbers are labelled as a starting line, and a hopeful line sits beside
+   them. See Plan.jsx. */
+.wayout__starthere {
+  display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap;
+  margin: 14px 0 0; font-size: 16px; line-height: 1.4; color: var(--ink);
+}
+.wayout__starthere b {
+  background: var(--green); color: #fff; font-size: 12px; letter-spacing: .04em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 6px; flex: none;
+}
+.wayout__starthere span { font-weight: 600; }
+.wayout__starthere em { font-style: normal; font-weight: 400; color: var(--soft); margin-left: 8px; }
+.wayout__starting { margin-top: 22px; }
+.wayout__starting > .wayout__label { margin: 0 0 4px; }
+.wayout__setup .wayout__starting .wayout__stats { margin-top: 18px; }
+.wayout__hopeful {
+  margin: 16px 0 0; padding-left: 10px; border-left: 3px solid var(--green);
+  color: var(--green); font-size: 15px; line-height: 1.45; font-weight: 600;
+}

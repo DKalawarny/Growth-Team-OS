@@ -36,8 +36,9 @@ const SAMPLE = {
     insight: 'You also mentioned rebuilding your uncle’s fence and hauling for three neighbours. That’s a business that hasn’t sent an invoice yet.',
   },
   stats: [
-    { label: 'Freed by cutting', value: 590, prefix: '$', suffix: '/mo', caption: 'the truck payment and the subscriptions' },
-    { label: 'Your quit number', value: 10000, prefix: '$', suffix: '', caption: 'on track for next summer' },
+    // The common case, and the one that hurt: somebody short every month.
+    { label: 'What has to go out every month', value: 4100, prefix: '$', suffix: '/mo', caption: 'The number everything has to beat', tone: 'plain' },
+    { label: 'The gap to close', value: 640, prefix: '$', suffix: '/mo', caption: '$3,460 coming in against $4,100 going out', tone: 'hard' },
   ],
   moves: [
     {

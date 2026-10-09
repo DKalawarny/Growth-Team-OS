@@ -996,6 +996,7 @@ export function Map({
 
   const [localDone, setLocalDone] = useState(() => new Set())
   const ticked = done ?? localDone
+  const nextMove = (map?.moves ?? []).find((m, i) => !ticked.has(i + 1)) ?? null
 
   /**
    * ⭐ THE BRIDGE TO ELIV8 OS — only when they are READY for it (bridges.js).
@@ -1126,6 +1127,16 @@ export function Map({
         <h2 className="wayout__r" style={at(0.3)}>
           <Marked text={map.headline} highlight={map.highlight} derive />
         </h2>
+        {/* ⭐⭐ THE FIRST THING THEY CAN DO, BEFORE ANY NUMBER. 9 Oct, Daniel's
+            brother read his numbers at night, "almost had a heart attack", and
+            went to bed before he reached the moves. The way out has to arrive
+            before the hole does, so the next open move sits under the headline. */}
+        {!past && nextMove && (
+          <p className="wayout__starthere wayout__r" style={at(0.5)}>
+            <b>{ticked.size ? 'Next' : 'Start here'}</b>
+            <span>{nextMove.title}{nextMove.when ? <em>{nextMove.when}</em> : null}</span>
+          </p>
+        )}
       </div>
 
       {/* ⭐ The quote and the two numbers are the SETUP — what they said and
@@ -1152,18 +1163,35 @@ export function Map({
         </div>
       )}
 
-      {Array.isArray(map.stats) && (
-        <div className="wayout__stats wayout__r" style={at(1.6)}>
+      {Array.isArray(map.stats) && map.stats.length > 0 && (
+        <div className="wayout__starting wayout__r" style={at(1.6)}>
+        {/* ⭐ A STARTING LINE, NOT A VERDICT. The numbers stay exactly as
+            honest; what changes is that they are labelled as where this
+            begins, and that something true and hopeful sits right beside
+            them. Daniel: "something positive beside it… a few moves can make
+            a change to this number". */}
+        <p className="wayout__label">Where you’re starting</p>
+        <div className="wayout__stats">
           {map.stats.slice(0, 2).map((s, i) => (
             <div className="wayout__stat" key={i}>
               <span>{s.label}</span>
-              <b><CountUp value={Number(s.value) || 0} prefix={s.prefix} suffix={s.suffix} /></b>
+              {/* ⚠️ Only good news counts up. A shortfall spinning up from zero
+                  is a slot machine landing on how far behind you are. */}
+              <b>{s.tone === 'good'
+                ? <CountUp value={Number(s.value) || 0} prefix={s.prefix} suffix={s.suffix} />
+                : <StatNum value={Number(s.value) || 0} prefix={s.prefix} suffix={s.suffix} />}</b>
               {/* ⚠️ Optional. A figure with no "by when" is a slogan, but an
                   invented one is worse than none — so it renders only when the
                   model actually derived it. */}
               {s.caption && <span className="wayout__statwhen">{s.caption}</span>}
             </div>
           ))}
+        </div>
+        <p className="wayout__hopeful">
+          {map.stats.some(x => x.tone === 'good')
+            ? 'You are already clearing what has to go out. Your plan is about what you do with the rest.'
+            : 'You are starting from here, not staying here. The moves below are built to change these numbers, one at a time.'}
+        </p>
         </div>
       )}
 
@@ -2022,6 +2050,11 @@ function CrisisNote({ message, region = null, onBack = null }) {
  * decoration; the number is the information, and someone who turned motion off
  * should not have to watch it arrive.
  */
+/** The same figure as CountUp, standing still. */
+function StatNum({ value, prefix = '', suffix = '' }) {
+  return <span className="wayout__statnum">{prefix}{value.toLocaleString()}{suffix && <small>{suffix}</small>}</span>
+}
+
 function CountUp({ value, prefix = '', suffix = '' }) {
   // The reduced-motion case is handled by the initial state, not by the effect
   // — setting it inside the effect body would be a cascading render for a value

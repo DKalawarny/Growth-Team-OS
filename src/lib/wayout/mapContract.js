@@ -1467,6 +1467,10 @@ export function deriveStats(answers = {}) {
     prefix: '$',
     suffix: '/mo',
     caption: 'The number everything has to beat',
+    // ⭐ `tone` decides presentation, never wording (9 Oct, Daniel's brother:
+    // "almost had a heart attack"). Only a `good` number counts up on screen;
+    // a hard one sits still beside what the plan does about it.
+    tone: 'plain',
   }]
 
   // ⚠️ Only when they actually told us what comes in. `reduce` on an empty
@@ -1481,6 +1485,7 @@ export function deriveStats(answers = {}) {
         prefix: '$',
         suffix: '/mo',
         caption: `$${income.toLocaleString()} coming in against $${mustPay.toLocaleString()} going out`,
+        tone: 'hard',
       }
       : {
         // ⭐ Not everybody is short. Somebody already clearing their floor is
@@ -1491,6 +1496,7 @@ export function deriveStats(answers = {}) {
         prefix: '$',
         suffix: '/mo',
         caption: `$${income.toLocaleString()} coming in against $${mustPay.toLocaleString()} going out`,
+        tone: 'good',
       })
   }
 
