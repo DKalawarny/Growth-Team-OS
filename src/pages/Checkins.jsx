@@ -24,11 +24,11 @@ import { HOURS_OPTIONS } from '../lib/businessProfileOptions'
  */
 
 const MOOD_OPTIONS = [
-  { value: 1, emoji: '😞', label: 'Rough' },
-  { value: 2, emoji: '😕', label: 'Meh'   },
-  { value: 3, emoji: '😐', label: 'OK'    },
-  { value: 4, emoji: '🙂', label: 'Good'  },
   { value: 5, emoji: '😄', label: 'Great' },
+  { value: 4, emoji: '🙂', label: 'Good'  },
+  { value: 3, emoji: '😐', label: 'OK'    },
+  { value: 2, emoji: '😕', label: 'Meh'   },
+  { value: 1, emoji: '😞', label: 'Rough' },
 ]
 
 const INITIAL_FORM = {

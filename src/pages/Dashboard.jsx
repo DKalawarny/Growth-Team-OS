@@ -354,7 +354,7 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-x-10 gap-y-5">
             <Count n={done}              label={done === 1 ? 'step finished' : 'steps finished'} />
             <Count n={counts.checkins}   label={counts.checkins === 1 ? 'check-in logged' : 'check-ins logged'} />
-            <Count n={counts.SOPs}  label={counts.SOPs === 1 ? 'job written down' : 'jobs written down'} />
+            <Count n={counts.SOPs}  label={counts.SOPs === 1 ? 'SOP written down' : 'SOPs written down'} />
             <Count n={counts.staff}      label={counts.staff === 1 ? 'person on the team' : 'people on the team'} />
             <Count n={counts.documents}  label={counts.documents === 1 ? 'thing Solomon made' : 'things Solomon made'} />
           </div>
