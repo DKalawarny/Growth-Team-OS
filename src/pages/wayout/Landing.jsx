@@ -243,7 +243,7 @@ export default function Landing() {
                 ))}
               </div>
 
-              <p className="wayout__label">Three moves. This order.</p>
+              <p className="wayout__label">Your three moves, in order</p>
               {pl.moves.map(([title, when, now]) => (
                 <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
                   <span className="wayout__chk">
@@ -262,7 +262,7 @@ export default function Landing() {
                   FRONT DOOR. Everything else adds to somebody's list; this is
                   the one that takes things off it, with the reason. */}
               <p className="wayout__herocut">
-                <b>Crossed off, with the reason</b>
+                <b>Ideas we left out, and why</b>
                 {pl.cut.map(([what, why]) => (
                   <span key={what}><s>{what}</s>: {why}</span>
                 ))}

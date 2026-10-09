@@ -114,7 +114,7 @@ import { WAYOUT_TOTAL_TIME } from '../lib/wayout/brand'
  * is quieter. The difference is intended — do not "fix" one to match the other.
  */
 export const DIAGNOSTIC_OPENING = {
-  headline: 'There are four ways out of this. Only one of them is yours.',
+  headline: 'There are four ways to get unstuck. We will show you which one fits you.',
   /**
    * 🔴🔴 THE MARK GOES ON THE WAY OUT, NOT ON THE COST. Daniel, 27 Sep: "i like
    * the highlight but do you think it's highlighting the negative part of this
@@ -151,7 +151,7 @@ export const DIAGNOSTIC_OPENING = {
    * survives in full; it is just told from the side where somebody gains
    * something rather than the side where they lose a year.
    */
-  highlight: 'four ways out',
+  highlight: 'four ways',
   lead: 'Maybe you’ve got three ideas and can’t pick. Maybe you’ve got none at all. Either way, nobody has told you which of these four is actually open to you.',
   // ⚠️ The time promise lives in brand.js; it was written out here and drifts.
   body: `Answer a few questions and we will show you which way fits you, and why the other three do not. Keep going and we build your full plan. ${WAYOUT_TOTAL_TIME[0].toUpperCase()}${WAYOUT_TOTAL_TIME.slice(1)}, start to finish.`,
@@ -178,7 +178,6 @@ export const DIAGNOSTIC_QUESTIONS = [
     // thing does not understand ordinary life.
     multi: true,
     question: 'What do you want most? Tap any.',
-    hint: 'Pick as many as are true.',
     options: [
       { key: 'money',       label: 'More money' },
       { key: 'time',        label: 'More time' },
@@ -364,27 +363,27 @@ export const DIAGNOSTIC_REGION = {
 export const PATHS = {
   'side-income': {
     gist: 'Earn from something you already have, before changing anything else.',
-    name: 'The side-income ladder',
+    name: 'Earn on the side',
     lead: 'You own something that can earn before you change anything else.',
-    body: 'The first rung pays inside a week, and each one buys the next. Nothing here asks you to quit, move, or borrow.',
+    body: 'The first step can pay within a week, and each step pays for the next. You do not have to quit, move or borrow.',
   },
   'cut-delegate': {
     gist: 'Keep more of what already comes in.',
-    name: 'Cut and delegate',
+    name: 'Spend less, keep more',
     lead: 'The fastest money you have is money you’re already earning and not keeping.',
-    body: 'Adding income costs hours you said you don’t have. Subtracting costs none, needs no customer, and starts this week.',
+    body: 'Earning more takes hours you said you don’t have. Cutting costs takes no time, needs no customers, and can start this week.',
   },
   'asset-play': {
     gist: 'Put savings, space or a property to work.',
-    name: 'The asset play',
-    lead: 'You’re sitting on the thing most people spend three years trying to build.',
-    body: 'Space, equity or a ticket someone else is short of. It earns without asking for your evenings.',
+    name: 'Make what you own earn',
+    lead: 'You already own something that can earn money for you.',
+    body: 'A spare room, savings, a property or a licence can bring in money without taking up your evenings.',
   },
   'relocate-or-stay': {
     gist: 'Move somewhere it is easier, or decide for good not to.',
-    name: 'Relocate, or decide not to',
-    lead: 'Nothing is holding you in place, which makes location the biggest lever you have, and the one you’ve been avoiding deciding.',
-    body: 'Either moving is the plan or it isn’t. Half-deciding costs more than either answer.',
+    name: 'Move, or decide to stay',
+    lead: 'Nothing keeps you where you live, so moving could be the biggest change you can make. It is time to decide.',
+    body: 'Either you move or you stay. Not deciding costs more than either choice.',
   },
 }
 
