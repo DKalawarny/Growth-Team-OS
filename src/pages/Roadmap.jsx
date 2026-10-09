@@ -1595,7 +1595,7 @@ function NextUpCard({ milestone, dependents, sharePct, updating, onSetProgress, 
               </ol>
             ) : (
               <p className="text-sm text-ink-400 italic">
-                No specific steps listed. Start by reading the description above and sketching your plan.
+                No steps yet. Break this into a few concrete moves to get it going.
               </p>
             )}
           </div>

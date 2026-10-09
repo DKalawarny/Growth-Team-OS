@@ -235,7 +235,7 @@ export default function Dashboard() {
         {dash.unsafe.length > 0 && (
           <section className="animate-fade-in rounded-xl border border-red-300 bg-red-50 px-5 py-4 flex flex-col gap-2">
             <p className="text-[11px] font-bold uppercase tracking-wider text-red-700">
-              {dash.unsafeToday.length > 0 ? 'Today' : 'Recently'}
+              Safety {dash.unsafeToday.length > 0 ? '· today' : '· recent'}
             </p>
             {dash.unsafe.slice(0, 2).map(l => (
               <p key={l.id} className="text-[14.5px] text-ink-900 leading-relaxed">

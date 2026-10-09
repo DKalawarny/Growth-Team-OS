@@ -136,4 +136,21 @@ insert into knowledge_files (company_id, title, file_path, kind, status, notes) 
 insert into checkins (company_id, user_id, revenue_update, win, challenge, mood) values
  ('de900000-0000-4000-8000-000000000001','f1eb0b1f-be17-4ade-b013-e706ea825d0e','Tracking to 2.8M, up 22%','Riverbend finished early and the client renewed on the spot','Deciding whether to crew up before the March bids',4);
 
+-- milestone steps + SOP wording (kept in sync with the live demo)
+-- Demo data: give milestones real steps + align wording with the SOPs rename.
+update milestones set actions = '["Ask Marcus this week if he wants to lead","Promote him and tell the crew","Step off the main crew for six weeks","Check the standard held before the March bids"]'::jsonb
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew';
+update milestones set title='Write the maintenance routes down as SOPs',
+ actions='["Pick the three routes you run most","Write each as an SOP, one step per line","Have the crew run from the SOP for two weeks","Fix the steps that did not match the real job"]'::jsonb
+ where company_id='de900000-0000-4000-8000-000000000001' and title like 'Write the maintenance routes down as%';
+update milestones set actions='["Confirm the scope and site list for each bid","Price with current labour and material rates","Submit both bids by the end of February","Follow up within a week of submitting"]'::jsonb
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Win the two March strata contracts';
+update milestones set actions='["Confirm the March bids landed","Promote or hire the second crew lead","Kit out the second truck and route","Run the new route at a conservative first-year margin"]'::jsonb
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Add a second maintenance crew';
+update milestones set actions='["Get the books current and reconciled monthly","Grow the recurring maintenance base","Document how the business runs without you","Get a broker read on what it is worth"]'::jsonb
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Clean books and recurring revenue, ready to hand on';
+-- office note wording
+update office_notes set note=replace(note,'new site playbook','new site SOP')
+ where company_id='de900000-0000-4000-8000-000000000001' and note like '%new site playbook%';
+
 commit;
