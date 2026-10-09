@@ -19,7 +19,7 @@
 
 export const TOOL_DISCLAIMERS = {
   'cfo-dashboard':
-    'Commentary is AI-generated from the books you connected. Treat it as a discussion starter for you and your accountant. Not a tax filing or financial advice.',
+    'Commentary is AI-generated from the financial figures you provided. Treat it as a discussion starter for you and your accountant, not tax filing or financial advice.',
 
   'cash-flow':
     'A 13-week projection from the inputs you gave. Forecasts move when reality does: re-run when payroll, big invoices, or a new contract changes.',
