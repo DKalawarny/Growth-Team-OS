@@ -150,6 +150,8 @@ export default function SOPs() {
 
   // Templates with items nested (PostgREST relation: items:work_order_template_items(*))
   const [templates,   setTemplates]   = useState([])
+  const [archived,    setArchived]    = useState([])
+  const [showArchived, setShowArchived] = useState(false)
   const [loading,     setLoading]     = useState(true)
   const [setupNeeded, setSetupNeeded] = useState(false)
   const [selectedId,  setSelectedId]  = useState(null)
@@ -388,6 +390,28 @@ export default function SOPs() {
     if (err) { setError(err.message); return }
     setTemplates(prev => prev.filter(t => t.id !== id))
     if (selectedId === id) setSelectedId(null)
+    if (showArchived) loadArchived()
+  }
+
+  async function loadArchived() {
+    if (!companyId) return
+    const { data } = await supabase
+      .from('work_order_templates')
+      .select('id, name')
+      .eq('company_id', companyId)
+      .not('archived_at', 'is', null)
+      .order('updated_at', { ascending: false })
+    setArchived(data ?? [])
+  }
+
+  async function unarchiveTemplate(id) {
+    const { error: err } = await supabase
+      .from('work_order_templates')
+      .update({ archived_at: null })
+      .eq('id', id)
+    if (err) { setError(err.message); return }
+    setArchived(a => a.filter(x => x.id !== id))
+    loadTemplates()
   }
 
   // ── Item-level operations ──────────────────────────────────────────────────
@@ -665,6 +689,35 @@ export default function SOPs() {
               Each SOP becomes a checklist on the work order. Crew ticks off
               steps as they go, from the office or the staff portal.
             </p>
+
+            {/* Archived SOPs — hidden from the list but recoverable */}
+            <button
+              onClick={() => { const n = !showArchived; setShowArchived(n); if (n) loadArchived() }}
+              className="mt-3 text-[11px] font-semibold text-ink-500 hover:text-ink-700 px-1"
+            >
+              {showArchived ? 'Hide archived' : 'View archived'}
+            </button>
+            {showArchived && (
+              <div className="mt-2 border-t border-ink-100 pt-2">
+                {archived.length === 0 ? (
+                  <p className="px-1 text-[11px] text-ink-400">No archived SOPs.</p>
+                ) : (
+                  <ul className="divide-y divide-ink-100">
+                    {archived.map(t => (
+                      <li key={t.id} className="flex items-center justify-between gap-2 px-1 py-2">
+                        <span className="text-[13px] text-ink-500 truncate">{t.name || 'Untitled SOP'}</span>
+                        <button
+                          onClick={() => unarchiveTemplate(t.id)}
+                          className="text-[11px] font-semibold text-brand-700 hover:text-brand-800 flex-shrink-0"
+                        >
+                          Restore
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </aside>
 
           {/* ── Right pane: editor ────────────────────────────────────────── */}

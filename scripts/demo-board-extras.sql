@@ -15,3 +15,6 @@ insert into work_order_step_comments (company_id, checklist_item_id, work_order_
 
 -- a two-person job, to show multiple assignees on one work order
 update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-000000000001','de900000-0000-4000-8001-000000000002']::uuid[] where id='de900000-0000-4000-8003-000000000002';
+
+-- one archived SOP, so 'View archived' has something to show
+insert into work_order_templates (id, company_id, name, description, archived_at) values ('de900000-0000-4000-8004-000000000009','de900000-0000-4000-8000-000000000001','Old leaf-removal routine','Retired, replaced by the weekly route', now() - interval '20 days') on conflict (id) do update set archived_at=excluded.archived_at;
