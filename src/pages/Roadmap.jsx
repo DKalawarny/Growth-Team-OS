@@ -3269,7 +3269,7 @@ function ChatPanel({ chatInput, setChatInput, chatPhase, chatSuggestion, inputRe
         </div>
         <div>
           <h2 className="text-sm font-bold text-ink-900">Something come up?</h2>
-          <p className="text-xs text-ink-400">Describe it. Solomon will figure out where it fits in your plan.</p>
+          <p className="text-xs text-ink-400">Describe it and Solomon adds it to your roadmap, slotted in where it fits.</p>
         </div>
       </div>
 
@@ -3299,7 +3299,7 @@ function ChatPanel({ chatInput, setChatInput, chatPhase, chatSuggestion, inputRe
                   Thinking…
                 </>
               ) : (
-                'Find its place →'
+                'Add to my roadmap →'
               )}
             </button>
           </div>

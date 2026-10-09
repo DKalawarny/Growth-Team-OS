@@ -692,7 +692,7 @@ alter table public.work_orders
           </button>
         ))}
         <span className="text-[11px] text-ink-400 ml-1">
-          {filtered.length} job{filtered.length !== 1 ? 's' : ''}
+          {filtered.length} task{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
 
