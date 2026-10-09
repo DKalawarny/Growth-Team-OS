@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { WAYOUT_BASE, onOwnDomain } from './lib/wayout/brand'
+import { WAYOUT_BASE, WAYOUT_SITE_URL, onOwnDomain } from './lib/wayout/brand'
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, AuthProvider } from './hooks/useAuth'
 
@@ -161,7 +161,13 @@ function RequireAuth({ children }) {
   // `onboarded` is permanently false and the redirect below would drop them
   // into BUSINESS onboarding — asked their annual revenue by a product they
   // have never heard of. Send them back to their own product instead.
-  if (isPersonal) return <Navigate to="/wayout" replace />
+  if (isPersonal) {
+    // On getunstuckmap.com they stay in-app; on eliv8os.com a personal (Unstuck)
+    // account belongs on its own domain, not bounced onto the Eliv8 side.
+    if (onOwnDomain()) return <Navigate to="/wayout" replace />
+    if (typeof window !== 'undefined') window.location.replace(WAYOUT_SITE_URL + '/')
+    return <LoadingScreen />
+  }
   if (!profile) return <Navigate to="/onboarding" replace />
   // ⚠️ Having a profile is not proof of setup. The profile is created at
   // signup; the business profile at the END of onboarding. Someone who closed
@@ -301,11 +307,27 @@ function RecoveryRescue() {
   return null
 }
 
+// Keep Unstuck off the Eliv8 domain. Any /wayout URL on eliv8os.com is sent to
+// getunstuckmap.com so the two products never bleed into each other. No-op on
+// getunstuckmap.com, where /wayout is the real product.
+function WayoutDomainGuard() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    if (onOwnDomain()) return
+    if (pathname === '/wayout' || pathname.startsWith('/wayout/')) {
+      const rest = pathname.slice('/wayout'.length) || '/'
+      window.location.replace(WAYOUT_SITE_URL + rest + window.location.search + window.location.hash)
+    }
+  }, [pathname])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTopOnNavigate />
       <RecoveryRescue />
+      <WayoutDomainGuard />
       {/* ⚠️ AuthProvider must sit ABOVE the routes: every page below calls
           useAuth(), and before this existed each of those 44 call sites ran its
           own session lookup and its own profile/company fetch. One page load
