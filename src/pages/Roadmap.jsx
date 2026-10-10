@@ -1013,6 +1013,8 @@ Suggest a single new milestone that addresses what they've described. Make it sp
           dependents={dependentCountById.get(nextMilestone.id) ?? 0}
           sharePct={sharePctById.get(nextMilestone.id) ?? 0}
           updating={updatingId === nextMilestone.id}
+          assignees={assigneesByMilestone.get(nextMilestone.id) ?? []}
+          actionAssigneesByKey={actionAssigneesByKey}
           onSetProgress={setProgress}
           onComplete={toggleComplete}
         />
@@ -1551,7 +1553,11 @@ function BottleneckBanner({ count }) {
 }
 
 /** The main call-to-action — shown when there is a next actionable milestone. */
-function NextUpCard({ milestone, dependents, sharePct, updating, onSetProgress, onComplete }) {
+function NextUpCard({
+  milestone, dependents, sharePct, updating,
+  assignees = [], actionAssigneesByKey = new Map(),
+  onSetProgress, onComplete,
+}) {
   const actions = Array.isArray(milestone.actions) ? milestone.actions : []
   const pct = Number(milestone.progress_percent ?? 0)
   const endLabel = formatFriendlyDate(milestone.end_date)
@@ -1602,7 +1608,11 @@ function NextUpCard({ milestone, dependents, sharePct, updating, onSetProgress, 
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-ink-900 text-brand-400 flex items-center justify-center text-xs font-bold">
                       {i + 1}
                     </span>
-                    <span className="leading-relaxed pt-0.5">{a}</span>
+                    <span className="leading-relaxed pt-0.5 flex-1">{a}</span>
+                    {/* Who has this step, same lookup the list rows use */}
+                    {actionAssigneesByKey.get(`${milestone.id}::${a}`) && (
+                      <AssigneeChip person={actionAssigneesByKey.get(`${milestone.id}::${a}`)} />
+                    )}
                   </li>
                 ))}
                 {actions.length > 4 && (
@@ -1620,6 +1630,15 @@ function NextUpCard({ milestone, dependents, sharePct, updating, onSetProgress, 
 
           {/* Right: status, progress, CTA */}
           <div className="space-y-4">
+            {assignees.length > 0 && (
+              <div className="bg-ink-50 rounded-lg p-3 border border-ink-100">
+                <div className="text-[10.5px] uppercase tracking-widest text-ink-400 font-semibold mb-1.5">Who is on this</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {assignees.map(p => <AssigneeChip key={p.id} person={p} full />)}
+                </div>
+              </div>
+            )}
+
             {endLabel && (
               <div className="bg-ink-50 rounded-lg p-3 border border-ink-100">
                 <div className="text-[10.5px] uppercase tracking-widest text-ink-400 font-semibold mb-0.5">Aim to finish by</div>
@@ -1671,6 +1690,24 @@ function NextUpCard({ milestone, dependents, sharePct, updating, onSetProgress, 
         )}
       </div>
     </div>
+  )
+}
+
+// Small name pill for whoever is on a milestone or one of its steps. Green for
+// team staff, grey for app users, matching the chips on the list rows.
+function AssigneeChip({ person, full = false }) {
+  const name = person.name || person.email
+  return (
+    <span
+      className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5 border ${
+        person._t === 'staff'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : 'bg-ink-100 text-ink-700 border-ink-200'
+      }`}
+      title={`Assigned to ${name}`}
+    >
+      {full ? name : (person.name?.split(' ')[0] || person.email)}
+    </span>
   )
 }
 

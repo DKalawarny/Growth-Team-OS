@@ -164,4 +164,21 @@ update work_orders set assigned_staff_ids = ARRAY['de900000-0000-4000-8001-00000
 update work_orders set milestone_id = (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew') where id='de900000-0000-4000-8003-000000000004';
 update work_orders set milestone_id = (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Add a second maintenance crew') where id='de900000-0000-4000-8003-000000000002';
 
+-- Roadmap step showcase: a task whose title is exactly a milestone step puts that
+-- person's name on the step itself (Daniel, 9 Oct: show people on the task inside
+-- the task, on the top milestone). Covers the focus card and the first list row.
+insert into work_orders (id, company_id, staff_member_id, assigned_staff_ids, milestone_id, title, status, priority, created_at) values
+ ('de900000-0000-4000-8003-000000000005','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001',
+  ARRAY['de900000-0000-4000-8001-000000000001']::uuid[],
+  (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew'),
+  'Step off the main crew for six weeks','in_progress','high', now() - interval '3 days'),
+ ('de900000-0000-4000-8003-000000000006','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001',
+  ARRAY['de900000-0000-4000-8001-000000000001']::uuid[],
+  (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Write the maintenance routes down as SOPs'),
+  'Write each as an SOP, one step per line','in_progress','medium', now() - interval '5 days'),
+ ('de900000-0000-4000-8003-000000000007','de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002',
+  ARRAY['de900000-0000-4000-8001-000000000002','de900000-0000-4000-8001-000000000003']::uuid[],
+  (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Write the maintenance routes down as SOPs'),
+  'Have the crew run from the SOP for two weeks','backlog','medium', now() - interval '2 days');
+
 commit;

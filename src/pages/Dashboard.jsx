@@ -19,6 +19,12 @@ import { AMOUNTS_EMBED, withAmounts } from '../lib/jobAmounts'
  * scored: no targets, no progress bars, no red. A number that judges you every
  * morning is guilt-driven engagement wearing a calm palette.
  *
+ * ⚠️ 9 Oct, Daniel: "not very good, needs to have more use case." One sentence
+ * and five counts gave an owner nothing to DO from here. The page still leads
+ * with one thing, but underneath it now shows the work itself: the steps of
+ * that milestone and who has each, the tasks in motion and who is on them, and
+ * what the crew last wrote. All real rows, still no scores.
+ *
  * None of the old components were deleted; this page simply stopped rendering
  * them. They live on in src/components/dashboard/ and on the surfaces that own
  * them.
@@ -98,7 +104,7 @@ export default function Dashboard() {
         supabase.from('checkins').select('id', { count: 'exact', head: true }).eq('company_id', cid),
         supabase.from('documents').select('id', { count: 'exact', head: true }).eq('company_id', cid),
         supabase.from('work_order_templates').select('id', { count: 'exact', head: true }).eq('company_id', cid).is('archived_at', null),
-        supabase.from('staff_members').select('id', { count: 'exact', head: true }).eq('company_id', cid),
+        supabase.from('staff_members').select('id, name').eq('company_id', cid),
         // ⚠️ 2 Sep — everything below is new to this page. The dashboard was
         // built before the job record existed and showed only milestones, so it
         // could not answer either of the two questions an owner actually opens
@@ -109,7 +115,7 @@ export default function Dashboard() {
         supabase.from('office_notes')
           .select('id, status').eq('company_id', cid).neq('status', 'done'),
         supabase.from('work_orders')
-          .select(`id, status, ${AMOUNTS_EMBED}`).eq('company_id', cid),
+          .select(`id, status, title, due_date, milestone_id, staff_member_id, assigned_staff_ids, updated_at, ${AMOUNTS_EMBED}`).eq('company_id', cid),
       ])
       if (cancelled) return
       setState({
@@ -120,8 +126,9 @@ export default function Dashboard() {
           checkins:  ciCount.count    ?? 0,
           documents: docCount.count   ?? 0,
           SOPs: playCount.count  ?? 0,
-          staff:     staffCount.count ?? 0,
+          staff:     staffCount.data?.length ?? 0,
         },
+        staff:     staffCount.data    ?? [],
         logs:      logsRes.data       ?? [],
         openNotes: openNotesRes.data  ?? [],
         orders:    withAmounts(ordersRes.data),
@@ -170,7 +177,25 @@ export default function Dashboard() {
       ? Math.round(priced.reduce((a, o) => a + ((o.invoiced_amount - o.cost_amount) / o.invoiced_amount), 0) / priced.length * 100)
       : null
 
+    // Who is on each task: the multi-assignee array first, the older single
+    // field as the fallback. Same order the roadmap reads them in.
+    const staffById = new Map((state.staff ?? []).map(p => [p.id, p]))
+    const peopleOn = o => {
+      const ids = Array.isArray(o.assigned_staff_ids) && o.assigned_staff_ids.length
+        ? o.assigned_staff_ids
+        : (o.staff_member_id ? [o.staff_member_id] : [])
+      return ids.map(id => staffById.get(id)?.name).filter(Boolean)
+    }
+    const rank = { in_progress: 0, review: 1, backlog: 2 }
+    const openTasks = orders
+      .filter(o => o.status && o.status !== 'done')
+      .map(o => ({ ...o, people: peopleOn(o) }))
+      .sort((a, b) => (rank[a.status] ?? 3) - (rank[b.status] ?? 3))
+
     return {
+      openTasks,
+      staffById,
+      recentLogs: logs.slice(0, 3),
       unsafe,
       unsafeToday: unsafe.filter(l => l.log_date === today),
       unreadLogs,
@@ -182,7 +207,7 @@ export default function Dashboard() {
       pricedCount: priced.length,
       reviewedPct: logs.length ? Math.round(((logs.length - unreadLogs.length) / logs.length) * 100) : null,
     }
-  }, [state.logs, state.orders, state.openNotes])
+  }, [state.logs, state.orders, state.openNotes, state.staff])
 
   const statusById = useMemo(
     () => classifyAll(state.milestones ?? [], todayYmd()),
@@ -196,11 +221,21 @@ export default function Dashboard() {
   const daysSinceLastCheckin = lastCheckin ? daysBetween(lastCheckin.created_at, new Date()) : null
   const done = milestones.filter(m => m.completed).length
 
-  const { headline, detail, others } = pickFocus({ milestones, statusById, daysSinceLastCheckin })
+  const { headline, detail, lead, others } = pickFocus({ milestones, statusById, daysSinceLastCheckin })
+
+  // The lead milestone's own steps, each with whoever has a task on that exact
+  // step (a task titled with the step text is how the roadmap assigns one).
+  const leadSteps = (Array.isArray(lead?.actions) ? lead.actions : []).slice(0, 4).map(text => ({
+    text,
+    people: dash.openTasks.find(o => o.milestone_id === lead.id && o.title === text)?.people ?? [],
+  }))
+  const leadPeople = lead
+    ? [...new Set(dash.openTasks.filter(o => o.milestone_id === lead.id).flatMap(o => o.people))]
+    : []
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="mx-auto w-full max-w-[680px] px-6 pt-16 pb-12 flex flex-col gap-11">
+      <div className="mx-auto w-full max-w-[920px] px-6 pt-16 pb-12 flex flex-col gap-11">
 
         <header className="animate-fade-in flex flex-col gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
@@ -306,6 +341,28 @@ export default function Dashboard() {
           </h2>
           <p className="text-[15.5px] leading-[1.7] text-ink-700">{detail}</p>
 
+          {leadSteps.length > 0 && (
+            <div className="rounded-xl bg-white border border-ink-100 px-5 py-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">The steps</p>
+                {leadPeople.length > 0 && (
+                  <p className="text-[12.5px] text-ink-500">On this: {leadPeople.join(', ')}</p>
+                )}
+              </div>
+              <ol className="flex flex-col gap-2.5">
+                {leadSteps.map((st, i) => (
+                  <li key={i} className="flex items-start gap-3 text-[14.5px] text-ink-800">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-ink-100 text-ink-700 text-[11px] font-bold flex items-center justify-center mt-0.5">
+                      {i + 1}
+                    </span>
+                    <span className="flex-1 leading-relaxed">{st.text}</span>
+                    {st.people.length > 0 && <NameChips names={st.people} />}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-3 pt-0.5">
             <Link
               to="/advisor"
@@ -319,6 +376,87 @@ export default function Dashboard() {
             >
               Open the roadmap
             </Link>
+          </div>
+        </section>
+
+        {/* ── The work itself: who is on what, and what the crew last wrote ── */}
+        <section className="animate-fade-in grid md:grid-cols-2 gap-5">
+          <Panel title="Tasks in motion" to="/board" linkLabel="Open tasks">
+            {dash.openTasks.length === 0 ? (
+              <Empty>No open tasks. Add one from the board, or from any step on the roadmap.</Empty>
+            ) : (
+              <ul className="flex flex-col divide-y divide-ink-100">
+                {dash.openTasks.slice(0, 5).map(o => (
+                  <li key={o.id} className="py-2.5 flex flex-col gap-1.5">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-[14px] text-ink-900 leading-snug">{o.title}</p>
+                      <span className="flex-shrink-0 text-[11px] text-ink-500 whitespace-nowrap mt-0.5">{TASK_STATUS[o.status] ?? o.status}</span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {o.people.length > 0
+                        ? <NameChips names={o.people} />
+                        : <span className="text-[12px] text-ink-400">No one on this yet</span>}
+                      {o.due_date && (
+                        <span className="text-[12px] text-ink-500">
+                          Due {new Date(o.due_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {dash.openTasks.length > 5 && (
+              <p className="text-[12.5px] text-ink-400 pt-1">and {dash.openTasks.length - 5} more on the board</p>
+            )}
+          </Panel>
+
+          <Panel title="From the crew" to="/logs" linkLabel="Open daily logs">
+            {dash.recentLogs.length === 0 ? (
+              <Empty>No daily logs yet. Once the crew write at the end of the day, the latest shows here.</Empty>
+            ) : (
+              <ul className="flex flex-col divide-y divide-ink-100">
+                {dash.recentLogs.map(l => (
+                  <li key={l.id} className="py-2.5 flex flex-col gap-1">
+                    <p className="text-[12px] text-ink-500">
+                      {new Date(`${l.log_date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+                      {' · '}
+                      {l.staff_member_id ? (dash.staffById.get(l.staff_member_id)?.name ?? 'Crew') : 'You'}
+                      {!l.reviewed_at && <span className="ml-2 text-brand-700 font-semibold">Not read yet</span>}
+                    </p>
+                    <p className="text-[14px] text-ink-900 leading-snug">{l.what_happened}</p>
+                    {l.blockers && (
+                      <p className="text-[13px] text-amber-800 leading-snug">
+                        <span className="font-semibold">Held them up:</span> {l.blockers}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        </section>
+
+        {/* ── Straight to the thing you came to do ────────────────────────── */}
+        <section className="animate-fade-in flex flex-col gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">Jump to</p>
+          <div className="flex flex-wrap gap-2.5">
+            {[
+              ['/advisor',   'Ask Solomon'],
+              ['/board',     'Assign a task'],
+              ['/playbooks', 'Write an SOP'],
+              ['/logs',      'Read the logs'],
+              ['/tools/cfo', 'Check the money'],
+              ['/documents', 'Add a document'],
+            ].map(([to, label]) => (
+              <Link
+                key={to}
+                to={to}
+                className="px-4 py-2.5 rounded-full bg-white border border-ink-100 hover:border-brand-300 hover:text-brand-700 text-[13.5px] font-semibold text-ink-700 transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -380,6 +518,37 @@ export default function Dashboard() {
   )
 }
 
+const TASK_STATUS = { backlog: 'Not started', in_progress: 'In progress', review: 'In review' }
+
+function Panel({ title, to, linkLabel, children }) {
+  return (
+    <div className="rounded-xl bg-white border border-ink-100 px-5 py-4 flex flex-col gap-2">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">{title}</p>
+        <Link to={to} className="text-[12.5px] font-semibold text-brand-700 hover:text-brand-800">{linkLabel} →</Link>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function Empty({ children }) {
+  return <p className="text-[13.5px] text-ink-500 leading-relaxed py-2">{children}</p>
+}
+
+// First names as small pills, the same look the roadmap uses for team staff.
+function NameChips({ names }) {
+  return (
+    <span className="flex flex-wrap gap-1 flex-shrink-0">
+      {names.map(n => (
+        <span key={n} title={n} className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 whitespace-nowrap">
+          {n.split(' ')[0]}
+        </span>
+      ))}
+    </span>
+  )
+}
+
 function Count({ n, label }) {
   return (
     <div className="flex flex-col gap-1">
@@ -392,7 +561,7 @@ function Count({ n, label }) {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="mx-auto w-full max-w-[680px] px-6 pt-16 flex flex-col gap-11">
+      <div className="mx-auto w-full max-w-[920px] px-6 pt-16 flex flex-col gap-11">
         <div className="flex flex-col gap-3">
           <div className="h-3 w-32 rounded bg-ink-100" />
           <div className="h-10 w-64 rounded bg-ink-100" />
