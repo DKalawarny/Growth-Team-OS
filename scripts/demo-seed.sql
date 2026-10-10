@@ -199,4 +199,32 @@ insert into milestones (company_id, title, description, timeframe, category, sor
  ('de900000-0000-4000-8000-000000000001','Move the schedule off the whiteboard into one calendar','One schedule the whole crew can see, so the day does not depend on who was in the yard that morning.','Next 90 days','systems',0,100,true, now() - interval '35 days', current_date - 95, current_date - 15,
   '["Put every recurring route in one calendar","Share the calendar with the crew","Run from the calendar for two weeks","Take the whiteboard down"]'::jsonb,'[]');
 
+-- More daily logs (Daniel, 10 Oct: "add another daily log so it depicts what this
+-- is better"). Four logs showed the plain case only. These add the cases the page
+-- is built for: someone hurt, a job running behind with a cost nobody planned, a
+-- blocker that repeats an earlier one (the gate, which lights up "Same thing came
+-- up twice"), and two logs the office has already answered, one shared with the
+-- crew and one kept private.
+delete from daily_logs where company_id='de900000-0000-4000-8000-000000000001' and what_happened in (
+ 'First full visit at Center Street. Beds cleared and the irrigation tested, two zones are not firing.',
+ 'Oakridge weekly maintenance, full route done. The belt on the ride-on slipped twice on the back lawn, finished that section with the push mower.',
+ 'Hedge trimming along the east fence at Oakridge, about two thirds done.');
+insert into daily_logs (company_id, staff_member_id, work_order_id, log_date, what_happened, blockers, hours_on_site, who_on_site, on_site_staff_ids, safety_note, injury, injury_detail, incident_report_filed, flha_done, schedule_status, percent_complete, unplanned_cost, unplanned_cost_note) values
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000001','de900000-0000-4000-8003-000000000004', current_date,
+  'First full visit at Center Street. Beds cleared and the irrigation tested, two zones are not firing.',
+  'Gate was locked again when we arrived, waited 25 minutes for the building manager to bring the key.',
+  6.0, null, ARRAY['de900000-0000-4000-8001-000000000001','de900000-0000-4000-8001-000000000003']::uuid[], null, false, null, null, true, 'behind', 40, true, 'Two irrigation heads need replacing, not in the quote'),
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000002','de900000-0000-4000-8003-000000000002', current_date - 2,
+  'Oakridge weekly maintenance, full route done. The belt on the ride-on slipped twice on the back lawn, finished that section with the push mower.',
+  'The ride-on belt is worn and needs replacing before next week.',
+  6.5, null, ARRAY['de900000-0000-4000-8001-000000000002','de900000-0000-4000-8001-000000000004']::uuid[], null, false, null, null, true, 'on_track', 100, false, null),
+ ('de900000-0000-4000-8000-000000000001','de900000-0000-4000-8001-000000000004','de900000-0000-4000-8003-000000000002', current_date - 3,
+  'Hedge trimming along the east fence at Oakridge, about two thirds done.',
+  null,
+  7.0, null, ARRAY['de900000-0000-4000-8001-000000000004','de900000-0000-4000-8001-000000000005']::uuid[], null, true, 'Chris caught his forearm on the trimmer guard. Small cut, cleaned and bandaged on site, and he finished the day.', false, true, 'on_track', 65, false, null);
+update daily_logs set pm_note='The zones are marked on the site map in Documents now. Sarah, send a photo of the two beds so we can check them with the client.', pm_note_shared=true, reviewed_at=now() - interval '3 days'
+ where company_id='de900000-0000-4000-8000-000000000001' and what_happened like 'Riverbend bed refresh finished%';
+update daily_logs set pm_note='Second time this gate has cost us time. Raise it when the contract comes up for renewal.', pm_note_shared=false, reviewed_at=now() - interval '10 days'
+ where company_id='de900000-0000-4000-8000-000000000001' and what_happened like 'Spring cleanup at Maple Plaza%';
+
 commit;

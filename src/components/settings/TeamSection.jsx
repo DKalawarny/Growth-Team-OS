@@ -230,7 +230,11 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
     <section className="mt-10 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
       <div className="bg-ink-900 px-6 py-4">
         <div className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 mb-0.5">Field crew</div>
-        <p className="text-xs text-ink-400">Your on-site crew. They get a phone link to log their day and take assigned jobs, no login needed.</p>
+        <p className="text-xs text-ink-300 leading-relaxed max-w-2xl">
+          The people who do the work on site. Each one gets their own page on their phone, with no login:
+          the tasks they are on, any files you sent, and a short form to write up their day.
+          Set this up once and it mostly runs itself.
+        </p>
       </div>
 
       {loading ? (
@@ -249,7 +253,7 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
               </div>
               <div className="rounded-xl border border-ink-100 bg-ink-50/40 p-4">
                 <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Set a schedule for the crew</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Daily reminder</span>
                   <button type="button" onClick={toggleSelectAll} className="text-[11px] font-semibold text-brand-700 hover:text-brand-800">
                     {selected.size > 0 ? 'Clear' : 'Select all'}
                   </button>
@@ -272,11 +276,18 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
                   <button type="button" onClick={sendLinkToSelected} disabled={selected.size === 0} className="px-3 py-1.5 rounded-lg border border-ink-200 hover:bg-white disabled:opacity-40 text-ink-700 text-xs font-semibold transition-colors">Send link to {selected.size}</button>
                   {bulkMsg && <span className="text-[11px] text-green-700 font-medium">{bulkMsg}</span>}
                 </div>
-                <p className="text-[11px] text-ink-400 mt-2 leading-relaxed">Tick the people below, set the days and time, then Apply. Untick the night crew and set theirs on their own row.</p>
+                <p className="text-[11px] text-ink-500 mt-2 leading-relaxed">
+                  The reminder is an email with the link to their page, sent at the time you pick, asking them to write up the day.
+                  Tick people in the list below, choose the days and the time, then Apply. Send link emails the link right now.
+                  Someone on a different shift can have their own time set on their row.
+                </p>
               </div>
               <div className="rounded-xl border border-ink-100 bg-white p-4">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-ink-400 mb-1">Daily numbers your crew reports</div>
-                <p className="text-[11px] text-ink-400 mb-3">On top of the built-ins (on track, % done, unplanned cost, hours). Add your own, e.g. "Units installed".</p>
+                <p className="text-[11px] text-ink-500 mb-3 leading-relaxed">
+                  Every daily log already asks whether the job is on track, how far along it is, any cost that was not planned, and hours.
+                  Add anything else you want counted each day, such as units installed or loads hauled.
+                </p>
                 <div className="space-y-2">
                   {metrics.map(m => (
                     <div key={m.key} className="flex items-center gap-2">
@@ -507,6 +518,7 @@ function StaffRow({ staff: s, removing, sending, sentToday, selected, onToggleSe
           {sending ? 'Sending\u2026' : sentToday ? 'Sent today \u2713' : 'Send link'}
         </button>
       )}
+      <OpenTheirPage staffId={s.id} />
       <button
         type="button"
         onClick={() => setEditing(true)}
@@ -585,5 +597,38 @@ function AddNotice({ notice, onDismiss }) {
         ×
       </button>
     </div>
+  )
+}
+
+/**
+ * Opens one crew member's own page in a new tab, exactly as they see it.
+ * The link is signed on the server (staff-link); until this existed the only
+ * way to see the crew side was to be emailed a link, so a person with no email
+ * on file, and anyone touring the demo, could not see it at all.
+ */
+function OpenTheirPage({ staffId }) {
+  const [busy, setBusy]   = useState(false)
+  const [failed, setFailed] = useState(false)
+  async function open() {
+    setBusy(true); setFailed(false)
+    // Open the tab inside the click, then point it at the link once it comes
+    // back. A tab opened after an await is treated as a pop-up and blocked.
+    const tab = window.open('', '_blank')
+    const { data, error } = await supabase.functions.invoke('staff-link', { body: { staffId } })
+    setBusy(false)
+    if (error || !data?.token) { tab?.close(); setFailed(true); return }
+    if (tab) tab.location = `/staff/${data.token}`
+    else window.location.assign(`/staff/${data.token}`)
+  }
+  return (
+    <button
+      type="button"
+      onClick={open}
+      disabled={busy}
+      className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition-colors flex-shrink-0 whitespace-nowrap disabled:opacity-50 ${failed ? 'text-red-700' : 'text-brand-700 hover:bg-brand-50'}`}
+      title="See exactly what this person sees on their phone"
+    >
+      {busy ? 'Opening…' : failed ? 'Could not open, try again' : 'Open their page'}
+    </button>
   )
 }

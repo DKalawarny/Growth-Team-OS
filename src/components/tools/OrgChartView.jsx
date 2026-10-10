@@ -26,6 +26,7 @@
  */
 
 import ToolDisclaimer from './ToolDisclaimer'
+import BookLinks from './BookLinks'
 
 export default function OrgChartView({ data }) {
   if (!data || typeof data !== 'object') {
@@ -90,17 +91,7 @@ export default function OrgChartView({ data }) {
 
       {books.length > 0 && (
         <Section title="Further reading">
-          <ul className="flex flex-wrap gap-2">
-            {books.map((b, i) => (
-              <li
-                key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-xs text-gray-700"
-              >
-                <span aria-hidden>📖</span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
+          <BookLinks books={books} />
         </Section>
       )}
 

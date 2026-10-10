@@ -32,6 +32,7 @@ function categoryStyle(cat) {
 }
 
 import ToolDisclaimer from './ToolDisclaimer'
+import BookLinks from './BookLinks'
 
 export default function RocksPlan({ data }) {
   if (!data) return null
@@ -116,17 +117,7 @@ export default function RocksPlan({ data }) {
 
       {books.length > 0 && (
         <Section title="Go deeper">
-          <div className="flex flex-wrap gap-2">
-            {books.map((b, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-700"
-              >
-                <span aria-hidden>📖</span>
-                {b}
-              </span>
-            ))}
-          </div>
+          <BookLinks books={books} />
         </Section>
       )}
 

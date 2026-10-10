@@ -126,6 +126,7 @@ export default function DailyLogs() {
   const [q, setQ] = useState('')
   const [limit, setLimit] = useState(100)
   const [jobFilter, setJobFilter] = useState('')
+  const [sendOpen, setSendOpen] = useState(false)
 
   const load = useCallback(async () => {
     if (!profile?.company_id) return
@@ -171,6 +172,15 @@ export default function DailyLogs() {
   }, [profile?.company_id, limit])
 
   useEffect(() => { load() }, [load])
+
+  // "Manage crew" on the Tasks page lands here with ?crew=1. The setup now
+  // sits at the bottom of the page, so open it AND bring it into view.
+  useEffect(() => {
+    if (!showCrew || loading) return
+    const t = setTimeout(() => document.getElementById('crew-setup')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading])
 
   // Deep-link from the dashboard "things on your list" counter: scroll to the
   // notes box so that counter lands somewhere distinct from the logs counter.
@@ -235,6 +245,8 @@ export default function DailyLogs() {
   const hit      = (...vals) => !needle || vals.some(v => String(v ?? '').toLowerCase().includes(needle))
   const shownNotes = notes.filter(n => hit(n.note, n.note_date))
   const logJobs    = [...new Set(logs.map(l => l.job).filter(Boolean))].sort()
+  // His notes that sit on a specific log, newest first, for the side panel.
+  const pinned     = logs.filter(l => (l.pm_note ?? '').trim() && hit(l.pm_note, l.person, l.job))
   const shownLogs  = logs.filter(l => (!jobFilter || l.job === jobFilter) && hit(l.what_happened, l.blockers, l.pm_note, l.person, l.job, l.log_date, l.who_on_site, l.safety_note))
 
   if (loading) {
@@ -242,7 +254,17 @@ export default function DailyLogs() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-3xl">
+    <div className="p-6 md:p-8 max-w-6xl">
+      {/* ⚠️ 10 Oct — ONE LAYOUT, agreed with Daniel before building ("let's
+          talk it through so it comes out properly, not add-ons"). The page had
+          grown into five things stacked in one column: crew setup, send a job,
+          search, his list, then the logs. His notes "get kind of lost".
+          Now: the crew's logs are the page (left), his notes sit beside them
+          and scroll on their own (right) so he can write while he reads, and
+          the set-once crew setup is collapsed at the bottom. Do not add a new
+          block above the logs; a new thing belongs in one of these places. */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="min-w-0">
       <h1 className="text-xl font-bold text-ink-900">Daily logs</h1>
       {/* ⚠️ 2 Sep — the old blurb explained the PLUMBING: "you cannot change
           what they wrote... Solomon reads every log either way". Daniel: "I
@@ -251,163 +273,62 @@ export default function DailyLogs() {
           Solomon does with it, he cares what the page is FOR. Say that, and let
           the two sections explain the difference between themselves. */}
       <p className="text-xs text-ink-500 mt-1.5 max-w-xl leading-relaxed">
-        Your own running list, and what the crew wrote from site at the end of each
-        day. Between them they keep the jobs straight, instead of it living in your
-        head and half a dozen text messages.
+        What the crew wrote from site at the end of each day, with your own notes
+        beside it. Between them they keep the jobs straight, instead of that living
+        in your head and half a dozen text messages.
       </p>
-
-      {/* ⚠️ One search box for both streams. Daniel: "is there a way of looking
-          back on notes, this is important." Scrolling was the only way back.
-          Matches the note, the crew's account, the blockers and the office's
-          note — i.e. everything anyone typed — because a searcher does not know
-          or care which field their half-remembered phrase landed in. */}
-      {/* Field crew & reminders — moved here from Settings so the crew setup
-          (reminder times, the numbers they report, the roster) lives with the
-          logs. People/roles stay in Settings (Daniel, 8 Oct). */}
-      <div className="mt-5">
+        </div>
         <button
-          onClick={() => setShowCrew(v => !v)}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
+          type="button"
+          onClick={() => setSendOpen(v => !v)}
+          className="flex-shrink-0 px-4 py-2 rounded-lg border border-ink-200 bg-white hover:border-ink-300 text-sm font-semibold text-ink-800 transition-colors"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${showCrew ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
-          Field crew &amp; reminders
+          {sendOpen ? 'Close' : 'Send a job and files to the crew'}
         </button>
-        {showCrew && (
-          <div className="mt-3">
-            <TeamSection companyId={profile?.company_id} companyName={companyName} ownerName={ownerName} />
-          </div>
-        )}
       </div>
 
+
       <OneOffJob
+        open={sendOpen}
         profile={profile}
         company={company}
         onCreated={row => setJobs(prev => [{ id: row.id, title: row.title }, ...prev])}
       />
 
+
+      <div className="mt-6 grid gap-6 items-start lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0">
+          <div className="flex flex-col sm:flex-row gap-3">
+      {/* ⚠️ One search box for both streams. Daniel: "is there a way of looking
+          back on notes, this is important." Scrolling was the only way back.
+          Matches the note, the crew's account, the blockers and the office's
+          note — i.e. everything anyone typed — because a searcher does not know
+          or care which field their half-remembered phrase landed in. */}
       <input
         type="search"
         value={q}
         onChange={e => setQ(e.target.value)}
-        placeholder="Search everything on this page: a word, a name, a job"
-        className="mt-4 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
+        placeholder="Search the logs and your notes: a word, a name, a job"
+        className="w-full rounded-lg bg-white border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
       />
       {logJobs.length > 0 && (
         <select
           value={jobFilter}
           onChange={e => setJobFilter(e.target.value)}
-          className="mt-3 w-full max-w-xl rounded-lg border border-ink-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300"
+          className="w-full sm:w-64 flex-shrink-0 rounded-lg border border-ink-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300"
         >
           <option value="">All jobs</option>
           {logJobs.map(j => <option key={j} value={j}>{j}</option>)}
         </select>
       )}
 
-      {/* ⚠️ Office notes sit ABOVE the crew logs on purpose. This is the box the
-          person at the desk actually reaches for — the crew's logs arrive on
-          their own, but a note about the day only exists if somebody writes it,
-          and a compose box below a hundred log cards never gets found.
-          It is also what makes the note field visible at all when there are no
-          logs yet: Daniel asked "where is the area for the PM to make notes?"
-          precisely because the per-log note field only renders once a log
-          exists, so with an empty list the whole feature was invisible. */}
-      <div id="office-notes" className="mt-6 rounded-xl border border-ink-100 bg-white overflow-hidden scroll-mt-20">
-        <div className="px-5 py-3 border-b border-ink-100">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your list</h2>
-          <p className="text-[12px] text-ink-400 mt-0.5">
-            Things to remember, chase or buy. Not tied to any one job. Tick them off
-            as they go. Written by you and the office, not the crew.
-          </p>
-        </div>
-        <div className="px-5 py-4">
-          <textarea
-            value={noteDraft}
-            onChange={e => setNoteDraft(e.target.value)}
-            rows={2}
-            placeholder="Supplier rang. Steel is going up 6% from the first. Worth repricing the Cascade quote before it goes out."
-            className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
-          />
-          <div className="mt-2 flex items-center gap-2 flex-wrap">
-          <select
-            value={noteJob}
-            onChange={e => setNoteJob(e.target.value)}
-            className="rounded-lg border border-ink-200 px-2 py-2 text-sm text-ink-600 focus:outline-none focus:ring-2 focus:ring-brand-300"
-          >
-            <option value="">Not about a job</option>
-            {jobs.map(j => <option key={j.id} value={j.id}>{j.title}</option>)}
-          </select>
-          <button
-            type="button"
-            onClick={addNote}
-            disabled={noteSaving || !noteDraft.trim()}
-            className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-200 text-white text-sm font-medium transition-colors"
-          >
-            {noteSaving ? 'Saving…' : 'Add note'}
-          </button>
           </div>
-
-          {shownNotes.length > 0 && (
-            <ul className="mt-4 space-y-2.5">
-              {shownNotes.map(n => (
-                <li key={n.id} className="flex items-start gap-3 group">
-                  {/* ⚠️ Three explicit labels rather than a click-to-cycle circle.
-                      Daniel asked for check marks AND said "I just want assurance
-                      it's all self-explanatory so it works" — a control whose
-                      states you discover by clicking it is the opposite of that.
-                      "Working on it" is a real answer and a checkbox forces it
-                      into the wrong one, so three, not two. */}
-                  <div className="flex gap-1 flex-shrink-0 mt-0.5">
-                    {[['open', 'To do'], ['doing', 'Doing'], ['done', 'Done']].map(([val, label]) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => setNoteStatus(n.id, val)}
-                        className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${
-                          (n.status ?? 'open') === val
-                            ? val === 'done'
-                              ? 'bg-brand-600 border-brand-600 text-white'
-                              : 'bg-ink-900 border-ink-900 text-white'
-                            : 'border-ink-200 text-ink-400 hover:border-ink-300'
-                        }`}
-                      >
-                        {val === 'done' ? '✓ ' : ''}{label}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-[12px] text-ink-400 flex-shrink-0 mt-1 w-20" title={n.note_date}>{humanDate(n.note_date)}</span>
-                  <p className={`text-[14px] leading-relaxed whitespace-pre-wrap flex-1 mt-0.5 ${
-                    n.status === 'done' ? 'text-ink-400 line-through' : 'text-ink-800'
-                  }`}>
-                    {n.note}
-                    {n.work_order_id && (
-                      <span className="text-[12px] text-ink-400">
-                        {' '}· {jobs.find(j => j.id === n.work_order_id)?.title ?? 'job'}
-                      </span>
-                    )}
-                  </p>
-                  {/* Only the author can delete — RLS enforces it, this just
-                      hides a button that would fail for everyone else. */}
-                  {n.author_profile === profile?.id && (
-                    <button
-                      type="button"
-                      onClick={() => deleteNote(n.id)}
-                      className="text-[12px] text-ink-300 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
 
       {(() => {
         const pairs = repeatedBlockers(logs)  // pattern always over ALL logs, not the filtered view
         if (!pairs.length) return null
         return (
-          <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
             <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
               Same thing came up twice
             </p>
@@ -432,13 +353,13 @@ export default function DailyLogs() {
           explained better — general notes vs notes for that day's job the
           foreman gave at the end of the day." Without a heading the two blocks
           look like one list with different formatting. */}
-      <div className="mt-10 mb-3">
+      <div className="mt-6 mb-3">
         <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">
           From the crew &middot; end of day
         </h2>
         <p className="text-[12px] text-ink-400 mt-0.5 max-w-xl leading-relaxed">
           What each person wrote from site when they finished, about the job they were
-          on. You cannot edit it, add your own note underneath instead.
+          on. Their words stay as written. Add your own note under any log.
         </p>
       </div>
 
@@ -465,7 +386,7 @@ export default function DailyLogs() {
               {showHeader && (
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-400 pt-3 first:pt-0">{bucket}</h3>
               )}
-            <div className="rounded-xl border border-ink-100 border-l-4 bg-white overflow-hidden" style={{ borderLeftColor: personColor(log.person) }}>
+            <div id={`log-${log.id}`} className="rounded-xl border border-ink-100 border-l-4 bg-white overflow-hidden scroll-mt-6" style={{ borderLeftColor: personColor(log.person) }}>
               <div className="px-5 py-3 border-b border-ink-100 flex items-center justify-between gap-3 flex-wrap">
                 <div className="min-w-0 flex items-center gap-2.5">
                   <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0" style={{ background: personColor(log.person) }}>{initials(log.person)}</span>
@@ -548,13 +469,13 @@ export default function DailyLogs() {
 
                 <div className="pt-1">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-1.5">
-                    Your note on this job
+                    Your note on this log
                   </label>
                   <textarea
                     value={draft}
                     onChange={e => setDrafts(d => ({ ...d, [log.id]: e.target.value }))}
                     rows={2}
-                    placeholder="A note on this job. The crew sees it unless you keep it private."
+                    placeholder="A note on this log. The crew sees it unless you keep it private."
                     className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
                   />
                   <label className="mt-2 flex items-center gap-2 cursor-pointer select-none">
@@ -607,6 +528,153 @@ export default function DailyLogs() {
           </button>
         )}
       </div>
+        </div>
+
+      {/* ⚠️ Office notes sit ABOVE the crew logs on purpose. This is the box the
+          person at the desk actually reaches for — the crew's logs arrive on
+          their own, but a note about the day only exists if somebody writes it,
+          and a compose box below a hundred log cards never gets found.
+          It is also what makes the note field visible at all when there are no
+          logs yet: Daniel asked "where is the area for the PM to make notes?"
+          precisely because the per-log note field only renders once a log
+          exists, so with an empty list the whole feature was invisible. */}
+      <aside
+        id="office-notes"
+        className="rounded-xl border border-ink-100 bg-white scroll-mt-20 lg:sticky lg:top-4 lg:max-h-[calc(100vh_-_7rem)] lg:overflow-y-auto"
+      >
+        <div className="px-4 py-3 border-b border-ink-100 sticky top-0 bg-white z-10 rounded-t-xl">
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your notes</h2>
+          <p className="text-[12px] text-ink-400 mt-0.5 leading-relaxed">
+            Jot things down while you read. Things to remember, chase or buy. Only you and the office see these.
+          </p>
+        </div>
+        <div className="px-4 py-4">
+          <textarea
+            value={noteDraft}
+            onChange={e => setNoteDraft(e.target.value)}
+            rows={3}
+            placeholder="A note to yourself. e.g. Supplier rang, steel goes up 6% from the first."
+            className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+          />
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+          <select
+            value={noteJob}
+            onChange={e => setNoteJob(e.target.value)}
+            className="flex-1 min-w-0 rounded-lg border border-ink-200 px-2 py-2 text-sm text-ink-600 focus:outline-none focus:ring-2 focus:ring-brand-300"
+          >
+            <option value="">Not about a job</option>
+            {jobs.map(j => <option key={j.id} value={j.id}>{j.title}</option>)}
+          </select>
+          <button
+            type="button"
+            onClick={addNote}
+            disabled={noteSaving || !noteDraft.trim()}
+            className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-ink-200 text-white text-sm font-medium transition-colors"
+          >
+            {noteSaving ? 'Saving…' : 'Add note'}
+          </button>
+          </div>
+
+          {shownNotes.length > 0 && (
+            <ul className="mt-4 space-y-2.5">
+              {shownNotes.map(n => (
+                <li key={n.id} className="group border-t border-ink-100 pt-2.5 first:border-t-0 first:pt-0">
+                  <p className={`text-[14px] leading-relaxed whitespace-pre-wrap ${
+                    n.status === 'done' ? 'text-ink-400 line-through' : 'text-ink-800'
+                  }`}>
+                    {n.note}
+                  </p>
+                  <p className="text-[12px] text-ink-400 mt-0.5" title={n.note_date}>
+                    {humanDate(n.note_date)}
+                    {n.work_order_id && ` · ${jobs.find(j => j.id === n.work_order_id)?.title ?? 'a job'}`}
+                  </p>
+                  {/* Three explicit labels, not a click-to-cycle circle: Daniel
+                      wanted check marks AND "assurance it's all self-explanatory".
+                      "Working on it" is a real answer, so three, not two. */}
+                  <div className="flex items-center gap-1 mt-1.5">
+                    {[['open', 'To do'], ['doing', 'Doing'], ['done', 'Done']].map(([val, label]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setNoteStatus(n.id, val)}
+                        className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${
+                          (n.status ?? 'open') === val
+                            ? val === 'done'
+                              ? 'bg-brand-600 border-brand-600 text-white'
+                              : 'bg-ink-900 border-ink-900 text-white'
+                            : 'border-ink-200 text-ink-400 hover:border-ink-300'
+                        }`}
+                      >
+                        {val === 'done' ? '✓ ' : ''}{label}
+                      </button>
+                    ))}
+                    {/* Only the author can delete; RLS enforces it. */}
+                    {n.author_profile === profile?.id && (
+                      <button
+                        type="button"
+                        onClick={() => deleteNote(n.id)}
+                        className="ml-auto text-[12px] text-ink-300 hover:text-red-600 lg:opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Notes written ON a log live with that log. Listed here too so
+              everything he has written is in one place; tapping one jumps to
+              the log it belongs to. */}
+          {pinned.length > 0 && (
+            <div className="mt-5 pt-4 border-t border-ink-100">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Your notes on a log</h3>
+              <ul className="mt-2 space-y-2.5">
+                {pinned.map(l => (
+                  <li key={l.id}>
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById(`log-${l.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                      className="text-left w-full group/pin"
+                    >
+                      <span className="block text-[14px] text-ink-800 leading-relaxed group-hover/pin:text-brand-700">{l.pm_note}</span>
+                      <span className="block text-[12px] text-ink-400 mt-0.5">
+                        {humanDate(l.log_date)} · {l.person}{l.job ? ` · ${l.job}` : ''} · {l.pm_note_shared === false ? 'private' : 'the crew sees this'}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </aside>
+      </div>
+
+      {/* Field crew & reminders — moved here from Settings so the crew setup
+          (reminder times, the numbers they report, the roster) lives with the
+          logs. People/roles stay in Settings (Daniel, 8 Oct). */}
+      <div id="crew-setup" className="mt-12 pt-6 border-t border-ink-100 scroll-mt-6">
+        <button
+          onClick={() => setShowCrew(v => !v)}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${showCrew ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
+          Crew and reminders
+        </button>
+        {!showCrew && (
+          <p className="text-[12px] text-ink-400 mt-1 ml-6">
+            Who is on the crew, when they get reminded to write up the day, and what they report. Set once.
+          </p>
+        )}
+        {showCrew && (
+          <div className="mt-3">
+            <TeamSection companyId={profile?.company_id} companyName={companyName} ownerName={ownerName} />
+          </div>
+        )}
+      </div>
+
     </div>
   )
 }

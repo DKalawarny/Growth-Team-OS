@@ -38,9 +38,8 @@ async function fetchSent(companyId) {
   return (rows ?? []).map(r => ({ ...r, files: files.filter(f => f.work_order_id === r.id) }))
 }
 
-export default function OneOffJob({ profile, company, onCreated }) {
+export default function OneOffJob({ profile, company, onCreated, open = false }) {
   const companyId = profile?.company_id
-  const [open, setOpen]       = useState(false)
   const [staff, setStaff]     = useState([])
   const [title, setTitle]     = useState('')
   const [day, setDay]         = useState(todayLocal)   // start
@@ -146,18 +145,9 @@ export default function OneOffJob({ profile, company, onCreated }) {
   const dayLabel = iso => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div className="mt-3">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${open ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
-        Send a job and files to the crew
-      </button>
-
+    <div>
       {open && (
-        <div className="mt-3 max-w-3xl rounded-xl border border-ink-100 bg-white px-5 py-4 flex flex-col gap-3">
+        <div className="mt-4 rounded-xl border border-ink-100 bg-white px-5 py-4 flex flex-col gap-3">
           <p className="text-[12.5px] text-ink-500 leading-relaxed">
             Name the job, pick who is on it and the days it runs, and attach any plans or files.
             The job shows on their link with the files ready to open on site.
@@ -194,7 +184,7 @@ export default function OneOffJob({ profile, company, onCreated }) {
           <div>
             <p className="text-[12px] font-semibold text-ink-600 mb-1.5">Who is on this job?</p>
             {staff.length === 0 ? (
-              <p className="text-[12px] text-ink-400">No crew yet. Add them under Field crew and reminders above.</p>
+              <p className="text-[12px] text-ink-400">No crew yet. Add them under Crew and reminders at the bottom of this page.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {staff.map(s => {
@@ -287,7 +277,7 @@ export default function OneOffJob({ profile, company, onCreated }) {
       )}
 
       {open && sentJobs.length > 0 && (
-        <div className="mt-3 max-w-3xl rounded-xl border border-ink-100 bg-white px-5 py-4">
+        <div className="mt-3 rounded-xl border border-ink-100 bg-white px-5 py-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">What you have sent</p>
           <ul className="flex flex-col divide-y divide-ink-100">
             {sentJobs.map(j => {
