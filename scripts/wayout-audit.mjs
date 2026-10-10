@@ -150,6 +150,40 @@ const PEOPLE = {
       story: 'Retired from the post office two years ago. I miss being on my feet.',
     },
   },
+  // ⭐ 10 Oct: a friend read the whole product as "launch and grow a business".
+  // Nobody who wanted TIME first had been through production. These two have.
+  'time-comfortable': {
+    why: 'wants time, money is fine: every move gives hours back from what she tapped, none adds work or income',
+    answers: {
+      name: 'Karen', age: 44, out: 'I work all the time and I am missing my kids.', region: 'ca',
+      workType: 'employed', relationship: 'aligned', kidsAges: ['5-11', '12-17'],
+      takeHome: 7200, mustPay: 5200, housingCost: 2400, savings: 30000,
+      goalType: [{ key: 'time', label: 'More time' }], horizon: 'a year', yearShape: 'steady',
+      timeEaters: [{ key: 'work-long', label: 'Long hours at my job' }, { key: 'work-travel', label: 'Getting to and from work' }, { key: 'home-running', label: 'Running the house' }],
+      hoursPerWeek: 'under 5', locationText: 'Calgary, Alberta', atStake: 'time',
+      tuesday: 'Home by five, dinner with the kids, no laptop after they are in bed.',
+      peopleNote: 'Dinner with my kids on weeknights.',
+      alreadyTried: 'Asked for fewer hours once, got told it was a bad time.',
+      refuse: 'Quitting outright.',
+    },
+  },
+  'time-but-short': {
+    why: 'says time, every other answer is about money: must not hand him a second job, must not ignore that he is short',
+    answers: {
+      name: 'Luis', age: 36, out: 'I never see my family and we are still behind every month.', region: 'ca',
+      workType: 'employed', relationship: 'aligned', kidsAges: ['0-4', '5-11'],
+      takeHome: 4100, mustPay: 4400, housingCost: 2100, savings: 500,
+      debt: '14000 on cards at 22 percent',
+      goalType: [{ key: 'time', label: 'More time' }], horizon: 'a year', yearShape: 'steady',
+      timeEaters: [{ key: 'work-long', label: 'Long hours at my job' }, { key: 'work-second', label: 'A second job or side work' }],
+      askedFor: 'People pay me to detail their cars. I charge 120 a car.',
+      assets: [{ key: 'truck', label: 'Truck or van' }, { key: 'tools', label: 'Tools' }],
+      hoursPerWeek: 'under 5', locationText: 'Winnipeg, Manitoba', atStake: 'security',
+      tuesday: 'One job, not two. Cards going down. Home for supper.',
+      alreadyTried: 'Picked up weekend shifts at a warehouse, still behind.',
+      enough: 'About 5500 a month',
+    },
+  },
   'thin-answers': {
     why: 'almost nothing given — the likeliest place to invent detail to fill space',
     answers: {

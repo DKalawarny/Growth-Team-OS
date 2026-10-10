@@ -14,7 +14,7 @@
 // rather than a copy that can drift from them.
 import { WAYOUT_READING } from '../../content/wayoutReading.js'
 import { WAYOUT_SCREENS, WAYOUT_OPEN } from '../../content/wayoutIntake.js'
-import { plainDashes } from '../plainDashes'
+import { plainDashes } from '../plainDashes.js'
 export { plainDashes }
 
 /**
