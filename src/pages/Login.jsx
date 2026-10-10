@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { supabase } from '../lib/supabase'
+import { supabase, setRemember } from '../lib/supabase'
 import { SITE_URL, SITE_NAME } from '../lib/seo'
 import Wordmark from '../components/brand/Wordmark'
 import { SHOW_PUBLIC_PRICE } from '../lib/pricing'
@@ -29,11 +29,13 @@ export default function Login() {
   const [resetSent, setResetSent]   = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [remember, setRemember_]   = useState(true)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setRemember(remember)   // before sign-in, so the session is written to the right place
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) setError(error.message)
     else navigate('/dashboard')
@@ -186,11 +188,13 @@ export default function Login() {
                 </label>
                 <input
                   type="email"
+                  name="email"
+                  id="login-email"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  autoComplete="email"
+                  autoComplete="username"
                 />
               </div>
 
@@ -214,6 +218,8 @@ export default function Login() {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    name="password"
+                    id="login-password"
                     autoComplete="current-password"
                     className="pr-10"
                   />
@@ -226,6 +232,21 @@ export default function Login() {
                   </button>
                 </div>
               </div>
+
+              {/* Two different things people mean by "remember me": staying
+                  signed in (this box), and the browser offering to save the
+                  password (the name/autocomplete attributes on the two fields
+                  above, which is what makes Chrome and Safari offer). */}
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={e => setRemember_(e.target.checked)}
+                  className="w-4 h-4 rounded text-brand-600 focus:ring-brand-400 border-ink-300"
+                  style={{ width: 16, height: 16 }}
+                />
+                <span className="text-sm text-ink-700">Keep me signed in on this computer</span>
+              </label>
 
               {error && (
                 <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">

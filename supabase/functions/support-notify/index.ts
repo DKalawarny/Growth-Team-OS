@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
   const email    = clip(body.email, 200)
   const name     = clip(body.name, 120) || '(no name)'
   const company  = clip(body.company, 160) || '(no company name)'
-  const kind     = body.kind === 'problem' ? 'Problem reported' : 'Help question'
+  const kind     = body.kind === 'crash' ? 'A page crashed' : body.kind === 'problem' ? 'Problem reported' : 'Help question'
   const question = clip(body.question, 4000)
   const answer   = clip(body.solomon_answer, 3000)
 
@@ -42,10 +42,10 @@ Deno.serve(async (req) => {
     email ? `Reply to: ${email}` : 'No email on the account.',
     body.page ? `Page they were on: ${clip(body.page, 300)}` : '',
     '',
-    'What they wrote:',
+    body.kind === 'crash' ? 'The error:' : 'What they wrote:',
     question || '(empty)',
     '',
-    answer ? `What Solomon told them first:\n${answer}` : 'Solomon had not answered this.',
+    body.kind === 'crash' ? 'Open a Claude Code session on Eliv8 and paste this in to have it fixed.' : answer ? `What Solomon told them first:\n${answer}` : 'Solomon had not answered this.',
   ].filter(l => l !== '').join('\n')
 
   const res = await fetch('https://api.resend.com/emails', {

@@ -37,8 +37,11 @@ export default function PublicHeader() {
               via the sitemap treats it as unimportant, and an assistant
               following links off the homepage never reaches it at all. This is
               the link that makes the rest of the work count. */}
-          <Link to="/answers" className="text-gray-700 hover:text-gray-900 font-medium">Answers</Link>
-          <Link to="/pricing" className="text-gray-700 hover:text-gray-900 font-medium">Pricing</Link>
+          {/* Answers and Pricing drop out on a phone (both are in the footer): five
+              links did not fit at 390px and the whole page slid sideways. */}
+          <Link to="/answers" className="hidden sm:inline text-gray-700 hover:text-gray-900 font-medium">Answers</Link>
+          <Link to="/pricing" className="hidden sm:inline text-gray-700 hover:text-gray-900 font-medium">Pricing</Link>
+          <Link to="/demo" className="text-brand-700 hover:text-brand-800 font-bold">Live demo</Link>
           <Link to="/login" className="text-gray-600 hover:text-gray-900">Log in</Link>
           <Link
             to="/signup"

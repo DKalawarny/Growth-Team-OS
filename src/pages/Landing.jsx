@@ -208,6 +208,7 @@ export default function Landing() {
       <HeroSection />
       <UseCasesSection />
       <SolomonSection />
+      <DemoBand />
       <FollowsUpSection />
       <WhatHeKnowsSection />
       <ConvictionSection />
@@ -374,21 +375,30 @@ function HeroSection() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+          {/* ⚠️ 10 Oct, Daniel: "the demo button gets kinda lost, it should be one
+              of the big sells." It was a ghost button labelled "See it in action"
+              beside the sign-up. The demo is the strongest thing on this page
+              (the real app, loaded, nothing to sign up for), so it leads, solid
+              white on the dark hero, and says what it is. */}
+          <Link
+            to="/demo"
+            className="px-10 py-4 rounded-xl bg-white hover:bg-gray-100 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-2.5"
+          >
+            <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-brand-600" />
+            Try the live demo
+          </Link>
           <Link
             to="/signup"
             className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
           >
             {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
           </Link>
-          <Link
-            to="/demo"
-            className="px-10 py-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-base transition-colors"
-          >
-            See it in action
-          </Link>
         </div>
 
-        <p className="text-white/30 text-sm">
+        <p className="text-white/60 text-sm">
+          The demo is the real app with a sample company in it. Click anything. No sign-up.
+        </p>
+        <p className="text-white/30 text-sm mt-1.5">
           {SHOW_PUBLIC_PRICE
             ? `No credit card · ${TRIAL_DAYS} days free · Cancel anytime`
             : `No credit card · ${PILOT_PRICE_LINE} · Cancel anytime`}
@@ -866,6 +876,36 @@ function PriceSection() {
   )
 }
 
+// ── The demo, mid-page ────────────────────────────────────────────────────────
+// A second, larger invitation for the reader who scrolled past the hero. By
+// here they have read what Solomon does; this is where they can go and see it.
+function DemoBand() {
+  return (
+    <section className="bg-gray-950 py-16">
+      <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
+        <div className="flex-1 text-center md:text-left">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-400 mb-3">The live demo</p>
+          <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">
+            Don&rsquo;t take our word for it. Open it.
+          </h2>
+          <p className="text-white/70 leading-relaxed max-w-xl">
+            The demo is the full app with a sample landscaping company loaded: its roadmap, its numbers, its crew&rsquo;s
+            daily logs. You get your own private copy, so click and change anything. No sign-up, no card.
+            Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
+          </p>
+        </div>
+        <Link
+          to="/demo"
+          className="flex-shrink-0 px-10 py-5 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-lg transition-colors shadow-lg inline-flex items-center gap-3"
+        >
+          <span aria-hidden className="inline-block w-0 h-0 border-y-[7px] border-y-transparent border-l-[12px] border-l-gray-950" />
+          Open the live demo
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 // ── Closing CTA ───────────────────────────────────────────────────────────────
 
 function ClosingCTA() {
@@ -887,12 +927,12 @@ function ClosingCTA() {
           >
             Start free
           </Link>
-          <a
-            href="mailto:support@eliv8os.com"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl border-2 border-gray-950/20 text-gray-950/70 hover:text-gray-950 hover:border-gray-950/40 font-semibold text-base transition-colors"
+<Link
+            to="/demo"
+            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-gray-950 font-black text-base hover:bg-gray-100 transition-colors"
           >
-            Questions? Email us
-          </a>
+            Try the live demo first
+          </Link>
         </div>
       </div>
     </section>

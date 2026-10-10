@@ -26,7 +26,7 @@ export default function Documents() {
           <div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Library</h1>
             <p className="text-xs text-ink-500 mt-0.5">
-              Two shelves. On the left, everything made in the app. On the right, the files you added yourself.
+              Left: everything made in the app. Right: the files you added.
             </p>
           </div>
         </div>
@@ -36,7 +36,7 @@ export default function Documents() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Left — Generated (40%) */}
-        <div className="flex flex-col w-2/5 border-r border-ink-100 overflow-hidden">
+        <div className="flex flex-col w-1/2 border-r border-ink-100 overflow-hidden">
           {/* Column header */}
           <div className="bg-white border-b border-ink-100 px-6 py-3 flex-shrink-0 flex items-center gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Made in the app</span>
@@ -45,8 +45,6 @@ export default function Documents() {
                 {genCount}
               </span>
             )}
-            <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">What the tools and Solomon wrote for you</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">
@@ -55,7 +53,7 @@ export default function Documents() {
         </div>
 
         {/* Right — Uploaded (60%) */}
-        <div className="flex flex-col w-3/5 overflow-hidden">
+        <div className="flex flex-col w-1/2 overflow-hidden">
           {/* Column header */}
           <div className="bg-white border-b border-ink-100 px-6 py-3 flex-shrink-0 flex items-center gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Your files</span>
@@ -64,8 +62,6 @@ export default function Documents() {
                 {upCount}
               </span>
             )}
-            <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">What you gave Solomon to read</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">

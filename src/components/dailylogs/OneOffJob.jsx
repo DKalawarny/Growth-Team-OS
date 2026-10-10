@@ -150,7 +150,8 @@ export default function OneOffJob({ profile, company, onCreated, open = false })
         <div className="mt-4 rounded-xl border border-ink-100 bg-white px-5 py-4 flex flex-col gap-3">
           <p className="text-[12.5px] text-ink-500 leading-relaxed">
             Name the job, pick who is on it and the days it runs, and attach any plans or files.
-            The job shows on their link with the files ready to open on site.
+            Once sent, the job is in three places: on each person's own page with the files ready to open,
+            on your Tasks board, and in the list under this form.
           </p>
           <input
             value={title}
@@ -276,9 +277,12 @@ export default function OneOffJob({ profile, company, onCreated, open = false })
         </div>
       )}
 
-      {open && sentJobs.length > 0 && (
+      {open && (
         <div className="mt-3 rounded-xl border border-ink-100 bg-white px-5 py-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">What you have sent</p>
+          {sentJobs.length === 0 && (
+            <p className="text-sm text-ink-600">Nothing sent yet. Each job you send from here is listed in this spot, with who it went to and its files.</p>
+          )}
           <ul className="flex flex-col divide-y divide-ink-100">
             {sentJobs.map(j => {
               const ids = j.assigned_staff_ids?.length ? j.assigned_staff_ids : (j.staff_member_id ? [j.staff_member_id] : [])

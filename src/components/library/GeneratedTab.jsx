@@ -106,15 +106,15 @@ export default function GeneratedTab({ onCountChange }) {
           layout or defined better." One flat list mixed a cash-flow forecast
           with an org chart with a saved note. Same rows, now under a plain
           heading for what each is about, with a line saying what this shelf is. */}
-      <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
-        A copy of everything a tool or Solomon writes for you is kept here. Open one to read it again.
+      <p className="text-sm text-ink-600 leading-snug mb-3 lg:h-10">
+        What the tools and Solomon wrote for you. Open one to read it again.
       </p>
-      <div className="flex items-center gap-2 mb-4">
-        <label className="text-xs text-ink-500 font-medium flex-shrink-0">Show</label>
+      <div className="flex items-center gap-2 mb-4 h-10">
+        <label className="text-sm text-ink-600 font-medium flex-shrink-0">Show</label>
         <select
           value={toolFilter}
           onChange={e => setFilter(e.target.value)}
-          className="text-xs border border-ink-200 rounded-lg px-2.5 py-1.5 bg-white text-ink-700 font-medium focus:outline-none focus:border-brand-400 transition-colors"
+          className="min-w-0 flex-1 h-10 text-sm border border-ink-200 rounded-lg px-2.5 bg-white text-ink-800 font-medium focus:outline-none focus:border-brand-400 transition-colors"
         >
           <option value="all">All ({docs.length})</option>
           {usedToolIds.map(id => {

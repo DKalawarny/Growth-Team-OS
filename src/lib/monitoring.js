@@ -105,12 +105,45 @@ export function identify({ userId, companyId } = {}) {
  * Report a caught error that did not reach the error boundary — a failed
  * save, a rejected fetch the UI handled. Optional context is scrubbed.
  */
+// Crashes are also written to our own database (migration 099), which emails
+// Daniel. This is what makes "We've logged what happened" on the crash screen
+// true whether or not the outside error service is configured. It can never
+// throw, never blocks, and reports each distinct message once per page load.
+const sentOnce = new Set()
+function logToOwnDatabase(error, context) {
+  try {
+    const message = scrub(String(error?.message || error || 'Unknown error')).slice(0, 500)
+    if (!message || sentOnce.has(message)) return
+    // A page left open across a deploy asks for a file that was renamed. The
+    // app reloads itself for that; it is not a crash anyone needs an email about.
+    if (/MIME type|dynamically imported module|module script failed|preload CSS|ChunkLoadError/i.test(message)) return
+    sentOnce.add(message)
+    const stack = scrub(String(context?.componentStack || error?.stack || '')).slice(0, 4000) || null
+    import('./supabase').then(async ({ supabase }) => {
+      let user_id = null, company_id = null
+      try {
+        const { data } = await supabase.auth.getSession()
+        user_id = data?.session?.user?.id ?? null
+        if (user_id) {
+          const { data: p } = await supabase.from('profiles').select('company_id').eq('id', user_id).maybeSingle()
+          company_id = p?.company_id ?? null
+        }
+      } catch { /* not signed in: the crew page, or a public page */ }
+      // A crew link carries a token in the path. Keep the page, drop the token.
+      const page = window.location.pathname.replace(/^\/staff\/.+/, '/staff/(crew link)').slice(0, 300)
+      await supabase.from('client_errors').insert({ message, stack, page, user_id, company_id })
+    }).catch(() => {})
+  } catch { /* reporting must never be the thing that breaks */ }
+}
+
 export function reportError(error, context = {}) {
-  if (!DSN || import.meta.env.DEV) {
+  if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.error('[monitoring]', error, context)
     return
   }
+  logToOwnDatabase(error, context)
+  if (!DSN) return
   try {
     Sentry.captureException(error, { extra: context })
   } catch { /* ignore */ }

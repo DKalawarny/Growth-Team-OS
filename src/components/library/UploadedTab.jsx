@@ -218,58 +218,43 @@ export default function UploadedTab({ onCountChange }) {
           Surrounding it with duplicates of itself is the opposite. */}
       {files.length > 0 && (
       <>
-      {/* What this side is, then the ways to add a file, then the files. */}
-      <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
-        Price sheets, contracts, statements, quotes. Solomon reads these before he answers.
-        The more you add, the less he has to guess.
+      {/* ⚠️ 10 Oct, Daniel: "it's a mess, nothing lines up, you need to
+          streamline it." Both shelves now have the SAME three rows in the same
+          places: one line saying what the shelf is, one row of controls with a
+          Show filter on the left, then the list. Keep the two in step: if a row
+          is added here, add its twin in GeneratedTab. */}
+      <p className="text-sm text-ink-600 leading-snug mb-3 lg:h-10">
+        Files you added. Solomon reads these before he answers.
       </p>
-      <div className="flex items-center gap-2 flex-wrap mb-4">
-        <button
-          type="button"
-          onClick={() => setShowUpload(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors"
+      <div className="flex items-center gap-2 mb-4 h-10">
+        <label className="text-sm text-ink-600 font-medium flex-shrink-0">Show</label>
+        <select
+          value={kindFilter}
+          onChange={e => setKind(e.target.value)}
+          className="min-w-0 flex-1 h-10 text-sm border border-ink-200 rounded-lg px-2.5 bg-white text-ink-800 font-medium focus:outline-none focus:border-brand-400"
         >
-          <span aria-hidden>＋</span> Upload a file
-        </button>
+          <option value="all">All ({files.length})</option>
+          {usedKinds.map(k => (
+            <option key={k} value={k}>
+              {KIND_OPTIONS.find(o => o.value === k)?.label ?? k} ({files.filter(f => f.kind === k).length})
+            </option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={() => setShowCloud(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 text-sm font-semibold text-ink-700 transition-colors"
+          className="flex-shrink-0 h-10 inline-flex items-center px-3 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-900"
+          title="Bring files in from Google Drive or OneDrive"
         >
-          Bring in from Google Drive or OneDrive
+          From Drive
         </button>
         <button
           type="button"
-          onClick={handleCheckDrive}
-          disabled={checking}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 text-sm font-semibold text-ink-700 transition-colors disabled:opacity-50"
-          title="Checks whether any file you brought in from Google Drive has changed there since"
+          onClick={() => setShowUpload(true)}
+          className="flex-shrink-0 h-10 inline-flex items-center gap-1.5 px-4 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors"
         >
-          {checking ? 'Checking…' : 'Check Drive for newer versions'}
+          <span aria-hidden>＋</span> Upload
         </button>
-      </div>
-
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-        <div className="flex flex-wrap gap-2">
-          <FilterChip
-            label="All" count={files.length}
-            active={kindFilter === 'all'}
-            onClick={() => setKind('all')}
-          />
-          {usedKinds.map(k => {
-            const meta = KIND_OPTIONS.find(o => o.value === k)
-            return (
-              <FilterChip
-                key={k}
-                label={meta?.label ?? k}
-                count={files.filter(f => f.kind === k).length}
-                active={kindFilter === k}
-                onClick={() => setKind(k)}
-              />
-            )
-          })}
-        </div>
-
       </div>
 
       {/* Freshness result. Deliberately plain text rather than badges on rows:
@@ -320,6 +305,11 @@ export default function UploadedTab({ onCountChange }) {
           No files in this category yet.
         </div>
       ) : (
+        <>
+        {/* A heading and one line, the same shape as the group headings on the
+            other shelf, so the two lists start on the same line. */}
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Files</h3>
+        <p className="text-[12px] text-ink-400 mt-0.5 mb-2">Newest first. Click one to read what Solomon took from it.</p>
         <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
           {visible.map(f => (
             <Row
@@ -330,6 +320,16 @@ export default function UploadedTab({ onCountChange }) {
             />
           ))}
         </div>
+        </>
+      )}
+
+      {files.length > 0 && (
+        <p className="mt-2 text-sm text-ink-600">
+          Brought files in from Google Drive?{' '}
+          <button type="button" onClick={handleCheckDrive} disabled={checking} className="font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50">
+            {checking ? 'Checking…' : 'Check whether any have changed there'}
+          </button>
+        </p>
       )}
 
       {/* ⚠️ 10 Oct, Daniel: "this section is confusing to me." Two dark bars

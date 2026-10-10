@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
+import { isDemoCompany } from '../../lib/demo'
 
 /**
  * RefineChat — conversational tweak panel shared across tool pages.
@@ -39,6 +41,12 @@ export default function RefineChat({
   bare        = false,  // true when the page already wraps it in a card
 }) {
   const [draft, setDraft] = useState('')
+  // In the demo Solomon is switched off, so a change request can only fail,
+  // and it failed as "Couldn't apply that. Try rephrasing." (Daniel, 10 Oct:
+  // "that's a weird response"). The honest answer is that he is off here.
+  const { company } = useAuth()
+  const demo = isDemoCompany(company)
+  const [demoAsked, setDemoAsked] = useState(null)
   const endRef            = useRef(null)
 
   // Keep the chat pinned to the newest message so long threads don't hide it,
@@ -56,6 +64,7 @@ export default function RefineChat({
     const value = (text ?? draft).trim()
     if (!value || refining) return
     setDraft('')
+    if (demo) { setDemoAsked(value); return }
     onSend(value)
   }
 
@@ -103,6 +112,13 @@ export default function RefineChat({
           )}
           <div ref={endRef} />
         </div>
+      )}
+
+      {demoAsked && (
+        <p className="mb-3 text-sm text-ink-800 bg-ink-50 border border-ink-100 rounded-lg px-3 py-2.5 leading-relaxed">
+          You asked: "{demoAsked}". Solomon is switched off in this demo, so nothing changed.
+          In your own account he rewrites the result above to match.
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="flex items-end gap-2">

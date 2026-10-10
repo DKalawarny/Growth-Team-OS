@@ -660,7 +660,16 @@ export default function DailyLogs() {
             open/close, because as a small text link at the foot of the page
             this "gets lost a bit" (Daniel, 10 Oct). */}
         <button
-          onClick={() => setShowCrew(v => !v)}
+          onClick={() => {
+            const opening = !showCrew
+            setShowCrew(opening)
+            // The row sits at the foot of the page, so what opened was below
+            // the screen and it looked as if nothing happened. Bring the row
+            // to the top so the section opens in view.
+            // More than once: the section loads its content after it opens,
+            // and until that arrives the page is too short to scroll this far.
+            if (opening) [80, 450, 1000].forEach(ms => setTimeout(() => document.getElementById('crew-setup')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), ms))
+          }}
           aria-expanded={showCrew}
           className="w-full flex items-center justify-between gap-4 rounded-xl border border-ink-200 bg-white px-5 py-4 text-left"
         >
