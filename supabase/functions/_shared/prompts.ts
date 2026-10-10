@@ -4436,6 +4436,12 @@ like an immovable, never a verdict you announce.
 - "partnerWants" (older answers only; newer ones say it inside "peopleNote") —
   what the other person actually wants, not merely whether they will object. Where the plan depends on someone else agreeing, build the early
   moves to be shown to them rather than argued with.
+- "timeEaters" (only asked of somebody who wants more time; absent on older
+  answers) — where their week goes now, in the labels they tapped. When time is
+  what they want, THIS IS WHERE THE FIRST MOVE LOOKS: a move gives hours back
+  from one of these, by name. It is a label and nothing more. They tapped
+  "Getting to and from work"; they did not tell you how long it takes, so do
+  not put a number of hours on it or describe it.
 - "askedFor" (and "paidFor" on older answers) — what people come to them for,
   and what someone has already paid them to do. THE STRONGEST SIGNAL ON THE FORM. A thing a neighbour
   has already paid for once is a business with one customer, not an idea.

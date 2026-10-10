@@ -8,6 +8,8 @@ import { WAYOUT_HOME, WAYOUT_INTAKE, timeLine } from '../../lib/wayout/brand'
 import { tidyQuote } from '../../lib/wayout/tidyQuote'
 import { WAYOUT_PAYMENTS_LIVE } from '../../lib/wayout/pricing'
 import { Marked } from '../../lib/wayout/marked.jsx'
+import { tapProgress } from '../../lib/wayout/progress'
+import PlanSoFar from './PlanSoFar'
 import { readSource } from '../../lib/wayout/source'
 
 /**
@@ -85,18 +87,21 @@ export default function Diagnostic() {
   const q = DIAGNOSTIC_QUESTIONS[step]
 
   /**
-   * ⭐⭐ WHAT THEY HAVE SAID SO FAR, in their own labels, for the strip under
-   * the question. Only questions already ANSWERED — showing the current one
-   * would make the strip jump as they tap, and the point of it is that it only
-   * ever grows.
+   * ⭐⭐ WHAT THEY HAVE SAID SO FAR, in their own labels, grouped under the rows
+   * the plan sheet keeps. Only questions already ANSWERED: showing the current
+   * one would make the sheet jump as they tap, and the point of it is that it
+   * only ever grows.
+   * ⚠️ The money tap and the country are left out on purpose: money shows on
+   * the sheet later, as their own figures, and a country is not part of a plan.
    */
-  const said = DIAGNOSTIC_QUESTIONS.slice(0, Math.max(step, 0)).flatMap(past => {
+  const SHEET_ROWS = { goalType: 'What you want', horizon: 'How soon', immovable: 'What stays put', asset: 'What you have to work with' }
+  const sheet = DIAGNOSTIC_QUESTIONS.slice(0, Math.max(step, 0)).filter(past => SHEET_ROWS[past.key]).map(past => {
     const v = answers[past.key]
     const labels = (Array.isArray(v) ? v : v ? [v] : [])
       .map(k => past.options.find(o => o.key === k)?.label)
       .filter(Boolean)
     const own = answers[`${past.key}Other`]
-    return own ? [...labels, own] : labels
+    return { label: SHEET_ROWS[past.key], items: own ? [...labels, own] : labels }
   })
 
   /** Record and land. Split out so the note step can call it too. */
@@ -186,7 +191,8 @@ export default function Diagnostic() {
       return
     }
 
-    const next = { ...answers, [q.key]: key }
+    // ⚠️ A one-tap question can still store a list: see `asList` on goalType.
+    const next = { ...answers, [q.key]: q.options.find(o => o.key === key)?.value ?? key }
     setAnswers(next)
 
     if (step < DIAGNOSTIC_QUESTIONS.length - 1) {
@@ -272,7 +278,7 @@ export default function Diagnostic() {
             moving" on every screen, and it animates on every change — which is
             what "2 of 6" in a corner never did. */}
         <div className="wayout__prog">
-          <b style={{ width: `${(step / DIAGNOSTIC_QUESTIONS.length) * 100}%` }} />
+          <b style={{ width: tapProgress(step) }} />
         </div>
 
         <div className="wayout__askstage" key={step}>
@@ -288,13 +294,15 @@ export default function Diagnostic() {
             </p>
           )}
           {q.kicker && <p className="wayout__kicker wayout__rise">{q.kicker}</p>}
-          <h1 className="wayout__bigq wayout__rise wayout__r1">{q.question}</h1>
+          <h1 className="wayout__bigq wayout__rise wayout__r1">{q.questionFor?.(answers) ?? q.question}</h1>
 
           <div className="wayout__chips">
             {q.options.map((opt, i) => {
               const on = q.multi
                 ? (answers[q.key] ?? []).includes(opt.key)
-                : answers[q.key] === opt.key
+                : opt.value
+                  ? JSON.stringify(answers[q.key]) === JSON.stringify(opt.value)
+                  : answers[q.key] === opt.key
               return (
                 <button
                   type="button"
@@ -367,14 +375,10 @@ export default function Diagnostic() {
           )}
         </div>
 
-        {/* ⭐⭐ WHAT IT KNOWS SO FAR. This is the half that turns six screens into
-            one thing being built about you rather than six forms in a row. */}
-        <div className="wayout__sofar">
-          <em>So far</em>
-          {said.length
-            ? said.map((t, i) => <span className="wayout__tok" key={`${t}-${i}`}>{t}</span>)
-            : <span className="wayout__soempty">nothing yet. Six taps is enough to start</span>}
-        </div>
+        {/* ⭐⭐ WHAT IT KNOWS SO FAR, as the plan it is becoming. This was a strip
+            of tokens; it is now the same sheet the questions after this keep
+            filling, so six taps and the rest read as one thing being built. */}
+        <PlanSoFar rows={sheet} empty="Nothing yet. Six taps is enough to start." />
 
         {/* ⚠️ NEUTRAL THE WHOLE WAY THROUGH, and the label says so. The rules are
             a ladder — first check that fires wins — so nothing is genuinely ruled
@@ -458,7 +462,7 @@ function Result({ answers, note }) {
   return (
     <WayoutShell title="The path that fits you" wide>
       <div className="wayout__ask2 wayout__verdict">
-        <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
+        <div className="wayout__prog"><b style={{ width: tapProgress(DIAGNOSTIC_QUESTIONS.length) }} /></div>
 
         {/* ⚠️ PLAIN, AND IT NAMES THE PATH. An earlier version read "Three of
             these were never yours. This one is." Daniel: "this isn't the type of

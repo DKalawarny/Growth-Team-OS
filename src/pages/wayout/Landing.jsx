@@ -314,8 +314,9 @@ export default function Landing() {
               <span>First</span>
               <h3>Six taps, to start</h3>
               <p>
-                Where the money goes, what you have, what you will not move. Enough to
-                narrow four ways out to the one that fits you. No account, nothing typed.
+                More money, more time, or both. Then what you have and what you will
+                not move. Enough to narrow four ways out to the one that fits you. No
+                account, nothing typed.
               </p>
             </div>
             <div>
@@ -336,6 +337,25 @@ export default function Landing() {
               <p>
                 Three moves in the order they work, what each is worth in your own
                 numbers, and the list of what to leave alone. Yours to keep.
+              </p>
+            </div>
+            {/* ⭐⭐ 10 OCT: THE PART THE PAGE NEVER SAID. A friend finished a plan
+                and then described, as the thing he would actually want,
+                something that "keeps them on task" — which is what happens
+                after the plan, and the steps stopped at the plan. Daniel: "maybe
+                we should explain when marketing better."
+                ⚠️ Every clause is a thing the plan page does today: moves are
+                ticked off, all three ticked asks how it went and builds the
+                next plan, and "Something changed?" rewrites it.
+                🔴 Nothing here may imply a person on the other end. The plan is
+                the subject of every sentence, never a coach or an adviser. */}
+            <div>
+              <span>After that</span>
+              <h3>Your plan keeps up with you</h3>
+              <p>
+                Tick each move off as you do it. When all three are done, say how it
+                went and get your next three. If something changes along the way, say
+                so and your plan is rewritten around it.
               </p>
             </div>
           </div>

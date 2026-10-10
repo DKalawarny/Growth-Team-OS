@@ -11,6 +11,9 @@ import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE, timeLine } from '../../lib/wayout/brand'
 import { priceShort } from '../../lib/wayout/pricing'
 import { Marked } from '../../lib/wayout/marked.jsx'
+import { intakeProgress } from '../../lib/wayout/progress'
+import { sheetRows } from '../../lib/wayout/planSheet'
+import PlanSoFar from './PlanSoFar'
 
 /**
  * The way out — the opening screen and the six intake screens.
@@ -197,7 +200,15 @@ export default function Intake({ preview = false, previewReflections = null }) {
   }, [step])
 
   function setValue(key, value) {
-    setAnswers(a => ({ ...a, [key]: value }))
+    setAnswers(a => {
+      const next = { ...a, [key]: value }
+      // 🔴 A hidden answer was still sent. Found 10 Oct on a real plan: somebody
+      // tapped two goals, picked "More time" as the one for this year, then
+      // untapped it. The follow-up disappeared and its answer stayed, and the
+      // plan is told that answer decides its direction.
+      if (key === 'goalType' && !(Array.isArray(value) && value.length > 1)) delete next.goalFirst
+      return next
+    })
     // Clear the inline error the moment they answer, rather than making them
     // press Next again to find out they fixed it.
     setErrors(e => (e[key] ? { ...e, [key]: undefined } : e))
@@ -353,6 +364,9 @@ export default function Intake({ preview = false, previewReflections = null }) {
   }
 
   // ── S0 ────────────────────────────────────────────────────────────────────
+  // ⭐ The plan sheet, the same one the six taps started. See PlanSoFar.
+  const sheet = sheetRows(answers, step)
+
   if (step === 0) {
     const f = WAYOUT_OPENING.field
     return (
@@ -363,7 +377,8 @@ export default function Intake({ preview = false, previewReflections = null }) {
             either of them. One is the first question anybody answers; the other is
             `story`, the required catch-all that carries an illness, a bankruptcy
             or a record. Both are exactly where somebody would rather talk. */}
-        <div className="wayout__ask2">
+        <div className={sheet.length ? 'wayout__ask2 wayout__ask2--sheet' : 'wayout__ask2'}>
+          <div className="wayout__prog"><b style={{ width: intakeProgress(0) }} /></div>
           <div className="wayout__askstage">
             <h1 className="wayout__bigq wayout__rise">
               <Marked text={WAYOUT_OPENING.headline} highlight={WAYOUT_OPENING.highlight} />
@@ -393,6 +408,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
               {timeLine()} {priceShort()}
             </p>
           </div>
+          {sheet.length > 0 && <PlanSoFar rows={sheet} />}
         </div>
       </WayoutShell>
     )
@@ -407,8 +423,8 @@ export default function Intake({ preview = false, previewReflections = null }) {
     const f = WAYOUT_OPEN.field
     return (
       <WayoutShell wide>
-        <div className="wayout__ask2">
-          <div className="wayout__prog"><b style={{ width: '100%' }} /></div>
+        <div className="wayout__ask2 wayout__ask2--sheet">
+          <div className="wayout__prog"><b style={{ width: intakeProgress(step) }} /></div>
           <div className="wayout__askstage">
             <p className="wayout__kicker wayout__rise">Last one</p>
             <h1 className="wayout__bigq wayout__rise wayout__r1">{WAYOUT_OPEN.question}</h1>
@@ -436,6 +452,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
               {WAYOUT_OPEN.cta}
             </button>
           </div>
+          <PlanSoFar rows={sheet} />
           <div className="wayout__nav">
             <button className="wayout__back" onClick={back} aria-label="Back">←</button>
           </div>
@@ -465,19 +482,19 @@ export default function Intake({ preview = false, previewReflections = null }) {
           much further, what was heard, and the price. They now sit where the
           equivalent sits on a tap screen, so nothing was lost and the dead
           column on the left went with it. */}
-      <div className="wayout__ask2">
+      <div className="wayout__ask2 wayout__ask2--sheet">
         <div className="wayout__prog">
-          <b style={{ width: `${((step - 1) / WAYOUT_TOTAL_SCREENS) * 100}%` }} />
+          <b style={{ width: intakeProgress(step) }} />
         </div>
 
         <div className="wayout__askstage" key={step}>
           {screen?.section && (
             <p className="wayout__kicker wayout__rise">{screen.section}</p>
           )}
-          <h1 className="wayout__bigq wayout__rise wayout__r1">{screen.question}</h1>
+          <h1 className="wayout__bigq wayout__rise wayout__r1">{screen.questionFor?.(answers) ?? screen.question}</h1>
           {screen?.why && (
             <p className="wayout__lead wayout__rise wayout__r2" style={{ maxWidth: '58ch' }}>
-              {screen.why}
+              {screen.whyFor?.(answers) ?? screen.why}
             </p>
           )}
 
@@ -493,7 +510,7 @@ export default function Intake({ preview = false, previewReflections = null }) {
                 worst possible place for the form to prove it is not. */}
             {visibleFields(screen, answers).map(f => (
               <div key={f.key}>
-                {f.label && <label className="wayout__label">{f.label}</label>}
+                {f.label && <label className="wayout__label">{f.labelFor?.(answers) ?? f.label}</label>}
                 {/* ⭐ 9 Oct: carried from the free taps. Said, so it does not read
                     as the same question asked twice. */}
                 {(answers._carried ?? []).includes(f.key) && (
@@ -525,6 +542,8 @@ export default function Intake({ preview = false, previewReflections = null }) {
             ? <span className="wayout__tok">{reflection}</span>
             : <span className="wayout__soempty">{priceShort()}</span>}
         </div>
+
+        <PlanSoFar rows={sheet} />
 
         <div className="wayout__nav">
           <button className="wayout__back" onClick={back} aria-label="Back">←</button>

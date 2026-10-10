@@ -2240,6 +2240,75 @@ h1.wayout__heroline {
 }
 .wayout__soempty { font-size: 13px; color: var(--label); }
 
+/* ── The plan, filling in while they answer ─────────────────────────────── */
+.wayout__sheet {
+  margin-top: 22px; border: 1px solid var(--line); border-radius: 16px;
+  background: var(--paper); padding: 18px 20px;
+  display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px;
+}
+.wayout__sheeth {
+  font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--label); margin: 0 0 12px;
+}
+.wayout__sheetrow { margin-bottom: 12px; }
+.wayout__sheetrow:last-child { margin-bottom: 0; }
+.wayout__sheetrow em {
+  display: block; font-style: normal; font-size: 12px; font-weight: 700;
+  color: var(--soft); margin-bottom: 6px;
+}
+.wayout__sheetrow > span { display: flex; flex-wrap: wrap; gap: 7px; }
+.wayout__sheetrow p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--ink); }
+.wayout__sheetrow p.is-hand {
+  font-family: Caveat, ui-rounded, cursive; font-size: 24px; line-height: 1.15;
+}
+.wayout__sheetmoves { border-left: 1px dashed var(--line); padding-left: 22px; }
+.wayout__sheetmove { display: flex; align-items: center; gap: 11px; margin-bottom: 11px; }
+.wayout__sheetmove b {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px dashed #C9C2AC; color: var(--label);
+  font-size: 13px; display: grid; place-items: center;
+}
+.wayout__sheetmove > span { flex: 1; min-width: 0; }
+.wayout__sheetmove s {
+  display: block; text-decoration: none; font-size: 13px; font-weight: 700;
+  color: var(--label); margin-bottom: 5px;
+}
+.wayout__sheetmove i {
+  display: block; height: 9px; border-radius: 999px; background: var(--tint);
+}
+.wayout__sheetfine { margin: 4px 0 0; font-size: 13px; color: var(--label); }
+@media (max-width: 760px) {
+  .wayout__sheet { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
+  .wayout__sheetmoves {
+    border-left: 0; padding-left: 0;
+    border-top: 1px dashed var(--line); padding-top: 16px;
+  }
+}
+
+/* ⭐ On the question screens there is a tall column of fields and, on a wide
+   window, nothing beside it, so the sheet rides alongside and stays in view.
+   Under the fields it sat 1,700px down, where nobody answering would see it
+   fill. ⚠️ Measured, not assumed: see the sticky check in the 10 Oct notes. */
+@media (min-width: 1100px) {
+  .wayout__ask2--sheet {
+    display: grid; grid-template-columns: minmax(0, 1fr) 330px;
+    column-gap: 40px; align-items: start;
+  }
+  .wayout__ask2--sheet > .wayout__prog,
+  .wayout__ask2--sheet > .wayout__nav { grid-column: 1 / -1; }
+  .wayout__ask2--sheet > .wayout__askstage,
+  .wayout__ask2--sheet > .wayout__sofar { grid-column: 1; }
+  .wayout__ask2--sheet > .wayout__sheet {
+    grid-column: 2; grid-row: 2 / span 2;
+    position: sticky; top: 24px; margin-top: 0;
+    grid-template-columns: 1fr; gap: 16px;
+  }
+  .wayout__ask2--sheet > .wayout__sheet .wayout__sheetmoves {
+    border-left: 0; padding-left: 0;
+    border-top: 1px dashed var(--line); padding-top: 16px;
+  }
+}
+
 /* ── The four, held in view ─────────────────────────────────────────────── */
 .wayout__rail { margin-top: 18px; }
 .wayout__raill {

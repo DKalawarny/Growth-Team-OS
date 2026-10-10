@@ -166,6 +166,13 @@ export const DIAGNOSTIC_OPENING = {
   fine: 'No card. These questions need no account; you make one at the end to keep your plan. Nothing is charged.',
 }
 
+/** They want time and did not ask for money. Read by the wording, never the rules. */
+export const onlyTime = a => {
+  const g = Array.isArray(a?.goalType) ? a.goalType : a?.goalType ? [a.goalType] : []
+  const keys = g.map(x => x?.key ?? x)
+  return keys.includes('time') && !keys.includes('money')
+}
+
 export const DIAGNOSTIC_QUESTIONS = [
   {
     key: 'goalType',
@@ -173,16 +180,26 @@ export const DIAGNOSTIC_QUESTIONS = [
     // each question gets a reason to exist before it is asked.
     kicker: 'First, what you want',
     // 🔴 SINGLE-SELECT WAS WRONG AND IT WAS THE FIRST THING ANYONE SAW. Wanting
-    // more time AND more money is the normal case, not an edge case — forcing
-    // one gives a wrong answer and tells the person on screen one that this
-    // thing does not understand ordinary life.
-    multi: true,
-    question: 'What do you want most? Tap any.',
+    // more time AND more money is the normal case, not an edge case, so the
+    // question went multi-select with four options.
+    //
+    // ⭐⭐ 10 OCT: THREE ANSWERS, ONE TAP, AND "BOTH" IS ONE OF THEM. A friend
+    // who went through it read the whole product as "for people starting a
+    // business". Daniel: "maybe the first question is three: more money, time,
+    // or both." It keeps what multi-select was for (both is sayable) and puts
+    // TIME on the first screen as an equal, so the person who works too much
+    // and never sees their family knows in one tap that this is for them too.
+    //
+    // ⚠️ THE STORED SHAPE DID NOT CHANGE. `value` is what gets saved, and it is
+    // still the list everything downstream reads: choosePath, the carry into the
+    // intake's own goal chips, and the plan. "Not working for someone else" and
+    // "Freedom to move" are still asked, on the intake's goal question.
+    asList: true,
+    question: 'What do you want more of?',
     options: [
-      { key: 'money',       label: 'More money' },
-      { key: 'time',        label: 'More time' },
-      { key: 'independent', label: 'Not working for someone else' },
-      { key: 'mobile',      label: 'Freedom to move' },
+      { key: 'money', label: 'More money', value: ['money'] },
+      { key: 'time',  label: 'More time',  value: ['time'] },
+      { key: 'both',  label: 'Both',       value: ['money', 'time'] },
     ],
   },
   {
@@ -224,6 +241,10 @@ export const DIAGNOSTIC_QUESTIONS = [
     kicker: 'What you are working with',
     multi: true,
     question: 'What do you already have that could make money? Tap any.',
+    // ⚠️ Somebody who tapped only "More time" was asked what could make money,
+    // which is the question that told a time person this was not for them.
+    // Same options and the same rules read them; only the words change.
+    questionFor: a => onlyTime(a) ? 'What do you already have that could help? Tap any.' : null,
     hint: 'Pick any that apply.',
     options: [
       { key: 'vehicle',  label: 'A vehicle or tools' },

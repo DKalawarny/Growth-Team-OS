@@ -1195,7 +1195,7 @@ const FIELD_NAMES = [
   'partnerWants', 'peopleNote', 'askedFor', 'paidFor', 'takeHome', 'mustPay',
   'householdTakeHome', 'atStake', 'fiveYearTest', 'tradeRank', 'hoursPerWeek',
   'yearShape', 'locationText', 'alreadyTried', 'goalType', 'goalFirst',
-  'seasonNote', 'worstVersion', 'fromToward',
+  'seasonNote', 'worstVersion', 'fromToward', 'timeEaters',
   // 🔴 'discretionary' WAS IN THIS LIST AND IT IS AN ORDINARY ENGLISH WORD.
   // The model wrote the perfectly good "no discretionary spending named" and
   // the substitution turned it into "no what you spend on top spending named".
@@ -1211,6 +1211,7 @@ const FIELD_IN_WORDS = {
   householdTakeHome: 'what the household takes home',
   hoursPerWeek: 'the hours you have',
   locationText: 'where you live',
+  timeEaters: 'what takes your time',
 }
 
 /**

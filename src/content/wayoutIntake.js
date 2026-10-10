@@ -58,6 +58,12 @@ export const WAYOUT_OPENING = {
   handwritten: 'Not another course. Promise.',
 }
 
+const goalKeys = a => (Array.isArray(a?.goalType) ? a.goalType : a?.goalType ? [a.goalType] : []).map(x => x?.key ?? x)
+/** Time is one of the things they want. */
+export const wantsTime = a => goalKeys(a).includes('time')
+/** They want time and did not ask for money. Changes wording only. */
+export const onlyTime = a => wantsTime(a) && !goalKeys(a).includes('money')
+
 export const WAYOUT_SCREENS = [
   // ── S1 ────────────────────────────────────────────────────────────────────
   {
@@ -366,8 +372,40 @@ export const WAYOUT_SCREENS = [
     section: 'What you can start from',
     why: 'Things you own, things you can do, and time you could spare. Most people have more than they think, and the first step usually starts here.',
     question: 'What do you already have that could make money?',
+    // ⭐⭐ 10 OCT: A PERSON WHO CAME FOR TIME IS NOT ASKED WHAT COULD MAKE MONEY
+    // FIRST. A friend who went through it read the product as "for people
+    // starting a business", and this screen is where that reading comes from.
+    // Daniel: it is "about getting out of a situation you don't want to be in.
+    // That could be even working too much and no time for family."
+    // ⚠️ `goalType` is usually known by here, carried from the first tap.
+    questionFor: a => onlyTime(a) ? 'What takes your time, and what do you have to work with?' : null,
+    whyFor: a => onlyTime(a) ? 'To get time back, your plan has to know where it goes now. Then what you have that could help.' : null,
     reflectAfter: true,
     fields: [
+      {
+        // ⚠️ NOT REQUIRED, deliberately. `intakeIsComplete` walks required
+        // fields, so a required one added today would send everybody who
+        // already finished and wants more time back into the questions.
+        key: 'timeEaters',
+        showIf: a => wantsTime(a),
+        kind: 'chips',
+        label: 'What takes up most of your week? Tap any that apply.',
+        hint: 'Your plan looks here first for hours to give back.',
+        allowCustom: true,
+        required: false,
+        options: [
+          // ⚠️ Keys chosen to be things nobody writes. mapContract treats a
+          // hyphenated chip key found in a plan as our label leaking, so a key
+          // like "second-job" would flag an ordinary sentence.
+          { key: 'work-long', label: 'Long hours at my job' },
+          { key: 'work-travel', label: 'Getting to and from work' },
+          { key: 'work-second', label: 'A second job or side work' },
+          { key: 'work-own', label: 'My own business' },
+          { key: 'care-kids', label: 'Looking after kids' },
+          { key: 'care-family', label: 'Looking after a parent or family' },
+          { key: 'home-running', label: 'Running the house' },
+        ],
+      },
       {
         // 🔴 The plan is a sequence and we were asking the horizon in YEARS
         // while never asking how many hours a week exist to build it in. Five
@@ -394,6 +432,7 @@ export const WAYOUT_SCREENS = [
         // its hint read as describing these. Angela: "what is this asking? The
         // choices are things... vehicle, boat".
         label: 'What do you have that could earn money? Tap anything that applies.',
+        labelFor: a => onlyTime(a) ? 'What do you have that could help? Tap anything that applies.' : null,
         hint: 'Things you own, space you have, things you are good at, and people who could send you work.',
         allowCustom: true,
         required: true,
