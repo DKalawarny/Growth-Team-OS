@@ -307,7 +307,7 @@ export default function Roadmap() {
       const [ordersRes, profilesRes, staffRes] = await Promise.all([
         supabase
           .from('work_orders')
-          .select('id, milestone_id, title, assigned_to, staff_member_id, due_date, created_at')
+          .select('id, milestone_id, title, assigned_to, staff_member_id, assigned_staff_ids, due_date, created_at')
           .eq('company_id', profile.company_id)
           .not('milestone_id', 'is', null)
           // Order by created_at ascending so the latest row overwrites
@@ -329,9 +329,23 @@ export default function Roadmap() {
       const woIdMap    = new Map() // `${milestone_id}::${title}` -> work_order id (latest wins)
       for (const o of (ordersRes.data ?? [])) {
         if (!o.milestone_id) continue
-        const person = o.assigned_to     ? { ...profileMap[o.assigned_to],    _t: 'profile' }
-                     : o.staff_member_id ? { ...staffMap[o.staff_member_id],   _t: 'staff'   }
-                     : null
+        // Who's on this task. `assigned_staff_ids` (the multi-assignee array)
+        // is the field the app and the demo seed actually write, so it wins;
+        // `assigned_to` (a profile) and `staff_member_id` (one staffer) are
+        // the older single-assignee fallbacks. Reading only the fallbacks is
+        // what hid the seeded roadmap assignees.
+        const staffIds = Array.isArray(o.assigned_staff_ids) ? o.assigned_staff_ids : []
+        let persons = staffIds
+          .map(id => (staffMap[id] ? { ...staffMap[id], _t: 'staff' } : null))
+          .filter(Boolean)
+        if (persons.length === 0) {
+          const single = o.assigned_to && profileMap[o.assigned_to]
+                           ? { ...profileMap[o.assigned_to], _t: 'profile' }
+                       : o.staff_member_id && staffMap[o.staff_member_id]
+                           ? { ...staffMap[o.staff_member_id], _t: 'staff' }
+                       : null
+          if (single) persons = [single]
+        }
 
         // Per-action-step index — uses the job's title, which the
         // inline "+ Task" button sets to the exact action step text.
@@ -345,15 +359,19 @@ export default function Roadmap() {
           woIdMap.set(`${o.milestone_id}::${o.title}`, { id: o.id, due_date: o.due_date ?? null })
         }
 
-        if (!person?.id) continue
+        if (persons.length === 0) continue
 
-        // Per-milestone roll-up (unchanged)
+        // Per-milestone roll-up — every distinct person on the task
         if (!map.has(o.milestone_id)) map.set(o.milestone_id, [])
         const arr = map.get(o.milestone_id)
-        if (!arr.find(a => a.id === person.id)) arr.push(person)
+        for (const person of persons) {
+          if (person?.id && !arr.find(a => a.id === person.id)) arr.push(person)
+        }
 
+        // Per-action-step assignee — the primary (first) person drives the
+        // reassign modal, which is single-person.
         if (o.title) {
-          actionMap.set(`${o.milestone_id}::${o.title}`, person)
+          actionMap.set(`${o.milestone_id}::${o.title}`, persons[0])
         }
       }
       setAssigneesByMilestone(map)

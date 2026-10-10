@@ -34,3 +34,10 @@ design/*.html
 .wayout-audit-cache/
 .wayout-crisis-cache/
 .solomon-faith-cache/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

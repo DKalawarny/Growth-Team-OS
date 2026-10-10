@@ -31,16 +31,6 @@ export const isDemoCompany = company => !!company?.is_demo
  */
 export const DEMO_SOP_SUGGESTIONS = [
   {
-    title: 'Site access and gate-key confirmation',
-    why:   'Access was blocked at Maple Plaza because the gate key was not on site, costing the crew about 40 minutes. Confirming access the day before would stop it recurring.',
-    steps: [
-      'Call the site contact the day before and confirm the gate code, or who will hold the key',
-      'Get written confirmation (text or email) that the key will be on site when the crew arrives',
-      'Send a reminder to the site contact the morning of the visit',
-      'On arrival, confirm access before unloading any equipment',
-    ],
-  },
-  {
     title: 'Pre-visit scope and pruning confirmation',
     why:   'At Riverbend the crew could not confirm which zones to prune with no one on site and guessed on two beds. A quick scope check avoids rework and an unhappy client.',
     steps: [

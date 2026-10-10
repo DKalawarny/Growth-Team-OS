@@ -308,6 +308,16 @@ export default function SOPs() {
   // ── Template-level operations ──────────────────────────────────────────────
 
   async function createTemplate() {
+    // Reuse an existing blank instead of stacking more "Untitled SOP" rows:
+    // if there's already an empty, untouched one, open it rather than making
+    // another. Keeps the list from filling with blanks on repeated clicks.
+    const blank = templates.find(
+      t => !t.archived_at &&
+           (t.name || '').trim() === 'Untitled SOP' &&
+           (t.items?.length ?? 0) === 0
+    )
+    if (blank) { setSelectedId(blank.id); return }
+
     setBusy(true); setError(null)
     const { data, error: err } = await supabase
       .from('work_order_templates')
@@ -327,6 +337,15 @@ export default function SOPs() {
   // the empty template behind rather than rolling back — the owner can either
   // archive it or add steps manually, both of which are one click away.
   async function createFromStarter(starter) {
+    // Dedup — if a SOP with this name already exists, open it instead of
+    // creating a second copy. Clicking the same suggestion twice, or drafting
+    // one the owner already has, should never pile up duplicates.
+    const dupe = templates.find(
+      t => !t.archived_at &&
+           (t.name || '').trim().toLowerCase() === (starter.name || '').trim().toLowerCase()
+    )
+    if (dupe) { setSelectedId(dupe.id); return }
+
     setBusy(true); setError(null)
     const { data: tpl, error: tplErr } = await supabase
       .from('work_order_templates')
@@ -569,13 +588,19 @@ export default function SOPs() {
                         <div key={i} className="p-3 border border-ink-150 rounded-lg bg-brand-50/30">
                           <p className="text-sm font-semibold text-ink-900">{sg.title}</p>
                           {sg.why && <p className="text-[11px] text-ink-600 mt-1 leading-snug">{sg.why}</p>}
-                          <button
-                            onClick={() => draftWithSolomon(sg.title)}
-                            disabled={!!draftTitle}
-                            className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
-                          >
-                            {draftTitle === sg.title ? 'Drafting…' : 'Draft this with Solomon →'}
-                          </button>
+                          {isDemoCompany(company) ? (
+                            <p className="mt-2 text-[11px] text-ink-400 italic leading-snug">
+                              In your own account, Solomon writes the full SOP into your library.
+                            </p>
+                          ) : (
+                            <button
+                              onClick={() => draftWithSolomon(sg.title)}
+                              disabled={!!draftTitle}
+                              className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
+                            >
+                              {draftTitle === sg.title ? 'Drafting…' : 'Draft this with Solomon →'}
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -590,13 +615,15 @@ export default function SOPs() {
                 <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500">
                   SOPs <span className="text-ink-400">· {templates.length}</span>
                 </h2>
-                <button
-                  onClick={createTemplate}
-                  disabled={busy}
-                  className="text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
-                >
-                  + New
-                </button>
+                {!isDemoCompany(company) && (
+                  <button
+                    onClick={createTemplate}
+                    disabled={busy}
+                    className="text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
+                  >
+                    + New
+                  </button>
+                )}
               </div>
 
               {templates.length === 0 ? (
@@ -672,7 +699,7 @@ export default function SOPs() {
                 template={selected}
                 onBack={() => setSelectedId(null)}
                 onUpdateTemplate={patch => updateTemplate(selected.id, patch)}
-                onDelete={() => deleteTemplate(selected.id)}
+                onDelete={isDemoCompany(company) ? null : () => deleteTemplate(selected.id)}
                 onAddItem={() => addItem(selected.id)}
                 onUpdateItem={(itemId, patch) => updateItem(selected.id, itemId, patch)}
                 onRemoveItem={itemId => removeItem(selected.id, itemId)}
@@ -961,13 +988,15 @@ function PlaybookEditor({
         >
           Use this SOP on a new task →
         </Link>
-        <button
-          onClick={onDelete}
-          disabled={busy}
-          className="text-xs font-semibold text-red-700 hover:text-red-800 disabled:opacity-50"
-        >
-          Delete SOP
-        </button>
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            disabled={busy}
+            className="text-xs font-semibold text-red-700 hover:text-red-800 disabled:opacity-50"
+          >
+            Delete SOP
+          </button>
+        )}
       </div>
     </div>
   )
