@@ -145,6 +145,16 @@ export default function Newsletter() {
     }))
   }
 
+  // A section of your own (Daniel, 10 Oct: "there should be an area that you
+  // can add another section of info that might be different"). Lives in the same
+  // list as the drafted ones, so copying and saving carry it with no extra work.
+  function addSection() {
+    setResult(prev => ({ ...prev, sections: [...(prev.sections ?? []), { heading: '', body: '', custom: true }] }))
+  }
+  function removeSection(i) {
+    setResult(prev => ({ ...prev, sections: prev.sections.filter((_, idx) => idx !== i) }))
+  }
+
   // ── Generate ─────────────────────────────────────────────────────────────────
   async function handleGenerate(e) {
     e?.preventDefault()
@@ -358,23 +368,45 @@ Return JSON only:
             {/* Sections */}
             <div className="divide-y divide-ink-50">
               {(result.sections ?? []).map((s, i) => (
-                <div key={i} className="px-8 py-5">
-                  <input
-                    type="text"
-                    value={s.heading ?? ''}
-                    onChange={e => updateSection(i, 'heading', e.target.value)}
-                    className="block w-full text-[10.5px] font-bold uppercase tracking-widest text-ink-400 border-0 outline-none ring-0 focus:ring-0 bg-transparent p-0 mb-2.5"
-                    placeholder="Section heading…"
-                  />
+                <div key={i} className="px-8 py-5 group/sec">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="text"
+                      value={s.heading ?? ''}
+                      onChange={e => updateSection(i, 'heading', e.target.value)}
+                      className="block flex-1 text-[10.5px] font-bold uppercase tracking-widest text-ink-400 border-0 outline-none ring-0 focus:ring-0 bg-transparent p-0 mb-2.5"
+                      placeholder={s.custom ? 'Give this section a heading, e.g. Safety reminder' : 'Section heading…'}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeSection(i)}
+                      className="flex-shrink-0 text-[11px] text-ink-300 hover:text-red-600 opacity-0 group-hover/sec:opacity-100 focus:opacity-100 transition-opacity"
+                    >
+                      Remove section
+                    </button>
+                  </div>
                   <textarea
                     value={s.body ?? ''}
                     onChange={e => updateSection(i, 'body', e.target.value)}
                     rows={Math.max(3, Math.ceil((s.body?.length ?? 0) / 90))}
                     className="block w-full text-sm text-ink-800 leading-relaxed border border-transparent hover:border-ink-200 focus:border-brand-300 focus:ring-1 focus:ring-brand-200 rounded-lg bg-transparent p-2 -mx-2 resize-none transition-colors outline-none"
-                    placeholder="Section body…"
+                    placeholder={s.custom ? 'Write what you want the team to know. A birthday, a new truck, a reminder, a thank you.' : 'Section body…'}
                   />
                 </div>
               ))}
+
+              <div className="px-8 py-4">
+                <button
+                  type="button"
+                  onClick={addSection}
+                  className="text-sm font-semibold text-brand-700 hover:text-brand-800"
+                >
+                  + Add a section of your own
+                </button>
+                <p className="text-[12px] text-ink-400 mt-0.5">
+                  For anything the draft does not cover. It goes out with the rest when you copy or save.
+                </p>
+              </div>
 
               {/* Sign off */}
               {result.sign_off !== undefined && (

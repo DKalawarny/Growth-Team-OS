@@ -17,6 +17,7 @@ import { referenceCanonBlock } from './references'
 import { loadMemory, formatMemory } from './memory'
 import { roadmapDrift, describeDrift } from './roadmapFingerprint'
 import { AMOUNTS_EMBED, withAmounts } from './jobAmounts'
+import { quarterKey, quarterHistory, stepsDone } from './quarters'
 
 // Safety vault — char budget for direct loading (no embeddings path).
 // Owner uploads SOPs, SDS sheets, permits. We load the most recent
@@ -175,7 +176,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       .maybeSingle(),
     supabase
       .from('milestones')
-      .select('id, title, description, timeframe, category, completed, weight, progress_percent, start_date, end_date, depends_on, sort_order')
+      .select('id, title, description, timeframe, category, completed, weight, progress_percent, start_date, end_date, depends_on, sort_order, actions, actions_done, rock_quarter')
       .eq('company_id', companyId)
       .order('sort_order', { ascending: true }),
     supabase
@@ -616,6 +617,22 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
       completed:           completedCount,
       weighted_pct_done:   weightedPct,  // the number the owner sees on /roadmap
       active_focus:        active,
+      // ⭐ The quarter's priorities and whether they got done. These are roadmap
+      // milestones the owner chose for the quarter, so this is counted from
+      // what was ticked and finished, not from anything he said about it.
+      // `history` is finished-out-of-set for each past quarter: the only
+      // measure here of whether priorities he sets tend to get finished.
+      this_quarter: (() => {
+        const key = quarterKey()
+        const mine = allMiles.filter(m => m.rock_quarter === key)
+        const history = quarterHistory(allMiles).filter(q => q.quarter < key)
+        if (mine.length === 0 && history.length === 0) return null
+        return {
+          quarter: key,
+          priorities: mine.map(m => ({ title: m.title, finished: !!m.completed, steps_done: stepsDone(m).done, steps_total: stepsDone(m).total })),
+          history,
+        }
+      })(),
       // ⚠️ Whether this plan was built for the business he has NOW. Milestones
       // are generated once from business_profiles and never re-checked, so
       // without this Solomon reasons confidently from a roadmap made for a

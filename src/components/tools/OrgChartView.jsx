@@ -48,7 +48,7 @@ export default function OrgChartView({ data }) {
       {summary && (
         <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
           <div className="text-xs uppercase tracking-wide text-brand-700 mb-1">
-            Target org · {horizon_label || 'Future state'}
+            Where your team is heading{horizon_label ? ` · ${horizon_label}` : ''}
           </div>
           <p className="text-sm text-gray-800 leading-relaxed">{summary}</p>
         </div>
@@ -56,10 +56,24 @@ export default function OrgChartView({ data }) {
 
       {owner_transition && <OwnerTransition block={owner_transition} />}
 
+      {/* ⚠️ 10 Oct, Daniel: "org needs a bit more excitement and clear wording."
+          It was an org chart with no chart: indented cards and a legend in
+          consultant words. Now the picture comes first, today beside where it
+          is heading, so the owner SEES the business change shape. The cards
+          stay underneath as the detail. */}
       {roles.length > 0 && (
         <Section
-          title="Who does what"
-          hint="Indentation = reporting line. Tag colour = existing vs. new vs. evolving role."
+          title="The picture"
+          hint="Who answers to whom. On top, the team you have. Below, the team this plan builds."
+        >
+          <BeforeAfterChart roles={roles} horizon={horizon_label} />
+        </Section>
+      )}
+
+      {roles.length > 0 && (
+        <Section
+          title="What each role is responsible for"
+          hint="Each box sits under the person it answers to."
         >
           <RoleTree roles={roles} />
         </Section>
@@ -67,7 +81,7 @@ export default function OrgChartView({ data }) {
 
       {hiring_sequence.length > 0 && (
         <Section
-          title="Hiring sequence"
+          title="Who to hire, and in what order"
           hint="Order matters more than speed. Each hire is in this position because it unlocks the next."
         >
           <ol className="space-y-2">
@@ -109,7 +123,7 @@ function OwnerTransition({ block }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
-        Your role shifts
+        How your own job changes
       </div>
 
       {(from || to) && (
@@ -123,7 +137,7 @@ function OwnerTransition({ block }) {
           <div className="text-gray-300 text-xl self-center" aria-hidden>→</div>
           <div className="flex-1 min-w-[180px] rounded-lg bg-brand-50 border border-brand-200 p-3">
             <div className="text-[10px] uppercase tracking-wide text-brand-700 font-semibold mb-1">
-              Target state
+              Where you are heading
             </div>
             <p className="text-sm text-gray-800 leading-relaxed">{to || '—'}</p>
           </div>
@@ -217,7 +231,7 @@ function RoleTree({ roles }) {
       {orphans.length > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 mt-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-amber-800 mb-2">
-            Unreporting
+            Not placed yet
           </div>
           <div className="space-y-2">
             {orphans.map(r => <RoleCard key={r.title} role={r} />)}
@@ -325,9 +339,9 @@ function RoleCard({ role, depth = 0 }) {
 }
 
 const TYPE_BADGES = {
-  'existing':   { label: 'Existing',   classes: 'bg-gray-100 text-gray-700' },
-  'transition': { label: 'Evolves',    classes: 'bg-amber-100 text-amber-800' },
-  'new-hire':   { label: 'New hire',   classes: 'bg-brand-100 text-brand-800' },
+  'existing':   { label: 'Stays the same', classes: 'bg-gray-100 text-gray-700' },
+  'transition': { label: 'Changing', classes: 'bg-amber-100 text-amber-800' },
+  'new-hire':   { label: 'New role', classes: 'bg-brand-100 text-brand-800' },
 }
 
 // ----------------------------------------------------------------------------
@@ -378,6 +392,132 @@ function Section({ title, hint, children }) {
       </div>
       {hint && <p className="text-xs text-gray-500 mb-2">{hint}</p>}
       {children}
+    </div>
+  )
+}
+
+// ----------------------------------------------------------------------------
+// The picture — a drawn chart, today beside the plan
+// ----------------------------------------------------------------------------
+
+const CHART_STYLE = {
+  existing:   { box: 'bg-white border-gray-300 text-gray-900',              tag: null },
+  transition: { box: 'bg-amber-50 border-amber-300 text-gray-900',          tag: 'Changing' },
+  'new-hire': { box: 'bg-brand-50 border-brand-400 border-dashed text-gray-900', tag: 'New role' },
+}
+
+/** title -> children, roots first. Roles naming a parent that is not in the list become roots. */
+function buildTree(roles) {
+  const titles = new Set(roles.map(r => r.title))
+  const kids = new Map()
+  const roots = []
+  for (const r of roles) {
+    if (r.reports_to && titles.has(r.reports_to) && r.reports_to !== r.title) {
+      if (!kids.has(r.reports_to)) kids.set(r.reports_to, [])
+      kids.get(r.reports_to).push(r)
+    } else roots.push(r)
+  }
+  return { roots, kids }
+}
+
+/**
+ * The team as it stands: every role that is not a new hire. Someone who will
+ * report to a role that does not exist yet reports, today, to that role's own
+ * boss, so they are lifted up a level instead of vanishing from the picture.
+ */
+function todayRoles(roles) {
+  const byTitle = new Map(roles.map(r => [r.title, r]))
+  const realParent = (r, hops = 0) => {
+    const p = r.reports_to ? byTitle.get(r.reports_to) : null
+    if (!p || hops > 6) return null
+    return p.type === 'new-hire' ? realParent(p, hops + 1) : p.title
+  }
+  return roles
+    .filter(r => r.type !== 'new-hire')
+    .map(r => ({ ...r, type: 'existing', reports_to: realParent(r) }))
+}
+
+function BeforeAfterChart({ roles, horizon }) {
+  const today = todayRoles(roles)
+  const added = roles.filter(r => r.type === 'new-hire').length
+  const changing = roles.filter(r => r.type === 'transition').length
+  return (
+    <div className="space-y-4">
+      <ChartPanel label="Today" roles={today} muted />
+      <div className="text-center text-xs text-gray-500">
+        <span aria-hidden className="block text-gray-300 text-lg leading-none mb-1">↓</span>
+        {added > 0 ? `${added} new role${added === 1 ? '' : 's'}` : 'No new roles'}
+        {changing > 0 ? `, ${changing} that change${changing === 1 ? 's' : ''}` : ''}
+      </div>
+      <ChartPanel label={horizon ? `The plan · ${horizon}` : 'The plan'} roles={roles} />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-500">
+        <LegendSwatch cls="bg-white border-gray-300" label="Stays the same" />
+        <LegendSwatch cls="bg-amber-50 border-amber-300" label="Changing" />
+        <LegendSwatch cls="bg-brand-50 border-brand-400 border-dashed" label="New role to fill" />
+      </div>
+    </div>
+  )
+}
+
+function LegendSwatch({ cls, label }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`inline-block w-3.5 h-3.5 rounded border ${cls}`} aria-hidden />
+      {label}
+    </span>
+  )
+}
+
+function ChartPanel({ label, roles, muted = false }) {
+  const { roots, kids } = buildTree(roles)
+  return (
+    <div className={`rounded-xl border ${muted ? 'border-gray-200 bg-gray-50/60' : 'border-brand-200 bg-white'} p-4`}>
+      <div className={`text-[11px] font-bold uppercase tracking-wider mb-3 ${muted ? 'text-gray-500' : 'text-brand-700'}`}>{label}</div>
+      <div className="overflow-x-auto pb-1">
+        <div className="flex justify-center gap-6 min-w-max mx-auto">
+          {roots.map(r => <ChartNode key={r.title} role={r} kids={kids} depth={0} />)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** One box, a line down, then its reports in a row joined by a rail. */
+function ChartNode({ role, kids, depth }) {
+  const children = depth < 6 ? (kids.get(role.title) ?? []) : []
+  const st = CHART_STYLE[role.type] ?? CHART_STYLE.existing
+  return (
+    <div className="flex flex-col items-center">
+      <div className={`rounded-lg border px-3 py-2 text-center w-40 ${st.box}`}>
+        <div className="text-[12.5px] font-semibold leading-snug">
+          {role.title}
+          {role.headcount > 1 && <span className="font-normal text-gray-400"> × {role.headcount}</span>}
+        </div>
+        {st.tag && (
+          <div className={`text-[10px] font-semibold uppercase tracking-wide mt-0.5 ${role.type === 'new-hire' ? 'text-brand-700' : 'text-amber-700'}`}>
+            {st.tag}{role.type === 'new-hire' && role.hire_by ? ` · by ${role.hire_by}` : ''}
+          </div>
+        )}
+      </div>
+      {children.length > 0 && (
+        <>
+          <div className="w-px h-4 bg-gray-300" aria-hidden />
+          <div className="flex">
+            {children.map((c, i) => (
+              <div key={c.title} className="relative px-2 pt-4">
+                {/* the rail: half-width on the two ends so it stops at the outer boxes */}
+                <span
+                  aria-hidden
+                  className="absolute top-0 h-px bg-gray-300"
+                  style={{ left: i === 0 ? '50%' : 0, right: i === children.length - 1 ? '50%' : 0 }}
+                />
+                <span aria-hidden className="absolute top-0 left-1/2 w-px h-4 bg-gray-300" />
+                <ChartNode role={c} kids={kids} depth={depth + 1} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

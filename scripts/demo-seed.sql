@@ -227,4 +227,16 @@ update daily_logs set pm_note='The zones are marked on the site map in Documents
 update daily_logs set pm_note='Second time this gate has cost us time. Raise it when the contract comes up for renewal.', pm_note_shared=false, reviewed_at=now() - interval '10 days'
  where company_id='de900000-0000-4000-8000-000000000001' and what_happened like 'Spring cleanup at Maple Plaza%';
 
+-- This quarter's priorities and last quarter's, so the Rocks page shows tracked
+-- progress and a finished-out-of-set count (10 Oct).
+
+update milestones set rock_quarter = to_char(current_date, 'YYYY"-Q"Q'), actions_done = '["Ask Marcus this week if he wants to lead","Promote him and tell the crew"]'::jsonb, progress_percent = 50
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew';
+update milestones set rock_quarter = to_char(current_date, 'YYYY"-Q"Q'), actions_done = '["Pick the three routes you run most","Write each as an SOP, one step per line"]'::jsonb, progress_percent = 50
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Write the maintenance routes down as SOPs';
+update milestones set rock_quarter = to_char(current_date, 'YYYY"-Q"Q'), actions_done = '["Confirm the scope and site list for each bid"]'::jsonb, progress_percent = 25
+ where company_id='de900000-0000-4000-8000-000000000001' and title='Win the two March strata contracts';
+update milestones set rock_quarter = to_char(current_date - interval '3 months', 'YYYY"-Q"Q'), actions_done = actions
+ where company_id='de900000-0000-4000-8000-000000000001' and completed = true;
+
 commit;

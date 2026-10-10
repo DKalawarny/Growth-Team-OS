@@ -11,6 +11,7 @@ import RocksPlan from '../../components/tools/RocksPlan'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import RefineChat from '../../components/tools/RefineChat'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import QuarterPriorities from '../../components/tools/QuarterPriorities'
 
 /**
  * Rocks Tracker — /tools/rocks
@@ -254,6 +255,7 @@ export default function Rocks() {
   if (stage === 'result' || stage === 'saving') {
     return (
       <ResultView
+        companyId={profile?.company_id}
         form={form}
         result={result}
         saving={stage === 'saving'}
@@ -271,6 +273,7 @@ export default function Rocks() {
 
   return (
     <FormView
+      companyId={profile?.company_id}
       form={form}
       canSubmit={canSubmit}
       error={error}
@@ -283,27 +286,29 @@ export default function Rocks() {
 
 // ============================================================== FormView
 
-function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
+function FormView({ form, canSubmit, error, capError, onChange, onSubmit, companyId }) {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
-            🪨 Rocks Tracker
+            Quarterly priorities · Rocks
           </div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">
-            Quarterly priorities, weekly status, zero spreadsheets
+            What matters most this quarter
           </h1>
           <p className="text-xs text-ink-500 mt-0.5">
-            3–5 company rocks with owners, definitions-of-done, and weekly milestones.
+            Pick a few things from your roadmap, tick them off as they get done, and see how many you finish each quarter.
           </p>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-5">
+        <QuarterPriorities companyId={companyId} />
         {capError && <CapExceededNotice err={capError} toolLabel="Rocks Tracker" />}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
+        <SolomonHelpHeading />
         <form onSubmit={onSubmit} className="bg-white border border-ink-100 rounded-xl shadow-sm p-6 space-y-5">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -416,23 +421,25 @@ function LoadingView({ quarter }) {
 
 // ============================================================== ResultView
 
-function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
+function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine, companyId }) {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">🪨 Rocks Tracker</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">{result?.quarter_label || form.quarter_label}</h1>
-            {result?.theme && <p className="text-xs text-ink-500 mt-0.5">"{result.theme}"</p>}
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Quarterly priorities · Rocks</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">What matters most this quarter</h1>
+            <p className="text-xs text-ink-500 mt-0.5">Pick a few things from your roadmap, tick them off as they get done, and see how many you finish each quarter.</p>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-5">
+        <QuarterPriorities companyId={companyId} />
         {capError && <CapExceededNotice err={capError} toolLabel="Rocks Tracker" />}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
+        <SolomonHelpHeading drafted />
         <ContextUsedLine summary={contextSummary} />
 
         <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-5 md:p-6 relative">
@@ -496,4 +503,21 @@ function currentQuarterLabel() {
   const now = new Date()
   const q = Math.floor(now.getMonth() / 3) + 1
   return `Q${q} ${now.getFullYear()}`
+}
+
+// The Solomon draft used to BE this page. It is now the help for choosing: the
+// tracked list above is the record, this is a second opinion on what to put in it.
+function SolomonHelpHeading({ drafted = false }) {
+  return (
+    <div className="pt-2">
+      <h2 className="text-base font-bold text-ink-900">
+        {drafted ? "Solomon's take on the quarter" : 'Not sure what to pick? Ask Solomon'}
+      </h2>
+      <p className="text-[13px] text-ink-500 mt-0.5 max-w-2xl leading-relaxed">
+        {drafted
+          ? 'A drafted set of priorities with what done looks like and how each one usually goes wrong. Use it to decide what goes in the list above. The list above is what gets tracked.'
+          : 'Tell him the focus for the quarter and he drafts a set of priorities from your plan and your numbers. Add the ones you agree with to the list above.'}
+      </p>
+    </div>
+  )
 }
