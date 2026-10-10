@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import TeamSection from '../components/settings/TeamSection'
+import OneOffJob from '../components/dailylogs/OneOffJob'
 
 /**
  * DailyLogs — the office's view of what the crew wrote at the end of the day.
@@ -160,6 +161,10 @@ export default function DailyLogs() {
       ...l,
       person: staffById.get(l.staff_member_id) ?? 'Crew',
       job:    woById.get(l.work_order_id) ?? null,
+      // Resolved here, where the name map exists. The render used to reach for
+      // staffById directly, which is out of scope there and threw on any log
+      // that had people ticked as on site.
+      onSiteNames: (l.on_site_staff_ids ?? []).map(id => staffById.get(id)).filter(Boolean),
       numbers: l.metrics ? Object.entries(l.metrics).map(([k, v]) => ({ label: metricLabels.get(k) ?? k, value: v })) : [],
     })))
     setLoading(false)
@@ -273,6 +278,12 @@ export default function DailyLogs() {
           </div>
         )}
       </div>
+
+      <OneOffJob
+        profile={profile}
+        company={company}
+        onCreated={row => setJobs(prev => [{ id: row.id, title: row.title }, ...prev])}
+      />
 
       <input
         type="search"
@@ -490,7 +501,7 @@ export default function DailyLogs() {
                   </div>
                 )}
                 {(() => {
-                  const names = (log.on_site_staff_ids ?? []).map(id => staffById.get(id)).filter(Boolean)
+                  const names = log.onSiteNames ?? []
                   const parts = [...names, ...(log.who_on_site ? [log.who_on_site] : [])]
                   return parts.length ? <p className="text-[13px] text-ink-500">On site: {parts.join(', ')}</p> : null
                 })()}

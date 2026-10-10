@@ -144,15 +144,15 @@ const PACE_AUTO_KEY    = 'growthos:roadmapPaceAuto'
  */
 const PACE_PRESETS = [
   { id: 'relaxed',   label: 'Relaxed',     mul: 1.5,  emoji: '🐢',
-    activeCls: 'bg-teal-50   text-teal-700   border-teal-300',   desc: '~36 months' },
+    activeCls: 'bg-teal-50   text-teal-700   border-teal-300',   desc: '~36 months', blurb: 'More room on every step' },
   { id: 'steady',    label: 'Steady',      mul: 1.0,  emoji: '🚶',
-    activeCls: 'bg-ink-100   text-ink-900   border-ink-300',     desc: 'Your plan' },
+    activeCls: 'bg-ink-100   text-ink-900   border-ink-300',     desc: 'Your plan', blurb: 'The plan as written' },
   { id: 'focused',   label: 'Focused',     mul: 0.75, emoji: '🏃',
-    activeCls: 'bg-brand-50  text-brand-700 border-brand-300',   desc: '~18 months' },
+    activeCls: 'bg-brand-50  text-brand-700 border-brand-300',   desc: '~18 months', blurb: 'A quarter faster' },
   { id: 'ambitious', label: 'Ambitious',   mul: 0.6,  emoji: '⚡',
-    activeCls: 'bg-amber-50  text-amber-700 border-amber-300',   desc: '~15 months' },
+    activeCls: 'bg-amber-50  text-amber-700 border-amber-300',   desc: '~15 months', blurb: 'Tight, little slack' },
   { id: 'sprint',    label: 'Full sprint', mul: 0.5,  emoji: '🚀',
-    activeCls: 'bg-rose-50   text-rose-700  border-rose-300',    desc: '~12 months' },
+    activeCls: 'bg-rose-50   text-rose-700  border-rose-300',    desc: '~12 months', blurb: 'Half the time' },
 ]
 
 const PX_PER_MONTH     = 100
@@ -488,6 +488,12 @@ export default function Roadmap() {
       .sort()
     return ends.length > 0 ? ends[ends.length - 1] : null
   }, [scaledMilestones])
+
+  /** The same finish date at the plan's own pace, so each preset can show where it lands. */
+  const baseFinish = useMemo(() => {
+    const ends = milestones.filter(m => !m.completed && m.end_date).map(m => m.end_date).sort()
+    return ends.length > 0 ? ends[ends.length - 1] : null
+  }, [milestones])
 
   /**
    * Learned pace — derived from how long completed milestones actually took
@@ -1079,6 +1085,7 @@ Suggest a single new milestone that addresses what they've described. Make it sp
         <PaceControl
           paceMul={paceMul}
           projectedFinish={projectedFinish}
+          baseFinish={baseFinish}
           paceConfirm={paceConfirm}
           applying={applyingPace}
           learnedPace={learnedPace}
@@ -3107,11 +3114,16 @@ function ListIcon() {
 // Pace control
 // ============================================================================
 function PaceControl({
-  paceMul, projectedFinish, paceConfirm, applying,
+  paceMul, projectedFinish, baseFinish, paceConfirm, applying,
   learnedPace, learnedDataPoints, paceAuto,
   onChangePace, onConfirm, onApply, onCancelConfirm, onToggleAuto,
 }) {
   const isChanged    = paceMul !== 1.0
+  // Where each pace would finish the plan, worked out from the real dates so
+  // the buttons show an outcome instead of a rough month count.
+  const today        = new Date()
+  const finishAt     = mul => baseFinish ? (mul === 1.0 ? baseFinish : scaleDate(baseFinish, mul, today)) : null
+  const monthYear    = iso => new Date(iso).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
   const active       = PACE_PRESETS.find(p => p.mul === paceMul)
   const learnedSnap  = learnedPace ? snapToPreset(learnedPace) : null
   const learnedPreset = learnedSnap ? PACE_PRESETS.find(p => p.mul === learnedSnap) : null
@@ -3126,17 +3138,17 @@ function PaceControl({
       <div className="bg-ink-900 px-5 py-3 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-            Pace control
+            How fast do you want to go?
           </span>
-          <p className="text-xs text-ink-400 mt-0.5">
+          <p className="text-xs text-ink-300 mt-0.5 max-w-xl leading-relaxed">
             {paceAuto && learnedPreset
-              ? `Auto-set from your history. You run at ${learnedPreset.label} pace.`
-              : 'Adjust your speed, the timeline and projected finish update live.'}
+              ? `Set from your own history. You have been moving at ${learnedPreset.label} pace.`
+              : 'Pick a pace and every date on your plan moves with it. Slower gives each milestone more room. Faster pulls the finish date closer. Nothing is saved until you lock it in.'}
           </p>
         </div>
         {projectedFinish && (
           <div className="text-right flex-shrink-0">
-            <div className="text-[10px] text-ink-500 uppercase tracking-wide">Projected finish</div>
+            <div className="text-[10px] text-ink-500 uppercase tracking-wide">Plan finishes</div>
             <div className={`text-sm font-bold tabular-nums ${isChanged ? 'text-brand-400' : 'text-white'}`}>
               {formatFriendlyDate(projectedFinish)}
             </div>
@@ -3169,8 +3181,11 @@ function PaceControl({
                 )}
                 <span className="text-xl leading-none">{p.emoji}</span>
                 <span className="text-xs">{p.label}</span>
-                <span className={`text-[10px] font-normal ${isActive ? 'opacity-70' : 'opacity-50'}`}>
-                  {p.desc}
+                <span className={`text-[10px] font-normal ${isActive ? 'opacity-80' : 'opacity-60'}`}>
+                  {p.blurb}
+                </span>
+                <span className={`text-[10px] font-semibold ${isActive ? 'opacity-90' : 'opacity-60'}`}>
+                  {finishAt(p.mul) ? `Done ${monthYear(finishAt(p.mul))}` : p.desc}
                 </span>
               </button>
             )
@@ -3211,8 +3226,8 @@ function PaceControl({
                 ) : (
                   <p className="text-xs text-ink-400">
                     {learnedDataPoints === 0
-                      ? 'Complete milestones to unlock your personal pace.'
-                      : `Need ${2 - learnedDataPoints} more completed milestone to calculate.`}
+                      ? 'Finish two milestones and this shows how fast you really move against the plan, so the dates can follow you instead of a guess.'
+                      : 'Finish one more milestone and this shows how fast you really move against the plan.'}
                   </p>
                 )}
               </div>
@@ -3220,7 +3235,7 @@ function PaceControl({
 
             {/* Auto toggle */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xs text-ink-500">Auto-apply</span>
+              <span className="text-xs text-ink-500" title="When on, your roadmap opens at the pace you actually keep.">Use my real pace</span>
               <button
                 type="button"
                 onClick={onToggleAuto}

@@ -306,8 +306,38 @@ Deno.serve(async (req) => {
         }
       }
 
+      // ── Attach files (plans, drawings, photos for a one-off job) ─────────
+      // The office attaches them to the task; the crew gets time-limited
+      // links here because the bucket is private and they have no session.
+      // Silent-fail like the checklist: no files beats no portal.
+      const filesByWo = new Map<string, Array<Record<string, unknown>>>()
+      if (woIds.length) {
+        const { data: atts, error: attErr } = await admin
+          .from('work_order_attachments')
+          .select('id, work_order_id, title, file_path, mime_type, size_bytes')
+          .in('work_order_id', woIds)
+          .eq('company_id', staff.company_id)
+          .order('created_at', { ascending: true })
+        if (attErr) {
+          console.warn('[staff-portal] attachments fetch failed', attErr.message)
+        } else if (atts?.length) {
+          const { data: signed, error: signErr } = await admin.storage
+            .from('knowledge-files')
+            .createSignedUrls(atts.map(a => a.file_path), 60 * 60 * 12)
+          if (signErr) console.warn('[staff-portal] attachment signing failed', signErr.message)
+          atts.forEach((a, i) => {
+            const url = signed?.[i]?.signedUrl
+            if (!url) return
+            const arr = filesByWo.get(a.work_order_id) ?? []
+            arr.push({ id: a.id, title: a.title, mime_type: a.mime_type, size_bytes: a.size_bytes, url })
+            filesByWo.set(a.work_order_id, arr)
+          })
+        }
+      }
+
       const workOrdersWithItems = (workOrders ?? []).map(w => ({
         ...w,
+        attachments: filesByWo.get(w.id) ?? [],
         checklist_items: (itemsByWo.get(w.id) ?? []).map(it => ({
           ...it,
           comments: commentsByItem.get(it.id as string) ?? [],

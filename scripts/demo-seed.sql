@@ -181,4 +181,22 @@ insert into work_orders (id, company_id, staff_member_id, assigned_staff_ids, mi
   (select id from milestones where company_id='de900000-0000-4000-8000-000000000001' and title='Write the maintenance routes down as SOPs'),
   'Have the crew run from the SOP for two weeks','backlog','medium', now() - interval '2 days');
 
+-- Roadmap dates + two finished milestones (Daniel, 9 Oct: pace control and the
+-- timeline "were supposed to depict what it does better"). Without dates the
+-- timeline is empty and the pace buttons move nothing; without two finished
+-- milestones "your actual pace" has nothing to read. Dates are relative to the
+-- day the seed runs. The two finished ones came in at about three quarters of
+-- their planned time, so the learned pace reads Focused.
+update milestones set start_date = current_date - 30,  end_date = current_date + 45  where company_id='de900000-0000-4000-8000-000000000001' and title='Promote a crew lead and step back from the first crew';
+update milestones set start_date = current_date - 45,  end_date = current_date + 60  where company_id='de900000-0000-4000-8000-000000000001' and title='Write the maintenance routes down as SOPs';
+update milestones set start_date = current_date + 30,  end_date = current_date + 150 where company_id='de900000-0000-4000-8000-000000000001' and title='Win the two March strata contracts';
+update milestones set start_date = current_date + 150, end_date = current_date + 330 where company_id='de900000-0000-4000-8000-000000000001' and title='Add a second maintenance crew';
+update milestones set start_date = current_date + 300, end_date = current_date + 700 where company_id='de900000-0000-4000-8000-000000000001' and title='Clean books and recurring revenue, ready to hand on';
+delete from milestones where company_id='de900000-0000-4000-8000-000000000001' and title in ('Put every recurring client on a written contract','Move the schedule off the whiteboard into one calendar');
+insert into milestones (company_id, title, description, timeframe, category, sort_order, progress_percent, completed, completed_date, start_date, end_date, actions, books) values
+ ('de900000-0000-4000-8000-000000000001','Put every recurring client on a written contract','Every maintenance client signed, with scope and price in writing, so the recurring book is real.','Next 90 days','revenue',-1,100,true, now() - interval '70 days', current_date - 160, current_date - 40,
+  '["List every recurring client and what they pay","Write one plain contract","Get each client signed","File the signed copies in Documents"]'::jsonb,'[]'),
+ ('de900000-0000-4000-8000-000000000001','Move the schedule off the whiteboard into one calendar','One schedule the whole crew can see, so the day does not depend on who was in the yard that morning.','Next 90 days','systems',0,100,true, now() - interval '35 days', current_date - 95, current_date - 15,
+  '["Put every recurring route in one calendar","Share the calendar with the crew","Run from the calendar for two weeks","Take the whiteboard down"]'::jsonb,'[]');
+
 commit;

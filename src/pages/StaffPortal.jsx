@@ -509,6 +509,27 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
         <p className="mt-1.5 text-xs text-ink-600 leading-relaxed">{order.description}</p>
       )}
 
+      {/* Files the office sent with this job: plans, drawings, photos */}
+      {order.attachments?.length > 0 && (
+        <div className="mt-2.5 rounded-lg border border-ink-150 bg-ink-50/60 px-3 py-2">
+          <p className="text-[10.5px] font-bold uppercase tracking-wider text-ink-500 mb-1">Files for this job</p>
+          <ul className="flex flex-col gap-1">
+            {order.attachments.map(f => (
+              <li key={f.id}>
+                <a
+                  href={f.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-brand-700 hover:text-brand-800 underline underline-offset-2 break-all"
+                >
+                  {f.title || 'Open file'}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Due-date — colored if overdue */}
       {due && (
         <p className={`mt-2 text-[11px] font-semibold ${
