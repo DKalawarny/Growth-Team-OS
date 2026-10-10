@@ -11,6 +11,7 @@ import OfferBuilderCard from '../../components/tools/OfferBuilderCard'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import RefineChat from '../../components/tools/RefineChat'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import PriceCheck from '../../components/tools/PriceCheck'
 
 /**
  * Offer Builder — /tools/offer-builder
@@ -255,6 +256,7 @@ export default function OfferBuilder() {
   if (stage === 'result' || stage === 'saving') {
     return (
       <ResultView
+        companyId={profile?.company_id}
         form={form}
         result={result}
         saving={stage === 'saving'}
@@ -272,6 +274,7 @@ export default function OfferBuilder() {
 
   return (
     <FormView
+      companyId={profile?.company_id}
       form={form}
       canSubmit={canSubmit}
       error={error}
@@ -284,7 +287,7 @@ export default function OfferBuilder() {
 
 // ============================================================== subviews
 
-function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
+function FormView({ form, canSubmit, error, capError, onChange, onSubmit, companyId }) {
   return (
     <div className="min-h-screen bg-ink-50">
 
@@ -292,37 +295,28 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit }) {
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-3xl mx-auto px-8 py-8">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-brand-700">
-            💰 Offer Builder
+            Price check
           </div>
           <h1 className="text-2xl font-bold text-ink-900 leading-tight mb-2">
-            Turn what you do into a package that's easy to sell, and easy to price.
+            Does this price make sense for your business?
           </h1>
-          <p className="text-sm text-ink-400 leading-relaxed">
-            Describe a service you sell: a maintenance contract, a renovation package, a recurring job type.
-            We'll define exactly what's included, recommend a price you can defend, and give you word-for-word
-            responses when a customer says <em className="text-ink-300">"that seems expensive."</em>
+          <p className="text-sm text-ink-500 leading-relaxed">
+            A quick check on a price you have in mind, using your own costs and what your finished jobs made.
+            This is not quoting software. It tells you what you would keep, and lets you put the number to Solomon.
           </p>
-
-          {/* What you'll get */}
-          <div className="flex flex-wrap gap-3 mt-5">
-            {[
-              { icon: '📋', label: 'Clear scope', sub: 'What\'s in and what\'s not, in writing' },
-              { icon: '💲', label: 'Right price', sub: 'With a rationale you can explain' },
-              { icon: '🗣️', label: 'Sales responses', sub: 'For every objection buyers raise' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-2.5 bg-white/6 border border-white/10 rounded-xl px-4 py-3 min-w-0">
-                <span className="text-lg flex-shrink-0">{item.icon}</span>
-                <div>
-                  <p className="text-xs font-bold text-ink-900">{item.label}</p>
-                  <p className="text-xs text-ink-500 mt-0.5">{item.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-8 py-6 space-y-5">
+        <PriceCheck companyId={companyId} />
+
+        <div className="pt-2">
+          <h2 className="text-base font-bold text-ink-900">Want the offer written up?</h2>
+          <p className="text-[13px] text-ink-500 mt-0.5 leading-relaxed">
+            Optional. Describe the service and Solomon drafts what is included, what is not, and how to answer
+            "that seems expensive". Any price in the draft is his suggestion: run it through the check above before you use it.
+          </p>
+        </div>
 
         {capError && <CapExceededNotice err={capError} toolLabel="Offer Builder" />}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
@@ -521,23 +515,31 @@ function LoadingView({ name }) {
   )
 }
 
-function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine }) {
+function ResultView({ form, result, saving, error, capError, messages, refining, contextSummary, onSave, onStartOver, onRefine, companyId }) {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">💰 Offer Builder</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.offer_name || 'Your offer'}</h1>
-            <p className="text-xs text-ink-500 mt-0.5">Scope · Pricing · Sales responses, ready to use or refine below.</p>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Price check</div>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">Does this price make sense for your business?</h1>
+            <p className="text-xs text-ink-500 mt-0.5">A quick check on a price, then the written offer underneath if you want one.</p>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-5">
+        <PriceCheck companyId={companyId} />
         {capError && <CapExceededNotice err={capError} toolLabel="Offer Builder" />}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
+        <div className="pt-2">
+          <h2 className="text-base font-bold text-ink-900">The written offer: {form.offer_name || 'your draft'}</h2>
+          <p className="text-[13px] text-ink-500 mt-0.5 leading-relaxed max-w-3xl">
+            Drafted by Solomon: what is included, what is not, and how to answer a customer who pushes back.
+            The prices in it are his suggestion, not a calculation. Run the one you would use through the check above.
+          </p>
+        </div>
         <ContextUsedLine summary={contextSummary} />
 
         <div className="bg-white border border-ink-100 rounded-xl shadow-sm p-5 md:p-6 relative">

@@ -17,6 +17,8 @@ import CashFlowPlan from '../../components/tools/CashFlowPlan'
 import CapExceededNotice from '../../components/tools/CapExceededNotice'
 import RefineChat from '../../components/tools/RefineChat'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
+import ForecastSources from '../../components/tools/ForecastSources'
+import { AMOUNTS_EMBED, withAmounts } from '../../lib/jobAmounts'
 
 /**
  * Cash Flow — /tools/cash-flow
@@ -52,6 +54,11 @@ export default function CashFlow() {
 
   // Uploaded financial docs
   const [financialDocs,  setFinancialDocs]  = useState([])
+  // Quotes and invoices exported from whatever system he quotes in, and tasks
+  // carrying a quoted amount that has not been invoiced. Both are "money that
+  // may be coming", which a forecast built from last month's books cannot see.
+  const [quoteDocs,      setQuoteDocs]      = useState([])
+  const [pipeline,       setPipeline]       = useState([])
 
   const [qboLoaded, setQboLoaded] = useState(false)
 
@@ -112,10 +119,11 @@ export default function CashFlow() {
     let cancelled = false
     ;(async () => {
       try {
-        const [integration, snapshots, allFiles] = await Promise.all([
+        const [integration, snapshots, allFiles, ordersRes] = await Promise.all([
           fetchIntegration(profile.company_id, 'quickbooks').catch(() => null),
           fetchLatestSnapshots(profile.company_id, { limit: 4 }).catch(() => []),
           listKnowledgeFiles(profile.company_id).catch(() => []),
+          supabase.from('work_orders').select(`id, title, status, due_date, ${AMOUNTS_EMBED}`).eq('company_id', profile.company_id),
         ])
         if (cancelled) return
 
@@ -129,6 +137,10 @@ export default function CashFlow() {
         setQboIntegration(integration)
         setQboSnapshots(snapshots)
         setFinancialDocs(finDocs)
+        setQuoteDocs(allFiles.filter(f => !finDocs.includes(f) && (f.kind === 'sales' || /quote|estimate|proposal|invoice|receivable|bid/i.test(f.title))))
+        // A role that cannot see amounts gets none back, so this is simply empty.
+        setPipeline(withAmounts(ordersRes?.data).filter(o => o.quoted_amount > 0 && !(o.invoiced_amount > 0))
+          .map(o => ({ title: o.title, amount: Number(o.quoted_amount), status: o.status, due_date: o.due_date ?? null })))
 
         // Pick the best default mode
         if (qboOk)           setMode('qbo')
@@ -189,6 +201,15 @@ export default function CashFlow() {
             concerns:                 form.concerns.trim()        || null,
           })
 
+      // The same possible-money-in goes with every mode. Named as possible on
+      // purpose: a quote is not a deposit, and a forecast that banks one as
+      // certain is the invented number this product refuses to write.
+      const withPipeline = pipeline.length === 0 ? userMessage : JSON.stringify({
+        ...JSON.parse(userMessage),
+        quoted_not_invoiced: pipeline,
+        quoted_not_invoiced_note: 'Tasks the owner has quoted and not yet invoiced. Treat as POSSIBLE money in. Do not place one in a week as received unless it has a due_date, and say in the notes which weeks lean on a quote that is not yet won or paid.',
+      })
+
       const raw = await runToolCall({
         companyId: profile.company_id,
         userId:    profile.id,
@@ -197,7 +218,7 @@ export default function CashFlow() {
         model:     HAIKU,
         promptKey,
         stableContext,
-        messages:  [{ role: 'user', content: userMessage }],
+        messages:  [{ role: 'user', content: withPipeline }],
         maxTokens: 4000,
         json:      true,
       })
@@ -320,6 +341,7 @@ export default function CashFlow() {
         dataSource={mode === 'qbo' ? { type: 'qbo', snapshot: latestSnapshot }
                   : mode === 'docs' ? { type: 'docs', docs: financialDocs }
                   : null}
+        sources={{ qboConnected, snapshotLabel: latestSnapshot?.period_label, financialDocs, quoteDocs, pipeline }}
         onSave={handleSave}
         onStartOver={handleStartOver}
         onRefine={handleRefine}
@@ -340,6 +362,15 @@ export default function CashFlow() {
       <PageShell>
         {capError && <div className="mb-0"><CapExceededNotice err={capError} toolLabel="Cash Flow" /></div>}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+
+        <ForecastSources
+          qboConnected={qboConnected}
+          snapshotLabel={latestSnapshot?.period_label}
+          financialDocs={financialDocs}
+          quoteDocs={quoteDocs}
+          pipeline={pipeline}
+          typed={mode === 'manual' ? { inflows: form.known_inflows.trim(), outflows: form.known_outflows.trim() } : null}
+        />
 
         {/* Source selector tabs */}
         {(qboConnected || hasDocs) && (
@@ -458,13 +489,7 @@ export default function CashFlow() {
 
 // ── Result view ───────────────────────────────────────────────────────────────
 
-function ResultView({ result, saving, error, capError, messages, refining, contextSummary, dataSource, onSave, onStartOver, onRefine }) {
-  const sourceLabel = dataSource?.type === 'qbo'
-    ? `✓ Built from QuickBooks · ${dataSource.snapshot?.period_label} · synced ${formatRelative(dataSource.snapshot?.synced_at)}`
-    : dataSource?.type === 'docs'
-    ? `✓ Built from ${dataSource.docs?.length} uploaded document${dataSource.docs?.length === 1 ? '' : 's'}`
-    : null
-
+function ResultView({ result, saving, error, capError, messages, refining, contextSummary, sources, onSave, onStartOver, onRefine }) {
   return (
     <div className="min-h-screen bg-ink-50">
       <div className="bg-white border-b border-ink-100">
@@ -472,7 +497,7 @@ function ResultView({ result, saving, error, capError, messages, refining, conte
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Cash Flow · 13-week projection</div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Your cash runway</h1>
-            {sourceLabel && <p className="text-xs text-green-400 mt-0.5">{sourceLabel}</p>}
+            <p className="text-xs text-ink-500 mt-0.5">Week by week for the next 13 weeks: what is in the bank, and whether any week gets tight.</p>
           </div>
         </div>
       </div>
@@ -480,6 +505,7 @@ function ResultView({ result, saving, error, capError, messages, refining, conte
         {capError && <CapExceededNotice err={capError} toolLabel="Cash Flow" />}
         {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
         <ContextUsedLine summary={contextSummary} />
+        {sources && <ForecastSources {...sources} />}
         <div className="relative">
           {refining && (
             <div className="absolute top-3 right-4 inline-flex items-center gap-1.5 text-xs text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-1 rounded-full z-10">

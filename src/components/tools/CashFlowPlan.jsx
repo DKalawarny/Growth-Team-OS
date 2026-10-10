@@ -64,7 +64,7 @@ export default function CashFlowPlan({ data }) {
       )}
 
       {weeks.length > 0 && (
-        <Section title="13-week balance projection" hint="Bars show weekly ending cash balance. Dashed line is your comfort threshold.">
+        <Section title="The next 13 weeks" hint="Each bar is what is in the bank at the end of that week. The dashed line is your comfort line: the least you want to be holding.">
           <BalanceChart
             weeks={weeks}
             comfortThreshold={comfort_threshold}
@@ -114,18 +114,21 @@ function HeadlineBand({ startingBalance, runwayWeeks, comfortThreshold, lowest }
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Each number says what it is. "Runway" over a bare dash told an owner
+            nothing (Daniel, 10 Oct: "the headings need context"). */}
         <Stat
-          label="Starting balance"
+          label="In the bank today"
           value={formatCurrency(startingBalance)}
+          hint="Where the 13 weeks start from."
         />
         <Stat
-          label="Runway"
-          value={runwayWeeks == null ? '—' : `${runwayWeeks} wk${runwayWeeks === 1 ? '' : 's'}`}
+          label="Weeks until cash gets tight"
+          value={runwayWeeks == null || runwayWeeks >= 13 ? 'None in sight' : `${runwayWeeks} week${runwayWeeks === 1 ? '' : 's'}`}
           hint={runwayTone.hint}
           tone={runwayTone.tone}
         />
         <Stat
-          label={lowest ? `Lowest point (wk ${lowest.week})` : 'Lowest point'}
+          label={lowest ? `Lowest it gets (week ${lowest.week})` : 'Lowest it gets'}
           value={lowest ? formatCurrency(lowest.balance) : '—'}
           tone={lowest && lowest.balance < comfortThreshold ? 'red' : 'neutral'}
           hint={lowest?.note}
@@ -162,8 +165,8 @@ function Stat({ label, value, hint, tone = 'neutral' }) {
  * didn't breach, 6+ = yellow-light "fine, but watch it", <6 = red.
  */
 function runwayTag(w) {
-  if (w == null) return { tone: 'green', hint: "You don't breach in the projection window." }
-  if (w >= 13)   return { tone: 'green', hint: "You don't breach in the projection window." }
+  if (w == null) return { tone: 'green', hint: 'Cash stays above your comfort line for all 13 weeks.' }
+  if (w >= 13)   return { tone: 'green', hint: 'Cash stays above your comfort line for all 13 weeks.' }
   if (w >= 6)    return { tone: 'amber', hint: 'Tight but workable with planning.' }
   return { tone: 'red', hint: 'Act this month. This is where payroll risk lives.' }
 }

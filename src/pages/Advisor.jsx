@@ -125,7 +125,11 @@ export default function Advisor() {
     }
     setError(null)
   }
-  const [input,           setInput]           = useState('')
+  // A question handed over from another page (the price check does this) lands
+  // in the box, unsent, so the owner reads it and decides whether to ask.
+  const [input,           setInput]           = useState(() => {
+    try { return new URLSearchParams(window.location.search).get('ask') ?? '' } catch { return '' }
+  })
   const [loading,         setLoading]         = useState(true)
   const [sending,         setSending]         = useState(false)
   const [generatingOpen,  setGeneratingOpen]  = useState(false) // morning opener in flight
