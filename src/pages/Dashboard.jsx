@@ -19,8 +19,12 @@ import { AMOUNTS_EMBED, withAmounts } from '../lib/jobAmounts'
  * scored: no targets, no progress bars, no red. A number that judges you every
  * morning is guilt-driven engagement wearing a calm palette.
  *
- * ⚠️ 9 Oct, Daniel: "not very good, needs to have more use case." One sentence
- * and five counts gave an owner nothing to DO from here. The page still leads
+ * ⚠️ 9 Oct, Daniel, looking at THIS page: "there should be more of a use case
+ * for it, the count at the bottom seems useless." (An earlier session read
+ * "landing page" as the marketing site and changed that instead.) So the "So
+ * far" counts are gone, and the check-in button, which "gets lost on the
+ * bottom", sits with the main buttons. One sentence and five counts gave an
+ * owner nothing to DO from here. The page still leads
  * with one thing, but underneath it now shows the work itself: the steps of
  * that milestone and who has each, the tasks in motion and who is on them, and
  * what the crew last wrote. All real rows, still no scores.
@@ -216,10 +220,9 @@ export default function Dashboard() {
 
   if (state.loading) return <LoadingSkeleton />
 
-  const { milestones, lastCheckin, counts } = state
+  const { milestones, lastCheckin } = state
   const firstName = profile?.name?.split(' ')[0] ?? null
   const daysSinceLastCheckin = lastCheckin ? daysBetween(lastCheckin.created_at, new Date()) : null
-  const done = milestones.filter(m => m.completed).length
 
   const { headline, detail, lead, others } = pickFocus({ milestones, statusById, daysSinceLastCheckin })
 
@@ -376,6 +379,14 @@ export default function Dashboard() {
             >
               Open the roadmap
             </Link>
+            {/* The check-in used to sit at the very bottom, where Daniel said
+                it "gets lost". It lives with the other two doors now. */}
+            <Link
+              to="/checkins"
+              className="px-6 py-3 rounded-[10px] border border-ink-200 hover:border-ink-300 text-ink-900 text-[14.5px] font-semibold transition-colors"
+            >
+              {daysSinceLastCheckin === null ? 'Log your first check-in' : "Start this week's check-in"}
+            </Link>
           </div>
         </section>
 
@@ -483,36 +494,6 @@ export default function Dashboard() {
           </>
         )}
 
-        {/* ── Counted, not scored ─────────────────────────────────────────── */}
-        <hr className="border-0 border-t border-ink-100" />
-        <section className="flex flex-col gap-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">
-            So far
-          </p>
-          <div className="flex flex-wrap gap-x-10 gap-y-5">
-            <Count n={done}              label={done === 1 ? 'step finished' : 'steps finished'} />
-            <Count n={counts.checkins}   label={counts.checkins === 1 ? 'check-in logged' : 'check-ins logged'} />
-            <Count n={counts.SOPs}  label={counts.SOPs === 1 ? 'SOP written down' : 'SOPs written down'} />
-            <Count n={counts.staff}      label={counts.staff === 1 ? 'person on the team' : 'people on the team'} />
-            <Count n={counts.documents}  label={counts.documents === 1 ? 'thing Solomon made' : 'things Solomon made'} />
-          </div>
-          <p className="text-[13.5px] leading-[1.6] text-ink-300 max-w-[520px]">
-            Counted, not scored. The trends live in the roadmap when you want to look at them.
-          </p>
-        </section>
-
-        {/* ── A door, not a nag ───────────────────────────────────────────── */}
-        <div className="mt-4 pt-6 border-t border-ink-100 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[14px] text-ink-500">
-            {daysSinceLastCheckin === null
-              ? 'Solomon reads your plan and your numbers before he says anything.'
-              : "Sit down with Solomon when you're ready. He'll keep."}
-          </p>
-          <Link to="/checkins" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 text-white text-[14px] font-semibold hover:bg-brand-700 transition-colors">
-            {daysSinceLastCheckin === null ? 'Log your first check-in →' : "Start this week's check-in →"}
-          </Link>
-        </div>
-
       </div>
     </div>
   )
@@ -546,15 +527,6 @@ function NameChips({ names }) {
         </span>
       ))}
     </span>
-  )
-}
-
-function Count({ n, label }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-serif text-[27px] leading-none text-ink-900 tabular-nums">{n}</span>
-      <span className="text-[13px] text-ink-300">{label}</span>
-    </div>
   )
 }
 
