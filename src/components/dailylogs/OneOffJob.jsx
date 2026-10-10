@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { sendTaskAssigned } from '../../lib/email'
-import { uploadTaskAttachment, validateAttachment, TASK_ATTACH_MAX_MB } from '../../lib/taskAttachments'
+import { uploadTaskAttachment, validateAttachment, openTaskAttachment, TASK_ATTACH_MAX_MB } from '../../lib/taskAttachments'
 
 /**
  * A one-off job, sent from the Daily logs page (Daniel, 9 Oct: "a one off job
@@ -17,6 +17,21 @@ const todayLocal = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+async function fetchSent(companyId) {
+  const { data: rows } = await supabase.from('work_orders')
+    .select('id, title, description, status, due_date, created_at, assigned_staff_ids, staff_member_id')
+    .eq('company_id', companyId).eq('one_off', true)
+    .order('created_at', { ascending: false }).limit(15)
+  const ids = (rows ?? []).map(r => r.id)
+  let files = []
+  if (ids.length) {
+    const { data } = await supabase.from('work_order_attachments')
+      .select('id, work_order_id, title, file_path').in('work_order_id', ids).order('created_at', { ascending: true })
+    files = data ?? []
+  }
+  return (rows ?? []).map(r => ({ ...r, files: files.filter(f => f.work_order_id === r.id) }))
+}
+
 export default function OneOffJob({ profile, company, onCreated }) {
   const companyId = profile?.company_id
   const [open, setOpen]       = useState(false)
@@ -30,6 +45,19 @@ export default function OneOffJob({ profile, company, onCreated }) {
   const [error, setError]     = useState(null)
   const [sent, setSent]       = useState(null)
   const fileInput = useRef(null)
+  // What has already gone out, newest first, so the office can look back on
+  // what was sent, to whom, and check the files are all there.
+  const [sentJobs, setSentJobs] = useState([])
+
+  const [sentTick, setSentTick] = useState(0)
+  const loadSent = () => setSentTick(t => t + 1)
+
+  useEffect(() => {
+    if (!companyId) return
+    let cancelled = false
+    fetchSent(companyId).then(rows => { if (!cancelled) setSentJobs(rows) })
+    return () => { cancelled = true }
+  }, [companyId, sentTick])
 
   useEffect(() => {
     if (!companyId) return
@@ -62,6 +90,7 @@ export default function OneOffJob({ profile, company, onCreated }) {
       status:             'backlog',
       staff_member_id:    who[0],
       assigned_staff_ids: who,
+      one_off:            true,
     }
     const { data: row, error: err } = await supabase.from('work_orders')
       .insert({ company_id: companyId, created_by: profile.id, ...payload })
@@ -96,7 +125,11 @@ export default function OneOffJob({ profile, company, onCreated }) {
     if (failed.length) setError(`The job was sent, but these files did not upload: ${failed.join(', ')}`)
     setTitle(''); setNotes(''); setWho([]); setFiles([]); setBusy(false)
     onCreated?.(row)
+    loadSent()
   }
+
+  const nameOf = id => staff.find(s => s.id === id)?.name?.split(' ')[0]
+  const STATUS = { backlog: 'Not started', in_progress: 'In progress', review: 'In review', done: 'Done' }
 
   const dayLabel = iso => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
 
@@ -227,6 +260,48 @@ export default function OneOffJob({ profile, company, onCreated }) {
             </p>
           )}
           {error && <p className="text-[13px] text-red-700">{error}</p>}
+        </div>
+      )}
+
+      {sentJobs.length > 0 && (
+        <div className="px-5 py-4 border-t border-ink-100">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">What you have sent</p>
+          <ul className="flex flex-col divide-y divide-ink-100">
+            {sentJobs.map(j => {
+              const ids = j.assigned_staff_ids?.length ? j.assigned_staff_ids : (j.staff_member_id ? [j.staff_member_id] : [])
+              const names = ids.map(nameOf).filter(Boolean)
+              return (
+                <li key={j.id} className="py-2.5 flex flex-col gap-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-[14px] font-semibold text-ink-900 leading-snug">{j.title}</p>
+                    <span className="flex-shrink-0 text-[11px] text-ink-500 whitespace-nowrap mt-0.5">{STATUS[j.status] ?? j.status}</span>
+                  </div>
+                  <p className="text-[12px] text-ink-500">
+                    {j.due_date ? `For ${dayLabel(j.due_date)}` : 'No day set'}
+                    {names.length > 0 && ` · ${names.join(', ')}`}
+                    {` · sent ${new Date(j.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`}
+                  </p>
+                  {j.description && <p className="text-[13px] text-ink-700 leading-snug">{j.description}</p>}
+                  {j.files.length > 0 ? (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {j.files.map(f => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => openTaskAttachment(f)}
+                          className="text-[12.5px] font-semibold text-brand-700 hover:text-brand-800 underline underline-offset-2"
+                        >
+                          {f.title || 'Open file'}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[12px] text-ink-400">No files went with this one.</p>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
         </div>
       )}
     </div>

@@ -816,7 +816,39 @@ function PriceSection() {
             </>
           )}
 
-          
+          {/* ⚠️ Restored 9 Oct. This list was cut by mistake: Daniel's "the
+              count at the bottom seems useless" was about the dashboard, not
+              this card. Names match the app as it is now (Tasks, Daily logs);
+              the retired visibility tool is left out. Keep it to what an
+              owner can actually find in the nav. */}
+          <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">
+            {[
+              'Solomon AI advisor',
+              'QuickBooks sync',
+              'CFO dashboard',
+              '13-week cash flow',
+              'Offer & pricing builder',
+              'Hiring planner',
+              'Org chart',
+              'Team newsletter',
+              'Safety & compliance',
+              'Work through a decision',
+              'Succession planning',
+              'Growth roadmap',
+              'Weekly check-ins',
+              'SOPs',
+              'Tasks',
+              'Daily logs',
+              'Cited regulatory answers',
+              'Document library',
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-2 text-white/70">
+                <span className="text-brand-400 font-bold flex-shrink-0">✓</span>
+                {f}
+              </div>
+            ))}
+          </div>
+
           <Link
             to="/signup"
             className="inline-block px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors"
