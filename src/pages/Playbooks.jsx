@@ -875,7 +875,6 @@ function PlaybookEditor({
   const itemsText = (template.items ?? []).slice().sort((a, b) => a.position - b.position).map(i => i.text).join('\n')
   const [stepsText, setStepsText]     = useState(itemsText)
   const [savingSteps, setSavingSteps] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { setStepsText(itemsText) }, [template.id])
 
@@ -964,17 +963,6 @@ function PlaybookEditor({
         {savingSteps && <p className="mt-1 text-[11px] text-ink-400">Saving…</p>}
       </div>
 
-      {/* Crew preview — collapsed by default so the editor stays clean */}
-      <div className="px-5 pb-1">
-        <button
-          onClick={() => setShowPreview(v => !v)}
-          className="text-xs font-semibold text-ink-500 hover:text-ink-700"
-        >
-          {showPreview ? 'Hide crew preview ▾' : 'Preview what your crew sees ▸'}
-        </button>
-      </div>
-      {showPreview && <CrewPreview items={template.items} />}
-
       {/* Footer — actions */}
       <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/50 flex items-center justify-between flex-wrap gap-2">
         {/* Bridge to the place the SOP actually gets used. Without this
@@ -998,117 +986,6 @@ function PlaybookEditor({
           </button>
         )}
       </div>
-    </div>
-  )
-}
-
-/**
- * CrewPreview — what the field crew will see on their phone.
- *
- * Mirrors the visual language of the staff portal's checklist (StaffPortal.jsx):
- * progress bar across the top, "Checklist · X of Y" header, amber "N required
- * left" badge, large tappable rows with custom checkbox, green-when-done state,
- * "REQ" badge on required+unchecked steps, notes shown below.
- *
- * Tapping is purely local — the demo state resets every time the underlying
- * items list changes (different SOP selected, step added/removed) so the
- * preview never lies about what the real crew has actually done.
- */
-function CrewPreview({ items }) {
-  const [demoChecked, setDemoChecked] = useState(() => new Set())
-
-  // Reset the local "what the owner toy-ticked" set whenever the underlying
-  // step list changes. Keying off the joined IDs covers add/remove/reorder.
-  const itemsKey = items.map(i => i.id).join('|')
-  useEffect(() => {
-    setDemoChecked(new Set())
-  }, [itemsKey])
-
-  if (items.length === 0) {
-    return (
-      <div className="border-t border-ink-100 bg-ink-50/40 px-5 py-4">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">
-          Preview · what your crew sees
-        </h3>
-        <div className="border border-dashed border-ink-200 rounded-lg p-5 text-center bg-white">
-          <p className="text-xs text-ink-500">
-            Add a step above and you'll see exactly what the crew sees on their phone.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  function toggle(id) {
-    setDemoChecked(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id); else next.add(id)
-      return next
-    })
-  }
-
-  return (
-    <div className="border-t border-ink-100 bg-ink-50/40 px-5 py-4">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">
-          Preview · what your crew sees
-        </h3>
-        <span className="text-[10px] text-ink-400 font-medium italic">
-          Tap to try, won't save
-        </span>
-      </div>
-
-      {/* The checklist itself, styled to match StaffPortal's renderer. */}
-      <div className="bg-white border border-ink-200 rounded-xl p-4 shadow-sm">
-        {/* A written procedure, not a tracked job — the steps the crew follows. */}
-        <p className="text-xs font-bold text-ink-900 mb-3">The steps your crew follows</p>
-
-        {/* Items */}
-        <ul className="space-y-1.5">
-          {items.map(item => {
-            const isDone = demoChecked.has(item.id)
-            return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  onClick={() => toggle(item.id)}
-                  className={`w-full flex items-start gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                    isDone ? 'bg-emerald-50 hover:bg-emerald-100/70' : 'bg-white hover:bg-ink-50'
-                  }`}
-                >
-                  {/* Custom checkbox — matches StaffPortal's size + colour */}
-                  <span className={`mt-0.5 w-5 h-5 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                    isDone ? 'bg-emerald-500 border-emerald-500' : 'bg-white border-ink-300'
-                  }`}>
-                    {isDone && (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="w-3 h-3">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                    )}
-                  </span>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-2 flex-wrap">
-                      <p className={`text-sm leading-snug ${isDone ? 'text-ink-500 line-through' : 'text-ink-900'}`}>
-                        {item.text || <span className="italic text-ink-400">(unnamed step)</span>}
-                      </p>
-                    </div>
-                    {item.notes && (
-                      <p className="text-[11px] text-ink-500 mt-0.5 leading-relaxed">
-                        {item.notes}
-                      </p>
-                    )}
-                  </div>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-
-      <p className="mt-2 text-[10px] text-ink-400 leading-relaxed">
-        This is the checklist your crew works through on the job.
-      </p>
     </div>
   )
 }
