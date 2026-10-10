@@ -5,7 +5,7 @@ import { runToolCall, HAIKU } from '../../lib/anthropic'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import { summarizeContext } from '../../lib/toolContextSummary'
-import SafetyRecord from '../../components/tools/SafetyRecord'
+import BackToTools from '../../components/tools/BackToTools'
 import {
   uploadKnowledgeFile,
   listKnowledgeFiles,
@@ -109,7 +109,7 @@ export default function Safety() {
   const answerRef = useRef()
 
   // Document vault
-  const [vaultOpen,  setVaultOpen]  = useState(false)
+  const [vaultOpen,  setVaultOpen]  = useState(true)
   const [docs,       setDocs]       = useState([])
   const [uploading,  setUploading]  = useState(false)
   const [uploadErr,  setUploadErr]  = useState('')
@@ -269,28 +269,21 @@ export default function Safety() {
       {/* ── Dark header ───────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
+          <BackToTools className="mb-2.5" />
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
             Safety
           </div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">
-            What happened on site, and what the rules say
+            Your safety documents, and the rules where you work
           </h1>
-          <p className="text-sm text-ink-500 mt-0.5">
-            Your safety record from the crew's daily logs, then a place to look up a rule and keep the documents that prove you are covered.
+          <p className="text-sm text-ink-500 mt-0.5 max-w-2xl">
+            Two things in one place: the safety documents your own company has, and the rules for your trade in the area you work in.
+            Ask a question and the answer is drawn from both, with the source shown.
           </p>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-5">
-
-        <SafetyRecord companyId={profile?.company_id} />
-
-        <div className="pt-2">
-          <h2 className="text-base font-bold text-ink-900">Look up a rule, keep the paperwork</h2>
-          <p className="text-[13px] text-ink-500 mt-0.5 max-w-2xl leading-relaxed">
-            Ask what applies to your trade and where you work. The answer comes from your own documents and the actual regulation, with the source shown.
-          </p>
-        </div>
 
         {/* ── Renewal alerts (top of page when anything is within 30 days) ── */}
         {alerts.length > 0 && (
@@ -307,7 +300,7 @@ export default function Safety() {
         <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
           <div className="bg-ink-900 px-5 py-3.5">
             <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-              Ask a compliance question
+              Ask about the rules where you work
             </span>
           </div>
 
@@ -315,7 +308,7 @@ export default function Safety() {
 
             {/* Left: location context */}
             <div className="p-5 space-y-4">
-              <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Your context</p>
+              <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Where you work and what you do</p>
 
               {/* Country toggle */}
               <div>
@@ -430,12 +423,12 @@ export default function Safety() {
 
         {/* ── Document vault (collapsible) ─────────────────────────────────── */}
         <CollapsibleSection
-          title="Compliance document vault"
+          title="Your company's safety documents"
           badge={docs.length ? `${docs.length} file${docs.length > 1 ? 's' : ''}` : null}
           badgeTone={docs.length ? 'green' : null}
           open={vaultOpen}
           onToggle={() => setVaultOpen(o => !o)}
-          hint="Uploaded docs are searched first when you ask a question."
+          hint="Your own policies, certificates, training records and inspection reports. These are read first when you ask a question below."
         >
           {/* Drop zone */}
           <div
@@ -614,25 +607,21 @@ function CollapsibleSection({ title, badge, badgeTone, open, onToggle, hint, act
 
 // ── Disclaimer ────────────────────────────────────────────────────────────────
 
+// ⚠️ 10 Oct, Daniel: this page "needs to have a disclaimer". It had one, but an
+// ✕ hid it for the rest of the session, so most of the time it was not there.
+// On a page that answers questions about safety law it stays put.
 function Disclaimer() {
-  const [dismissed, setDismissed] = useState(() => {
-    try { return sessionStorage.getItem('growthos:compliance-disclaimer') === '1' } catch { return false }
-  })
-  if (dismissed) return null
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-      <span className="text-xl flex-shrink-0 mt-0.5">⚠️</span>
+      <span className="text-xl flex-shrink-0 mt-0.5" aria-hidden>⚠️</span>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold text-amber-900 mb-0.5">Important disclaimer</p>
-        <p className="text-xs text-amber-800 leading-relaxed">
-          Compliance information generated by this tool is for general informational purposes only and does not constitute legal or professional advice. Regulations change frequently.
-          <strong> Always verify with the relevant regulatory authority, a licensed lawyer, or a certified compliance professional before acting.</strong>
+        <p className="text-sm font-bold text-amber-900 mb-0.5">Please read this first</p>
+        <p className="text-[13px] text-amber-900 leading-relaxed">
+          This page gives general information to help you find the right rule. It is not legal advice and it is not a safety program.
+          Rules change, and they differ from one area to the next.
+          <strong> Before you act on anything here, check it with the regulator for your area, a lawyer, or a certified safety professional.</strong>
         </p>
       </div>
-      <button type="button" onClick={() => {
-        setDismissed(true)
-        try { sessionStorage.setItem('growthos:compliance-disclaimer', '1') } catch {}
-      }} className="flex-shrink-0 text-amber-600 hover:text-amber-800 text-lg leading-none">✕</button>
     </div>
   )
 }

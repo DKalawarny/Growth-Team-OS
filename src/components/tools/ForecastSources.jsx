@@ -32,11 +32,13 @@ export default function ForecastSources({ qboConnected, snapshotLabel, financial
       how: <Link to="/documents?view=uploaded" className="font-semibold text-brand-700 hover:text-brand-800">Upload one</Link>,
     },
     {
-      title: 'What you have quoted and invoiced, from any system',
+      title: 'What you have quoted and invoiced',
       have: quoteDocs.length > 0,
       found: `${quoteDocs.length} file${quoteDocs.length === 1 ? '' : 's'}: ${quoteDocs.slice(0, 3).map(f => f.title).join(', ')}${quoteDocs.length > 3 ? ' and more' : ''}.`,
-      missing: 'Nothing yet. Export your quotes or unpaid invoices from whatever you quote in (a spreadsheet, your invoicing app, QuickBooks) and upload the file.',
-      how: <Link to="/documents?view=uploaded" className="font-semibold text-brand-700 hover:text-brand-800">Upload the export</Link>,
+      // Daniel, 10 Oct: "some quotes could be done manually or use a different
+      // program, so just uploading in general, not necessarily QuickBooks."
+      missing: 'Nothing yet. Upload your quotes or unpaid invoices in whatever form you have them: a spreadsheet, a PDF, a list you typed up, or a file from the program you quote in.',
+      how: <Link to="/documents?view=uploaded" className="font-semibold text-brand-700 hover:text-brand-800">Upload them</Link>,
     },
     {
       title: 'Tasks with a quoted amount, not invoiced yet',
