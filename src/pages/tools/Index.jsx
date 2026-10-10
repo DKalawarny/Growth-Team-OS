@@ -44,12 +44,16 @@ import { fetchIntegration } from '../../lib/quickbooks'
 
 // Groups and labels mirror SolomonLauncher exactly. If you change one, change
 // both — that shared vocabulary is the entire point of this rebuild.
+// ⚠️ 10 Oct, Daniel: "a couple on tools you should get rid of if it's on the
+// nav bar." Finances, SOPs and Succession each have their own place in the
+// sidebar, so they are not repeated here. This page is for what the sidebar
+// does NOT already show. (SolomonLauncher still lists all of them: there the
+// list is "what can Solomon do", not navigation.)
 const GROUPS = [
   {
     title: 'Money',
     items: [
       { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', name: 'Cash flow', needsQbo: true },
-      { label: 'Read this month’s numbers to me', note: 'The month in plain English: what changed, and what to do about it.', to: '/tools/cfo', name: 'Finances', needsQbo: true },
       { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder', name: 'Offer builder' },
     ],
   },
@@ -66,9 +70,7 @@ const GROUPS = [
     items: [
       { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision', name: 'Decision' },
       { label: 'Set this quarter’s priorities',  note: 'The two or three that matter, and an honest word if it is too many.', to: '/tools/rocks', name: 'Rocks' },
-      { label: 'Write down a repeating job',     note: 'Get it out of your head and onto paper, so the business can run without you.', to: '/playbooks', name: 'SOPs' },
       { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety', name: 'Safety' },
-      { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness', name: 'Succession' },
     ],
   },
 ]
