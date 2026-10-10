@@ -102,9 +102,16 @@ export default function GeneratedTab({ onCountChange }) {
 
   return (
     <>
-      {/* Compact filter row */}
+      {/* ⚠️ 10 Oct, Daniel: "this makes sense... maybe it just needs a better
+          layout or defined better." One flat list mixed a cash-flow forecast
+          with an org chart with a saved note. Same rows, now under a plain
+          heading for what each is about, with a line saying what this shelf is. */}
+      <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
+        Every time a tool or Solomon writes something for you, a copy is kept here.
+        Nothing to file. Open one to read it again or pick up where you left off.
+      </p>
       <div className="flex items-center gap-2 mb-4">
-        <label className="text-xs text-ink-500 font-medium flex-shrink-0">Filter</label>
+        <label className="text-xs text-ink-500 font-medium flex-shrink-0">Show</label>
         <select
           value={toolFilter}
           onChange={e => setFilter(e.target.value)}
@@ -129,10 +136,22 @@ export default function GeneratedTab({ onCountChange }) {
           No documents for this tool yet.
         </div>
       ) : (
-        <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
-          {visibleDocs.map(doc => (
-            <Row key={doc.id} doc={doc} onOpen={() => setSlideDoc(doc)} />
-          ))}
+        <div className="space-y-5">
+          {GROUPS.map(g => {
+            const rows = visibleDocs.filter(d => groupOf(d.tool_id) === g.key)
+            if (rows.length === 0) return null
+            return (
+              <section key={g.key}>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">{g.title}</h3>
+                <p className="text-[12px] text-ink-400 mt-0.5 mb-2">{g.hint}</p>
+                <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
+                  {rows.map(doc => (
+                    <Row key={doc.id} doc={doc} onOpen={() => setSlideDoc(doc)} />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
         </div>
       )}
 
@@ -143,6 +162,23 @@ export default function GeneratedTab({ onCountChange }) {
     </>
   )
 }
+
+// What each saved thing is ABOUT, in the owner's words. Anything a new tool
+// saves lands in "Everything else" until it is given a home here.
+const GROUPS = [
+  { key: 'money',   title: 'Money',              hint: 'Reads of your numbers, cash forecasts and pricing.' },
+  { key: 'people',  title: 'People',             hint: 'Hiring plans, the org chart and updates for the team.' },
+  { key: 'plan',    title: 'Plan and decisions', hint: 'Decisions worked through, priorities, and how ready the business is to run without you.' },
+  { key: 'solomon', title: 'Saved from Solomon', hint: 'Answers you chose to keep from a conversation.' },
+  { key: 'other',   title: 'Everything else',    hint: 'Other things the tools have made.' },
+]
+const GROUP_BY_TOOL = {
+  'cfo-dashboard': 'money', 'cash-flow': 'money', 'offer-builder': 'money',
+  'hiring-scorecard': 'people', 'org-chart': 'people', 'team-newsletter': 'people',
+  'decision': 'plan', 'exit-readiness': 'plan', 'rocks-tracker': 'plan',
+  'solomon': 'solomon',
+}
+const groupOf = toolId => GROUP_BY_TOOL[toolId] ?? 'other'
 
 // ── Row (divider style — no individual card) ──────────────────────────────────
 

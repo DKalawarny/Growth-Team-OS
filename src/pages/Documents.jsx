@@ -26,7 +26,7 @@ export default function Documents() {
           <div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Library</h1>
             <p className="text-xs text-ink-500 mt-0.5">
-              What Solomon has written for you, and what you have given him to read.
+              Two shelves. On the left, everything made in the app. On the right, the files you added yourself.
             </p>
           </div>
         </div>
@@ -39,14 +39,14 @@ export default function Documents() {
         <div className="flex flex-col w-2/5 border-r border-ink-100 overflow-hidden">
           {/* Column header */}
           <div className="bg-white border-b border-ink-100 px-6 py-3 flex-shrink-0 flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Generated</span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Made in the app</span>
             {genCount !== null && (
               <span className="text-[10px] font-semibold bg-ink-100 text-ink-500 px-1.5 py-0.5 rounded-full">
                 {genCount}
               </span>
             )}
             <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">Written by the tools, saved here</span>
+            <span className="text-xs text-ink-400">What the tools and Solomon wrote for you</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">
@@ -58,14 +58,14 @@ export default function Documents() {
         <div className="flex flex-col w-3/5 overflow-hidden">
           {/* Column header */}
           <div className="bg-white border-b border-ink-100 px-6 py-3 flex-shrink-0 flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Uploaded</span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">Your files</span>
             {upCount !== null && (
               <span className="text-[10px] font-semibold bg-ink-100 text-ink-500 px-1.5 py-0.5 rounded-full">
                 {upCount}
               </span>
             )}
             <span className="text-ink-300 text-xs">·</span>
-            <span className="text-xs text-ink-400">Files you added, Solomon reads all of them</span>
+            <span className="text-xs text-ink-400">What you gave Solomon to read</span>
           </div>
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-5">

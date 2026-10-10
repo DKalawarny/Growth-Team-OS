@@ -146,11 +146,15 @@ export const TOOLS = [
   {
     id:          'rocks-tracker',
     route:       '/tools/rocks',
-    name:        'Rocks Tracker',
-    tagline:     'Quarterly priorities, weekly status, zero spreadsheets.',
+    name:        'Quarterly priorities',
+    tagline:     'The three to five things that matter this quarter (your rocks), who owns each, and where each stands.',
     category:    'systems',
     status:      'available',
     icon:        '🪨',
+    // Still hidden from generated nav, and still reachable: the /tools page
+    // lists it by hand as "Set this quarter's priorities". Daniel could not find
+    // it there (10 Oct) because that row never said "Rocks"; the fix was naming
+    // each row on that page, not un-hiding this.
     hidden:      true,
   },
   // ── Virtual tool — Solomon saved answers ──────────────────────────────────

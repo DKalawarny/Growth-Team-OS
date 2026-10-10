@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { uploadKnowledgeFile, validateFile, listFilesForMilestone } from '../lib/knowledgeFiles'
 import { sendTaskAssigned } from '../lib/email'
 import Tooltip from '../components/ui/Tooltip'
-import { getBookLink, AFFILIATE_DISCLOSURE } from '../lib/affiliateLinks'
+import { getBookLink, AFFILIATE_DISCLOSURE, AFFILIATE_ACTIVE } from '../lib/affiliateLinks'
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { buildAdvisorContext } from '../lib/advisorContext'
@@ -1169,9 +1169,11 @@ Suggest a single new milestone that addresses what they've described. Make it sp
         onCancel={handleChatCancel}
       />
 
-      <footer className="mt-12 pt-6 border-t border-ink-100">
-        <p className="text-xs text-ink-400 leading-relaxed">{AFFILIATE_DISCLOSURE}</p>
-      </footer>
+      {AFFILIATE_ACTIVE && (
+        <footer className="mt-12 pt-6 border-t border-ink-100">
+          <p className="text-xs text-ink-400 leading-relaxed">{AFFILIATE_DISCLOSURE}</p>
+        </footer>
+      )}
 
       {/* Quick work-order popup — opens inline, no navigation */}
       {workOrderDraft && (
@@ -2498,7 +2500,8 @@ function MilestoneRow({
 
           {Array.isArray(books) && books.length > 0 && (
             <div>
-              <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-2">Suggested reading</div>
+              <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-1">Suggested reading</div>
+              <p className="text-xs text-ink-500 leading-relaxed mb-2">Goes further into this milestone. Worth a look if you want the thinking behind it, not required to get it done.</p>
               <ul className="flex flex-wrap gap-2">
                 {books.map((b, i) => {
                   const link = getBookLink(b)

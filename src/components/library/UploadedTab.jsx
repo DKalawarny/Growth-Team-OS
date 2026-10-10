@@ -206,19 +206,6 @@ export default function UploadedTab({ onCountChange }) {
 
   return (
     <>
-      {/* Library Intelligence panel — shown once files exist */}
-      {files.length > 0 && (
-        <LibraryIntelligencePanel
-          readyCount={readyCount}
-          analysis={analysis}
-          analyzePhase={analyzePhase}
-          analyzeError={analyzeError}
-          appliedTitles={appliedTitles}
-          onAnalyze={handleAnalyze}
-          onApplyMilestone={handleApplyMilestone}
-        />
-      )}
-
       {/* ⚠️ BOTH OF THESE ARE GATED ON files.length > 0, AND THAT MATTERS.
           They used to render unconditionally, above an EmptyState that carries
           its own copy of each. On an empty library that produced FOUR upload
@@ -231,10 +218,37 @@ export default function UploadedTab({ onCountChange }) {
           Surrounding it with duplicates of itself is the opposite. */}
       {files.length > 0 && (
       <>
-      {/* Upload guide — collapsed by default once files exist */}
-      <UploadSuggestionsPanel defaultOpen={false} onManualEntry={() => setShowManualFinancials(true)} />
+      {/* What this side is, then the ways to add a file, then the files. */}
+      <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
+        Price sheets, contracts, statements, anything already written down. Solomon reads
+        these before he answers, so the more that is here, the less he has to guess.
+      </p>
+      <div className="flex items-center gap-2 flex-wrap mb-4">
+        <button
+          type="button"
+          onClick={() => setShowUpload(true)}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors"
+        >
+          <span aria-hidden>＋</span> Upload a file
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowCloud(true)}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 text-sm font-semibold text-ink-700 transition-colors"
+        >
+          Bring in from Google Drive or OneDrive
+        </button>
+        <button
+          type="button"
+          onClick={handleCheckDrive}
+          disabled={checking}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 text-sm font-semibold text-ink-700 transition-colors disabled:opacity-50"
+          title="Checks whether any file you brought in from Google Drive has changed there since"
+        >
+          {checking ? 'Checking…' : 'Check Drive for newer versions'}
+        </button>
+      </div>
 
-      {/* Filter + upload bar */}
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div className="flex flex-wrap gap-2">
           <FilterChip
@@ -256,34 +270,6 @@ export default function UploadedTab({ onCountChange }) {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCheckDrive}
-            disabled={checking}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 hover:bg-brand-50/20 text-sm text-ink-600 font-medium transition-colors disabled:opacity-50"
-            title="Ask Google Drive whether any imported file has changed since you imported it"
-          >
-            <span aria-hidden>⟳</span>
-            <span className="hidden sm:inline">{checking ? 'Checking…' : 'Check Drive'}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowCloud(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-ink-200 bg-white hover:border-brand-300 hover:bg-brand-50/20 text-sm text-ink-600 font-medium transition-colors"
-            title="Import from Google Drive or OneDrive"
-          >
-            <span aria-hidden>☁️</span>
-            <span className="hidden sm:inline">Import</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUpload(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-gradient text-white text-sm font-bold tracking-wide glow-gold-sm hover:glow-gold transition-all duration-200"
-          >
-            <span aria-hidden>＋</span> Upload
-          </button>
-        </div>
       </div>
 
       {/* Freshness result. Deliberately plain text rather than badges on rows:
@@ -346,6 +332,26 @@ export default function UploadedTab({ onCountChange }) {
         </div>
       )}
 
+      {/* ⚠️ 10 Oct, Daniel: "this section is confusing to me." Two dark bars
+          (read everything together, what should I upload) sat ABOVE the files,
+          so the first thing on a page called Uploaded was two things that are
+          not files. The files and the three ways to add one come first now;
+          these two follow, as the optional extras they are. */}
+      {files.length > 0 && (
+        <div className="mt-6">
+          <UploadSuggestionsPanel defaultOpen={false} onManualEntry={() => setShowManualFinancials(true)} />
+        <LibraryIntelligencePanel
+          readyCount={readyCount}
+          analysis={analysis}
+          analyzePhase={analyzePhase}
+          analyzeError={analyzeError}
+          appliedTitles={appliedTitles}
+          onAnalyze={handleAnalyze}
+          onApplyMilestone={handleApplyMilestone}
+        />
+        </div>
+      )}
+
       {showUpload && (
         <UploadDialog
           initialFiles={seedFiles}
@@ -403,7 +409,7 @@ function LibraryIntelligencePanel({
       <button
         type="button"
         onClick={() => setExpanded(e => !e)}
-        className="w-full flex items-center gap-2.5 px-5 py-3 bg-ink-900 hover:bg-ink-800 transition-colors text-left"
+        className="w-full flex items-center gap-2.5 px-5 py-3 bg-ink-50 hover:bg-ink-100 transition-colors text-left"
       >
         {/* Status dot */}
         {isRunning ? (
@@ -419,8 +425,8 @@ function LibraryIntelligencePanel({
             that — a synthesised read across ALL the uploaded files at once, not
             per-file — and the old name described the machinery rather than the
             thing. Named for what it does now. */}
-        <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400 flex-shrink-0">
-          Everything, read together
+        <span className="text-[10.5px] font-bold uppercase tracking-widest text-ink-700 flex-shrink-0">
+          One read across all your files
         </span>
 
         {/* Collapsed summary */}
@@ -450,7 +456,7 @@ function LibraryIntelligencePanel({
             onClick={e => { e.stopPropagation(); onAnalyze() }}
             className="text-[10.5px] text-ink-400 hover:text-brand-400 transition-colors font-medium flex-shrink-0 ml-auto mr-2"
           >
-            {hasAnalysis ? 'Re-analyze →' : 'Analyze library →'}
+            {hasAnalysis ? 'Read them again →' : ''}
           </button>
         )}
 
@@ -491,16 +497,15 @@ function LibraryIntelligencePanel({
           {!isRunning && !hasAnalysis && analyzePhase !== 'error' && (
             <div className="py-1">
               <p className="text-sm text-ink-500 leading-relaxed mb-4">
-                Solomon will read all {readyCount} document{readyCount !== 1 ? 's' : ''} together, not one by one, and build a live
-                intelligence picture of your business: what's strong, what's missing,
-                and what new roadmap milestones to add.
+                Solomon reads all {readyCount} file{readyCount !== 1 ? 's' : ''} as one set, not one at a time, and tells you
+                what is strong, what is missing, and what is worth adding to your roadmap.
               </p>
               <button
                 type="button"
                 onClick={onAnalyze}
                 className="bg-gold-gradient text-white rounded-lg px-5 py-2.5 text-sm font-bold tracking-wide glow-gold-sm hover:glow-gold transition-all duration-200"
               >
-                Analyze my library →
+                Read them together →
               </button>
             </div>
           )}
@@ -799,14 +804,14 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-ink-900 hover:bg-ink-800 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3 bg-ink-50 hover:bg-ink-100 transition-colors"
       >
         <div className="flex items-center gap-2.5">
-          <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
-            What should I upload?
+          <span className="text-[10.5px] font-bold uppercase tracking-widest text-ink-700">
+            Not sure what else to add?
           </span>
-          <span className="text-[10px] text-ink-500">
-            · the more context, the sharper Solomon's advice
+          <span className="text-[11px] text-ink-500">
+            · a short list of what helps most
           </span>
         </div>
         <span className="text-ink-400 text-xs flex-shrink-0">

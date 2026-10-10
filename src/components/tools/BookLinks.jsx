@@ -1,4 +1,4 @@
-import { getBookLink, AFFILIATE_DISCLOSURE } from '../../lib/affiliateLinks'
+import { getBookLink, AFFILIATE_DISCLOSURE, AFFILIATE_ACTIVE } from '../../lib/affiliateLinks'
 
 /**
  * Book suggestions at the foot of a tool result, as real links.
@@ -13,6 +13,10 @@ export default function BookLinks({ books = [] }) {
   if (links.length === 0) return null
   return (
     <div>
+      {/* Why they are here, in one line (Daniel: "a short little this will help type thing"). */}
+      <p className="text-xs text-gray-500 leading-relaxed mb-2">
+        {links.length === 1 ? 'This book goes' : 'These books go'} further into what came up above. Worth a look if you want the thinking behind the advice, not required to act on it.
+      </p>
       <ul className="flex flex-wrap gap-2">
         {links.map((link, i) => (
           <li key={i}>
@@ -31,7 +35,7 @@ export default function BookLinks({ books = [] }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[11px] text-gray-400 leading-relaxed">{AFFILIATE_DISCLOSURE}</p>
+      {AFFILIATE_ACTIVE && <p className="mt-2 text-[11px] text-gray-400 leading-relaxed">{AFFILIATE_DISCLOSURE}</p>}
     </div>
   )
 }

@@ -71,6 +71,14 @@ export function getBookLink(rawTitle) {
   }
 }
 
+/**
+ * Whether an affiliate tag is actually configured. ⚠️ The disclosure below says
+ * "Eliv8 OS earns from qualifying purchases"; with no tag set that sentence is
+ * false, so the UI shows it only when this is true (10 Oct: Daniel confirmed the
+ * Amazon tag has not been set up).
+ */
+export const AFFILIATE_ACTIVE = !!import.meta.env.VITE_AMAZON_AFFILIATE_TAG?.trim()
+
 /** Exported so the UI can render the required disclosure once, globally. */
 export const AFFILIATE_DISCLOSURE =
   'Book recommendations include Amazon affiliate links. As an Amazon Associate, Eliv8 OS earns from qualifying purchases at no extra cost to you.'

@@ -48,27 +48,27 @@ const GROUPS = [
   {
     title: 'Money',
     items: [
-      { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', needsQbo: true },
-      { label: 'Read this month’s numbers to me', note: 'The month in plain English: what changed, and what to do about it.', to: '/tools/cfo', needsQbo: true },
-      { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder' },
+      { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', name: 'Cash flow', needsQbo: true },
+      { label: 'Read this month’s numbers to me', note: 'The month in plain English: what changed, and what to do about it.', to: '/tools/cfo', name: 'Finances', needsQbo: true },
+      { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder', name: 'Offer builder' },
     ],
   },
   {
     title: 'People',
     items: [
-      { label: 'Think through a hire',         note: 'Whether to, what the role really is, and what to look for in the person.', to: '/tools/hiring' },
-      { label: 'Plan the team I’ll need',      note: 'What the team should look like in twelve months, and the order to build it.', to: '/tools/org-chart' },
-      { label: 'Draft an update for the team', note: 'Say where things are heading, in words you would be happy to have repeated.', to: '/tools/newsletter' },
+      { label: 'Think through a hire',         note: 'Whether to, what the role really is, and what to look for in the person.', to: '/tools/hiring', name: 'Hiring planner' },
+      { label: 'Plan the team I’ll need',      note: 'What the team should look like in twelve months, and the order to build it.', to: '/tools/org-chart', name: 'Org chart' },
+      { label: 'Draft an update for the team', note: 'Say where things are heading, in words you would be happy to have repeated.', to: '/tools/newsletter', name: 'Team newsletter' },
     ],
   },
   {
     title: 'The business',
     items: [
-      { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision' },
-      { label: 'Set this quarter’s priorities',  note: 'The two or three that matter, and an honest word if it is too many.', to: '/tools/rocks' },
-      { label: 'Write down a repeating job',     note: 'Get it out of your head and onto paper, so the business can run without you.', to: '/playbooks' },
-      { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety' },
-      { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness' },
+      { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision', name: 'Decision' },
+      { label: 'Set this quarter’s priorities',  note: 'The two or three that matter, and an honest word if it is too many.', to: '/tools/rocks', name: 'Rocks' },
+      { label: 'Write down a repeating job',     note: 'Get it out of your head and onto paper, so the business can run without you.', to: '/playbooks', name: 'SOPs' },
+      { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety', name: 'Safety' },
+      { label: 'Think about who runs this next', note: 'What would have to be true for someone else to run it, and how far off that is.', to: '/tools/exit-readiness', name: 'Succession' },
     ],
   },
 ]
@@ -159,6 +159,14 @@ function ToolRow({ item, first, qbo }) {
       <span className="min-w-0">
         <span className="block text-[15px] font-semibold text-ink-900 leading-snug">
           {item.label}
+          {/* The tool's own name, small. The rows are written as jobs ("Plan
+              the team I'll need"), which is right, but someone looking for
+              "the org chart" or "rocks" could not find either on this page. */}
+          {item.name && (
+            <span className="ml-2 align-middle text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">
+              {item.name}
+            </span>
+          )}
           {item.needsQbo && qbo === false && (
             <span className="ml-2 align-middle text-[10px] font-semibold uppercase tracking-wide text-ink-400">
               needs QuickBooks
