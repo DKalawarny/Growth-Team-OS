@@ -25,8 +25,8 @@ import { listTaskAttachments, uploadTaskAttachment, deleteTaskAttachment, openTa
 // ── Column + priority config ──────────────────────────────────────────────────
 
 const COLUMNS = [
-  { key: 'backlog',     label: 'Backlog',     headerCls: 'bg-ink-100   text-ink-700',   dotCls: 'bg-ink-400'   },
-  { key: 'in_progress', label: 'In Progress', headerCls: 'bg-brand-100 text-brand-800', dotCls: 'bg-brand-500' },
+  { key: 'backlog',     label: 'Not started',   headerCls: 'bg-ink-100   text-ink-700',   dotCls: 'bg-ink-400'   },
+  { key: 'in_progress', label: 'In progress', headerCls: 'bg-brand-100 text-brand-800', dotCls: 'bg-brand-500' },
   { key: 'review',      label: 'Review',      headerCls: 'bg-amber-100 text-amber-800', dotCls: 'bg-amber-500' },
   { key: 'done',        label: 'Done',        headerCls: 'bg-green-100 text-green-800', dotCls: 'bg-green-500' },
 ]
@@ -74,6 +74,15 @@ function isOverdue(d) {
 
 export default function Board() {
   const { profile, company, role } = useAuth()
+  // "How tasks work" strip. Shown until dismissed, remembered per company, the
+  // same way the SOPs page remembers its own.
+  const howKey = profile?.company_id ? `tasks_how_dismissed_${profile.company_id}` : null
+  const [howHidden, setHowHidden] = useState(false)
+  const showHow = !howHidden && !(howKey && typeof window !== 'undefined' && localStorage.getItem(howKey) === '1')
+  function dismissHow() {
+    setHowHidden(true)
+    try { if (howKey) localStorage.setItem(howKey, '1') } catch { /* storage blocked */ }
+  }
   const seeCosts = canSeeJobCosts(role, company)
   const companyId    = profile?.company_id
   const [searchParams, setSearchParams] = useSearchParams()
@@ -665,6 +674,12 @@ alter table public.work_orders
           </div>
         </div>
       </div>
+
+      {showHow && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-4">
+          <HowTasksWork onDismiss={dismissHow} />
+        </div>
+      )}
 
       {/* Member filter strip */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-2 flex items-center gap-2 flex-wrap">
@@ -1533,3 +1548,43 @@ function boardFormatRelativeTime(iso) {
   return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
+/**
+ * ⚠️ 10 Oct, Daniel: "this page does look a bit intimidating, I think it needs
+ * explanation on how things work." Four columns, seven name filters and three
+ * header buttons with nothing saying what any of it is for. Three steps and one
+ * line naming the buttons, dismissible.
+ */
+function HowTasksWork({ onDismiss }) {
+  const steps = [
+    ['Add a task and pick who is on it',
+     'A task is one piece of work: a site visit, a quote to send, a step from your roadmap. Give it a name, choose one or more people, and a due date if there is one.'],
+    ['Move it along as it goes',
+     'Drag a card to the next column, or use the arrows on the card. Review is for work you want to look at before calling it done.'],
+    ['Your crew sees their own tasks',
+     'Each person gets the tasks they are on through their own link, with any SOP steps and files you attached. They do not need a login.'],
+  ]
+  return (
+    <div className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
+      <div className="px-5 py-3 border-b border-ink-100 flex items-center justify-between">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">How tasks work</h2>
+        <button onClick={onDismiss} className="text-[11px] font-semibold text-ink-400 hover:text-ink-700">Got it, hide</button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-ink-100">
+        {steps.map(([title, body], i) => (
+          <div key={title} className="px-5 py-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
+              <h3 className="text-sm font-bold text-ink-900">{title}</h3>
+            </div>
+            <p className="text-xs text-ink-600 leading-relaxed">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="px-5 py-3 border-t border-ink-100 text-xs text-ink-500 leading-relaxed">
+        <span className="font-semibold text-ink-700">The names along the top</span> show one person's tasks.{' '}
+        <span className="font-semibold text-ink-700">Field flags</span> are things the crew flagged for the office from site.{' '}
+        <span className="font-semibold text-ink-700">Manage crew</span> is where you add people and set their reminders.
+      </p>
+    </div>
+  )
+}

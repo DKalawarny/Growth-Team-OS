@@ -18,20 +18,30 @@ import { sendStaffWelcome, sendStaffLogLink } from '../../lib/email'
  */
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 const fmtHour = (h) => { const am = h < 12; const n = h % 12 === 0 ? 12 : h % 12; return `${n}${am ? 'am' : 'pm'}` }
+// ⚠️ 10 Oct, Daniel: "this sounds too Canadian, make it normal." The list named
+// zones by Canadian city (Calgary / Edmonton, Winnipeg, Halifax) and then listed
+// the same four zones again as "US ...". One plain entry per zone now.
 const TZ_OPTIONS = [
-  ['America/Edmonton', 'Mountain (Calgary / Edmonton)'],
-  ['America/Vancouver', 'Pacific (Vancouver)'],
-  ['America/Toronto', 'Eastern (Toronto)'],
-  ['America/Winnipeg', 'Central (Winnipeg)'],
-  ['America/Halifax', 'Atlantic (Halifax)'],
-  ['America/New_York', 'US Eastern'],
-  ['America/Chicago', 'US Central'],
-  ['America/Denver', 'US Mountain'],
-  ['America/Los_Angeles', 'US Pacific'],
-  ['Europe/London', 'UK (London)'],
-  ['Australia/Sydney', 'Sydney'],
-  ['Pacific/Auckland', 'Auckland'],
+  ['America/Los_Angeles', 'Pacific Time'],
+  ['America/Denver', 'Mountain Time'],
+  ['America/Phoenix', 'Arizona (no daylight saving)'],
+  ['America/Chicago', 'Central Time'],
+  ['America/New_York', 'Eastern Time'],
+  ['America/Halifax', 'Atlantic Time'],
+  ['America/Anchorage', 'Alaska Time'],
+  ['Pacific/Honolulu', 'Hawaii Time'],
+  ['Europe/London', 'UK Time'],
+  ['Australia/Sydney', 'Sydney Time'],
+  ['Pacific/Auckland', 'New Zealand Time'],
 ]
+// Companies saved under the old city-named entries keep their stored value; the
+// same clock is simply shown under its plain name.
+const TZ_ALIAS = {
+  'America/Edmonton': 'America/Denver',
+  'America/Vancouver': 'America/Los_Angeles',
+  'America/Winnipeg': 'America/Chicago',
+  'America/Toronto': 'America/New_York',
+}
 
 export default function TeamSection({ companyId, companyName, ownerName }) {
   const [staff,     setStaff]     = useState([])
@@ -233,8 +243,8 @@ export default function TeamSection({ companyId, companyName, ownerName }) {
             <div className="px-6 pt-5 space-y-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] text-ink-500">Reminder times are in</span>
-                <select value={tz} onChange={e => saveTz(e.target.value)} className="text-[12px] py-1 rounded-lg border border-ink-200">
-                  {(TZ_OPTIONS.some(([v]) => v === tz) ? TZ_OPTIONS : [[tz, tz], ...TZ_OPTIONS]).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+                <select value={TZ_ALIAS[tz] ?? tz} onChange={e => saveTz(e.target.value)} className="text-[12px] py-1 rounded-lg border border-ink-200">
+                  {(TZ_OPTIONS.some(([v]) => v === (TZ_ALIAS[tz] ?? tz)) ? TZ_OPTIONS : [[tz, tz], ...TZ_OPTIONS]).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
                 </select>
               </div>
               <div className="rounded-xl border border-ink-100 bg-ink-50/40 p-4">

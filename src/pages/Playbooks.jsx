@@ -760,10 +760,9 @@ function PageHeader() {
           honest version of this all along: "get the jobs that live in your
           head onto paper, so the business can run a day without you in it." */}
       <p className="text-xs text-ink-500 mt-1.5 max-w-2xl leading-relaxed">
-        The jobs you do over and over, written down once: what they involve, and
-        what actually happened on them. It gets what is in your head onto paper, so
-        the business can run a day without you, and so Solomon can see how the work
-        really goes rather than how it was supposed to.
+        The jobs you do over and over, written down once. Writing them down gets
+        what is in your head onto paper, so the business can run a day without you
+        and a new person can do the job the way you would.
       </p>
     </div>
   )
@@ -799,17 +798,17 @@ function HowItWorksBanner({ onDismiss }) {
         <HowStep
           n="1"
           title="Write it down once"
-          body="List the steps for a job your team does over and over: site walkthrough, demo, daily safety. The order matters; the crew works top to bottom."
+          body="List the steps for a job your team does over and over: a site visit, a new client setup, a daily safety check. One step per line, in the order the work happens."
         />
         <HowStep
           n="2"
-          title="Attach it to a job"
-          body="When a job comes up, pick the matching SOP. Its steps copy across, so the same work gets done the same way whoever is on it."
+          title="Let Solomon point out what is missing"
+          body="Ask what we are missing and Solomon reads your daily logs, your tasks and your documents, then names the SOPs worth writing, with the reason for each one."
         />
         <HowStep
           n="3"
-          title="It comes back with what happened"
-          body="The crew works through it on their phone and adds notes as they go. Those notes stay with the job, which is what lets Solomon tell you something true about how it actually went."
+          title="Put it in front of the crew"
+          body="Create a task from an SOP and its steps go with the task, so whoever is on it has the procedure to follow. You can also print an SOP or save it as a PDF."
         />
       </div>
     </div>
