@@ -913,7 +913,7 @@ function PageFooter() {
               immediately unpacked and earns its place. */}
           <span>· An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           <Link to="/answers" className="hover:text-white/60 transition-colors">Answers</Link>
           <Link to="/demo" className="hover:text-white/60 transition-colors">See it work</Link>
           <Link to="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
