@@ -288,6 +288,7 @@ export default function Enter() {
               id="wayout-email"
               className="wayout__input"
               type="email"
+              name="email"
               autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -299,6 +300,7 @@ export default function Enter() {
               <input
                 id="wayout-password"
                 className="wayout__input"
+                name="password"
                 type={show ? 'text' : 'password'}
                 autoComplete={mode === 'new' ? 'new-password' : 'current-password'}
                 value={password}
