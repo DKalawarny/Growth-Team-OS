@@ -1092,7 +1092,7 @@ function WorkOrderModal({ order, appUsers, staff, milestones, templates = [], ch
                 const n   = tpl?.items?.length ?? 0
                 return (
                   <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
-                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this job. The crew can tick them off from the board or the staff portal.
+                    {n} step{n === 1 ? '' : 's'} from this SOP go with the task, so whoever is on it has the procedure to follow.
                   </p>
                 )
               })()}

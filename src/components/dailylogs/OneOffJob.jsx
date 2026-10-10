@@ -4,8 +4,14 @@ import { sendTaskAssigned } from '../../lib/email'
 import { uploadTaskAttachment, validateAttachment, openTaskAttachment, TASK_ATTACH_MAX_MB } from '../../lib/taskAttachments'
 
 /**
- * A one-off job, sent from the Daily logs page (Daniel, 9 Oct: "a one off job
- * so you can send out plans etc, or a one off clean that's a day job").
+ * Send a job to the crew, with files, from the Daily logs page.
+ *
+ * ⚠️ 9 Oct, Daniel on the first version: "it doesn't need to be a one off job
+ * and i don't want it focussed on, also maybe it has a start and end date."
+ * So it is a quiet line that opens, the same weight as "Field crew &
+ * reminders" above it, the wording is any job, and a job can run over a span
+ * of days. (The `one_off` column name is internal: it marks what was sent
+ * from here so the look-back list can find it.)
  *
  * It is a real task, not a new kind of thing: the crew's portal already lists
  * every task a person is on, so creating one with a date and people IS putting
@@ -19,7 +25,7 @@ const todayLocal = () => {
 
 async function fetchSent(companyId) {
   const { data: rows } = await supabase.from('work_orders')
-    .select('id, title, description, status, due_date, created_at, assigned_staff_ids, staff_member_id')
+    .select('id, title, description, status, start_date, due_date, created_at, assigned_staff_ids, staff_member_id')
     .eq('company_id', companyId).eq('one_off', true)
     .order('created_at', { ascending: false }).limit(15)
   const ids = (rows ?? []).map(r => r.id)
@@ -37,7 +43,8 @@ export default function OneOffJob({ profile, company, onCreated }) {
   const [open, setOpen]       = useState(false)
   const [staff, setStaff]     = useState([])
   const [title, setTitle]     = useState('')
-  const [day, setDay]         = useState(todayLocal)
+  const [day, setDay]         = useState(todayLocal)   // start
+  const [endDay, setEndDay]   = useState('')           // optional end
   const [notes, setNotes]     = useState('')
   const [who, setWho]         = useState([])
   const [files, setFiles]     = useState([])
@@ -85,7 +92,10 @@ export default function OneOffJob({ profile, company, onCreated }) {
     const payload = {
       title:              title.trim(),
       description:        notes.trim() || null,
-      due_date:           day || null,
+      // One day: that day is the due date. A span: starts on the first,
+      // due on the last. An end before the start is ignored, not saved.
+      start_date:         endDay && endDay > day ? day : null,
+      due_date:           (endDay && endDay > day ? endDay : day) || null,
       priority:           'medium',
       status:             'backlog',
       staff_member_id:    who[0],
@@ -118,12 +128,13 @@ export default function OneOffJob({ profile, company, onCreated }) {
 
     setSent({
       names: people.map(s => s.name.split(' ')[0]),
-      day,
+      day: payload.start_date || payload.due_date,
+      endDay: payload.start_date ? payload.due_date : null,
       fileCount: files.length - failed.length,
       noEmail: people.filter(s => !s.email).map(s => s.name.split(' ')[0]),
     })
     if (failed.length) setError(`The job was sent, but these files did not upload: ${failed.join(', ')}`)
-    setTitle(''); setNotes(''); setWho([]); setFiles([]); setBusy(false)
+    setTitle(''); setNotes(''); setWho([]); setFiles([]); setEndDay(''); setBusy(false)
     onCreated?.(row)
     loadSent()
   }
@@ -131,41 +142,53 @@ export default function OneOffJob({ profile, company, onCreated }) {
   const nameOf = id => staff.find(s => s.id === id)?.name?.split(' ')[0]
   const STATUS = { backlog: 'Not started', in_progress: 'In progress', review: 'In review', done: 'Done' }
 
+  const shortDay = iso => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
   const dayLabel = iso => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div className="mt-6 rounded-xl border border-ink-100 bg-white overflow-hidden">
+    <div className="mt-3">
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full px-5 py-3 flex items-center justify-between gap-3 text-left"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
       >
-        <span>
-          <span className="block text-[11px] font-bold uppercase tracking-wider text-ink-500">Send a one-off job</span>
-          <span className="block text-[12px] text-ink-400 mt-0.5">
-            A single day job, a one-off clean, a set of plans. Name the job, pick who is on it and attach the files.
-            The job lands on their daily checklist with the files ready to open on site.
-          </span>
-        </span>
-        <span className="flex-shrink-0 text-xs font-semibold text-brand-700">{open ? 'Close' : 'Start one'}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${open ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
+        Send a job and files to the crew
       </button>
 
       {open && (
-        <div className="px-5 pb-5 pt-1 border-t border-ink-100 flex flex-col gap-3">
-          <div className="grid sm:grid-cols-[1fr_auto] gap-3 mt-3">
-            <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="What is the job? e.g. One-off clean, 14 Birch Street"
-              className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
-            />
-            <input
-              type="date"
-              value={day}
-              onChange={e => setDay(e.target.value)}
-              aria-label="Which day"
-              className="rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-700 focus:outline-none focus:ring-2 focus:ring-brand-300"
-            />
+        <div className="mt-3 max-w-3xl rounded-xl border border-ink-100 bg-white px-5 py-4 flex flex-col gap-3">
+          <p className="text-[12.5px] text-ink-500 leading-relaxed">
+            Name the job, pick who is on it and the days it runs, and attach any plans or files.
+            The job shows on their link with the files ready to open on site.
+          </p>
+          <input
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="What is the job? e.g. Deep clean, 14 Birch Street"
+            className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
+          />
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex flex-col gap-1 text-[12px] font-semibold text-ink-600">
+              Starts
+              <input
+                type="date"
+                value={day}
+                onChange={e => setDay(e.target.value)}
+                className="rounded-lg border border-ink-200 px-3 py-2 text-sm font-normal text-ink-700 focus:outline-none focus:ring-2 focus:ring-brand-300"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[12px] font-semibold text-ink-600">
+              Ends
+              <input
+                type="date"
+                value={endDay}
+                min={day || undefined}
+                onChange={e => setEndDay(e.target.value)}
+                className="rounded-lg border border-ink-200 px-3 py-2 text-sm font-normal text-ink-700 focus:outline-none focus:ring-2 focus:ring-brand-300"
+              />
+            </label>
+            <span className="text-[12px] text-ink-400 pb-2.5">Leave the end empty for a single day.</span>
           </div>
 
           <div>
@@ -254,7 +277,7 @@ export default function OneOffJob({ profile, company, onCreated }) {
 
           {sent && (
             <p className="text-[13px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 leading-relaxed">
-              Sent to {sent.names.join(' and ')}. The job is on their checklist{sent.day ? ` for ${dayLabel(sent.day)}` : ''}
+              Sent to {sent.names.join(' and ')}. The job is on their link{sent.day ? (sent.endDay ? ` from ${dayLabel(sent.day)} to ${dayLabel(sent.endDay)}` : ` for ${dayLabel(sent.day)}`) : ''}
               {sent.fileCount > 0 ? `, with ${sent.fileCount} file${sent.fileCount === 1 ? '' : 's'} attached` : ''}.
               {sent.noEmail.length > 0 && ` No email on file for ${sent.noEmail.join(' and ')}, so they will see the job when they next open their link.`}
             </p>
@@ -263,8 +286,8 @@ export default function OneOffJob({ profile, company, onCreated }) {
         </div>
       )}
 
-      {sentJobs.length > 0 && (
-        <div className="px-5 py-4 border-t border-ink-100">
+      {open && sentJobs.length > 0 && (
+        <div className="mt-3 max-w-3xl rounded-xl border border-ink-100 bg-white px-5 py-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500 mb-2">What you have sent</p>
           <ul className="flex flex-col divide-y divide-ink-100">
             {sentJobs.map(j => {
@@ -277,7 +300,7 @@ export default function OneOffJob({ profile, company, onCreated }) {
                     <span className="flex-shrink-0 text-[11px] text-ink-500 whitespace-nowrap mt-0.5">{STATUS[j.status] ?? j.status}</span>
                   </div>
                   <p className="text-[12px] text-ink-500">
-                    {j.due_date ? `For ${dayLabel(j.due_date)}` : 'No day set'}
+                    {j.due_date ? (j.start_date ? `${shortDay(j.start_date)} to ${shortDay(j.due_date)}` : `For ${dayLabel(j.due_date)}`) : 'No day set'}
                     {names.length > 0 && ` · ${names.join(', ')}`}
                     {` · sent ${new Date(j.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`}
                   </p>

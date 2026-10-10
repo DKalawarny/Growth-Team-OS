@@ -535,7 +535,7 @@ function WorkOrderCard({ order, onSetStatus, onToggleChecklistItem, onAddStepCom
         <p className={`mt-2 text-[11px] font-semibold ${
           overdue ? 'text-red-600' : 'text-ink-500'
         }`}>
-          {overdue ? 'Overdue · ' : 'Due '}{due}
+          {overdue ? 'Overdue · ' : (order.start_date ? `From ${formatDueDate(order.start_date)}, due ` : 'Due ')}{due}
         </p>
       )}
 

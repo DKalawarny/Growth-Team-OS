@@ -1995,7 +1995,7 @@ function GanttMonthHeader({ startMonth, totalMonths, labelColumnPx, currentMonth
     <div className="flex sticky top-0 z-20 bg-ink-900 border-b border-ink-700">
       {/* Label column */}
       <div
-        className="flex-shrink-0 border-r border-ink-700 px-4 flex items-center"
+        className="flex-shrink-0 border-r border-ink-700 px-4 flex items-center sticky left-0 z-10 bg-ink-900"
         style={{ width: labelColumnPx, height: 40 }}
       >
         <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Milestone</span>
@@ -2066,10 +2066,12 @@ function GanttRow({
         backgroundColor: isEven ? 'white' : 'rgba(248,249,250,0.6)',
       }}
     >
-      {/* Label column */}
+      {/* Label column. Sticky, with a solid background, so the milestone
+          name stays readable while the bars scroll underneath. Without it the
+          timeline opens scrolled to today and every name is cut off. */}
       <div
-        className="flex-shrink-0 border-r border-ink-100 px-4 flex items-center gap-3"
-        style={{ width: labelColumnPx, borderLeft: `3px solid ${accentColor}` }}
+        className="flex-shrink-0 border-r border-ink-100 px-4 flex items-center gap-3 sticky left-0 z-10"
+        style={{ width: labelColumnPx, borderLeft: `3px solid ${accentColor}`, backgroundColor: isEven ? '#ffffff' : '#fafbfb' }}
       >
         {/* Category dot */}
         {milestone.category && (
@@ -2080,7 +2082,7 @@ function GanttRow({
         )}
 
         <div className="min-w-0 flex-1">
-          <p className={`text-[12.5px] font-semibold leading-snug truncate ${isDone ? 'line-through text-ink-300' : 'text-ink-800'} ${isFeatured ? 'text-brand-700' : ''}`}>
+          <p className={`text-[12.5px] font-semibold leading-snug line-clamp-2 ${isDone ? 'line-through text-ink-300' : 'text-ink-800'} ${isFeatured ? 'text-brand-700' : ''}`}>
             {isFeatured && <span className="mr-1 text-brand-500">★</span>}
             {milestone.title}
           </p>
@@ -2779,7 +2781,7 @@ function QuickWorkOrderModal({ draft, teamMembers, templates = [], profile, comp
                 const n   = tpl?.items?.length ?? 0
                 return (
                   <p className="mt-1.5 text-[11px] text-ink-500 leading-relaxed">
-                    {n} step{n === 1 ? '' : 's'} will appear as a checklist on this job.
+                    {n} step{n === 1 ? '' : 's'} from this SOP go with the task, so whoever is on it has the procedure to follow.
                   </p>
                 )
               })()}

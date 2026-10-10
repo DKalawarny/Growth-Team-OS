@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from 'react'
  *   refining     — boolean, shows typing dots + disables send
  *   onSend       — (text: string) => void
  *   suggestions  — string[], suggested prompts shown before first user turn
- *   title        — section heading, defaults to "Tweak it"
+ *   title        — section heading, defaults to "Want something changed?"
  *   hint         — small subheading under the title
  *   placeholder  — input placeholder when idle
  *
@@ -33,9 +33,10 @@ export default function RefineChat({
   refining,
   onSend,
   suggestions = [],
-  title       = 'Tweak it',
-  hint        = 'Tell me what to change, the result above updates each time.',
+  title       = 'Want something changed?',
+  hint        = 'Say what to change and the result above updates.',
   placeholder = 'What would you like to change?',
+  bare        = false,  // true when the page already wraps it in a card
 }) {
   const [draft, setDraft] = useState('')
   const endRef            = useRef(null)
@@ -73,47 +74,38 @@ export default function RefineChat({
 
   const userTurnCount = messages.filter(m => m.role === 'user').length
 
+  // ⚠️ 9 Oct, Daniel: "this is messy looking clean it up, it's on other pages
+  // too." It was a boxed chat with a grey header strip, a greeting bubble
+  // sitting in an empty thread, five long chips and then the input. Now: one
+  // line of heading, the input, and at most three quiet suggestions under it.
+  // The thread only appears once the owner has actually said something, so
+  // the canned opening line never shows on its own.
+  const thread = userTurnCount > 0 ? messages.slice(messages.findIndex(m => m.role === 'user')) : []
+
   return (
-    <section className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          {title}
-        </div>
-        <p className="text-xs text-gray-500 mt-0.5">{hint}</p>
+    <section className={bare ? '' : 'bg-white border border-gray-200 rounded-xl px-4 py-4'}>
+      <div className="flex items-baseline justify-between gap-3 flex-wrap mb-2">
+        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+        <p className="text-xs text-gray-500">{hint}</p>
       </div>
 
-      <div className="px-4 py-4 space-y-3 max-h-80 overflow-y-auto">
-        {messages.map((m, i) => <ChatBubble key={i} message={m} />)}
-        {refining && (
-          <div className="flex justify-start">
-            <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-gray-100 text-sm text-gray-500">
-              <Dot delay={0} />
-              <Dot delay={150} />
-              <Dot delay={300} />
+      {(thread.length > 0 || refining) && (
+        <div className="mb-3 space-y-2.5 max-h-72 overflow-y-auto">
+          {thread.map((m, i) => <ChatBubble key={i} message={m} />)}
+          {refining && (
+            <div className="flex justify-start">
+              <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-gray-100 text-sm text-gray-500">
+                <Dot delay={0} />
+                <Dot delay={150} />
+                <Dot delay={300} />
+              </div>
             </div>
-          </div>
-        )}
-        <div ref={endRef} />
-      </div>
-
-      {/* Suggested prompts — shown only before the first user turn to avoid
-          clutter. Clicking fills and sends. */}
-      {suggestions.length > 0 && userTurnCount === 0 && !refining && (
-        <div className="px-4 pb-3 flex flex-wrap gap-2">
-          {suggestions.map(s => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => send(s)}
-              className="text-xs px-2.5 py-1 rounded-full border border-gray-200 bg-white hover:border-brand-300 hover:text-brand-700 text-gray-700 transition-colors"
-            >
-              {s}
-            </button>
-          ))}
+          )}
+          <div ref={endRef} />
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex items-end gap-2 border-t border-gray-100 p-3">
+      <form onSubmit={handleSubmit} className="flex items-end gap-2">
         <textarea
           value={draft}
           onChange={e => setDraft(e.target.value)}
@@ -121,7 +113,7 @@ export default function RefineChat({
           rows={1}
           placeholder={refining ? 'Updating…' : placeholder}
           disabled={refining}
-          className="flex-1 resize-none px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:bg-gray-50"
+          className="flex-1 resize-none px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:bg-gray-50"
           style={{ maxHeight: '8rem' }}
         />
         <button
@@ -132,6 +124,24 @@ export default function RefineChat({
           Send
         </button>
       </form>
+
+      {/* Suggestions: only before the first turn, three at most, as plain
+          text links so they read as examples and not as a wall of buttons. */}
+      {suggestions.length > 0 && userTurnCount === 0 && !refining && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+          <span>Or try:</span>
+          {suggestions.slice(0, 3).map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => send(s)}
+              className="text-brand-700 hover:text-brand-800 hover:underline underline-offset-2 text-left"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

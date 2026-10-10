@@ -20,7 +20,7 @@
 
 import ToolDisclaimer from './ToolDisclaimer'
 
-export default function CFODashboardView({ data, computedDeltas = {}, prevPeriodLabel = null }) {
+export default function CFODashboardView({ data, computedDeltas = {}, prevPeriodLabel = null, hidePeriod = false }) {
   if (!data) return null
 
   const {
@@ -40,7 +40,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
   return (
     <div className="space-y-6">
       <HeadlineBand
-        period={period_label}
+        period={hidePeriod ? null : period_label}
         grade={health_grade}
         summary={summary}
       />
@@ -60,7 +60,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
 
       {commentary && (
         <Section title="What's going on">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-800 leading-relaxed whitespace-pre-line">
+          <div className="rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-sm text-gray-800 leading-relaxed whitespace-pre-line">
             {commentary}
           </div>
         </Section>
@@ -85,7 +85,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
 
       {trends.length > 0 && (
         <Section title="Trends" hint="Multi-period reads. What's drifting vs holding steady.">
-          <ul className="space-y-2">
+          <ul className="rounded-xl border border-gray-200 bg-white divide-y divide-gray-100">
             {trends.map((t, i) => <TrendRow key={i} trend={t} />)}
           </ul>
         </Section>
@@ -96,9 +96,9 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
           title="Ask your accountant"
           hint="Copy-paste these into an email. They're sharper than 'how was my month'."
         >
-          <ul className="space-y-2">
+          <ul className="rounded-xl border border-gray-200 bg-white divide-y divide-gray-100">
             {accountant_questions.map((q, i) => (
-              <li key={i} className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-800">
+              <li key={i} className="px-4 py-3 text-sm text-gray-800">
                 <span className="text-brand-600 font-semibold mr-2">Q{i + 1}.</span>
                 {q}
               </li>
@@ -109,9 +109,9 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
 
       {next_actions.length > 0 && (
         <Section title="Do this in the next 2 weeks" hint="Ordered by leverage.">
-          <ol className="space-y-2">
+          <ol className="rounded-xl border border-brand-200 bg-brand-50/60 divide-y divide-brand-100">
             {next_actions.map((a, i) => (
-              <li key={i} className="flex gap-3 rounded-xl border border-brand-200 bg-brand-50/60 p-4 text-sm text-gray-800">
+              <li key={i} className="flex gap-3 px-4 py-3 text-sm text-gray-800">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-semibold flex items-center justify-center">
                   {i + 1}
                 </span>
@@ -148,10 +148,10 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
 function HeadlineBand({ period, grade, summary }) {
   const tone = gradeTone(grade)
   return (
-    <div className={`rounded-2xl border ${tone.border} ${tone.bg} p-5 md:p-6`}>
-      <div className="flex items-start gap-5">
-        <div className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-2xl ${tone.badgeBg} ${tone.badgeText} flex flex-col items-center justify-center`}>
-          <div className="text-3xl md:text-4xl font-bold leading-none">
+    <div className={`rounded-xl border ${tone.border} ${tone.bg} p-4 md:p-5`}>
+      <div className="flex items-center gap-4">
+        <div className={`flex-shrink-0 w-16 h-16 rounded-xl ${tone.badgeBg} ${tone.badgeText} flex flex-col items-center justify-center`}>
+          <div className="text-2xl font-bold leading-none">
             {grade || '—'}
           </div>
           <div className="text-[10px] uppercase tracking-wider mt-1 opacity-80">
@@ -164,9 +164,11 @@ function HeadlineBand({ period, grade, summary }) {
               {period}
             </div>
           )}
-          <h2 className={`text-xl md:text-2xl font-bold ${tone.headline}`}>
+          {/* A summary runs to several sentences. Set as body text it reads
+              in one pass; set as a bold headline it was a wall. */}
+          <p className={`text-[15px] md:text-base font-medium leading-relaxed ${tone.headline}`}>
             {summary || 'Your books at a glance.'}
-          </h2>
+          </p>
         </div>
       </div>
     </div>
@@ -221,9 +223,12 @@ const TONE = {
 
 // ============================================================= KPIs
 
+// Four or five numbers sit on one row; a 3-wide grid left a hole beside them.
+const KPI_COLS = { 4: 'lg:grid-cols-4', 5: 'md:grid-cols-3 lg:grid-cols-5', 7: 'lg:grid-cols-4', 8: 'lg:grid-cols-4' }
+
 function KPIGrid({ kpis, computedDeltas = {}, prevPeriodLabel = null }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className={`grid grid-cols-2 gap-3 ${KPI_COLS[kpis.length] ?? 'lg:grid-cols-3'}`}>
       {kpis.map((k, i) => (
         <KPICard
           key={i}
@@ -373,8 +378,8 @@ function TrendRow({ trend }) {
     : dir === 'volatile' ? 'text-amber-700'
     : 'text-gray-600'
   return (
-    <li className="flex gap-3 rounded-xl border border-gray-200 bg-white p-3.5">
-      <span className={`flex-shrink-0 text-lg font-semibold ${tone}`} aria-hidden>
+    <li className="flex gap-3 px-4 py-3">
+      <span className={`flex-shrink-0 text-base font-semibold ${tone}`} aria-hidden>
         {arrow}
       </span>
       <div className="flex-1 min-w-0">

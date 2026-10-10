@@ -43,12 +43,12 @@ const FOCUS_OPTIONS = [
   { value: 'sales',         label: 'Sales momentum'   },
 ]
 
+// Three, short, and true of any read. The old five named a month and metrics
+// that were not on the page they sat under.
 const CFO_SUGGESTIONS = [
-  'The Feb revenue number is wrong, let me give you the real one',
-  'Remove the invoicing metrics. We collect payment on the day',
-  'Swap "Average Job Size" in for one of the KPIs',
-  'Less scary tone',
-  'What should I ask my accountant this month?',
+  'One of these numbers is wrong',
+  'Add average job size',
+  'What should I ask my accountant?',
 ]
 
 // ⭐ 7 Oct — a generated read that was never saved used to vanish on navigation
@@ -145,6 +145,13 @@ export default function CFO() {
 
   // ── Refs ──────────────────────────────────────────────────────────────────
   const formRef   = useRef()  // scroll-to-form button target
+  // The new-period form stays closed while a read is on screen. It used to sit
+  // open under every read, with three separate buttons that only scrolled to it.
+  const [showForm, setShowForm] = useState(false)
+  const openForm = () => {
+    setShowForm(true)
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
   const resultRef = useRef()  // scroll-to-result after generate
 
   // ── On mount: load latest doc + QBO state ────────────────────────────────
@@ -418,7 +425,7 @@ export default function CFO() {
           <div className="flex items-center gap-3">
             {allDocs.length > 1 && (
               <select
-                className="text-xs font-medium rounded-lg px-3 py-2 border border-ink-700 bg-ink-800 text-ink-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="text-xs font-medium rounded-lg px-3 py-2 border border-ink-200 bg-white text-ink-700 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 value={resultDocId ?? ''}
                 onChange={e => {
                   const doc = allDocs.find(d => d.id === e.target.value)
@@ -435,13 +442,10 @@ export default function CFO() {
             )}
             <button
               type="button"
-              onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onClick={openForm}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-brand-600 hover:bg-brand-700 text-white transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 2.5A6.5 6.5 0 1 1 6 2.6M13.5 2.5V6M13.5 2.5H10" />
-              </svg>
-              Update / Refresh
+              Run a new period
             </button>
           </div>
         </div>
@@ -473,11 +477,6 @@ export default function CFO() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
                     {resultForm?.period_label || result?.period_label || 'Current read'}
                   </span>
-                  {result?.health_grade && (
-                    <span className="text-xs font-black text-white bg-brand-600/30 border border-brand-500/40 px-2 py-0.5 rounded-full">
-                      {result.health_grade}
-                    </span>
-                  )}
                   {unsaved && (
                     <span className="text-[10px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
                       Unsaved
@@ -506,23 +505,6 @@ export default function CFO() {
                 </div>
               </div>
 
-              {/* Update shortcut bar */}
-              <div className="border-b border-ink-100 px-5 py-2 flex items-center justify-between">
-                <span className="text-[11px] text-ink-400">
-                  Want to run a new period or adjust inputs?
-                </span>
-                <button
-                  type="button"
-                  onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold text-brand-500 hover:text-brand-700 transition-colors"
-                >
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 2.5A6.5 6.5 0 1 1 6 2.6M13.5 2.5V6M13.5 2.5H10" />
-                  </svg>
-                  Update / New period ↓
-                </button>
-              </div>
-
               {/* Dashboard output */}
               <div className="p-5 md:p-6 relative space-y-4">
                 {refining && (
@@ -536,17 +518,19 @@ export default function CFO() {
                   data={result}
                   computedDeltas={computedDeltas}
                   prevPeriodLabel={prevPeriodLabel}
+                  hidePeriod
                 />
               </div>
 
               {/* Refine chat */}
               <div className="border-t border-ink-100 px-5 pb-5 pt-4">
                 <RefineChat
+                  bare
                   messages={messages}
                   refining={refining}
                   onSend={handleRefine}
                   suggestions={CFO_SUGGESTIONS}
-                  placeholder="The Feb revenue number is wrong. Should be $52,400. Rerun."
+                  placeholder="e.g. Cash on hand is $265k, not $240k. Update the read."
                 />
               </div>
             </div>
@@ -560,7 +544,7 @@ export default function CFO() {
               </p>
               <button
                 type="button"
-                onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                onClick={openForm}
                 className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
               >
                 Build your first read →
@@ -570,6 +554,7 @@ export default function CFO() {
         </div>
 
         {/* ── New analysis form (below, scroll to) ──────────────────────────── */}
+        {(showForm || (!result && !loading)) && (
         <div ref={formRef} className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
           <div className="bg-ink-900 px-5 py-3.5">
             <span className="text-[10.5px] font-semibold uppercase tracking-widest text-brand-400">
@@ -661,7 +646,9 @@ export default function CFO() {
                 >
                   Build the dashboard →
                 </button>
-                <Link to="/tools" className="text-sm text-ink-400 hover:text-ink-600">Cancel</Link>
+                {result
+                  ? <button type="button" onClick={() => setShowForm(false)} className="text-sm text-ink-400 hover:text-ink-600">Cancel</button>
+                  : <Link to="/tools" className="text-sm text-ink-400 hover:text-ink-600">Cancel</Link>}
               </div>
             </form>
 
@@ -671,6 +658,7 @@ export default function CFO() {
             </p>
           </div>
         </div>
+        )}
 
         <div className="h-4" />
       </div>
