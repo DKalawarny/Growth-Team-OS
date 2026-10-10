@@ -167,6 +167,11 @@ const mainNav = [
   { to: '/logs',                   label: 'Daily logs', icon: 'SOPs'    },
   { to: '/tools/cfo',              label: 'Finances',   icon: 'cfo'          },
   { to: '/documents',              label: 'Documents',  icon: 'library'      },
+  // ⭐ 10 Oct — Safety is back as its own entry, agreed with Daniel, because the
+  // page is now more than a regulation lookup: it gathers every injury, safety
+  // note and hazard check the crew already reports in their daily logs. A
+  // lookup alone did not earn a slot; a record a trades owner opens weekly does.
+  { to: '/tools/safety',           label: 'Safety',     icon: 'safety'       },
   { to: '/tools/exit-readiness',   label: 'Succession', icon: 'trajectories' },
   // ⭐ 7 Oct — tools back in the sidebar. Moving them into the Solomon launcher
   // alone (the "no longer top-level shouting" call) buried them: Daniel could

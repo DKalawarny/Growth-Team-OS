@@ -45,7 +45,7 @@ import { fetchIntegration } from '../../lib/quickbooks'
 // Groups and labels mirror SolomonLauncher exactly. If you change one, change
 // both — that shared vocabulary is the entire point of this rebuild.
 // ⚠️ 10 Oct, Daniel: "a couple on tools you should get rid of if it's on the
-// nav bar." Finances, SOPs and Succession each have their own place in the
+// nav bar." Finances, SOPs, Safety and Succession each have their own place in the
 // sidebar, so they are not repeated here. This page is for what the sidebar
 // does NOT already show. (SolomonLauncher still lists all of them: there the
 // list is "what can Solomon do", not navigation.)
@@ -70,7 +70,6 @@ const GROUPS = [
     items: [
       { label: 'Work through a decision',        note: 'Argued more than one way, with where it lands and what it cannot see.', to: '/tools/decision', name: 'Decision' },
       { label: 'Set this quarter’s priorities',  note: 'The two or three that matter, and an honest word if it is too many.', to: '/tools/rocks', name: 'Rocks' },
-      { label: 'Check an obligation',            note: 'Answered from your own documents and the actual regulation, source shown.', to: '/tools/safety', name: 'Safety' },
     ],
   },
 ]

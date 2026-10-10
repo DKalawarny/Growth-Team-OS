@@ -85,6 +85,7 @@ const MAIN_NAV = [
   { to: '/playbooks',            label: 'SOPs'  },
   { to: '/tools/cfo',            label: 'Finances'   },
   { to: '/documents',            label: 'Documents'  },
+  { to: '/tools/safety',         label: 'Safety'     },
   { to: '/tools/exit-readiness', label: 'Succession' },
   { to: '/logs',                 label: 'Daily logs', teamOnly: true },
   { to: '/board',                label: 'Tasks' },

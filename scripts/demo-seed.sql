@@ -239,4 +239,14 @@ update milestones set rock_quarter = to_char(current_date, 'YYYY"-Q"Q'), actions
 update milestones set rock_quarter = to_char(current_date - interval '3 months', 'YYYY"-Q"Q'), actions_done = actions
  where company_id='de900000-0000-4000-8000-000000000001' and completed = true;
 
+-- Job amounts, so the price check has finished jobs to compare against and the
+-- cash forecast can see what is quoted and not yet invoiced (10 Oct).
+
+insert into work_order_amounts (work_order_id, company_id, quoted_amount, cost_amount, invoiced_amount) values
+ ('de900000-0000-4000-8003-000000000001','de900000-0000-4000-8000-000000000001', 4200, 2500, 4200),   -- Maple Plaza spring cleanup: done, 40.5% margin
+ ('de900000-0000-4000-8003-000000000003','de900000-0000-4000-8000-000000000001', 2800, 1750, 2800),   -- Riverbend bed refresh: done, 37.5% margin
+ ('de900000-0000-4000-8003-000000000002','de900000-0000-4000-8000-000000000001', 1900, null, null),   -- Oakridge weekly maintenance: quoted, not invoiced yet
+ ('de900000-0000-4000-8003-000000000004','de900000-0000-4000-8000-000000000001', 3400, null, null)    -- Center Street onboarding: quoted, not invoiced yet
+on conflict (work_order_id) do update set quoted_amount=excluded.quoted_amount, cost_amount=excluded.cost_amount, invoiced_amount=excluded.invoiced_amount;
+
 commit;

@@ -5,7 +5,7 @@ import { runToolCall, HAIKU } from '../../lib/anthropic'
 import ToolDisclaimer from '../../components/tools/ToolDisclaimer'
 import ContextUsedLine from '../../components/tools/ContextUsedLine'
 import { summarizeContext } from '../../lib/toolContextSummary'
-import BackToTools from '../../components/tools/BackToTools'
+import SafetyRecord from '../../components/tools/SafetyRecord'
 import {
   uploadKnowledgeFile,
   listKnowledgeFiles,
@@ -269,20 +269,28 @@ export default function Safety() {
       {/* ── Dark header ───────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-8 py-5">
-          <BackToTools className="mb-2.5" />
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">
-            Safety &amp; Compliance
+            Safety
           </div>
           <h1 className="text-xl font-bold text-ink-900 leading-tight">
-            Compliance research &amp; document vault
+            What happened on site, and what the rules say
           </h1>
           <p className="text-sm text-ink-500 mt-0.5">
-            Search your uploaded docs and official regulatory sources for your industry and location.
+            Your safety record from the crew's daily logs, then a place to look up a rule and keep the documents that prove you are covered.
           </p>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-5">
+
+        <SafetyRecord companyId={profile?.company_id} />
+
+        <div className="pt-2">
+          <h2 className="text-base font-bold text-ink-900">Look up a rule, keep the paperwork</h2>
+          <p className="text-[13px] text-ink-500 mt-0.5 max-w-2xl leading-relaxed">
+            Ask what applies to your trade and where you work. The answer comes from your own documents and the actual regulation, with the source shown.
+          </p>
+        </div>
 
         {/* ── Renewal alerts (top of page when anything is within 30 days) ── */}
         {alerts.length > 0 && (

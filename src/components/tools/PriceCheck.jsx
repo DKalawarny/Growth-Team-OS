@@ -19,6 +19,15 @@ import { checkPrice, priceForMargin, pastMargin } from '../../lib/priceCheck'
  */
 const money = n => `${n < 0 ? '-' : ''}$${Math.abs(Math.round(n)).toLocaleString()}`
 
+function Label({ children, hint }) {
+  return (
+      <span className="block mb-1">
+        <span className="block text-[12.5px] font-semibold text-ink-700">{children}</span>
+        {hint && <span className="block text-[11.5px] text-ink-400 leading-snug">{hint}</span>}
+      </span>
+  )
+}
+
 export default function PriceCheck({ companyId }) {
   const [f, setF] = useState({ what: '', price: '', hours: '', hourlyCost: '', materials: '', target: '' })
   const [jobs, setJobs] = useState([])
@@ -45,13 +54,6 @@ export default function PriceCheck({ companyId }) {
   ].filter(Boolean).join(' ') : ''
 
   const inputCls = 'w-full rounded-lg border border-ink-200 px-3 py-2 text-sm text-ink-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand-300'
-  const Label = ({ children, hint }) => (
-    <span className="block mb-1">
-      <span className="block text-[12.5px] font-semibold text-ink-700">{children}</span>
-      {hint && <span className="block text-[11.5px] text-ink-400 leading-snug">{hint}</span>}
-    </span>
-  )
-
   return (
     <section className="bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
       <div className="px-5 md:px-6 py-4 border-b border-ink-100">
