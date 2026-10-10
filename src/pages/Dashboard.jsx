@@ -282,30 +282,16 @@ export default function Dashboard() {
               </p>
             ))}
             <Link to="/logs" className="text-[13px] font-semibold text-red-700 hover:text-red-800 mt-0.5">
-              Open the logs →
+              Read this in the logs →
             </Link>
           </section>
         )}
 
-        {mode === 'today' ? (
-          <section className="animate-fade-in flex flex-wrap gap-x-8 gap-y-3">
-            {dash.unreadLogs.length > 0 && (
-              <Link to="/logs" className="text-[15px] text-ink-900 hover:text-brand-700">
-                <span className="font-semibold">{dash.unreadLogs.length}</span> log{dash.unreadLogs.length === 1 ? '' : 's'} you have not read
-              </Link>
-            )}
-            {dash.openNotes.length > 0 && (
-              <Link to="/logs#office-notes" className="text-[15px] text-ink-900 hover:text-brand-700">
-                <span className="font-semibold">{dash.openNotes.length}</span> thing{dash.openNotes.length === 1 ? '' : 's'} on your list
-              </Link>
-            )}
-            {dash.liveJobs > 0 && (
-              <Link to="/board" className="text-[15px] text-ink-900 hover:text-brand-700">
-                <span className="font-semibold">{dash.liveJobs}</span> task{dash.liveJobs === 1 ? '' : 's'} on the board
-              </Link>
-            )}
-          </section>
-        ) : (
+        {/* ⚠️ 10 Oct, Daniel: "these all go to the same page, we could clean
+            this up." A row of three counts used to sit here in the today view,
+            each linking to a page that a panel below already links to. The
+            counts now sit on those panels and each destination has ONE link. */}
+        {mode === 'running' && (
           <section className="animate-fade-in flex flex-col gap-3">
             {/* ⭐ The honest one. An owner writing his own daily logs is in the
                 business whatever the questionnaire says, and this is the only
@@ -366,6 +352,12 @@ export default function Dashboard() {
             </div>
           )}
 
+          {others.length > 0 && (
+            <p className="text-[13.5px] text-ink-500 leading-relaxed">
+              After this: {others.map(m => m.title).join(', then ')}.
+            </p>
+          )}
+
           <div className="flex flex-wrap gap-3 pt-0.5">
             <Link
               to="/advisor"
@@ -392,7 +384,7 @@ export default function Dashboard() {
 
         {/* ── The work itself: who is on what, and what the crew last wrote ── */}
         <section className="animate-fade-in grid md:grid-cols-2 gap-5">
-          <Panel title="Tasks in motion" to="/board" linkLabel="Open tasks">
+          <Panel title="Tasks in motion" count={dash.openTasks.length || null} to="/board" linkLabel="Open tasks">
             {dash.openTasks.length === 0 ? (
               <Empty>No open tasks. Add one from the board, or from any step on the roadmap.</Empty>
             ) : (
@@ -422,7 +414,12 @@ export default function Dashboard() {
             )}
           </Panel>
 
-          <Panel title="From the crew" to="/logs" linkLabel="Open daily logs">
+          <Panel
+            title="From the crew"
+            count={dash.unreadLogs.length ? `${dash.unreadLogs.length} not read` : null}
+            to="/logs"
+            linkLabel="Open daily logs"
+          >
             {dash.recentLogs.length === 0 ? (
               <Empty>No daily logs yet. Once the crew write at the end of the day, the latest shows here.</Empty>
             ) : (
@@ -433,7 +430,6 @@ export default function Dashboard() {
                       {new Date(`${l.log_date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
                       {' · '}
                       {l.staff_member_id ? (dash.staffById.get(l.staff_member_id)?.name ?? 'Crew') : 'You'}
-                      {!l.reviewed_at && <span className="ml-2 text-brand-700 font-semibold">Not read yet</span>}
                     </p>
                     <p className="text-[14px] text-ink-900 leading-snug">{l.what_happened}</p>
                     {l.blockers && (
@@ -445,54 +441,13 @@ export default function Dashboard() {
                 ))}
               </ul>
             )}
+            {dash.openNotes.length > 0 && (
+              <p className="text-[12.5px] text-ink-500 pt-1 border-t border-ink-100 mt-1">
+                Your own list has {dash.openNotes.length} open {dash.openNotes.length === 1 ? 'item' : 'items'}, on the same page.
+              </p>
+            )}
           </Panel>
         </section>
-
-        {/* ── Straight to the thing you came to do ────────────────────────── */}
-        <section className="animate-fade-in flex flex-col gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-300">Jump to</p>
-          <div className="flex flex-wrap gap-2.5">
-            {[
-              ['/advisor',   'Ask Solomon'],
-              ['/board',     'Assign a task'],
-              ['/playbooks', 'Write an SOP'],
-              ['/logs',      'Read the logs'],
-              ['/tools/cfo', 'Check the money'],
-              ['/documents', 'Add a document'],
-            ].map(([to, label]) => (
-              <Link
-                key={to}
-                to={to}
-                className="px-4 py-2.5 rounded-full bg-white border border-ink-100 hover:border-brand-300 hover:text-brand-700 text-[13.5px] font-semibold text-ink-700 transition-colors"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Everything else, quietly ────────────────────────────────────── */}
-        {others.length > 0 && (
-          <>
-            <hr className="border-0 border-t border-ink-100" />
-            <section className="flex flex-col gap-4">
-              <p className="text-[14.5px] text-ink-500">
-                {others.length === 1 ? 'One other thing' : `${others.length} other things`}, whenever you want {others.length === 1 ? 'it' : 'them'}
-              </p>
-              <div className="flex flex-wrap gap-2.5">
-                {others.map(m => (
-                  <Link
-                    key={m.id}
-                    to="/roadmap"
-                    className="px-4 py-2.5 rounded-full bg-white border border-ink-100 hover:border-ink-200 text-[13.5px] text-ink-600 transition-colors"
-                  >
-                    {m.title}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
 
       </div>
     </div>
@@ -501,11 +456,13 @@ export default function Dashboard() {
 
 const TASK_STATUS = { backlog: 'Not started', in_progress: 'In progress', review: 'In review' }
 
-function Panel({ title, to, linkLabel, children }) {
+function Panel({ title, count = null, to, linkLabel, children }) {
   return (
     <div className="rounded-xl bg-white border border-ink-100 px-5 py-4 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">{title}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">
+          {title}{count != null && <span className="text-ink-700"> · {count}</span>}
+        </p>
         <Link to={to} className="text-[12.5px] font-semibold text-brand-700 hover:text-brand-800">{linkLabel} →</Link>
       </div>
       {children}
