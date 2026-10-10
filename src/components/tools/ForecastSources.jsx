@@ -62,8 +62,7 @@ export default function ForecastSources({ qboConnected, snapshotLabel, financial
       <div className="px-5 py-3 border-b border-ink-100">
         <h2 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">What this forecast can see</h2>
         <p className="text-[12.5px] text-ink-500 mt-0.5 leading-relaxed">
-          A forecast only knows what it has been shown. {haveCount} of {rows.length} sources have something in them.
-          The more of these are filled, the less of the 13 weeks is a guess.
+          This forecast is built from {haveCount} of {rows.length} sources. Fill the empty ones and less of the 13 weeks is a guess.
         </p>
       </div>
       <ul className="divide-y divide-ink-100">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 import Wordmark from '../brand/Wordmark'
@@ -294,8 +294,11 @@ export default function Sidebar() {
             build. It also carries the page they were on, which is the single
             most useful thing a bug report can include and the thing people
             most often leave out. */}
-        <a
-          href={`mailto:support@eliv8os.com?subject=${encodeURIComponent('Eliv8 OS. Something is not right')}&body=${encodeURIComponent(`\n\n\n---\nWhere: ${typeof window !== 'undefined' ? window.location.pathname : ''}\nSent from inside Eliv8 OS. Tell us what you were doing and what happened.`)}`}
+        {/* ⚠️ This was a mailto to support@eliv8os.com, and that address has no
+            mailbox: every report sent from here was lost. It opens the Help
+            page's form instead, which saves the message and emails it to Daniel. */}
+        <Link
+          to="/help?report=1"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-500 hover:bg-white/70 hover:text-ink-900 transition-all duration-150"
         >
           <span className="text-ink-500" aria-hidden>
@@ -305,7 +308,7 @@ export default function Sidebar() {
             </svg>
           </span>
           <span className="flex-1">Report a problem</span>
-        </a>
+        </Link>
 
         <NavLink
           to="/help"

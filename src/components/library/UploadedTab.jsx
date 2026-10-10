@@ -220,8 +220,8 @@ export default function UploadedTab({ onCountChange }) {
       <>
       {/* What this side is, then the ways to add a file, then the files. */}
       <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
-        Price sheets, contracts, statements, anything already written down. Solomon reads
-        these before he answers, so the more that is here, the less he has to guess.
+        Price sheets, contracts, statements, quotes. Solomon reads these before he answers.
+        The more you add, the less he has to guess.
       </p>
       <div className="flex items-center gap-2 flex-wrap mb-4">
         <button
@@ -702,7 +702,7 @@ const UPLOAD_CATEGORIES = [
     label:    'Sales & Marketing',
     why:      'Shows how you win work, and where deals are getting lost.',
     examples: [
-      'Past proposals or quotes (sanitised)',
+      'Past proposals or quotes',
       'Customer testimonials or reviews',
       'Marketing materials or flyers',
       'Lead follow-up process',
@@ -808,10 +808,10 @@ function UploadSuggestionsPanel({ defaultOpen = false, onManualEntry }) {
       >
         <div className="flex items-center gap-2.5">
           <span className="text-[10.5px] font-bold uppercase tracking-widest text-ink-700">
-            Not sure what else to add?
+            What to upload
           </span>
           <span className="text-[11px] text-ink-500">
-            · a short list of what helps most
+            · ideas, by area. You do not need all of them.
           </span>
         </div>
         <span className="text-ink-400 text-xs flex-shrink-0">

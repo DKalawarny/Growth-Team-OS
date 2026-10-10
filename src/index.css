@@ -211,3 +211,102 @@
     display: none;                  /* Chrome / Safari / Opera */
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THE SIGNED-IN APP: READABLE, AND NOT FLAT
+   ════════════════════════════════════════════════════════════════════════════
+   10 Oct, Daniel, walking the whole app: "the platform is very flat and hard to
+   see, writing in light grey and super small font", and of buttons: "they need
+   to pop more".
+
+   He was right on the numbers. 525 pieces of text were set at 10 or 11 pixels,
+   and the two greys used for nearly every hint and label measured 2.9:1 and
+   4.3:1 against white, under the 4.5:1 that small text needs to be readable.
+
+   Fixed here, once, for every page inside the app shell, instead of page by
+   page: a look that is corrected in forty files drifts apart again; a look
+   that is corrected in one place cannot.
+
+   ⚠️ Scoped to `.app-shell` (AppLayoutChrome). The marketing site and Unstuck
+   share these tokens and this file; neither is inside the shell, so neither
+   changes. Do not move these to :root.
+   ⚠️ Deliberately NOT in a cascade layer: Tailwind's utilities are layered, and
+   an unlayered rule wins over a layered one whatever the specificity. That is
+   what lets the font-size rules below beat `text-[11px]`.
+   ──────────────────────────────────────────────────────────────────────────── */
+.app-shell {
+  /* Greys for text, each now at or above 4.5:1 on white. The NAMES are the
+     same, so every existing `text-ink-400` simply reads darker. */
+  --color-ink-300: #6a7a7c;   /* was #8a9a9c, 2.9:1  → 4.5:1 */
+  --color-ink-400: #536366;   /* was #6b7b7d, 4.3:1  → 6.4:1 */
+  --color-ink-500: #3d4c4f;   /* was #47575a          → 8.9:1 */
+  /* The tool result views use Tailwind's own greys; same correction. */
+  --color-gray-400: #6b7280;  /* was #9ca3af, 2.5:1  → 4.8:1 */
+  --color-gray-500: #4b5563;  /* was #6b7280          → 7.6:1 */
+
+  /* Edges and the page behind the cards. A white card on a near-white page
+     with a near-white border is what "flat" looked like. */
+  --color-ink-50:  #f0f4f3;   /* page background, was #f6f8f8 */
+  --color-ink-100: #d6dfdf;   /* card borders and dividers, was #e3eaea */
+  --color-ink-200: #b3c1c2;   /* input and button borders, was #c3cfd0 */
+  --color-gray-200: #d5dadf;
+
+  /* The smallest named size. 12px → 13px. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+}
+
+/* Small text, set in fixed pixels all over the app, brought up to a size a
+   person can read without leaning in. Matched on the class as written, so
+   responsive variants (sm:text-[11px]) are caught too. */
+.app-shell [class*="text-[9px]"]    { font-size: 11px; }
+.app-shell [class*="text-[10px]"]   { font-size: 11.5px; }
+.app-shell [class*="text-[10.5px]"] { font-size: 12px; }
+.app-shell [class*="text-[11px]"]   { font-size: 12.5px; }
+.app-shell [class*="text-[11.5px]"] { font-size: 13px; }
+.app-shell [class*="text-[12px]"]   { font-size: 13px; }
+.app-shell [class*="text-[12.5px]"] { font-size: 13.5px; }
+.app-shell [class*="text-[13px]"]   { font-size: 14px; }
+
+/* Depth. Cards lift off the page a little, so a page reads as separate things
+   instead of one sheet. */
+.app-shell .bg-white.border:is(.rounded-xl, .rounded-2xl),
+.app-shell aside.bg-white.border {
+  box-shadow: 0 1px 2px rgba(13, 20, 19, 0.05), 0 4px 14px rgba(13, 20, 19, 0.06);
+}
+
+/* Buttons that look like buttons.
+   The main action: filled, with weight under it. */
+.app-shell :is(button, a).bg-brand-600 {
+  box-shadow: 0 1px 2px rgba(8, 84, 62, 0.25), 0 3px 10px rgba(20, 166, 123, 0.28);
+  font-weight: 700;
+}
+.app-shell :is(button, a).bg-brand-600:disabled,
+.app-shell :is(button, a).bg-brand-600[disabled] { box-shadow: none; }
+
+/* The second action: a white button with an edge and a shadow you can see,
+   and dark text, so it stops reading as a label. */
+.app-shell :is(button, a).border.bg-white:not([class*="rounded-full"]),
+.app-shell :is(button, a).border.border-ink-200:not([class*="rounded-full"]) {
+  border-color: #93a3a4;
+  color: var(--color-ink-900);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(13, 20, 19, 0.08);
+}
+.app-shell :is(button, a).border.bg-white:not([class*="rounded-full"]):hover,
+.app-shell :is(button, a).border.border-ink-200:not([class*="rounded-full"]):hover {
+  border-color: var(--color-ink-700);
+}
+
+/* Section labels (the small capitals above a block) carry the page's
+   structure, so they are dark, not grey. */
+.app-shell :is(h2, h3, p, span, div)[class*="uppercase"][class*="tracking-w"][class*="text-ink-4"],
+.app-shell :is(h2, h3, p, span, div)[class*="uppercase"][class*="tracking-w"][class*="text-ink-5"],
+.app-shell :is(h2, h3, p, span, div)[class*="uppercase"][class*="tracking-w"][class*="text-gray-5"],
+.app-shell :is(h2, h3, p, span, div)[class*="uppercase"][class*="tracking-w"][class*="text-gray-4"] {
+  color: var(--color-ink-800);
+}
+
+/* Small green capitals on a pale green panel measured 4.3:1. One step darker. */
+.app-shell [class*="uppercase"][class*="text-brand-7"],
+.app-shell [class*="uppercase"][class*="text-brand-6"] { color: var(--color-brand-900); }

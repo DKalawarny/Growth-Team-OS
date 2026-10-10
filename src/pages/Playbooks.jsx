@@ -554,6 +554,17 @@ export default function SOPs() {
           {/* ── Left pane: list of SOPs ─────────────────────────────── */}
           <aside className={`lg:col-span-3 ${selected && 'hidden lg:block'}`}>
             {/* Ask Solomon — collapsible so it does not crowd the list (Daniel, 8 Oct) */}
+            {/* ⚠️ 10 Oct, Daniel: "we should be able to make one from scratch here
+                too, that Solomon doesn't suggest." The only way in was a small "+ New"
+                text link, and the demo hid even that (it dated from when every demo
+                visitor shared one account; each now gets a private copy). */}
+            <button
+              onClick={createTemplate}
+              disabled={busy}
+              className="w-full mb-3 px-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold disabled:opacity-50 transition-colors"
+            >
+              + Write a new SOP from scratch
+            </button>
             <div className="mb-3 bg-white border border-ink-100 rounded-xl shadow-sm overflow-hidden">
               <button
                 onClick={() => setAskOpen(o => !o)}
@@ -615,15 +626,6 @@ export default function SOPs() {
                 <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500">
                   SOPs <span className="text-ink-400">· {templates.length}</span>
                 </h2>
-                {!isDemoCompany(company) && (
-                  <button
-                    onClick={createTemplate}
-                    disabled={busy}
-                    className="text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
-                  >
-                    + New
-                  </button>
-                )}
               </div>
 
               {templates.length === 0 ? (
@@ -699,7 +701,7 @@ export default function SOPs() {
                 template={selected}
                 onBack={() => setSelectedId(null)}
                 onUpdateTemplate={patch => updateTemplate(selected.id, patch)}
-                onDelete={isDemoCompany(company) ? null : () => deleteTemplate(selected.id)}
+                onDelete={() => deleteTemplate(selected.id)}
                 onAddItem={() => addItem(selected.id)}
                 onUpdateItem={(itemId, patch) => updateItem(selected.id, itemId, patch)}
                 onRemoveItem={itemId => removeItem(selected.id, itemId)}
@@ -718,11 +720,18 @@ export default function SOPs() {
                 <h3 className="text-sm font-bold text-ink-900 mb-1">
                   Your process library
                 </h3>
-                <p className="text-xs text-ink-500 max-w-sm mx-auto leading-relaxed">
+                <p className="text-sm text-ink-600 max-w-sm mx-auto leading-relaxed">
                   {templates.length === 0
-                    ? 'Pick a starter on the left, or start blank. Each SOP becomes a checklist your crew works through in the field.'
-                    : 'Pick a SOP on the left to edit it, or create a new one.'}
+                    ? 'Start with a blank one, or pick a starter on the left.'
+                    : 'Pick an SOP on the left to open it, or write a new one from scratch.'}
                 </p>
+                <button
+                  onClick={createTemplate}
+                  disabled={busy}
+                  className="mt-4 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold disabled:opacity-50 transition-colors"
+                >
+                  + Write a new SOP
+                </button>
               </div>
             )}
           </section>

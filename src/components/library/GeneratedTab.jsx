@@ -107,8 +107,7 @@ export default function GeneratedTab({ onCountChange }) {
           with an org chart with a saved note. Same rows, now under a plain
           heading for what each is about, with a line saying what this shelf is. */}
       <p className="text-[13px] text-ink-600 leading-relaxed mb-3">
-        Every time a tool or Solomon writes something for you, a copy is kept here.
-        Nothing to file. Open one to read it again or pick up where you left off.
+        A copy of everything a tool or Solomon writes for you is kept here. Open one to read it again.
       </p>
       <div className="flex items-center gap-2 mb-4">
         <label className="text-xs text-ink-500 font-medium flex-shrink-0">Show</label>

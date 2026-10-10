@@ -281,9 +281,9 @@ export default function DailyLogs() {
         <button
           type="button"
           onClick={() => setSendOpen(v => !v)}
-          className="flex-shrink-0 px-4 py-2 rounded-lg border border-ink-200 bg-white hover:border-ink-300 text-sm font-semibold text-ink-800 transition-colors"
+          className={`flex-shrink-0 px-5 py-2.5 rounded-lg text-sm font-bold transition-colors ${sendOpen ? 'border border-ink-200 bg-white text-ink-900' : 'bg-brand-600 hover:bg-brand-700 text-white'}`}
         >
-          {sendOpen ? 'Close' : 'Send a job and files to the crew'}
+          {sendOpen ? 'Close' : '+ Send a job and files to the crew'}
         </button>
       </div>
 
@@ -655,19 +655,23 @@ export default function DailyLogs() {
       {/* Field crew & reminders — moved here from Settings so the crew setup
           (reminder times, the numbers they report, the roster) lives with the
           logs. People/roles stay in Settings (Daniel, 8 Oct). */}
-      <div id="crew-setup" className="mt-12 pt-6 border-t border-ink-100 scroll-mt-6">
+      <div id="crew-setup" className="mt-12 scroll-mt-6">
+        {/* A full-width row with a title, a line of what is inside and a clear
+            open/close, because as a small text link at the foot of the page
+            this "gets lost a bit" (Daniel, 10 Oct). */}
         <button
           onClick={() => setShowCrew(v => !v)}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 hover:text-ink-900"
+          aria-expanded={showCrew}
+          className="w-full flex items-center justify-between gap-4 rounded-xl border border-ink-200 bg-white px-5 py-4 text-left"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 text-ink-400 transition-transform ${showCrew ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
-          Crew and reminders
+          <span>
+            <span className="block text-base font-bold text-ink-900">Crew and reminders</span>
+            <span className="block text-sm text-ink-600 mt-0.5">
+              Who is on the crew, which days and what time they are reminded to write up the day, and what they report.
+            </span>
+          </span>
+          <span className="flex-shrink-0 text-sm font-bold text-brand-700">{showCrew ? 'Close' : 'Open'}</span>
         </button>
-        {!showCrew && (
-          <p className="text-[12px] text-ink-400 mt-1 ml-6">
-            Who is on the crew, when they get reminded to write up the day, and what they report. Set once.
-          </p>
-        )}
         {showCrew && (
           <div className="mt-3">
             <TeamSection companyId={profile?.company_id} companyName={companyName} ownerName={ownerName} />

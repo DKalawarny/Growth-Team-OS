@@ -137,7 +137,7 @@ export default function OrgChart() {
       setResult(parsed)
       setMsgs([{
         role:    'assistant',
-        content: "Here's a target org. Push hires around, drop roles you can't afford, or tell me the owner-transition is wrong. This is a first draft, not a verdict.",
+        content: "Here is the team this plan builds. Move hires around, drop roles you cannot afford, or tell me your own job is wrong. This is a first draft.",
       }])
       setStage('result')
     } catch (err) {
@@ -370,7 +370,7 @@ const ORG_STEPS = [
   { label: 'Designing the target structure',sub: 'Roles, reporting lines, and responsibilities', delay: 10000 },
   { label: 'Sequencing the hires',          sub: 'Who to bring on first, second, and why', delay: 17000 },
   { label: 'Planning the owner transition', sub: 'How your role changes as the team grows', delay: 23000 },
-  { label: 'Building your hiring roadmap',  sub: 'A clear path from today to your target org', delay: 29000 },
+  { label: 'Building your hiring roadmap',  sub: 'The path from the team you have to the team you need', delay: 29000 },
 ]
 
 function LoadingView({ horizon }) {
@@ -387,7 +387,7 @@ function LoadingView({ horizon }) {
           <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
           Org Chart
         </div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">{horizon ? `${horizon} target org` : 'Your target org'}</h2>
+        <h2 className="text-2xl font-bold text-white tracking-tight">{horizon ? `Your team in ${horizon}` : 'The team you need next'}</h2>
         <p className="text-sm text-ink-500 mt-1.5">Usually 20 to 35 seconds</p>
       </div>
       <div className="w-full max-w-xs space-y-1">
@@ -422,7 +422,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
         <div className="max-w-5xl mx-auto px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">🧩 Org Chart</div>
-            <h1 className="text-xl font-bold text-ink-900 leading-tight">{form.horizon || '24-month'} target org</h1>
+            <h1 className="text-xl font-bold text-ink-900 leading-tight">The team you are building{result?.horizon_label ? ` · ${String(result.horizon_label).toLowerCase()}` : ''}</h1>
           </div>
         </div>
       </div>

@@ -59,8 +59,8 @@ export default function PriceCheck({ companyId }) {
       <div className="px-5 md:px-6 py-4 border-b border-ink-100">
         <h2 className="text-base font-bold text-ink-900">Quick price check</h2>
         <p className="text-[13px] text-ink-500 mt-0.5 max-w-2xl leading-relaxed">
-          Put in the price you have in mind and what the job costs you. You see what you keep, how that compares with
-          jobs you have finished, and you can ask Solomon whether the price makes sense. Nothing here is saved or sent.
+          Enter your price and what the job costs you. You see what you keep and how that compares with the jobs
+          you have finished. Nothing is saved or sent.
         </p>
       </div>
 
@@ -132,7 +132,7 @@ export default function PriceCheck({ companyId }) {
                 Ask Solomon if this makes sense
               </Link>
               <p className="text-[11.5px] text-ink-400 leading-snug">
-                He gets these numbers and reads them against the rest of your business. This is a check, not a quote.
+                Solomon reads these numbers against the rest of your business.
               </p>
             </>
           )}

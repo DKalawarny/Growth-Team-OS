@@ -84,8 +84,8 @@ export default function QuarterPriorities({ companyId }) {
         <div>
           <h2 className="text-base font-bold text-ink-900">This quarter · {quarterLabel(key)}</h2>
           <p className="text-[13px] text-ink-500 mt-0.5 max-w-2xl leading-relaxed">
-            The three to five things from your roadmap that matter most right now. Tick the steps as they get done.
-            Solomon sees the same ticks, and each quarter leaves a count of how many you finished.
+            The three to five things from your roadmap that matter most right now. Tick each step when it is done.
+            Solomon sees every tick. At the end of the quarter you see how many you finished.
           </p>
         </div>
         {mine.length > 0 && (
@@ -205,7 +205,7 @@ export default function QuarterPriorities({ companyId }) {
       {past.length > 0 && (
         <div className="px-5 md:px-6 py-4 border-t border-ink-100">
           <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-500">Quarter by quarter</h3>
-          <p className="text-[12px] text-ink-400 mt-0.5 mb-2">How many of the priorities you set got finished. Counted, not graded.</p>
+          <p className="text-[12px] text-ink-400 mt-0.5 mb-2">How many of the priorities you set got finished.</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             {past.slice(-6).map(q => (
               <li key={q.quarter} className="text-sm text-ink-800">

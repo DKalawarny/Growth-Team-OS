@@ -2501,7 +2501,7 @@ function MilestoneRow({
           {Array.isArray(books) && books.length > 0 && (
             <div>
               <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-1">Suggested reading</div>
-              <p className="text-xs text-ink-500 leading-relaxed mb-2">Goes further into this milestone. Worth a look if you want the thinking behind it, not required to get it done.</p>
+              <p className="text-xs text-ink-500 leading-relaxed mb-2">Books that go deeper on this milestone.</p>
               <ul className="flex flex-wrap gap-2">
                 {books.map((b, i) => {
                   const link = getBookLink(b)

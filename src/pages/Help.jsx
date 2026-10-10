@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import HelpAsk from '../components/help/HelpAsk'
 
 /**
  * /help — in-app FAQ + per-tool guides.
@@ -58,11 +59,11 @@ const FAQ = [
   },
   {
     q: 'How do I export my data?',
-    a: 'Not self-serve yet: email me at support@eliv8os.com and I\'ll send you a CSV of your milestones, tasks, and check-ins within a day. Built-in export is coming.',
+    a: 'Ask for it in the box at the top of this page and send it to a person. You get a CSV of your milestones, tasks and check-ins back, usually within a day.',
   },
   {
     q: 'I think I found a bug / something broke',
-    a: 'Email support@eliv8os.com with a screenshot if you have one. I read these personally and usually respond same day. Specific is better than general. "The cash flow chart wouldn\'t load after I connected QuickBooks" beats "it\'s not working".',
+    a: 'Use Report a problem in the sidebar, or the box at the top of this page, and send it to a person. Say what you were doing and what happened. "The cash flow chart would not load after I connected QuickBooks" beats "it is not working".',
   },
 ]
 
@@ -197,26 +198,11 @@ export default function Help() {
       <header className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-ink-900 tracking-tight">Help &amp; support</h1>
         <p className="text-sm text-ink-400 mt-1">
-          FAQ, tool guides, and how to get hold of me.
+          Ask Solomon how something works. If he cannot answer, your question goes to a person.
         </p>
       </header>
 
-      {/* Contact card — first thing on the page because most people who land
-          here are stuck on something specific and want to email. */}
-      <section className="mb-10 bg-ink-900 text-white rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex-1">
-          <h2 className="text-base font-bold mb-1">Need help fast?</h2>
-          <p className="text-sm text-ink-300 leading-relaxed">
-            Email me directly. I read these personally and usually reply same day.
-          </p>
-        </div>
-        <a
-          href="mailto:support@eliv8os.com"
-          className="px-5 py-2.5 rounded-lg bg-gold-gradient text-white text-sm font-bold whitespace-nowrap glow-gold-sm hover:glow-gold transition-all"
-        >
-          support@eliv8os.com
-        </a>
-      </section>
+      <HelpAsk faq={FAQ} guides={TOOL_GUIDES} />
 
       {/* How to read the Roadmap — visual guide with the same color
           legend that lives inline on /roadmap. Owners forward this link
@@ -284,11 +270,8 @@ export default function Help() {
         <p className="text-sm text-ink-600 mb-1">
           Still stuck? I read every message.
         </p>
-        <a
-          href="mailto:support@eliv8os.com"
-          className="text-sm font-semibold text-brand-600 hover:text-brand-700"
-        >
-          support@eliv8os.com
+<a href="#ask" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          Ask at the top of this page, then send it to a person
         </a>
       </section>
     </div>

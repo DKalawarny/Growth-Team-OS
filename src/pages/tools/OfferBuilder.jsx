@@ -301,8 +301,8 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit, compan
             Does this price make sense for your business?
           </h1>
           <p className="text-sm text-ink-500 leading-relaxed">
-            A quick check on a price you have in mind, using your own costs and what your finished jobs made.
-            This is not quoting software. It tells you what you would keep, and lets you put the number to Solomon.
+            Check a price against your own costs before you quote it. You see what you keep, how that compares
+            with the jobs you have finished, and you can put the number to Solomon.
           </p>
         </div>
       </div>
@@ -311,10 +311,10 @@ function FormView({ form, canSubmit, error, capError, onChange, onSubmit, compan
         <PriceCheck companyId={companyId} />
 
         <div className="pt-2">
-          <h2 className="text-base font-bold text-ink-900">Want the offer written up?</h2>
+          <h2 className="text-base font-bold text-ink-900">Write up the offer</h2>
           <p className="text-[13px] text-ink-500 mt-0.5 leading-relaxed">
-            Optional. Describe the service and Solomon drafts what is included, what is not, and how to answer
-            "that seems expensive". Any price in the draft is his suggestion: run it through the check above before you use it.
+            Describe the service. Solomon drafts what is included, what is not, and how to answer
+            "that seems expensive". Check any price in the draft above before you use it.
           </p>
         </div>
 
@@ -523,7 +523,7 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5 text-brand-700">Price check</div>
             <h1 className="text-xl font-bold text-ink-900 leading-tight">Does this price make sense for your business?</h1>
-            <p className="text-xs text-ink-500 mt-0.5">A quick check on a price, then the written offer underneath if you want one.</p>
+            <p className="text-sm text-ink-600 mt-0.5">Check a price against your own costs before you quote it.</p>
           </div>
         </div>
       </div>
@@ -536,8 +536,8 @@ function ResultView({ form, result, saving, error, capError, messages, refining,
         <div className="pt-2">
           <h2 className="text-base font-bold text-ink-900">The written offer: {form.offer_name || 'your draft'}</h2>
           <p className="text-[13px] text-ink-500 mt-0.5 leading-relaxed max-w-3xl">
-            Drafted by Solomon: what is included, what is not, and how to answer a customer who pushes back.
-            The prices in it are his suggestion, not a calculation. Run the one you would use through the check above.
+            What is included, what is not, and how to answer a customer who pushes back.
+            The prices are Solomon's suggestion. Check the one you plan to use above.
           </p>
         </div>
         <ContextUsedLine summary={contextSummary} />

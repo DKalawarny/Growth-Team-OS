@@ -15,7 +15,7 @@ export default function BookLinks({ books = [] }) {
     <div>
       {/* Why they are here, in one line (Daniel: "a short little this will help type thing"). */}
       <p className="text-xs text-gray-500 leading-relaxed mb-2">
-        {links.length === 1 ? 'This book goes' : 'These books go'} further into what came up above. Worth a look if you want the thinking behind the advice, not required to act on it.
+        {links.length === 1 ? 'This book goes' : 'These books go'} deeper on what came up above.
       </p>
       <ul className="flex flex-wrap gap-2">
         {links.map((link, i) => (

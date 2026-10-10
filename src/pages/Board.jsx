@@ -912,16 +912,13 @@ function WorkOrderCard({ order, members = [], milestone, onEdit, onMove, onDelet
           <button type="button"
             onClick={() => colIdx > 0 && onMove(COLUMN_KEYS[colIdx - 1])}
             disabled={colIdx === 0}
-            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg text-[10px] font-semibold text-ink-400 hover:bg-ink-50 hover:text-ink-700 disabled:opacity-25 disabled:cursor-not-allowed transition-colors">
+            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap text-ink-400 hover:bg-ink-50 hover:text-ink-700 disabled:opacity-25 disabled:cursor-not-allowed transition-colors">
             ← {colIdx > 0 ? COLUMNS[colIdx - 1].label : ''}
           </button>
-          <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg ${COLUMNS[colIdx]?.headerCls ?? ''}`}>
-            {COLUMNS[colIdx]?.label}
-          </span>
           <button type="button"
             onClick={() => colIdx < COLUMN_KEYS.length - 1 && onMove(COLUMN_KEYS[colIdx + 1])}
             disabled={colIdx === COLUMN_KEYS.length - 1}
-            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg text-[10px] font-semibold text-ink-400 hover:bg-ink-50 hover:text-ink-700 disabled:opacity-25 disabled:cursor-not-allowed transition-colors">
+            className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap text-ink-400 hover:bg-ink-50 hover:text-ink-700 disabled:opacity-25 disabled:cursor-not-allowed transition-colors">
             {colIdx < COLUMN_KEYS.length - 1 ? COLUMNS[colIdx + 1].label : ''} →
           </button>
         </div>

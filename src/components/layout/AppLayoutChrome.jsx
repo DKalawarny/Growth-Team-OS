@@ -47,7 +47,10 @@ export default function AppLayoutChrome({ children }) {
   }, [pathname])
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    // `app-shell` scopes the readability overrides in index.css (darker greys,
+    // larger small text, depth on cards and buttons) to the signed-in app. The
+    // marketing pages, the crew page and Unstuck are outside it and unchanged.
+    <div className="app-shell flex h-screen overflow-hidden">
       {/* Desktop sidebar — hidden on mobile */}
       <Sidebar />
 
