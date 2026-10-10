@@ -824,9 +824,12 @@ function RecentLogRow({ log, jobTitle, onEdit }) {
 function CommentPanel({ comments, onSubmit, defaultPromptType = 'free', placeholder = 'Add a note for the office or next crew...', autoFocus = false }) {
   const [draft, setDraft]         = useState('')
   const [voiceUsed, setVoiceUsed] = useState(false)
-  const [micField, setMicField] = useState(null)
   const [sending, setSending]     = useState(false)
   const [error, setError]         = useState(null)
+  // Restored. The per-field mic change (02a4753) renamed THIS declaration to
+  // micField by mistake, leaving every use of `recording` below undefined, so
+  // opening any note box on the crew page threw.
+  const [recording, setRecording] = useState(false)
   const recognitionRef            = useRef(null)
   const textareaRef               = useRef(null)
 
@@ -1051,6 +1054,11 @@ function FieldMic({ active, onClick }) {
 }
 
 function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLog }) {
+  // Which box is recording. This state was declared in CommentPanel by mistake
+  // (02a4753), so this component threw "micField is not defined" the moment the
+  // daily-log form rendered in a browser that supports dictation, which is
+  // every crew phone. It lives here, where it is used.
+  const [micField, setMicField] = useState(null)
   const general = workOrders.length === 1 && workOrders[0]?.id == null
   const [expanded, setExpanded] = useState(false)
   const [drafts, setDrafts]     = useState({})              // { [workOrderId]: what got done }
@@ -1161,7 +1169,7 @@ function ShiftEndRecap({ workOrders, crew = [], metricDefs = [], onSubmitDailyLo
       .filter(x => x.text.length > 0 || x.blockers.length > 0 || injury || safetyNote.trim().length > 0 || flhaDone !== null || onSiteIds.size > 0)
       .map(x => ({ ...x, text: x.text || x.blockers || (injury ? 'Injury reported, see the note.' : 'Nothing to add on the work itself.') }))
     if (toSend.length === 0) return
-    if (recording) stopRecording()
+    if (micField) stopMic()
     setSending(true)
     setError(null)
     setSuccess(false)
