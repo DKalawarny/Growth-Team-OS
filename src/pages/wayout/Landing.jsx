@@ -55,7 +55,7 @@ const HERO_PLANS = [
     who: 'Marcus, 52. Two kids at home. Wanted more time.',
     headline: 'Four days a week by March.',
     mark: 'You can already afford it.',
-    stats: [['Has to go out each month', '$4,100'], ['Your pay on four days', '$4,900']],
+    stats: [['Has to go out each month', '$4,100'], ['Your pay on four days', '$5,600']],
     moves: [
       ['Add up what has to go out each month', 'One evening.', true],
       ['Go over the number with Jen', 'Next week.', false],
@@ -73,7 +73,7 @@ const HERO_PLANS = [
     stats: [['Left at the end of the month', '$240'], ['What you owe', '$3,100']],
     moves: [
       ['Cancel the bills that renew on their own', 'This week.', true],
-      ['Pay the card with the highest interest first', 'Every month.', false],
+      ['Pay off the $900 card before the $2,200 one', 'By March. It charges you more.', false],
       ['Ask for a raise, with your numbers written down', 'April.', false],
     ],
     cut: [
