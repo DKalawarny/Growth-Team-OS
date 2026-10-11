@@ -52,33 +52,33 @@ import './wayout.css'
  */
 const HERO_PLANS = [
   {
-    who: 'Marcus, 52. Two kids at home.',
+    who: 'Marcus, 52. Two kids at home. Wanted more time.',
     headline: 'Four days a week by March.',
     mark: 'You can already afford it.',
-    stats: [['What your life costs', '$4,100'], ['The day costs', '$1,580']],
+    stats: [['Has to go out each month', '$4,100'], ['Your pay on four days', '$4,900']],
     moves: [
-      ['Work out what your life actually costs', 'One evening.', true],
-      ['Show Jen the number first', 'Next week.', false],
+      ['Add up what has to go out each month', 'One evening.', true],
+      ['Go over the number with Jen', 'Next week.', false],
       ['Ask for the four-day week', 'March.', false],
     ],
     cut: [
-      ['A side business', 'not enough hours in your week.'],
-      ['Selling the house', 'it does not clear enough to matter.'],
+      ['A side business', 'you asked for time, not more work.'],
+      ['Selling the house', 'you do not need to.'],
     ],
   },
   {
-    who: 'Dee, 38. Renting, two kids.',
+    who: 'Dee, 38. Renting, two kids. Wanted more money.',
     headline: 'Out of the hole by June,',
     mark: 'without a second job.',
     stats: [['Left at the end of the month', '$240'], ['What you owe', '$3,100']],
     moves: [
-      ['Put the two most expensive debts in order', 'This week.', true],
-      ['Rent the garage, not your evenings', 'This month.', false],
-      ['Ask what the night shift actually pays', 'April.', false],
+      ['Cancel the bills that renew on their own', 'This week.', true],
+      ['Pay the card with the highest interest first', 'Every month.', false],
+      ['Ask for a raise, with your numbers written down', 'April.', false],
     ],
     cut: [
-      ['A second job', 'the hours are not there, and the childcare eats it.'],
-      ['A consolidation loan', 'at your rate it costs more than it saves.'],
+      ['A second job', 'the hours are not there, and childcare would eat the pay.'],
+      ['A loan to combine your debts', 'at your rate it costs more than it saves.'],
     ],
   },
 ]
