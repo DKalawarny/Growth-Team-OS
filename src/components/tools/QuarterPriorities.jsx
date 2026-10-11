@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { quarterKey, quarterLabel, stepsDone, quarterHistory } from '../../lib/quarters'
+import { stepProgress, storedProgress } from '../../lib/milestoneProgress'
 
 /**
  * This quarter's priorities, as a view of the roadmap.
@@ -23,6 +24,7 @@ export default function QuarterPriorities({ companyId }) {
   const [newTitle, setNew]  = useState('')
   const [busy, setBusy]     = useState(false)
   const [error, setError]   = useState(null)
+  const [tasks, setTasks]   = useState([])   // tasks linked to milestones, for the same count the roadmap uses
   const key = quarterKey()
 
   useEffect(() => {
@@ -32,6 +34,8 @@ export default function QuarterPriorities({ companyId }) {
       .select('id, title, description, actions, actions_done, rock_quarter, completed, completed_date, progress_percent, end_date, sort_order')
       .eq('company_id', companyId).order('sort_order', { ascending: true })
       .then(({ data, error: err }) => { if (!cancelled) { setRows(data ?? []); if (err) setError(err.message) } })
+    supabase.from('work_orders').select('id, milestone_id, title, status').eq('company_id', companyId).not('milestone_id', 'is', null)
+      .then(({ data }) => { if (!cancelled) setTasks(data ?? []) })
     return () => { cancelled = true }
   }, [companyId])
 
@@ -52,14 +56,14 @@ export default function QuarterPriorities({ companyId }) {
     const done = new Set((Array.isArray(m.actions_done) ? m.actions_done : []).filter(a => actions.includes(a)))
     if (done.has(step)) done.delete(step); else done.add(step)
     const next = actions.filter(a => done.has(a))
-    // Progress is counted from the steps, capped below 100: "finished" is a
-    // decision the owner makes, not something a last tick does for him.
-    const pct = actions.length ? Math.min(95, Math.round((next.length / actions.length) * 100)) : m.progress_percent
+    // The same count the roadmap shows (steps AND tasks), capped below 100:
+    // "finished" is a decision the owner makes, not something a last tick does.
+    const pct = storedProgress(stepProgress({ ...m, actions_done: next }, tasks)) ?? m.progress_percent
     patch(m.id, { actions_done: next, ...(m.completed ? {} : { progress_percent: pct }) })
   }
 
   const finish  = m => patch(m.id, { completed: true, completed_date: new Date().toISOString(), progress_percent: 100 })
-  const reopen  = m => patch(m.id, { completed: false, completed_date: null, progress_percent: Math.min(95, Math.round((stepsDone(m).done / Math.max(1, stepsDone(m).total)) * 100)) })
+  const reopen  = m => patch(m.id, { completed: false, completed_date: null, progress_percent: storedProgress(stepProgress(m, tasks)) ?? 0 })
   const drop    = m => patch(m.id, { rock_quarter: null })
   const addPick = () => { if (pick) { patch(pick, { rock_quarter: key }); setPick('') } }
 
@@ -138,7 +142,7 @@ export default function QuarterPriorities({ companyId }) {
 
                 {!m.completed && sd.total > 0 && (
                   <div className="mt-2 h-1.5 w-full max-w-md bg-ink-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${Math.round((sd.done / sd.total) * 100)}%` }} />
+                    <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${stepProgress(m, tasks)?.pct ?? 0}%` }} />
                   </div>
                 )}
 

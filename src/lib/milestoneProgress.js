@@ -103,3 +103,56 @@ export function todayYmd() {
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
 }
+
+/**
+ * How far along a milestone is, COUNTED from its steps and tasks.
+ *
+ * ⚠️ 11 Oct 2026, Daniel, looking at the hand-dragged "Your progress" slider:
+ * "this gauge isn't correct, it should almost lock in what the overall % is of
+ * all tasks completed overall or partly done, to show how close to completion."
+ * A slider is an opinion; he could set 45% with half the steps ticked and a
+ * task under way. This is the arithmetic instead, and the screens lock to it.
+ *
+ * The units are the milestone's steps, plus any task linked to the milestone
+ * that is not one of its steps. Each unit counts:
+ *   1     the step is ticked, or its task is Done
+ *   0.75  its task is in Review
+ *   0.5   its task is In progress
+ *   0     nothing has started
+ *
+ * Returns null when there is nothing to count (no steps and no tasks). Only
+ * then is a hand-set number still the best there is.
+ */
+const TASK_WEIGHT = { done: 1, review: 0.75, in_progress: 0.5 }
+
+export function stepProgress(milestone, tasks = []) {
+  const steps  = Array.isArray(milestone?.actions) ? milestone.actions : []
+  const ticked = new Set(Array.isArray(milestone?.actions_done) ? milestone.actions_done : [])
+  const mine   = (tasks ?? []).filter(t => t.milestone_id === milestone?.id)
+
+  // The furthest-along task for each title (a step can have been reassigned).
+  const byTitle = new Map()
+  for (const t of mine) byTitle.set(t.title, Math.max(byTitle.get(t.title) ?? 0, TASK_WEIGHT[t.status] ?? 0))
+
+  const units = [
+    ...steps.map(text => ({ text, weight: ticked.has(text) ? 1 : (byTitle.get(text) ?? 0), isStep: true })),
+    ...[...byTitle.entries()].filter(([title]) => !steps.includes(title)).map(([text, weight]) => ({ text, weight, isStep: false })),
+  ]
+  if (units.length === 0) return null
+
+  const sum = units.reduce((a, u) => a + u.weight, 0)
+  return {
+    pct:     Math.round((sum / units.length) * 100),
+    done:    units.filter(u => u.weight === 1).length,
+    partial: units.filter(u => u.weight > 0 && u.weight < 1).length,
+    total:   units.length,
+    steps:   steps.length,
+    otherTasks: units.length - steps.length,
+    weightOf: text => units.find(u => u.text === text)?.weight ?? 0,
+  }
+}
+
+/** The number to STORE for an unfinished milestone: never 100, because finished is the owner's call. */
+export function storedProgress(counted) {
+  return counted ? Math.min(95, counted.pct) : null
+}

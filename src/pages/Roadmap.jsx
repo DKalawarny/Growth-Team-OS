@@ -5,6 +5,7 @@ import { uploadKnowledgeFile, validateFile, listFilesForMilestone } from '../lib
 import { sendTaskAssigned } from '../lib/email'
 import Tooltip from '../components/ui/Tooltip'
 import { getBookLink, AFFILIATE_DISCLOSURE, AFFILIATE_ACTIVE } from '../lib/affiliateLinks'
+import { stepProgress, storedProgress } from '../lib/milestoneProgress'
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { buildAdvisorContext } from '../lib/advisorContext'
@@ -179,6 +180,9 @@ export default function Roadmap() {
   // existing row when an action is reassigned, instead of inserting a
   // duplicate job every time the owner picks a new person.
   const [actionWorkOrderIdByKey, setActionWorkOrderIdByKey] = useState(new Map())
+  // Tasks linked to milestones, with status. null until loaded, so progress is
+  // not "corrected" downward during the moment before the tasks arrive.
+  const [milestoneTasks, setMilestoneTasks] = useState(null)
   // Bumped after a successful modal save so the orders loader re-runs and
   // the per-action map reflects the new assignment immediately (no full
   // page reload required).
@@ -307,7 +311,7 @@ export default function Roadmap() {
       const [ordersRes, profilesRes, staffRes] = await Promise.all([
         supabase
           .from('work_orders')
-          .select('id, milestone_id, title, assigned_to, staff_member_id, assigned_staff_ids, due_date, created_at')
+          .select('id, milestone_id, title, status, assigned_to, staff_member_id, assigned_staff_ids, due_date, created_at')
           .eq('company_id', profile.company_id)
           .not('milestone_id', 'is', null)
           // Order by created_at ascending so the latest row overwrites
@@ -377,6 +381,7 @@ export default function Roadmap() {
       setAssigneesByMilestone(map)
       setActionAssigneesByKey(actionMap)
       setActionWorkOrderIdByKey(woIdMap)
+      setMilestoneTasks(ordersRes.data ?? [])
     })()
     return () => { cancelled = true }
   }, [profile?.company_id, ordersRefreshTick])
@@ -601,7 +606,50 @@ export default function Roadmap() {
     if (error) setMilestones(prev => prev.map(m => m.id === milestone.id ? milestone : m))
   }
 
+  // ⭐ Progress is COUNTED, not dragged (Daniel, 11 Oct). See stepProgress.
+  const countedById = useMemo(() => {
+    const map = new Map()
+    if (milestoneTasks === null) return map
+    for (const m of milestones) {
+      const c = stepProgress(m, milestoneTasks)
+      if (c) map.set(m.id, c)
+    }
+    return map
+  }, [milestones, milestoneTasks])
+
+  // Keep the stored number equal to the count, so the overall bar, Home and
+  // Solomon all read the same figure this page shows. Only unfinished
+  // milestones, and only when the number is actually different, so this
+  // settles after one pass.
+  useEffect(() => {
+    const fixes = milestones
+      .filter(m => !m.completed && countedById.has(m.id))
+      .map(m => ({ m, want: storedProgress(countedById.get(m.id)) }))
+      .filter(x => x.want !== Number(x.m.progress_percent ?? 0))
+    if (fixes.length === 0) return
+    setMilestones(prev => prev.map(m => {
+      const f = fixes.find(x => x.m.id === m.id)
+      return f ? { ...m, progress_percent: f.want } : m
+    }))
+    fixes.forEach(f => { supabase.from('milestones').update({ progress_percent: f.want }).eq('id', f.m.id).then(() => {}) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countedById])
+
+  /** Tick or untick one step. The count, and so the gauge, follows. */
+  async function toggleStep(milestone, step) {
+    const actions = Array.isArray(milestone.actions) ? milestone.actions : []
+    const done = new Set((Array.isArray(milestone.actions_done) ? milestone.actions_done : []).filter(a => actions.includes(a)))
+    if (done.has(step)) done.delete(step); else done.add(step)
+    const next = actions.filter(a => done.has(a))
+    setMilestones(prev => prev.map(m => (m.id === milestone.id ? { ...m, actions_done: next } : m)))
+    const { error } = await supabase.from('milestones').update({ actions_done: next }).eq('id', milestone.id)
+    if (error) setMilestones(prev => prev.map(m => (m.id === milestone.id ? milestone : m)))
+  }
+
   async function setProgress(milestone, newPct) {
+    // Locked when there is something to count: the number comes from the steps
+    // and tasks, and a drag (here or on the timeline) must not overwrite it.
+    if (countedById.has(milestone.id)) return
     const clamped = Math.max(0, Math.min(100, Math.round(newPct)))
     if (clamped === (milestone.progress_percent ?? 0)) return
 
@@ -1021,6 +1069,8 @@ Suggest a single new milestone that addresses what they've described. Make it sp
           updating={updatingId === nextMilestone.id}
           assignees={assigneesByMilestone.get(nextMilestone.id) ?? []}
           actionAssigneesByKey={actionAssigneesByKey}
+          counted={countedById.get(nextMilestone.id) ?? null}
+          onToggleStep={toggleStep}
           onSetProgress={setProgress}
           onComplete={toggleComplete}
         />
@@ -1146,6 +1196,8 @@ Suggest a single new milestone that addresses what they've described. Make it sp
             sharePctById={sharePctById}
             assigneesByMilestone={assigneesByMilestone}
             actionAssigneesByKey={actionAssigneesByKey}
+            countedById={countedById}
+            onToggleStep={toggleStep}
             teamMembers={teamMembers}
             featuredId={nextMilestone?.id ?? null}
             onToggleExpand={id => setExpandedId(expandedId === id ? null : id)}
@@ -1565,6 +1617,7 @@ function BottleneckBanner({ count }) {
 function NextUpCard({
   milestone, dependents, sharePct, updating,
   assignees = [], actionAssigneesByKey = new Map(),
+  counted = null, onToggleStep,
   onSetProgress, onComplete,
 }) {
   const actions = Array.isArray(milestone.actions) ? milestone.actions : []
@@ -1614,10 +1667,14 @@ function NextUpCard({
               <ol className="space-y-2.5">
                 {actions.slice(0, 4).map((a, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-ink-700">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-ink-900 text-brand-400 flex items-center justify-center text-xs font-bold">
-                      {i + 1}
-                    </span>
-                    <span className="leading-relaxed pt-0.5 flex-1">{a}</span>
+                    <StepTick
+                      n={i + 1}
+                      weight={counted?.weightOf(a) ?? 0}
+                      ticked={(milestone.actions_done ?? []).includes(a)}
+                      onClick={() => onToggleStep?.(milestone, a)}
+                      dark
+                    />
+                    <span className={`leading-relaxed pt-0.5 flex-1 ${(counted?.weightOf(a) ?? 0) === 1 ? 'text-ink-400 line-through' : ''}`}>{a}</span>
                     {/* Who has this step, same lookup the list rows use */}
                     {actionAssigneesByKey.get(`${milestone.id}::${a}`) && (
                       <AssigneeChip person={actionAssigneesByKey.get(`${milestone.id}::${a}`)} />
@@ -1655,27 +1712,31 @@ function NextUpCard({
               </div>
             )}
 
-            <div className="bg-ink-50 rounded-lg p-3 border border-ink-100">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-ink-400 uppercase tracking-wider font-semibold">Your progress</span>
-                <span className="font-bold text-brand-600">{pct}%</span>
+            {counted ? (
+              <CountedProgress counted={counted} pct={pct} />
+            ) : (
+              <div className="bg-ink-50 rounded-lg p-3 border border-ink-100">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-ink-400 uppercase tracking-wider font-semibold">Your progress</span>
+                  <span className="font-bold text-brand-600">{pct}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value={pct}
+                  onChange={e => onSetProgress(milestone, Number(e.target.value))}
+                  aria-label="Progress on this milestone"
+                  className="w-full cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] text-ink-400 mt-0.5 px-0.5">
+                  <span>Not started</span>
+                  <span>Halfway</span>
+                  <span>Done</span>
+                </div>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={pct}
-                onChange={e => onSetProgress(milestone, Number(e.target.value))}
-                aria-label="Progress on this milestone"
-                className="w-full cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-ink-400 mt-0.5 px-0.5">
-                <span>Not started</span>
-                <span>Halfway</span>
-                <span>Done</span>
-              </div>
-            </div>
+            )}
 
             <button
               type="button"
@@ -1698,6 +1759,63 @@ function NextUpCard({
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/**
+ * The round marker beside a step. Click to tick the step done, click again to
+ * untick. It also shows a step that is done or under way because of its TASK:
+ * a full tick when the task is Done (that one is changed on the task, not
+ * here), a half-filled ring when the task is in progress or in review.
+ */
+function StepTick({ n, weight = 0, ticked = false, onClick, dark = false }) {
+  const done = weight === 1
+  const under = weight > 0 && weight < 1
+  const byTask = done && !ticked
+  const base = dark ? 'w-6 h-6 text-xs' : 'w-5 h-5 text-[11px]'
+  const look = done
+    ? 'bg-brand-600 text-white border-brand-600'
+    : under
+      ? 'bg-brand-50 text-brand-800 border-brand-500'
+      : dark ? 'bg-ink-900 text-brand-400 border-ink-900 hover:border-brand-500' : 'bg-ink-100 text-ink-700 border-ink-100 hover:border-brand-500'
+  return (
+    <button
+      type="button"
+      onClick={e => { e.stopPropagation(); if (!byTask) onClick?.() }}
+      aria-pressed={done}
+      title={byTask ? 'Done on its task. Change it on the Tasks board.' : done ? 'Done. Click to untick.' : under ? 'Its task is under way. Click to mark the step done.' : 'Click when this step is done.'}
+      className={`flex-shrink-0 rounded-full border-2 font-bold flex items-center justify-center transition-colors ${base} ${look} ${byTask ? 'cursor-default' : 'cursor-pointer'}`}
+    >
+      {done ? '✓' : n}
+    </button>
+  )
+}
+
+/** The locked gauge: a bar and one sentence saying what it was counted from. */
+function CountedProgress({ counted, pct, light = false }) {
+  const shown = Math.max(pct, 0)
+  const left = counted.total - counted.done - counted.partial
+  const parts = [
+    `${counted.done} of ${counted.total} done`,
+    counted.partial > 0 ? `${counted.partial} under way` : null,
+    left > 0 ? `${left} not started` : null,
+  ].filter(Boolean).join(', ')
+  return (
+    <div className={`${light ? 'bg-white border-ink-200' : 'bg-ink-50 border-ink-100'} rounded-lg p-3 border`}>
+      <div className="flex items-center justify-between text-xs mb-2">
+        <span className="text-ink-600 uppercase tracking-wider font-semibold">Progress</span>
+        <span className="font-bold text-brand-700 tabular-nums">{counted.pct === 100 ? 100 : shown}%</span>
+      </div>
+      <div className="h-2.5 w-full bg-ink-100 rounded-full overflow-hidden" role="img" aria-label={`${counted.pct}% done`}>
+        <div className="h-full bg-brand-600 rounded-full transition-all" style={{ width: `${counted.pct}%` }} />
+      </div>
+      <p className="text-[12px] text-ink-600 mt-2 leading-snug">
+        {parts}. Counted from {counted.steps > 0 ? `the ${counted.steps} step${counted.steps === 1 ? '' : 's'}` : 'the tasks'}
+        {counted.steps > 0 && counted.otherTasks > 0 ? ` and ${counted.otherTasks} other task${counted.otherTasks === 1 ? '' : 's'}` : ''} on this milestone.
+        Tick a step or move a task and this moves.
+        {counted.pct === 100 && " Everything is done. Click I've finished this to close it."}
+      </p>
     </div>
   )
 }
@@ -2182,6 +2300,7 @@ function ListView({
   grouped, expandedId, updatingId, bottlenecks, statusById, milestonesById,
   dependentCountById, sharePctById, assigneesByMilestone = new Map(),
   actionAssigneesByKey = new Map(),
+  countedById = new Map(), onToggleStep,
   teamMembers = [], featuredId,
   onToggleExpand, onToggleComplete, onSetProgress, onAssignMilestone, onOpenWorkOrder,
 }) {
@@ -2229,6 +2348,8 @@ function ListView({
                   sharePct={sharePctById.get(m.id) ?? 0}
                   assignees={assigneesByMilestone.get(m.id) ?? []}
                   actionAssigneesByKey={actionAssigneesByKey}
+                  counted={countedById.get(m.id) ?? null}
+                  onToggleStep={onToggleStep}
                   teamMembers={teamMembers}
                   milestonesById={milestonesById}
                   onToggleExpand={() => onToggleExpand(m.id)}
@@ -2249,6 +2370,7 @@ function ListView({
 function MilestoneRow({
   milestone, status, expanded, updating, bottleneckBlocks, dependents, sharePct,
   assignees = [], actionAssigneesByKey = new Map(), teamMembers = [],
+  counted = null, onToggleStep,
   milestonesById, onToggleExpand, onToggleComplete, onSetProgress, onAssignMilestone, onOpenWorkOrder,
 }) {
   const { title, description, category, actions, books, completed, depends_on } = milestone
@@ -2413,8 +2535,10 @@ function MilestoneRow({
         <div className="px-4 pb-5 pl-[3.25rem] space-y-4 text-sm border-t border-ink-100 pt-4">
           {description && <p className="text-ink-700 leading-relaxed">{description}</p>}
 
-          {/* Progress slider when not completed and not blocked */}
-          {!completed && !isBlocked && (
+          {!completed && counted && <CountedProgress counted={counted} pct={pct} light />}
+
+          {/* A slider only when there is nothing to count (no steps, no tasks) */}
+          {!completed && !isBlocked && !counted && (
             <div className="bg-white border border-ink-200 rounded-lg p-3">
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-ink-600 font-semibold">Your progress</span>
@@ -2463,10 +2587,13 @@ function MilestoneRow({
                   const actionAssignee = actionAssigneesByKey.get(`${milestone.id}::${a}`) ?? null
                   return (
                     <li key={i} className="flex items-start gap-2.5 text-ink-800 group/action">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-ink-100 text-ink-700 text-[11px] font-bold flex items-center justify-center">
-                        {i + 1}
-                      </span>
-                      <span className="leading-relaxed pt-px flex-1">{a}</span>
+                      <StepTick
+                        n={i + 1}
+                        weight={counted?.weightOf(a) ?? 0}
+                        ticked={(milestone.actions_done ?? []).includes(a)}
+                        onClick={() => onToggleStep?.(milestone, a)}
+                      />
+                      <span className={`leading-relaxed pt-px flex-1 ${(counted?.weightOf(a) ?? 0) === 1 ? 'text-ink-400 line-through' : ''}`}>{a}</span>
                       {actionAssignee && (
                         <span
                           className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5 ${
