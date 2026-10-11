@@ -76,6 +76,14 @@ export const REFERENCE_BOOKS = [
     because: 'for doing fewer things and doing them properly',
     signals: ['too many', 'too much', 'spread thin', 'overcommit', 'say no', 'saying yes', 'focus', 'priorit', 'stretched'] },
 
+  // Added on Daniel's word, 11 Oct ("tony is fine, everyone accepts him"), after
+  // I had left it out over the subtitle. Shown by title only, and only for the
+  // owner's own follow-through, never for money.
+  { title: 'Awaken the Giant Within', author: 'Tony Robbins', topic: 'follow-through',
+    fits: 'Owner knows what needs doing and keeps not doing it. The gap is habit and decision, not information.',
+    because: 'for closing the gap between knowing what to do and doing it',
+    signals: ['keep putting off', 'putting it off', 'procrastinat', 'not following through', 'follow through', 'habit', 'discipline', 'motivat', 'stuck', 'avoid', 'keeps slipping', 'said he would'] },
+
   // ── Money ───────────────────────────────────────────────────────────────
   { title: 'Profit First', author: 'Mike Michalowicz', topic: 'cash',
     fits: 'Revenue growing while the bank balance does not. Chronic cash anxiety.',
