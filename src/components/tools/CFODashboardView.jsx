@@ -123,11 +123,7 @@ export default function CFODashboardView({ data, computedDeltas = {}, prevPeriod
         </Section>
       )}
 
-      {books.length > 0 && (
-        <Section title="Go deeper">
-          <BookLinks books={books} />
-        </Section>
-      )}
+      <BookLinks data={data} prefer={['cash', 'open-book']} />
 
       <ToolDisclaimer toolId="cfo-dashboard" />
     </div>

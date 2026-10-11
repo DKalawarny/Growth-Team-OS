@@ -115,11 +115,7 @@ export default function RocksPlan({ data }) {
         </Section>
       )}
 
-      {books.length > 0 && (
-        <Section title="Go deeper">
-          <BookLinks books={books} />
-        </Section>
-      )}
+      <BookLinks data={data} prefer={['operating-rhythm', 'focus']} />
 
       <ToolDisclaimer toolId="rocks-tracker" />
     </div>

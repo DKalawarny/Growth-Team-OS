@@ -53,9 +53,16 @@ export const BOOK_CATALOG = {
  * curated vs. uncurated differently if they want (we don't bother; visually
  * they look the same).
  */
-export function getBookLink(rawTitle) {
+export function getBookLink(rawTitle, author = null) {
   const title = (rawTitle ?? '').trim()
   if (!title) return null
+
+  // A book from the verified list arrives with its author, which makes a far
+  // better search than the title alone ("Who" on its own finds nothing useful).
+  if (author) {
+    const t = import.meta.env.VITE_AMAZON_AFFILIATE_TAG?.trim() || ''
+    return { url: buildAmazonSearchUrl(`${title} ${author}`, t), label: title, curated: true }
+  }
 
   const tag = import.meta.env.VITE_AMAZON_AFFILIATE_TAG?.trim() || ''
   const match = findCatalogMatch(title)

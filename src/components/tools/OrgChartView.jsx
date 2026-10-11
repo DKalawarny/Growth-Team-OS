@@ -103,11 +103,7 @@ export default function OrgChartView({ data }) {
         </Section>
       )}
 
-      {books.length > 0 && (
-        <Section title="Further reading">
-          <BookLinks books={books} />
-        </Section>
-      )}
+      <BookLinks data={data} prefer={['second-in-command', 'hiring', 'owner-as-leader']} />
 
       <ToolDisclaimer toolId="org-chart" />
     </div>

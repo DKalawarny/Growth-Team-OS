@@ -6,6 +6,17 @@ import { sendTaskAssigned } from '../lib/email'
 import Tooltip from '../components/ui/Tooltip'
 import { getBookLink, AFFILIATE_DISCLOSURE, AFFILIATE_ACTIVE } from '../lib/affiliateLinks'
 import { stepProgress, storedProgress } from '../lib/milestoneProgress'
+import BookLinks from '../components/tools/BookLinks'
+
+// Which book topics a milestone's category leans toward.
+const MILESTONE_BOOK_TOPICS = {
+  team: ['second-in-command', 'hiring', 'advancement', 'care'],
+  systems: ['process', 'operating-rhythm'],
+  revenue: ['cash', 'focus'],
+  finance: ['cash', 'open-book'],
+  exit: ['succession', 'family-succession'],
+  foundation: ['process', 'focus'],
+}
 import { callClaude, SONNET, HAIKU } from '../lib/anthropic'
 import { fetchWebsiteContent } from '../lib/websiteScraper'
 import { buildAdvisorContext } from '../lib/advisorContext'
@@ -1750,6 +1761,15 @@ function NextUpCard({
           </div>
         </div>
 
+        <div className="mt-5 empty:hidden">
+          <BookLinks
+            text={[milestone.title, milestone.description, ...actions].join(' . ')}
+            prefer={MILESTONE_BOOK_TOPICS[milestone.category] ?? []}
+            max={1}
+            title="Worth reading for this milestone"
+          />
+        </div>
+
         {dependents > 0 && (
           <div className="mt-5 pt-4 border-t border-ink-100 text-xs text-ink-500 flex items-center gap-2">
             <span>🔓</span>
@@ -2625,33 +2645,14 @@ function MilestoneRow({
             </div>
           )}
 
-          {Array.isArray(books) && books.length > 0 && (
-            <div>
-              <div className="text-xs uppercase tracking-wide text-ink-500 font-bold mb-1">Suggested reading</div>
-              <p className="text-xs text-ink-500 leading-relaxed mb-2">Books that go deeper on this milestone.</p>
-              <ul className="flex flex-wrap gap-2">
-                {books.map((b, i) => {
-                  const link = getBookLink(b)
-                  if (!link) return null
-                  return (
-                    <li key={i}>
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer sponsored"
-                        className="inline-flex items-center gap-1 text-xs bg-white border border-ink-200 text-ink-700 px-2.5 py-1.5 rounded-md hover:border-brand-500 hover:text-brand-700 transition-colors"
-                      >
-                        📖 {link.label}
-                        <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M4.5 2h5.5v5.5M10 2L4 8M2 4v6h6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )}
+          {/* Books come up when the milestone's own words call for one, with
+              the reason beside it (lib/bookMatch.js). Nothing fits, nothing shows. */}
+          <BookLinks
+            text={[title, description, ...(Array.isArray(actions) ? actions : [])].join(' . ')}
+            prefer={MILESTONE_BOOK_TOPICS[category] ?? []}
+            max={1}
+            title="Worth reading for this milestone"
+          />
 
           {/* Completion evidence — only shown when the milestone is done */}
           {completed && (

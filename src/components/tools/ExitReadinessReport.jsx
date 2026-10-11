@@ -78,11 +78,7 @@ export default function ExitReadinessReport({ data }) {
         />
       )}
 
-      {books.length > 0 && (
-        <Section title="Further reading">
-          <BookLinks books={books} />
-        </Section>
-      )}
+      <BookLinks data={data} prefer={['succession', 'family-succession', 'second-in-command']} />
 
       <ToolDisclaimer toolId="exit-readiness" />
     </div>
