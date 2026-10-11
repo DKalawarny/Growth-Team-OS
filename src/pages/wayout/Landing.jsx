@@ -315,7 +315,7 @@ export default function Landing() {
               <h3>Six quick taps</h3>
               <p>
                 Tell us what you want and what you have. We show you the way out
-                that fits you best. No account. No typing.
+                that fits you best.
               </p>
             </div>
             <div>
