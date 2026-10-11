@@ -643,11 +643,11 @@ alter table public.work_orders
                 setFlagsOpen(true)
                 loadFlags()
               }}
-              aria-label="Field flags"
+              aria-label="Flags from the crew"
               className="relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 hover:text-white text-sm font-semibold transition-colors border border-ink-700"
             >
               <span aria-hidden>🚩</span>
-              <span className="hidden sm:inline">Field flags</span>
+              <span className="hidden sm:inline">Flags from the crew</span>
               {flagCount > 0 && (
                 <span className="ml-0.5 sm:ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500 text-ink-900">
                   {flagCount > 99 ? '99+' : flagCount}
@@ -1440,8 +1440,8 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
         {/* Header */}
         <div className="px-5 py-4 border-b border-ink-100 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-0.5">From the field</p>
-            <h2 className="text-lg font-bold text-ink-900">Flags for the office</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-0.5">From site</p>
+            <h2 className="text-lg font-bold text-ink-900">Flags from the crew</h2>
           </div>
           <button
             onClick={onClose}
@@ -1460,6 +1460,11 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
             <div className="text-center py-8">
               <div className="text-3xl mb-2">🚩</div>
               <p className="text-sm font-semibold text-ink-900 mb-1">Nothing flagged yet</p>
+              <p className="text-sm text-ink-600 leading-relaxed">
+                A flag is a short note a crew member sends you from site, on one step of a task: a tool that is missing,
+                a step that does not match the real job, something the office needs to sort out. They tap
+                "Flag for office" on their own page and the note lands here, across every task, so none get buried.
+              </p>
               <p className="text-xs text-ink-500 max-w-xs mx-auto leading-relaxed">
                 When the crew taps "Flag for office" on a step from the staff
                 portal, the note shows up here so it doesn't get buried in a
@@ -1503,9 +1508,8 @@ function FlagsDrawer({ flags, loading, workOrders, staff, appUsers, onClose, onO
             this drawer for the first time doesn't assume it's compliance. */}
         <div className="px-5 py-3 border-t border-ink-100 bg-ink-50/40">
           <p className="text-[10px] text-ink-500 leading-snug">
-            Field flags are an insight stream for SOP improvement. Not a
-            safety-compliance log. FLHA, toolbox talks, and incident reports
-            live in the CRM's safety module.
+            Use these to fix the SOP or the plan so the same thing stops coming up. A flag is not a safety record:
+            an injury or a hazard belongs in that day's daily log, and the official report still has to be filed.
           </p>
         </div>
       </div>
@@ -1579,7 +1583,7 @@ function HowTasksWork({ onDismiss }) {
       </div>
       <p className="px-5 py-3 border-t border-ink-100 text-xs text-ink-500 leading-relaxed">
         <span className="font-semibold text-ink-700">The names along the top</span> show one person's tasks.{' '}
-        <span className="font-semibold text-ink-700">Field flags</span> are things the crew flagged for the office from site.{' '}
+        <span className="font-semibold text-ink-700">Flags from the crew</span> are short notes they send you from site about one step of a task.{' '}
         <span className="font-semibold text-ink-700">Manage crew</span> is where you add people and set their reminders.
       </p>
     </div>
