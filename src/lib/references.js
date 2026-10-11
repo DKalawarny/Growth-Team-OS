@@ -44,10 +44,11 @@
  *   signals  words and phrases that, found in a result or a milestone, mean the
  *            situation is present. A book needs TWO different signals to be
  *            shown, so one stray word never summons a book.
- *   faith    true for books written from Christian conviction. These are never
- *            surfaced by the matcher on a page; Solomon may name one only when
- *            the owner has raised that subject himself. (The Creed principle:
- *            findable, never pushed.)
+ *   faith    true for books written from Christian conviction. Matched like
+ *            every other book; shown with a plain label saying so, and at most
+ *            one at a time unless the owner has raised faith himself. Daniel,
+ *            11 Oct: "I don't want to hide from it... pushing and hiding are
+ *            different." See lib/bookMatch.js.
  */
 export const REFERENCE_BOOKS = [
   // ── Operating the business ──────────────────────────────────────────────
@@ -148,49 +149,49 @@ export const REFERENCE_BOOKS = [
     because: 'for bringing the same clarity home that you bring to the business',
     signals: ['family', 'at home', 'kids', 'wife', 'husband', 'spouse', 'frantic', 'chaos', 'home life'] },
 
-  // ── Faith and work (Solomon only, and only when the owner raises it) ─────
+  // ── Faith and work ──────────────────────────────────────────────────────
   { title: 'Business by the Book', author: 'Larry Burkett', topic: 'stewardship', faith: true,
     fits: 'Owner wants a practical framework for running the business by conviction rather than instinct.',
-    because: 'for running the business by conviction', signals: [] },
+    because: 'for running the business by conviction', signals: ['conviction', 'principle', 'integrity', 'honest', 'steward', 'right way', 'ethic', 'do right by'] },
   { title: 'Business for the Glory of God', author: 'Wayne Grudem', topic: 'vocation', faith: true,
     fits: 'Owner is quietly unsure whether profit and business are good things to pursue at all.',
-    because: 'for whether business itself is a good thing to give your life to', signals: [] },
+    because: 'for whether business itself is a good thing to give your life to', signals: ['profit', 'guilt', 'is it right', 'greed', 'worth doing', 'good thing', 'ashamed', 'making money'] },
   { title: 'Every Good Endeavor', author: 'Timothy Keller and Katherine Leary Alsdorf', topic: 'vocation', faith: true,
     fits: 'Owner treats work and faith as separate compartments, or feels their work does not matter.',
-    because: 'for why ordinary work matters', signals: [] },
+    because: 'for why ordinary work matters', signals: ['meaning', 'purpose', 'why i do this', 'what it is for', 'does it matter', 'matters', 'just a job', 'separate'] },
   { title: 'Work Matters', author: 'Tom Nelson', topic: 'vocation', faith: true,
     fits: 'Owner sees ordinary work as second-rate next to ministry. Close to the thesis this product is built on.',
-    because: 'for seeing ordinary work as a calling', signals: [] },
+    because: 'for seeing ordinary work as a calling', signals: ['ordinary work', 'purpose', 'vocation', 'meaning', 'second rate', 'just a job', 'matters', 'serve'] },
   { title: 'The Gospel at Work', author: 'Sebastian Traeger and Greg Gilbert', topic: 'vocation', faith: true,
     fits: 'Work has become either everything to the owner or nothing.',
-    because: 'for when work has become everything, or nothing', signals: [] },
+    because: 'for when work has become everything, or nothing', signals: ['work is everything', 'identity', 'purpose', 'coast', 'everything to me', 'who i am', 'meaning', 'drive'] },
   { title: 'Love Works', author: 'Joel Manby', topic: 'care', faith: true,
     fits: 'Owner wants to lead people with patience, kindness and honesty as things he does, not feelings he has.',
-    because: 'for leading people with patience, kindness and honesty', signals: [] },
+    because: 'for leading people with patience, kindness and honesty', signals: ['morale', 'turnover', 'treated', 'culture', 'patien', 'kind', 'respect', 'recognition', 'compassion', 'people leaving'] },
   { title: 'When Work and Family Collide', author: 'Andy Stanley', topic: 'work-and-life', faith: true,
     fits: 'Work is taking time that belongs to the family and the owner knows it.',
-    because: 'for when work keeps taking what belongs to your family', signals: [] },
+    because: 'for when work keeps taking what belongs to your family', signals: ['family', 'at home', 'evenings', 'weekends', 'hours', 'missed', 'never home', 'wife', 'kids'] },
   { title: 'Margin', author: 'Richard A. Swenson', topic: 'whole-person', faith: true,
     fits: 'Owner is running with no reserve of time, energy or money. Everything is at the limit.',
-    because: 'for getting some room back in a life with none left', signals: [] },
+    because: 'for getting some room back in a life with none left', signals: ['overload', 'burnout', 'burn out', 'exhaust', 'no time', 'stretched', 'no reserve', 'at the limit', 'hours'] },
   { title: 'The Ruthless Elimination of Hurry', author: 'John Mark Comer', topic: 'whole-person', faith: true,
     fits: 'Owner is always rushing and it is costing him the things he says matter most.',
-    because: 'for slowing down before it costs you what matters', signals: [] },
+    because: 'for slowing down before it costs you what matters', signals: ['hurry', 'rush', 'busy', 'burnout', 'burn out', 'no time', 'always on', 'frantic'] },
   { title: 'The Treasure Principle', author: 'Randy Alcorn', topic: 'giving', faith: true,
     fits: 'Owner raises giving themselves and wants to think about it more deliberately. Never offer unprompted.',
-    because: 'for thinking about giving deliberately', signals: [] },
+    because: 'for thinking about giving deliberately', signals: ['giving', 'tithe', 'tithing', 'generos', 'donat', 'charity', 'give away'] },
   { title: 'Halftime', author: 'Bob Buford', topic: 'legacy', faith: true,
     fits: 'Owner is successful and asking what the rest of it is for.',
-    because: 'for asking what the rest of it is for', signals: [] },
+    because: 'for asking what the rest of it is for', signals: ['what it is for', 'legacy', 'second half', 'what next', 'significance', 'retire', 'enough', 'success'] },
   { title: 'Boundaries for Leaders', author: 'Henry Cloud', topic: 'whole-person', faith: true,
     fits: 'Business is consuming the owner; no line between work and family.',
-    because: 'for putting a line between the business and the rest of your life', signals: [] },
+    because: 'for putting a line between the business and the rest of your life', signals: ['boundar', 'consuming', 'no line', 'work and family', 'always working', 'evenings', 'weekends', 'say no'] },
 ]
 
 /** Compact block for the system prompt. Titles and authors only — no summaries
  *  the model could mistake for quotable content. */
 export function referenceCanonBlock() {
   return REFERENCE_BOOKS
-    .map(b => `- ${b.title} — ${b.author} (${b.topic}${b.faith ? ', faith: name only if the owner has raised this subject himself' : ''}): ${b.fits}`)
+    .map(b => `- ${b.title} — ${b.author} (${b.topic}${b.faith ? ', written from a Christian perspective' : ''}): ${b.fits}`)
     .join('\n')
 }

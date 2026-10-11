@@ -24,11 +24,30 @@ describe('matchBooks', () => {
     expect(matchBooks('We need to hire before spring.')).toEqual([])   // one signal only
     expect(matchBooks('')).toEqual([])
   })
-  it('never returns a faith book, whatever the text says', () => {
-    const all = REFERENCE_BOOKS.map(b => b.fits).join(' ') + ' family hours home burnout trust culture cash sell hire feedback'
-    const got = matchBooks(all, { max: 50, need: 1 })
-    const faith = new Set(REFERENCE_BOOKS.filter(b => b.faith).map(b => b.title))
-    expect(got.some(b => faith.has(b.title))).toBe(false)
+  const FAITH_TITLES = new Set(REFERENCE_BOOKS.filter(b => b.faith).map(b => b.title))
+  const overwork = 'He is working evenings and weekends, the hours keep climbing, he is close to burnout and his family barely sees him at home.'
+
+  it('does not hide a faith book: it comes up when the situation fits, labelled', () => {
+    const got = matchBooks(overwork, { max: 10 })
+    const faith = got.filter(b => FAITH_TITLES.has(b.title))
+    expect(faith.length).toBe(1)                 // there, and only one: not pushed
+    expect(faith[0].faith).toBe(true)            // the page says what it is
+    expect(got.some(b => !b.faith)).toBe(true)   // alongside the others, not instead
+  })
+  it('lifts the one-at-a-time limit for an owner who has raised faith himself', () => {
+    const got = matchBooks(overwork, { max: 10, faithRaised: true }).filter(b => b.faith)
+    expect(got.length).toBeGreaterThan(1)
+  })
+  it('also lifts it when the page\'s own words raise it', () => {
+    const got = matchBooks(overwork + ' He says he prays about it and wants to steward the business well.', { max: 10 }).filter(b => b.faith)
+    expect(got.length).toBeGreaterThan(1)
+  })
+  it('a church for a client is not the owner raising his faith', () => {
+    const got = matchBooks(overwork + ' The Maple Street Church contract and the ministry centre both renew in March.', { max: 10 }).filter(b => b.faith)
+    expect(got.length).toBe(1)
+  })
+  it('the book on giving needs giving to be on the page, even then', () => {
+    expect(titles(matchBooks(overwork, { max: 20, faithRaised: true }))).not.toContain('The Treasure Principle')
   })
   it('says why each book came up', () => {
     const [b] = matchBooks('The owner is the bottleneck. Nothing is written down and the crew cannot run a site without you.')
@@ -45,7 +64,7 @@ describe('the book list itself', () => {
     for (const b of REFERENCE_BOOKS) {
       expect(b.author, b.title).toBeTruthy()
       expect(b.because, b.title).toBeTruthy()
-      if (!b.faith) expect(b.signals.length, b.title).toBeGreaterThanOrEqual(6)
+      expect(b.signals.length, b.title).toBeGreaterThanOrEqual(6)
     }
   })
   it('no long dashes in anything an owner reads', () => {

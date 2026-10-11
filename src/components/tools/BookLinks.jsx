@@ -1,5 +1,8 @@
 import { getBookLink, AFFILIATE_DISCLOSURE, AFFILIATE_ACTIVE } from '../../lib/affiliateLinks'
+import { useEffect, useState } from 'react'
 import { matchBooks, textOf } from '../../lib/bookMatch'
+import { fetchFaithRaised } from '../../lib/faithRaised'
+import { useAuth } from '../../hooks/useAuth'
 
 /**
  * Book suggestions at the foot of a result, shown only when they fit.
@@ -18,7 +21,18 @@ import { matchBooks, textOf } from '../../lib/bookMatch'
  * outside the verified list, which is the exact failure the list exists for.
  */
 export default function BookLinks({ data, text, prefer = [], max = 2, title = 'Worth reading on this' }) {
-  const found = matchBooks(text ?? textOf(data), { prefer, max })
+  // Whether this owner has brought faith up himself, read once from what
+  // Solomon remembers him saying. It only lifts the one-at-a-time limit on
+  // books written from a Christian perspective; they are matched either way.
+  const { profile } = useAuth()
+  const [faithRaised, setFaithRaised] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    fetchFaithRaised(profile?.company_id).then(v => { if (!cancelled) setFaithRaised(v) })
+    return () => { cancelled = true }
+  }, [profile?.company_id])
+
+  const found = matchBooks(text ?? textOf(data), { prefer, max, faithRaised })
   if (found.length === 0) return null
   return (
     <section>
@@ -39,7 +53,9 @@ export default function BookLinks({ data, text, prefer = [], max = 2, title = 'W
                   {b.title}
                 </a>
                 <span className="text-sm text-gray-600">, {b.author}</span>
-                <p className="text-sm text-gray-700 leading-snug mt-0.5">Suggested {b.because}.</p>
+                <p className="text-sm text-gray-700 leading-snug mt-0.5">
+                  Suggested {b.because}.{b.faith && <span className="text-gray-500"> Written from a Christian perspective.</span>}
+                </p>
               </div>
             </li>
           )
