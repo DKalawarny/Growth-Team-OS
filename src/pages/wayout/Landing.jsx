@@ -174,8 +174,8 @@ export default function Landing() {
               one would… a year of night shifts"). Recognition works when a
               person meets their own situation twice, not two different lists. */}
           <p className="wayout__herolead">
-            {WAYOUT_TAGLINE} The house, the debt, the job, the hours, which of
-            those moves first, and what to leave alone for now.
+            {WAYOUT_TAGLINE} Your house, your debt, your job, your hours. Find
+            out what to do first and what can wait.
           </p>
 
           <div className="wayout__herocta">
@@ -298,8 +298,8 @@ export default function Landing() {
         <section>
           <h2 className="wayout__pitchh">What happens when you press the button.</h2>
           <p className="wayout__pitchlead">
-            Nothing to install, nothing to book. You answer questions about your own
-            situation and read what comes back.
+            You answer questions about your life. You get a plan back. Nothing
+            to install.
           </p>
           {/* ⚠️ NOT THE PILLAR CARDS. Rendered side by side these two sections
               were the same object twice — three bordered cards, then three
@@ -312,11 +312,10 @@ export default function Landing() {
           <div className="wayout__steps">
             <div>
               <span>First</span>
-              <h3>Six taps, to start</h3>
+              <h3>Six quick taps</h3>
               <p>
-                More money, more time, or both. Then what you have and what you will
-                not move. Enough to narrow four ways out to the one that fits you. No
-                account, nothing typed.
+                Tell us what you want and what you have. We show you the way out
+                that fits you best. No account. No typing.
               </p>
             </div>
             <div>
@@ -324,19 +323,18 @@ export default function Landing() {
               {/* ⚠️ NO TIME FIGURE HERE. The hero's fine print owns that promise
                   — the page once said "three minutes" five times and Daniel:
                   "it's still all over this page." Said once it is an offer. */}
-              <h3>The questions that build the plan</h3>
+              <h3>A few more questions</h3>
               <p>
-                The rent, the debt, the hours, the people it affects, and where you
-                want to be in a year, five and ten, in your own words and your own
-                figures, because that is what the plan is made of.
+                Your bills, your debt, your hours, your family, and where you want
+                to be in a year. Your own words and your own numbers.
               </p>
             </div>
             <div>
               <span>And then</span>
               <h3>Your plan, the same day</h3>
               <p>
-                Three moves in the order they work, what each is worth in your own
-                numbers, and the list of what to leave alone. Yours to keep.
+                Three things to do, in order. What each one is worth, using your
+                numbers. And what to skip for now. Your plan is yours to keep.
               </p>
             </div>
             {/* ⭐⭐ 10 OCT: THE PART THE PAGE NEVER SAID. A friend finished a plan
@@ -351,11 +349,11 @@ export default function Landing() {
                 the subject of every sentence, never a coach or an adviser. */}
             <div>
               <span>After that</span>
-              <h3>Your plan keeps up with you</h3>
+              <h3>Your plan changes when your life does</h3>
               <p>
-                Tick each move off as you do it. When all three are done, say how it
-                went and get your next three. If something changes along the way, say
-                so and your plan is rewritten around it.
+                Check off each move when you finish. When all three are done, you
+                get your next three. If something changes, say so and your plan is
+                updated.
               </p>
             </div>
           </div>
@@ -366,34 +364,32 @@ export default function Landing() {
             the cut list, the gates. Claims a competitor could copy into their
             copy but not into their product. */}
         <section>
-          <h2 className="wayout__pitchh">Advice is cheap. Order is the hard part.</h2>
+          <h2 className="wayout__pitchh">You don’t need more advice. You need to know what to do first.</h2>
           <p className="wayout__pitchlead">
-            You’ve already been told to budget, hustle and be patient. None of that
-            tells you what to do this week.
+            You’ve been told to budget, work harder and wait. None of that tells
+            you what to do this week.
           </p>
           <div className="wayout__three">
             <div>
               <h3>Your numbers. Not averages.</h3>
               <p>
-                Every figure in your plan is one you gave us, or worked out from
-                them. Where something isn’t known, we say so and tell you who would
-                know. We don’t fill the gap with a guess.
+                Every number in your plan comes from what you told us. If we
+                don’t know something, we say so and tell you who would know. We
+                never guess.
               </p>
             </div>
             <div>
               <h3>Your plan crosses things off.</h3>
               <p>
-                Your plan names what you should <b>not</b> do right now, and why.
-                Everything else only ever adds to your list, which is how you ended
-                up with three options and no first step.
+                Your plan tells you what <b>not</b> to do right now, and why.
+                Most advice only adds to your list.
               </p>
             </div>
             <div>
               <h3>One thing at a time.</h3>
               <p>
-                Each move says what has to be true before the next one starts, so you
-                always know whether you’re ready, instead of half-doing all
-                three and finishing none.
+                Each move tells you when you are ready for the next one. So you
+                finish one before you start another.
               </p>
             </div>
           </div>
@@ -455,10 +451,8 @@ export default function Landing() {
               on a landing page. */}
           <h2 className="wayout__pitchh">Read the one that sounds like yours.</h2>
           <p className="wayout__pitchlead">
-            Some of what people arrive with, answered properly: what the number
-            really is, what changes it, and what order things go in. Free to read,
-            nothing to fill in, and written to be worth your time whether or not
-            you ever make a plan.
+            Common situations, answered in plain words. Free to read. Nothing
+            to fill in.
           </p>
           <div className="wayout__board wayout__board--situations">
             {SITUATIONS.slice(0, 6).map(x => (
@@ -481,9 +475,8 @@ export default function Landing() {
               we cover that too" is a promise; "built from your answers" is how
               it works, and a reader can check it in twenty minutes. */}
           <p className="wayout__unique">
-            Yours will not be on this list, and that is the point. A plan is built
-            from your own answers, not matched to one of these. The specifics are
-            the whole input.
+            Yours is probably not on this list. That is fine. Your plan is built
+            from your own answers, not picked from a list.
           </p>
           <p className="wayout__fine" style={{ marginTop: 14, textAlign: 'left' }}>
             <Link to={`${WAYOUT_BASE}/stuck`}>More situations →</Link>
@@ -500,9 +493,9 @@ export default function Landing() {
               <span className="wayout__dealtag">Free. No card</span>
               <h3>The questions, then your plan</h3>
               <p>
-                Your direction first, then the questions that turn it into a plan: three moves in the order they work, what each is worth in your own
-                figures, and what to ignore. Yours to keep, and we don’t ask for a
-                card to see any of it.
+                Answer the questions and get your plan: three moves in order,
+                what each one is worth, and what to skip. Your plan is yours to
+                keep. No card needed.
               </p>
             </div>
             <div>
@@ -530,8 +523,8 @@ export default function Landing() {
                      price appears in the branch above the moment it is real —
                      advertising $29 on a page whose every other line says free
                      is the two-offers failure this block was written to end. */
-                  : <><b>Free while this is being built</b>, and you will be asked
-                      before that ever changes.</>}
+                  : <><b>Free for now.</b> We will ask you before that
+                      changes.</>}
               </p>
             </div>
           </div>
@@ -565,7 +558,7 @@ export default function Landing() {
             a family's Saturday, using it as the picture of when you get to work
             quietly said hustle. */}
         <section className="wayout__close">
-          <h2 className="wayout__pitchh">The first move is the only one you have to pick.</h2>
+          <h2 className="wayout__pitchh">You only need to know your first move.</h2>
           <p className="wayout__pitchlead">
             {/* 🔴 THIS PROMISED A PLAN IN THREE MINUTES AND THREE MINUTES DOES NOT
                 BUY ONE. Six taps name which of four ways out is yours; the plan
@@ -574,9 +567,8 @@ export default function Landing() {
                 door as though it were the whole house — and the first thing that
                 happens to somebody who believes it is that they feel misled at
                 minute four, which is the one thing this product cannot afford. */}
-            Answer the questions, make an account to keep what comes back, read it.
-            No card, and your answers stay yours. Then you will know what this week
-            is for.
+            Answer the questions. Make an account to keep your plan. No card,
+            and your answers stay yours. Then you will know what to do this week.
           </p>
           <Link className="wayout__btn" to={`${WAYOUT_BASE}/start`}>Show me which way</Link>
           <p className="wayout__fine" style={{ marginTop: 14 }}>{priceLine()}</p>
