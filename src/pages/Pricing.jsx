@@ -136,7 +136,10 @@ const FAQS = [
     // think for more use later." Nobody was raising caps by email, and the
     // support address has no mailbox. Say what is true: the limit resets, and
     // a bigger plan is coming. Do not name a price for it until there is one.
-    a: 'Right now the limit is 10 a month for each tool, and it resets every month. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything, including Solomon, once it is reached. Both limits are there to stop runaway AI bills. A plan with more room for heavier use is coming later. If you are hitting the limit, tell us from the Help page in the app, so we know who needs it.',
+    // The "$10" that used to be here is OUR cost ceiling per account, not a
+    // charge. Daniel read it as a charge ("we aren't charging so how would
+    // that work"), so a visitor would too. No dollar figure here.
+    a: 'Right now the limit is 10 a month for each tool, and it resets every month. There is also a monthly limit on how much each account can use Solomon and the tools in total. If you reach it, everything pauses until the next month. You are never charged for either limit. They are there because every answer costs us money to run. A plan with more room for heavier use is coming later. If you are hitting the limit, tell us from the Help page in the app, so we know who needs it.',
   },
   {
     q: 'Can I cancel anytime?',
