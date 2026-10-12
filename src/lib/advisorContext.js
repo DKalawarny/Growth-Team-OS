@@ -12,6 +12,7 @@ import { searchChatHistory, formatChatHistory } from './rag/chatSearch'
 import { compressSafetyContext } from './rag/compress'
 import { embed as embedQuery } from './rag/embeddings'
 import { getJurisdictionLinks } from './jurisdictionLinks'
+import { refreshOnlinePresence } from './onlinePresence'
 import { detectSafetyTopics, loadRegulatorySources } from './regulatorySources'
 import { referenceCanonBlock } from './references'
 import { loadMemory, formatMemory } from './memory'
@@ -265,7 +266,7 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     // advisor turn.
     supabase
       .from('companies')
-      .select('roadmap_built_from, log_metrics')
+      .select('roadmap_built_from, log_metrics, is_demo')
       .eq('id', companyId)
       .maybeSingle(),
     // ⭐ Daily logs — what actually happened on the jobs, in the crew's words.
@@ -299,6 +300,11 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     : null
 
   const bp        = bpRes.data ?? {}
+
+  // Keep the website copy and the Google listing summary current, in the
+  // background. Not awaited: this message goes out with what is stored, and
+  // the fresh copy is there for the next one.
+  refreshOnlinePresence(bp, { isDemo: !!coRes?.data?.is_demo })
   const allMiles  = msRes.data ?? []
   const checkins  = ciRes.data ?? []
   const knowledge = kfRes.data ?? []
@@ -701,6 +707,11 @@ export async function buildAdvisorContext(companyId, { userId, query } = {}) {
     website_excerpt: bp.website_content
       ? bp.website_content.slice(0, WEBSITE_EXCERPT_CHARS)
       : null,
+    // When the site was last read, and what Google shows for the business
+    // (or found:false when no listing clearly theirs came back). Null means
+    // not looked up yet. See lib/onlinePresence.js.
+    website_read_on: bp.website_fetched_at ? bp.website_fetched_at.slice(0, 10) : null,
+    google_listing: bp.google_listing ?? null,
     // Knowledge retrieval — two modes:
     //
     // RAG mode (query provided + OpenAI key set):
