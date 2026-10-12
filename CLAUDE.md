@@ -10,6 +10,33 @@ Deeper product context (features, philosophy) lives in
 
 ---
 
+## 🔴 PUBLISHING CHANGED ON 12 OCT 2026: CLOUDFLARE, NOT NETLIFY
+
+**A `git push` NO LONGER UPDATES THE LIVE SITES.** Netlify ran out of credits
+for the third time (six pushes on 11 Oct) and both sites served 503. Hosting
+moved to Cloudflare the same day.
+
+- **To publish: `npm run deploy`** on Daniel's Mac (he runs it with `!`). It
+  builds locally, deletes `dist/_redirects`, and uploads with
+  `wrangler deploy -c wrangler.deploy.jsonc`. No build credits anywhere.
+- **Commit and push to GitHub as normal for history.** A push costs nothing now
+  and publishes nothing.
+- One Cloudflare Worker (`growthos`, account under Daniel's hotmail) serves
+  eliv8os.com, getunstuckmap.com and leadeos.com. **`worker/index.js` is the
+  per-domain routing that `public/_redirects` used to be.** A new rule goes in
+  the Worker. `public/_redirects` is kept only while Netlify still exists as a
+  fallback; it can go once Netlify is cancelled (after about 19 Oct).
+- `wrangler.jsonc` (assets only) is read by the Vite plugin at build time and
+  must stay as it is. `wrangler.deploy.jsonc` is the one that deploys.
+- DNS for all three domains is on Cloudflare (registrar is still GoDaddy).
+  Cloudflare's import missed a Resend record; any DNS work starts from a `dig`
+  snapshot. Everything below that says "Netlify" is history.
+- Local check of the routing: `wrangler dev` with a copy of the deploy config
+  WITHOUT `routes` (with routes, dev forces every request onto the first
+  domain), `--var LOCAL:1`, then `curl -H 'Host: getunstuckmap.com'`.
+
+---
+
 ## What this is
 
 **Eliv8 OS** — React + Vite SPA backed by Supabase
