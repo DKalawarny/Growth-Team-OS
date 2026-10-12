@@ -30,6 +30,8 @@ const SETS = {
     ['slow demolition', 'We do demolition. Work has been slow for four months and I am barely covering overhead. I keep bidding and waiting for it to pick back up. I feel stuck. What do I do?'],
     ['raise outside bracket', 'John wants a raise. He is good and I do not want to lose him, but he has only been with us two months and we have an hourly bracket for his position that I cannot go over without it being unfair to the other guys. I do not know what to tell him.'],
     ['control, not stuck', 'What is a reasonable deposit to ask for on a 60k kitchen job?'],
+    ['thin work, no site', 'I am not getting much work lately. Phone has been quiet for two months. Not sure what is going on.', { business: { name: 'Hartley Roofing', industry: 'Roofing', location: 'Tulsa, OK, USA', website: null, team_size: '2-5' }, website_excerpt: null }],
+    ['thin work, weak site', 'I am not getting much work lately. Phone has been quiet for two months. Not sure what is going on.', { business: { name: 'Hartley Roofing', industry: 'Roofing', location: 'Tulsa, OK, USA', website: 'hartleyroofing.example', team_size: '2-5' }, website_excerpt: 'Hartley Roofing. Quality you can trust. Welcome to our website. We take pride in our work. Family owned. Contact us today.' }],
     ['seasonal landscaper', 'Landscaping. Every winter I lay off half the crew and lose the good ones to other outfits by spring. Same thing every year and I am tired of it.'],
   ],
 }
@@ -38,11 +40,11 @@ const [set, out] = process.argv.slice(2)
 fs.mkdirSync(out, { recursive: true })
 const jwt = await auditToken(URL, KEY)
 const only = process.argv[4]
-for (const [name, msg] of SETS[set].filter(([n]) => !only || n.includes(only))) {
+for (const [name, msg, ctx] of SETS[set].filter(([n]) => !only || n.includes(only))) {
   const res = await fetch(`${URL}/functions/v1/claude`, {
     method: 'POST',
     headers: { apikey: KEY, Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ promptKey: 'ADVISOR_SYSTEM_PROMPT', maxTokens: 1200, temperature: 0, messages: [{ role: 'user', content: msg }] }),
+    body: JSON.stringify({ promptKey: 'ADVISOR_SYSTEM_PROMPT', maxTokens: 1200, temperature: 0, ...(ctx ? { stableContext: `\n\nBUSINESS_CONTEXT:\n${JSON.stringify(ctx, null, 2)}` } : {}), messages: [{ role: 'user', content: msg }] }),
   })
   const body = await res.json()
   const text = body.text ?? JSON.stringify(body)
