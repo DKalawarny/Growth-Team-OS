@@ -416,11 +416,14 @@ function ConvictionSection() {
           <span className="text-gray-400">And to the things a margin can&rsquo;t show.</span>
         </h2>
 
-        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
+        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-700">
           <p>
-            Most business advice treats the company as a machine for producing a
-            number, and everything else, the wages, the estimates, whether
-            the shop is a decent place to work, as overhead on the way there.
+            {/* 12 Oct, Daniel on the old wording of these two paragraphs:
+                "wording can be more normal", it read like Yoda. One idea per
+                sentence, subject first. */}
+            Most business advice only cares about the number at the bottom.
+            Fair wages, honest quotes and whether your shop is a decent place
+            to work get treated as costs.
           </p>
           {/* ⚠️ 31 Aug — this used to read "notice how the customer who is never
               going to check the invoice gets treated". Daniel: "a weird thing to
@@ -435,10 +438,9 @@ function ConvictionSection() {
               unprepared — the section now counts a real cost, then says plainly
               that it will keep counting them. */}
           <p>
-            Solomon will hold you to your margins as hard as any CFO would. It will
-            also notice what the job you went back and fixed for free actually cost
-            you, and whether someone who shares none of your convictions still wants
-            to work here in a year.
+            Solomon watches your margins as closely as any CFO would. It also
+            tells you what it cost to go back and fix that job for free, and
+            whether your people will still want to work for you a year from now.
           </p>
           {/* ⚠️ "He/He'll" three times here until 31 Aug. The 29 Aug pronoun pass
               only ever touched the Solomon section; Daniel: "yes he is said lots
