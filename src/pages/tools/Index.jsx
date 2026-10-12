@@ -53,7 +53,7 @@ const GROUPS = [
   {
     title: 'Money',
     items: [
-      { label: 'Forecast cash further out',       note: 'Thirteen weeks out, so payroll week never arrives as a surprise.', to: '/tools/cash-flow', name: 'Cash flow', needsQbo: true },
+      { label: 'Forecast cash further out',       note: 'Solomon looks thirteen weeks ahead, so a tight payroll week never surprises you.', to: '/tools/cash-flow', name: 'Cash flow', needsQbo: true },
       { label: 'Price something honestly',        note: 'What the work is genuinely worth. Neither gouging nor underselling.', to: '/tools/offer-builder', name: 'Price check' },
     ],
   },

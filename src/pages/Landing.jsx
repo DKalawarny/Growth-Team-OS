@@ -47,19 +47,19 @@ const LANDING_META = buildPageMeta({
 const TOOLS = [
   {
     name: 'Work through a decision',
-    outcome: 'Argues it more than one way, shows you where the arguments disagree, then says which way it leans, and what it cannot see.',
+    outcome: 'Solomon argues both sides, shows you where they disagree, and tells you which way it leans and what it cannot see.',
   },
   {
     name: 'Read your numbers',
-    outcome: 'Connect QuickBooks and get the month in plain English: what changed, what it means, what to do about it.',
+    outcome: 'Connect QuickBooks and Solomon explains your month in plain English: what changed, what it means and what to do.',
   },
   {
     name: 'Write down a repeating job',
-    outcome: 'Get what lives in your head onto paper, so the business can run a day without you in it.',
+    outcome: 'Solomon writes down the jobs that only you know how to do, so the business can run a day without you.',
   },
   {
     name: 'Check an obligation',
-    outcome: 'Answered from your own documents and the actual regulation, with the source shown. Never guesses at the law.',
+    outcome: 'Solomon answers from your own documents and the actual regulation, and shows you the source. It never guesses at the law.',
   },
 ]
 
@@ -76,11 +76,11 @@ function UseCasesSection() {
     { when: 'You’re weighing whether you can afford to hire.',
       does: 'Solomon reads your real numbers and says what the hire costs, and whether the work is there to carry it.' },
     { when: 'A tight cash week is coming.',
-      does: 'Thirteen weeks out, so payroll week never arrives as a surprise.' },
+      does: 'Solomon looks thirteen weeks ahead, so a tight payroll week never surprises you.' },
     { when: 'You want to know it could run without you.',
-      does: 'An honest read on what would have to be true for someone else to run it, and how far off that is.' },
+      does: 'Solomon tells you what has to be in place before someone else can run it, and how far off you are.' },
     { when: 'You’re pricing a job and not sure where to land.',
-      does: 'What the work is genuinely worth. Neither gouging nor leaving money on the table.' },
+      does: 'Solomon helps you find a fair price, one that does not overcharge the customer or shortchange you.' },
   ]
   return (
     <section className="bg-gray-50 py-20 border-y border-gray-100">
@@ -507,9 +507,7 @@ function SolomonSection() {
           Solomon reads your books, your plan and your last six check-ins
           before it answers anything, so the advice starts from your
           numbers, not a template. It remembers what you decided in March and
-          why. On the calls that are hard to undo, it makes the case both
-          ways, tells you where it comes down, and tells you what it could
-          not see.
+          why. On the decisions that are hard to undo, it argues both sides, tells you which way it leans, and tells you what it could not see.
         </p>
         {/* 12 Oct: four ticks sat here. Each one repeated something said
             in full elsewhere on the page (reads your books, cash squeeze,
@@ -542,22 +540,21 @@ function WhatHeKnowsSection() {
             He answers from your business, not a template.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
-            Connect your books and bring what matters. Every answer after that is
-            about <em>your</em> numbers, your people and your decisions.
+            Connect your books and add the files that matter. After that, every answer is about <em>your</em> numbers, your people and your decisions.
           </p>
         </div>
 
         {/* What he reads */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mb-12">
           {[
-            { name: 'QuickBooks Online', logo: '/logos/quickbooks.svg', note: 'Connects once, stays current' },
+            { name: 'QuickBooks Online', logo: '/logos/quickbooks.svg', note: 'Connect it once and it stays current' },
             // ⚠️ "Import", not "sync" — Drive and OneDrive are a one-time
             // picker. Settings always said this correctly; the landing page
             // used to imply a standing connection. Same shape as /security
             // advertising an export that did not exist.
-            { name: 'Google Drive',      logo: '/logos/google-drive.svg', note: 'Bring the files that matter' },
-            { name: 'OneDrive',          logo: '/logos/onedrive.svg',     note: 'Bring the files that matter' },
-            { name: 'Your answers',      icon: '\ud83d\udcac',              note: 'Why you run it, and for whom' },
+            { name: 'Google Drive',      logo: '/logos/google-drive.svg', note: 'Add the files that matter' },
+            { name: 'OneDrive',          logo: '/logos/onedrive.svg',     note: 'Add the files that matter' },
+            { name: 'Your answers',      icon: '\ud83d\udcac',              note: 'Why you run the business, and who for' },
           ].map(({ name, logo, icon, note }) => (
             <div key={name} className="flex flex-col items-center gap-1.5 px-3 py-4 rounded-2xl border border-gray-200 bg-white text-center">
               {logo
@@ -571,7 +568,7 @@ function WhatHeKnowsSection() {
 
         {/* What he produces */}
         <p className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-6 text-center">
-          And what it builds for you, without leaving the conversation
+          What Solomon builds for you while you talk
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
           {TOOLS.map((tool, i) => (
@@ -601,11 +598,10 @@ function PriceSection() {
             : 'Free while we are in private pilot.'}
         </h2>
         <p className="text-gray-500 mb-10 max-w-lg mx-auto">
-          A coach or a mastermind runs $500 to $2,500 a month, and most of them
-          will tell you what you want to hear.{' '}
+          A coach or a mastermind group costs $500 to $2,500 a month, and most of them will tell you what you want to hear.{' '}
           {SHOW_PUBLIC_PRICE
             ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
-            : 'Solomon reads your actual numbers before it says anything. The owners using it now are the ones setting the price.'}
+            : 'Solomon reads your real numbers before it says anything. The owners using it now are helping to set the price.'}
         </p>
 
         {/* Toggle — only meaningful when a price is published */}
@@ -717,8 +713,7 @@ function DemoBand() {
           Don&rsquo;t take our word for it. Open it.
         </h2>
         <p className="text-white/70 text-[17px] leading-relaxed mb-8">
-          The demo is the full app with a sample landscaping company loaded: its roadmap, its numbers, its crew&rsquo;s
-          daily logs. You get your own private copy, so click and change anything. No sign-up, no card.
+          The demo is the full app with a sample landscaping company in it. You get your own private copy, so you can click and change anything. You do not need an account or a card.
           Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
         </p>
         <Link
@@ -742,9 +737,8 @@ function ClosingCTA() {
           You don&rsquo;t have to decide the next one alone.
         </h2>
         <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
-          {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, no card.`}{' '}
-          Connect your books, say what you&rsquo;re weighing, and see whether
-          Solomon tells you anything you did not already know. If not, leave, and take your data with you.
+          {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, and you do not need a card.`}{' '}
+          Connect your books, tell Solomon what you are weighing, and see if it tells you something you did not already know. If it does not, you can leave and take your data with you.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link

@@ -54,9 +54,9 @@ const FEATURE_GROUPS = [
     icon:  '💡',
     color: 'amber',
     features: [
-      { name: 'Solomon', desc: 'Knows your numbers, your people, and what you decided last quarter. Argues the hard calls more than one way, then says which way it leans, and what it cannot see.' },
-      { name: 'Remembers your business', desc: 'Constraints, decisions, people, commitments. You never re-explain the business, and when something you say contradicts something you said before, you hear about it.' },
-      { name: 'Will not guess', desc: 'Answers about rules and obligations come from your own documents and the actual regulation, with the source shown. No guessing at the law, and no flattery.' },
+      { name: 'Solomon', desc: 'Solomon knows your numbers, your people and what you decided last quarter. On the hard decisions it argues both sides, then tells you which way it leans and what it cannot see.' },
+      { name: 'Remembers your business', desc: 'Solomon remembers your limits, your decisions, your people and what you said you would do. You never have to explain the business twice. If you say something that contradicts what you said before, it tells you.' },
+      { name: 'Will not guess', desc: 'When you ask about rules and obligations, Solomon answers from your own documents and the actual regulation, and shows you the source. It does not guess at the law and it does not flatter you.' },
     ],
   },
   {
@@ -64,9 +64,9 @@ const FEATURE_GROUPS = [
     icon:  '📈',
     color: 'green',
     features: [
-      { name: 'Finances', desc: 'Live figures pulled straight from QuickBooks, with the month read back to you in plain English: what changed, what it means, what to do about it.' },
-      { name: 'Cash flow forecast', desc: 'The next thirteen weeks, updated automatically. Know before payroll week becomes a problem.' },
-      { name: 'Pricing something honestly', desc: 'What the work is genuinely worth. Neither gouging nor underselling yourself out of discomfort.' },
+      { name: 'Finances', desc: 'Your live figures come straight from QuickBooks. Solomon explains the month in plain English: what changed, what it means and what to do.' },
+      { name: 'Cash flow forecast', desc: 'A forecast of your next thirteen weeks that updates itself. You see a tight payroll week before it arrives.' },
+      { name: 'Pricing something honestly', desc: 'Find a fair price for the work, one that does not overcharge the customer or shortchange you.' },
     ],
   },
   {
@@ -74,10 +74,10 @@ const FEATURE_GROUPS = [
     icon:  '🎯',
     color: 'purple',
     features: [
-      { name: 'Think through a hire', desc: 'Whether to hire at all, what the role really is, and what you are actually looking for in the person. Scorecard, questions, and a first-30-days plan if you go ahead.' },
-      { name: 'Plan the team you will need', desc: 'What the team should look like in twelve months, and the order to build it in.' },
-      { name: 'An honest update for the team', desc: 'Say where the business is really heading, in words you would be comfortable having repeated back to you.' },
-      { name: 'Safety and compliance', desc: 'Every licence, registration, and compliance document tracked, so a renewal never catches you out.' },
+      { name: 'Think through a hire', desc: 'Work out whether to hire at all, what the role really is, and what kind of person you need. If you go ahead, you get a scorecard, interview questions and a plan for their first 30 days.' },
+      { name: 'Plan the team you will need', desc: 'See what your team should look like in twelve months, and which roles to fill first.' },
+      { name: 'An honest update for the team', desc: 'Tell your team where the business is really heading, in words you would be happy to hear repeated.' },
+      { name: 'Safety and compliance', desc: 'Eliv8 OS tracks every licence, registration and compliance document, so a renewal never catches you out.' },
     ],
   },
   {
@@ -85,10 +85,10 @@ const FEATURE_GROUPS = [
     icon:  '🗺️',
     color: 'gray',
     features: [
-      { name: 'Roadmap', desc: 'A milestone-by-milestone plan from where you are to where you are going, with the slipped ones surfaced honestly rather than buried.' },
-      { name: 'SOPs', desc: 'Get the jobs that live in your head onto paper, so the business can run a day without you in it.' },
-      { name: 'Check-ins', desc: 'A short weekly log. Solomon reads the recent ones, so the advice tracks how you are actually doing. Not just how the numbers are.' },
-      { name: 'Succession', desc: 'What would have to be true for someone else to run this, and how far off that is today.' },
+      { name: 'Roadmap', desc: 'A step-by-step plan from where you are to where you want to be. Milestones that slip are shown plainly, not hidden.' },
+      { name: 'SOPs', desc: 'Write down the jobs that only you know how to do, so the business can run a day without you.' },
+      { name: 'Check-ins', desc: 'You write a short log each week. Solomon reads the recent ones, so the advice fits how you are really doing and not only the numbers.' },
+      { name: 'Succession', desc: 'See what has to be in place before someone else can run the business, and how far off you are today.' },
       { name: 'Documents', desc: 'Everything Eliv8 OS writes for you, saved and searchable.' },
     ],
   },
@@ -123,11 +123,11 @@ const FAQS = [
     // SHOW_PUBLIC_PRICE is false. Do not hardcode either half.
     a: SHOW_PUBLIC_PRICE
       ? `Nope. Sign up with your email and get ${TRIAL_DAYS} full days of everything. No card, no commitment. You decide at the end of the trial whether it is worth it.`
-      : 'Nope. Sign up with your email. No card, no commitment. Eliv8 OS is free while it is in private pilot, and we are setting the price with the first owners using it.',
+      : 'No. You sign up with your email, with no card and no commitment. Eliv8 OS is free while it is in private pilot, and we are setting the price with the first owners using it.',
   },
   {
     q: 'What exactly counts as a "report"?',
-    a: 'One finished piece of work: a cash-flow forecast, a hiring scorecard, a written SOP. Refining an existing one also counts. Talking to Solomon does not: conversation is not counted against any tool.',
+    a: 'A report is one finished piece of work, such as a cash flow forecast, a hiring scorecard or a written SOP. Changing an existing one also counts. Talking to Solomon does not count.',
   },
   {
     q: 'What if I need more than 10 reports per tool?',
@@ -140,7 +140,11 @@ const FAQS = [
   },
   {
     q: 'Can I cancel anytime?',
-    a: 'Yes, always. Monthly plans stop at the end of the billing period. Annual plans can cancel renewal any time. No refund mid-year, but we\'ll never charge you for something you don\'t want.',
+    // 12 Oct: during the pilot there are no monthly or annual plans, so the
+    // old answer described billing that does not exist yet.
+    a: SHOW_PUBLIC_PRICE
+      ? 'Yes, always. A monthly plan stops at the end of the billing period. An annual plan can have its renewal cancelled at any time. We do not refund part of a year, and we will never charge you for something you do not want.'
+      : 'Yes. We charge nothing during the pilot, so there is nothing to cancel. You can stop using Eliv8 OS at any time.',
   },
   {
     q: 'Is my business data private?',
@@ -249,9 +253,7 @@ export default function Pricing() {
               the /tools grid plus Succession in the sidebar). Do not round it up
               and do not write "10+". */}
           <p className="text-lg text-white/55 max-w-xl mx-auto leading-relaxed">
-            Solomon reads your books and remembers what you decided. Behind that, ten tools
-            on the same set of numbers: the CFO dashboard, thirteen-week cash flow, hiring,
-            pricing, compliance and succession. {SHOW_PUBLIC_PRICE
+            Solomon reads your books and remembers what you decided. You also get ten tools that work from the same numbers, including the CFO dashboard, a thirteen-week cash flow forecast, hiring, pricing, compliance and succession. {SHOW_PUBLIC_PRICE
               ? <>All for <span className="text-white font-semibold">${PRICE_MONTHLY_USD} a month.</span></>
               : <span className="text-white font-semibold">Free while we are in private pilot.</span>}
           </p>
@@ -366,7 +368,7 @@ export default function Pricing() {
               What you're actually getting.
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
-              Not a list of features. A real breakdown of every tool, what it does, and why it matters to your business.
+              Here is every tool, what it does, and why it matters to your business.
             </p>
           </div>
 
@@ -402,8 +404,7 @@ export default function Pricing() {
               {SHOW_PUBLIC_PRICE ? `What $${PRICE_MONTHLY_USD} replaces.` : 'What it replaces.'}
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
-              Most owners are already paying for this advice: just scattered, expensive, and slow.
-              Eliv8 OS pulls it all into one place.
+              Most owners already pay for this advice. It is scattered, expensive and slow. Eliv8 OS puts it in one place.
             </p>
           </div>
 
@@ -464,9 +465,7 @@ export default function Pricing() {
               {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free. No card. No risk.` : 'Free while in pilot. No card. No risk.'}
             </h2>
             <p className="text-white/50 max-w-md mx-auto mb-8 leading-relaxed">
-              Connect QuickBooks, or start without it. Ask Solomon anything about the business
-              and see what it says with your actual numbers in front of it. Nothing is charged
-              during the pilot, and you will be told well before that changes.
+              Connect QuickBooks or start without it. Ask Solomon anything about your business and see what it says with your real numbers in front of it. We charge nothing during the pilot, and we will tell you well before that changes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
