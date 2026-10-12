@@ -56,7 +56,7 @@ describe('auth email copy', () => {
     for (const t of types) {
       it(`${brand} ${t} reads clean`, () => {
         const c = compose(t, brand)
-        const { text, html } = render(c, t === 'reauthentication' ? null : 'https://x.test/v?a=1&b=2', '123456')
+        const { text, html } = render(c, t === 'reauthentication' ? null : 'https://x.test/v?a=1&b=2', '123456', brand)
         for (const s of [c.subject, text]) {
           expect(s).not.toMatch(/[—–]/)
           expect(s).not.toMatch(/ - /)

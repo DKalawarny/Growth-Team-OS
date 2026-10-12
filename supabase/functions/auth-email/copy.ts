@@ -52,14 +52,48 @@ export function compose(type: string, brand: 'unstuck' | 'eliv8'): Composed {
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
+/**
+ * How each product's email is dressed. Colours are written out because an
+ * email cannot read the site's stylesheet (src/pages/wayout/wayout.css).
+ * ⚠️ The icon is a picture of the mark, not the name, so the rule at the top
+ * of this file still holds.
+ */
+const LOOK = {
+  unstuck: {
+    page: '#F5F1E6', card: '#FFFDF8', line: '#E4DECB', ink: '#23301F', soft: '#5F6956',
+    button: '#2F7D4F', icon: 'https://getunstuckmap.com/icon-unstuckmap-192.png',
+  },
+  eliv8: {
+    page: '#F3F4F2', card: '#FFFFFF', line: '#E1E4DF', ink: '#1F2A24', soft: '#5C665F',
+    button: '#1F2A24', icon: '',
+  },
+}
+
 /** Text and HTML bodies. `code` is shown only when there is no link (reauthentication). */
-export function render(c: Composed, link: string | null, code: string | null) {
+export function render(c: Composed, link: string | null, code: string | null, brand: 'unstuck' | 'eliv8' = 'eliv8') {
   const action = link ? `${c.button}:\n${link}` : `Your code: ${code ?? ''}`
-  const text = `Hi,\n\n${c.lead}\n\n${action}\n\n${c.ignore}\n`
+  const text = `${c.lead}\n\n${action}\n\n${c.ignore}\n`
+  const k = LOOK[brand]
+  const font = `font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif`
   const actionHtml = link
-    ? `<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;background:#1f2a24;color:#fff;border-radius:6px;text-decoration:none">${esc(c.button)}</a></p>`
-      + `<p style="color:#667;font-size:13px">Or paste this into your browser:<br>${esc(link)}</p>`
-    : `<p style="font-size:22px;letter-spacing:3px"><b>${esc(code ?? '')}</b></p>`
-  const html = `<p>Hi,</p><p>${esc(c.lead)}</p>${actionHtml}<p style="color:#667;font-size:13px">${esc(c.ignore)}</p>`
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 26px"><tr>`
+      + `<td style="background:${k.button};border-radius:10px">`
+      + `<a href="${esc(link)}" style="display:inline-block;padding:15px 34px;${font};font-size:17px;font-weight:600;color:#ffffff;text-decoration:none">${esc(c.button)}</a>`
+      + `</td></tr></table>`
+      + `<p style="margin:0 0 6px;${font};font-size:13px;line-height:1.5;color:${k.soft}">If the button does not work, copy this into your browser:</p>`
+      + `<p style="margin:0 0 26px;${font};font-size:12px;line-height:1.5;color:${k.soft};word-break:break-all">${esc(link)}</p>`
+    : `<p style="margin:0 0 26px;${font};font-size:30px;letter-spacing:6px;font-weight:700;color:${k.ink}">${esc(code ?? '')}</p>`
+  const icon = k.icon
+    ? `<img src="${k.icon}" width="44" height="44" alt="" style="display:block;border:0;border-radius:10px;margin:0 0 22px">`
+    : ''
+  const html = `<div style="margin:0;padding:32px 16px;background:${k.page}">`
+    + `<table role="presentation" align="center" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px;margin:0 auto;background:${k.card};border:1px solid ${k.line};border-radius:14px">`
+    + `<tr><td style="padding:34px 32px 28px">`
+    + icon
+    + `<h1 style="margin:0 0 12px;${font};font-size:24px;line-height:1.25;font-weight:700;color:${k.ink}">${esc(c.subject)}</h1>`
+    + `<p style="margin:0 0 26px;${font};font-size:17px;line-height:1.5;color:${k.ink}">${esc(c.lead)}</p>`
+    + actionHtml
+    + `<p style="margin:0;padding-top:18px;border-top:1px solid ${k.line};${font};font-size:13px;line-height:1.5;color:${k.soft}">${esc(c.ignore)}</p>`
+    + `</td></tr></table></div>`
   return { text, html }
 }

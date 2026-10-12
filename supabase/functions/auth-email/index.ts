@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
 
   try {
     for (const s of sends) {
-      const { text, html } = render(c, s.link, s.code)
+      const { text, html } = render(c, s.link, s.code, brand)
       await send(from, s.to, c.subject, text, html)
     }
   } catch (e) {
