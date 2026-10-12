@@ -1495,7 +1495,7 @@ const Composer = forwardRef(function Composer(
               const file = Array.from(e.clipboardData?.files || []).find(isImageFile)
               if (file) { e.preventDefault(); onAttach(file) }
             }}
-            placeholder="Reply to your advisor…"
+            placeholder="Message Solomon"
             className="flex-1 rounded-xl px-4 py-2.5 text-base sm:text-sm resize-none focus:outline-none transition-colors disabled:opacity-50"
             style={{
               minHeight: '44px',

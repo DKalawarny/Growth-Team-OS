@@ -83,11 +83,14 @@ const MAIN_NAV = [
   { to: '/advisor',              label: 'Solomon'    },
   { to: '/roadmap',              label: 'Roadmap'    },
   { to: '/playbooks',            label: 'SOPs'  },
+  { to: '/board',                label: 'Tasks' },
+  // 🔴 11 Oct 2026: Daily logs was marked teamOnly and Tools was missing, so an
+  // owner on a phone had no way to reach either. The desktop sidebar had both.
+  { to: '/logs',                 label: 'Daily logs' },
   { to: '/tools/cfo',            label: 'Finances'   },
   { to: '/documents',            label: 'Documents'  },
   { to: '/tools/exit-readiness', label: 'Succession' },
-  { to: '/logs',                 label: 'Daily logs', teamOnly: true },
-  { to: '/board',                label: 'Tasks' },
+  { to: '/tools',                label: 'Tools'      },
 ]
 
 // ⭐ The tabs a teammate gets where the owner's are not theirs (lib/access.js).
@@ -280,7 +283,14 @@ export default function MobileNav() {
             </div>
           )}
           <NavLink
+            to="/help?report=1"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-400 hover:bg-white/5 hover:text-ink-200 transition-all"
+          >
+            Report a problem
+          </NavLink>
+          <NavLink
             to="/help"
+            end
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive ? 'bg-white/8 text-white' : 'text-ink-400 hover:bg-white/5 hover:text-ink-200'
