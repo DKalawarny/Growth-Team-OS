@@ -46,18 +46,18 @@ export default function CapExceededNotice({ err, toolLabel }) {
             Your allowance resets on <strong>{reset}</strong>.
           </p>
           <p className="mt-2 text-amber-800">
-            Need it raised sooner?{' '}
+            {/* 12 Oct, Daniel: the offer to raise a cap by email was "not
+                true". The address also has no mailbox. A bigger plan is the
+                plan; until it exists, say so and point at Help. */}
+            A plan with more room for heavier use is coming later.{' '}
             <Link to="/settings" className="underline hover:text-amber-950">
               Check usage in Settings
             </Link>
-            {' '}or email{' '}
-            <a
-              href="mailto:support@eliv8os.com?subject=Raise%20my%20monthly%20tool%20cap"
-              className="underline hover:text-amber-950"
-            >
-              support@eliv8os.com
-            </a>
-            {' '}and we'll bump your limit.
+            , or{' '}
+            <Link to="/help" className="underline hover:text-amber-950">
+              tell us in Help
+            </Link>
+            {' '}if you keep hitting this.
           </p>
         </div>
       </div>

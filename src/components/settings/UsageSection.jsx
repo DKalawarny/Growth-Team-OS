@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { getMonthlyUsageSummary } from '../../lib/usage'
 import { getToolById } from '../../lib/tools'
@@ -55,7 +56,7 @@ export default function UsageSection() {
         <h2 className="text-lg font-semibold text-gray-900">This month's usage</h2>
         <p className="text-sm text-gray-500 mt-1">
           Each tool resets to zero on <span className="font-medium text-gray-700">{resetLabel}</span>.
-          Need a higher cap? <a href="mailto:support@eliv8os.com" className="text-brand-600 hover:underline">Get in touch</a>.
+          A plan with more room for heavier use is coming later. If you keep hitting a limit, <Link to="/help" className="text-brand-700 font-semibold hover:underline">tell us in Help</Link>.
         </p>
       </header>
 
