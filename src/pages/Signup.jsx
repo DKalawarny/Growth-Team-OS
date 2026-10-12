@@ -97,7 +97,7 @@ export default function Signup() {
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-            Somewhere to ask.
+            Stop carrying this alone.
           </h1>
 
           <p className="text-ink-300 text-sm leading-relaxed mb-10 max-w-sm">
