@@ -29,6 +29,25 @@ describe('brandFor', () => {
   })
 })
 
+import { linkBaseFor } from '../../supabase/functions/auth-email/brand.ts'
+
+describe('linkBaseFor', () => {
+  const direct = 'https://ref.supabase.co'
+  it('sends the link through our own domains', () => {
+    expect(linkBaseFor('https://getunstuckmap.com/questions', direct)).toBe('https://getunstuckmap.com')
+    expect(linkBaseFor('https://www.getunstuckmap.com/reset', direct)).toBe('https://getunstuckmap.com')
+    expect(linkBaseFor('https://eliv8os.com/reset-password', direct)).toBe('https://eliv8os.com')
+  })
+  it('keeps the direct address anywhere else', () => {
+    expect(linkBaseFor('http://localhost:5173/reset-password', direct)).toBe(direct)
+    expect(linkBaseFor('http://getunstuckmap.com/reset', direct)).toBe(direct)
+    expect(linkBaseFor('https://getunstuckmap.com.evil.io/reset', direct)).toBe(direct)
+    expect(linkBaseFor('https://evil.io/getunstuckmap.com', direct)).toBe(direct)
+    expect(linkBaseFor('', direct)).toBe(direct)
+    expect(linkBaseFor('not a url', direct)).toBe(direct)
+  })
+})
+
 import { compose, render } from '../../supabase/functions/auth-email/copy.ts'
 
 describe('auth email copy', () => {

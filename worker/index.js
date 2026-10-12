@@ -31,6 +31,10 @@ const SECURITY = {
   'Permissions-Policy': 'camera=(), geolocation=(), microphone=(self), payment=(self "https://js.stripe.com" "https://checkout.stripe.com")',
 }
 
+// The one address a sign in or reset email links to. See passAuthLink below.
+const SUPABASE = 'https://ufhduewbamnmoiksqgfq.supabase.co'
+const AUTH_LINK = '/auth/v1/verify'
+
 const moved = (to) => new Response(null, { status: 301, headers: { Location: to } })
 
 export default {
@@ -54,6 +58,8 @@ export default {
         return moved(cross ?? `https://${bare}${rest}`)
       }
     }
+
+    if (path === AUTH_LINK) return passAuthLink(request, url)
 
     const asset = (p) => env.ASSETS.fetch(new Request(new URL(p, url), request))
     // A real file if there is one: the path itself, then the prerendered page.
@@ -96,4 +102,26 @@ function eliv8ToUnstuck(path, search) {
   if (path === '/start') return `https://${UNSTUCK}/start`
   if (path === '/stuck' || path.startsWith('/stuck/')) return `https://${UNSTUCK}${path}`
   return null
+}
+
+// 🔴 The link in a sign in email has to sit on the sender's own domain, or
+// Hotmail files the email as junk (12 Oct). So the email links here and this
+// hands the click to Supabase and passes its answer straight back: a redirect
+// to the page they asked for, signed in.
+// ⚠️ `redirect: 'manual'` is the whole point. Following the redirect here would
+// use the one-time link up on the server and leave the person signed out.
+async function passAuthLink(request, url) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return new Response(null, { status: 405 })
+  const res = await fetch(`${SUPABASE}${AUTH_LINK}${url.search}`, {
+    method: request.method,
+    redirect: 'manual',
+    headers: {
+      'User-Agent': request.headers.get('User-Agent') ?? '',
+      'X-Forwarded-For': request.headers.get('CF-Connecting-IP') ?? '',
+    },
+  })
+  const out = new Response(res.body, res)
+  out.headers.set('Cache-Control', 'no-store')
+  out.headers.set('Referrer-Policy', 'no-referrer')
+  return out
 }

@@ -17,7 +17,7 @@
  */
 
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { brandFor } from './brand.ts'
+import { brandFor, linkBaseFor } from './brand.ts'
 import { compose, render } from './copy.ts'
 
 interface HookPayload {
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
   const from = brand === 'unstuck' ? Deno.env.get('WAYOUT_EMAIL_FROM') : Deno.env.get('RESEND_FROM')
   if (!from) return fail(500, `${brand === 'unstuck' ? 'WAYOUT_EMAIL_FROM' : 'RESEND_FROM'} is not set`)
 
-  const base = Deno.env.get('SUPABASE_URL') ?? ''
+  const base = linkBaseFor(d.redirect_to || d.site_url, Deno.env.get('SUPABASE_URL') ?? '')
   const verify = (hash: string) =>
     `${base}/auth/v1/verify?token=${encodeURIComponent(hash)}`
     + `&type=${encodeURIComponent(d.email_action_type)}`
