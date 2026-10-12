@@ -7,6 +7,17 @@
   "main": "worker/index.js",
   "compatibility_date": "2026-10-06",
   "observability": { "enabled": true },
+  // ⚠️ ROUTES, not custom domains: these sit on top of the DNS rows Cloudflare
+  // imported (the orange-cloud A and www rows), so nothing in DNS has to be
+  // deleted or re-created for the site to move.
+  "routes": [
+    { "pattern": "getunstuckmap.com/*", "zone_name": "getunstuckmap.com" },
+    { "pattern": "www.getunstuckmap.com/*", "zone_name": "getunstuckmap.com" },
+    { "pattern": "eliv8os.com/*", "zone_name": "eliv8os.com" },
+    { "pattern": "www.eliv8os.com/*", "zone_name": "eliv8os.com" },
+    { "pattern": "leadeos.com/*", "zone_name": "leadeos.com" },
+    { "pattern": "www.leadeos.com/*", "zone_name": "leadeos.com" }
+  ],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
