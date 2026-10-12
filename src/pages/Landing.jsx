@@ -318,7 +318,7 @@ function HeroSection() {
         </p>
 
         {/* What he does, in the owner's language rather than in feature names. */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-7 max-w-2xl mx-auto">
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-7 max-w-4xl mx-auto">
           {[
             'Reads your books',
             'Remembers your decisions',
@@ -326,7 +326,7 @@ function HeroSection() {
             'Names what it cannot see',
             'Never flatters you',
           ].map(f => (
-            <span key={f} className="text-xs font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/50">
+            <span key={f} className="text-[13px] font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/70">
               {f}
             </span>
           ))}
@@ -356,11 +356,8 @@ function HeroSection() {
         <p className="text-white/60 text-sm">
           The demo is the real app with a sample company in it. Click anything. No sign-up.
         </p>
-        <p className="text-white/30 text-sm mt-1.5">
-          {SHOW_PUBLIC_PRICE
-            ? `No credit card · ${TRIAL_DAYS} days free · Cancel anytime`
-            : `No credit card · ${PILOT_PRICE_LINE} · Cancel anytime`}
-        </p>
+        {/* 12 Oct: a second "no credit card, free in pilot" line sat here. The
+            pill above the headline already says it. Once per eyeful. */}
 
         {/* The moving part: Solomon answering, with questions a visitor can tap.
             Scripted and labelled as an example. See HeroAsk. */}
@@ -512,7 +509,7 @@ function ConvictionSection() {
  */
 function SolomonSection() {
   return (
-    <section className="bg-gray-950 py-20">
+    <section className="bg-gray-950 pt-20 pb-10">
       <div className="max-w-2xl mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
           Meet Solomon
@@ -591,7 +588,7 @@ function SolomonSection() {
  */
 function WhatHeKnowsSection() {
   return (
-    <section className="bg-white py-20 border-y border-gray-100">
+    <section className="bg-gray-50 py-20 border-y border-gray-100">
       <div className="max-w-4xl mx-auto px-6">
 
         <div className="text-center mb-12">
@@ -605,7 +602,7 @@ function WhatHeKnowsSection() {
         </div>
 
         {/* What he reads */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mb-12">
           {[
             { name: 'QuickBooks Online', logo: '/logos/quickbooks.svg', note: 'Connects once, stays current' },
             // ⚠️ "Import", not "sync" — Drive and OneDrive are a one-time
@@ -616,25 +613,25 @@ function WhatHeKnowsSection() {
             { name: 'OneDrive',          logo: '/logos/onedrive.svg',     note: 'Bring the files that matter' },
             { name: 'Your answers',      icon: '\ud83d\udcac',              note: 'Why you run it, and for whom' },
           ].map(({ name, logo, icon, note }) => (
-            <div key={name} className="flex flex-col items-center gap-1.5 px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50 min-w-[130px]">
+            <div key={name} className="flex flex-col items-center gap-1.5 px-3 py-4 rounded-2xl border border-gray-200 bg-white text-center">
               {logo
                 ? <img src={logo} alt={name} className="w-7 h-7 object-contain" />
                 : <span className="text-2xl">{icon}</span>}
-              <p className="text-xs font-bold text-gray-800">{name}</p>
-              <p className="text-xs text-gray-400 text-center">{note}</p>
+              <p className="text-sm font-bold text-gray-900">{name}</p>
+              <p className="text-[13px] text-gray-600 text-center">{note}</p>
             </div>
           ))}
         </div>
 
         {/* What he produces */}
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-6 text-center">
           And what it builds for you, without leaving the conversation
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
           {TOOLS.map((tool, i) => (
-            <div key={i} className="px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50">
+            <div key={i} className="px-4 py-3.5 rounded-xl border border-gray-200 bg-white">
               <p className="font-bold text-gray-900 text-sm mb-0.5">{tool.name}</p>
-              <p className="text-xs text-gray-500 leading-snug">{tool.outcome}</p>
+              <p className="text-[13px] text-gray-600 leading-snug">{tool.outcome}</p>
             </div>
           ))}
         </div>
@@ -650,7 +647,7 @@ function PriceSection() {
   const [annual, setAnnual] = useState(false)
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-gray-50 py-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           {SHOW_PUBLIC_PRICE
@@ -662,7 +659,7 @@ function PriceSection() {
           will tell you what you want to hear.{' '}
           {SHOW_PUBLIC_PRICE
             ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
-            : 'Solomon reads your actual numbers before it says anything. It is free while we are in private pilot. The owners using it now are the ones setting the price.'}
+            : 'Solomon reads your actual numbers before it says anything. The owners using it now are the ones setting the price.'}
         </p>
 
         {/* Toggle — only meaningful when a price is published */}
@@ -705,8 +702,9 @@ function PriceSection() {
             </>
           ) : (
             <>
-              <p className="text-4xl md:text-5xl font-black text-white mb-3">{PILOT_PRICE_LINE}</p>
-              <p className="text-white/40 text-sm max-w-md mx-auto mb-8">{PILOT_PRICE_BLURB}</p>
+              {/* 12 Oct: the big PILOT_PRICE_LINE sat here, directly under a
+                  heading saying the same thing. The heading says it once. */}
+              <p className="text-white/75 text-base max-w-md mx-auto mb-8">{PILOT_PRICE_BLURB}</p>
             </>
           )}
 
@@ -736,7 +734,7 @@ function PriceSection() {
               'Cited regulatory answers',
               'Document library',
             ].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-white/70">
+              <div key={i} className="flex items-center gap-2 text-white/85">
                 <span className="text-brand-400 font-bold flex-shrink-0">✓</span>
                 {f}
               </div>
@@ -749,7 +747,7 @@ function PriceSection() {
           >
             {SHOW_PUBLIC_PRICE ? `Start ${TRIAL_DAYS}-day free trial` : 'Start free'}
           </Link>
-          <p className="mt-4 text-white/25 text-xs">No credit card required · Cancel anytime</p>
+          <p className="mt-4 text-white/55 text-sm">No credit card required · Cancel anytime</p>
         </div>
 
         <Link to="/pricing" className="text-sm text-gray-500 hover:text-gray-700 underline underline-offset-2">
@@ -764,25 +762,24 @@ function PriceSection() {
 // A second, larger invitation for the reader who scrolled past the hero. By
 // here they have read what Solomon does; this is where they can go and see it.
 function DemoBand() {
+  // 12 Oct: centred, one column, so it reads as the end of "Meet Solomon"
+  // above it (same dark block) and not as a second, differently laid out one.
   return (
-    <section className="bg-gray-950 py-16">
-      <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
-        <div className="flex-1 text-center md:text-left">
-          <p className="text-xs font-bold uppercase tracking-widest text-brand-400 mb-3">The live demo</p>
-          <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">
-            Don&rsquo;t take our word for it. Open it.
-          </h2>
-          <p className="text-white/70 leading-relaxed max-w-xl">
-            The demo is the full app with a sample landscaping company loaded: its roadmap, its numbers, its crew&rsquo;s
-            daily logs. You get your own private copy, so click and change anything. No sign-up, no card.
-            Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
-          </p>
-        </div>
+    <section className="bg-gray-950 pt-10 pb-20">
+      <div className="max-w-2xl mx-auto px-6 text-center border-t border-white/10 pt-14">
+        <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-4">
+          Don&rsquo;t take our word for it. Open it.
+        </h2>
+        <p className="text-white/70 text-[17px] leading-relaxed mb-8">
+          The demo is the full app with a sample landscaping company loaded: its roadmap, its numbers, its crew&rsquo;s
+          daily logs. You get your own private copy, so click and change anything. No sign-up, no card.
+          Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
+        </p>
         <Link
           to="/demo"
-          className="flex-shrink-0 px-10 py-5 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-lg transition-colors shadow-lg inline-flex items-center gap-3"
+          className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-3"
         >
-          <span aria-hidden className="inline-block w-0 h-0 border-y-[7px] border-y-transparent border-l-[12px] border-l-gray-950" />
+          <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-gray-950" />
           Open the live demo
         </Link>
       </div>
@@ -790,7 +787,6 @@ function DemoBand() {
   )
 }
 
-// ── Closing CTA ───────────────────────────────────────────────────────────────
 
 function ClosingCTA() {
   return (

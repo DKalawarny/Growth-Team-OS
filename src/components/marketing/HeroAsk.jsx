@@ -26,7 +26,7 @@ const EXCHANGES = [
   // remediation idea and he asked for it out: "in case my old partner sees it."
   // Keep that example off every public page.
   {
-    chip: 'Losing crew every winter',
+    chip: 'Winter layoffs',
     q: 'Landscaping. Every winter I lay off half the crew and lose the good ones to other outfits by spring.',
     a: [
       'That cycle costs more than it shows: hiring, retraining, and the jobs that go sideways in April because the experienced hands are gone.',
@@ -35,8 +35,10 @@ const EXCHANGES = [
     ],
   },
   // ⚠️ Moved here 12 Oct from the "Meet Solomon" section further down, which
-  // had its own scripted chat until this panel made it redundant. Every line
-  // does a job, so do not trim it for length:
+  // had its own scripted chat until this panel made it redundant. Shortened
+  // the same day so all four answers are about the same height (the panel is
+  // as tall as the longest, and a long one left a hole under the others).
+  // Every line left does a job, so do not cut one of these:
   //   - real figures from connected books
   //   - "are you expecting the work to hold the cost" (Daniel, 31 Aug): a
   //     cushion is one-time money and a wage is not. This is the line that
@@ -51,8 +53,8 @@ const EXCHANGES = [
     q: 'Can I afford a second crew lead?',
     a: [
       'On the numbers, probably, though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that?',
-      "Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty.",
-      'Here is what it costs over thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200. It holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.',
+      "You also told me in March you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew.",
+      'Over thirteen weeks, week nine is the tight one at $6,200. Your June payroll is not in yet, so that cushion is a May figure.',
     ],
     doc: 'Cash flow forecast \u00b7 saved to your Library',
   },
@@ -66,7 +68,7 @@ const EXCHANGES = [
     ],
   },
   {
-    chip: 'A shortcut on a quote',
+    chip: 'Cutting a corner',
     q: 'A customer wants 15% off. I could hit it by quietly using cheaper material than I quoted.',
     a: [
       'Do not do it. Quoting one thing and delivering another without saying so is a lie with a price tag on it.',
@@ -185,15 +187,16 @@ export default function HeroAsk() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        <span className="text-sm text-white/50 w-full text-center">Tap a question to ask him:</span>
+      <p className="mt-5 mb-3 text-sm text-white/60 text-center">Tap a question to ask him:</p>
+      {/* Two by two on a phone, one row above that. Never three and an orphan. */}
+      <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2">
         {EXCHANGES.map((e, i) => (
           <button
             key={e.chip}
             type="button"
             onClick={() => pick(i)}
             aria-pressed={i === idx}
-            className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors ${
+            className={`text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-full border transition-colors ${
               i === idx ? 'bg-white text-gray-950 border-white' : 'bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
             }`}
           >
