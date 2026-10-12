@@ -220,17 +220,26 @@ export default function About() {
               and it is the one that matches the positioning: someone who wants
               software that promises returns will hate this. Saying so is honest
               and saves both sides the trouble. */}
+          {/* 12 Oct, Daniel: "this should speak on integrity and building the
+              business right." The old paragraph defined the buyer by what he
+              is not (not sector-specific, not a trade question). This says
+              what he wants, in Daniel's own terms: integrity, honest quotes,
+              fair pay, a place people want to work. No faith words (29 Aug). */}
           <p className="text-gray-700 leading-relaxed mb-4">
-            Owner-operators, where you are still the one making the financial
-            calls. It is not sector-specific, what these owners have in common
-            is a conviction about how the business should be run, not what it
-            does. Trade and construction are well represented, but the question
-            it answers is not a trade question.
+            Eliv8 OS is for owners who want to build the business right. You
+            want it to make money, and you want to do it with integrity: honest
+            quotes, fair pay, and a place people want to work.
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            You are still the one making the financial calls. It does not
+            matter what trade you are in. Many of the owners here are in trades
+            and construction, but what they share is how they want to run the
+            business.
           </p>
           <p className="text-gray-700 leading-relaxed">
-            <span className="font-bold text-gray-900">It's probably not for you if:</span>{' '}
-            what you want is software that promises returns. This is the wrong
-            product, and it will be a frustrating one.
+            <span className="font-bold text-gray-900">It is probably not for you if:</span>{' '}
+            you want software that promises returns. Eliv8 OS will not promise
+            that, and it will frustrate you.
           </p>
         </section>
 
