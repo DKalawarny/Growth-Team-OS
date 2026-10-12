@@ -2,6 +2,9 @@
   // ⚠️ The DEPLOY config. `wrangler.jsonc` beside it is read by the Vite plugin
   // during the build and must stay assets-only, or the plugin changes the shape
   // of `dist` and breaks the prerender step.
+  // 🔴 `dist/_redirects` MUST BE DELETED BEFORE UPLOAD (`npm run deploy` does it).
+  // It is Netlify's rule file; Cloudflare reads the same filename, rejects the
+  // domain-based rules in it, and refuses the whole upload.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "growthos",
   "main": "worker/index.js",
