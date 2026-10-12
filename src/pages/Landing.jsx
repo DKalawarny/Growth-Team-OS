@@ -16,8 +16,9 @@ import Wordmark from '../components/brand/Wordmark'
  * / — public marketing landing page.
  *
  * Structured to convert service-business owners:
- *   Hero → Solomon showcase → What he knows → Conviction → Price → CTA
- *   ⭐ Conviction sits AFTER Solomon on purpose — see the note at <HeroSection/>.
+ *   Hero (with Solomon answering) → Conviction → Use cases → Meet Solomon +
+ *   demo → What he knows → Follows up → Price → CTA
+ *   ⭐ 12 Oct: Conviction moved to SECOND. See the note at <HeroSection/>.
  *
  * SEO posture (see src/lib/seo.js for the canonical config):
  *   - Per-page <Helmet> with rich meta + canonical + og/twitter
@@ -40,6 +41,9 @@ const LANDING_META = buildPageMeta({
 
 // ── Tool showcase data ────────────────────────────────────────────────────────
 
+// 12 Oct: four of these (cash forecast, hire, pricing, succession) said again
+// what the "decisions you'd rather not make alone" cards say higher up. Out.
+// These are the four that appear nowhere else on the page.
 const TOOLS = [
   {
     name: 'Work through a decision',
@@ -50,28 +54,12 @@ const TOOLS = [
     outcome: 'Connect QuickBooks and get the month in plain English: what changed, what it means, what to do about it.',
   },
   {
-    name: 'Forecast your cash',
-    outcome: 'The next thirteen weeks. Know before payroll week becomes a problem.',
-  },
-  {
-    name: 'Think through a hire',
-    outcome: 'Whether to, what the role really is, and what you are actually looking for in the person.',
-  },
-  {
-    name: 'Price with integrity',
-    outcome: 'What the work is genuinely worth. Neither gouging nor underselling yourself out of discomfort.',
-  },
-  {
     name: 'Write down a repeating job',
     outcome: 'Get what lives in your head onto paper, so the business can run a day without you in it.',
   },
   {
     name: 'Check an obligation',
     outcome: 'Answered from your own documents and the actual regulation, with the source shown. Never guesses at the law.',
-  },
-  {
-    name: 'Plan what you leave behind',
-    outcome: 'What would have to be true for someone else to run this, and how far off that is today.',
   },
 ]
 
@@ -159,13 +147,19 @@ export default function Landing() {
           ⚠️ ProblemSection is deliberately gone too: the hero states the
           problem, and restating it for 67 lines is the page not trusting its
           own headline. */}
+      {/* ⭐ 12 Oct, Daniel: "we aren't really hitting on the difference this
+          app is over others, the integrity, the people", and of "Holds you to
+          your margins": "this is a good one but it's at the bottom." So it is
+          second now. The 29 Aug objection above (conviction before the product
+          has shown anything) no longer applies: the hero now ends with Solomon
+          answering three real questions, so competence is on screen first. */}
       <HeroSection />
+      <ConvictionSection />
       <UseCasesSection />
       <SolomonSection />
       <DemoBand />
-      <FollowsUpSection />
       <WhatHeKnowsSection />
-      <ConvictionSection />
+      <FollowsUpSection />
       <PriceSection />
       <ClosingCTA />
       <PageFooter />
@@ -375,37 +369,27 @@ function HeroSection() {
  * Section order argument is at the top of this file. */
 function FollowsUpSection() {
   return (
-    <section className="bg-white py-24 border-b border-gray-100">
+    <section className="bg-white py-20 border-b border-gray-100">
       <div className="max-w-2xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
           It remembers what you said you&rsquo;d do.<br />
           <span className="text-gray-400">Nobody else is going to ask.</span>
         </h2>
 
-        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-600">
+        {/* 12 Oct, Daniel: "this needs better wording or a bit of a change or
+            do we even need it." Kept, because it is the one thing a competitor
+            cannot say, but cut from 185 words to about 70. Same three beats:
+            you said it, Solomon asks once, no score. */}
+        <div className="space-y-5 text-[17px] leading-[1.7] text-gray-700">
           <p>
-            Somewhere in a conversation in June you said you were going to stop
-            quoting anything under eight grand. Nobody wrote it down. Your
-            bookkeeper tells you what already happened, your scheduling software
-            tells you what&rsquo;s late, and everyone else on the payroll is
-            waiting on you rather than asking you anything.
+            In June you said you would stop quoting anything under eight grand.
+            Nobody wrote it down, and nobody on your payroll is going to ask you
+            about it.
           </p>
           <p>
-            Solomon writes it down. Then one morning, when it has come due, it
-            asks you whether that held.
-          </p>
-          <p>
-            Once. It asks once, and then it never raises it again. If you
-            changed your mind, that is a complete answer: an owner who
-            reconsiders because the facts moved has done the right thing, and it
-            is recorded as exactly that. It does not count your misses, it will
-            never tell you how you are doing on the things you said, and there
-            is no score anywhere in it.
-          </p>
-          <p>
-            That restraint is the whole design. Something that keeps a tally of
-            where you fell short is not an advisor. It is a report card, and you
-            already know how much those change anyone.
+            Solomon wrote it down. When it comes due, it asks you once whether
+            that held. If you changed your mind, that is a full answer. It does
+            not keep score, and it does not bring it up again.
           </p>
         </div>
       </div>
@@ -517,7 +501,7 @@ function SolomonSection() {
             What still holds from 29 Aug: no "he", and no five-pronoun
             paragraph. The rule is now "one subject, then it" — not "no
             subject at all". */}
-        <p className="text-white/70 text-[17px] leading-relaxed mb-8">
+        <p className="text-white/70 text-[17px] leading-relaxed">
           Solomon reads your books, your plan and your last six check-ins
           before it answers anything, so the advice starts from your
           numbers, not a template. It remembers what you decided in March and
@@ -525,28 +509,10 @@ function SolomonSection() {
           ways, tells you where it comes down, and tells you what it could
           not see.
         </p>
-        {/* The anti-prosperity line used to sit here as a refusal. It now
-            lives in ConvictionSection, stated as a promise — "he'll tell you
-            what it costs, and whether you can afford it" — which is the same
-            move the product's disclaimer rule makes everywhere else: state
-            the limit, never apologise for the product. */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-left">
-          {[
-            // Tightened 29 Aug — same four claims, half the words. ⚠️ "gets
-            // smarter over time" was cut on purpose: it is AI-vendor
-            // boilerplate, it promises something we do not measure, and it
-            // is exactly the kind of sentence this product refuses to write.
-            'Reads your books, roadmap and check-ins daily',
-            'Flags the cash squeeze while you can still do something about it',
-            'Answers hiring, pricing, cash and strategy',
-            'Remembers every decision, and why you made it',
-          ].map((point, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-[15px] text-white/80">
-              <span className="text-brand-400 font-bold mt-0.5 flex-shrink-0">✓</span>
-              {point}
-            </li>
-          ))}
-        </ul>
+        {/* 12 Oct: four ticks sat here. Each one repeated something said
+            in full elsewhere on the page (reads your books, cash squeeze,
+            hiring and pricing, remembers decisions). Daniel: "still some
+            redundancies". */}
       </div>
     </section>
   )
