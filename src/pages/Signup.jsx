@@ -92,16 +92,12 @@ export default function Signup() {
             <Wordmark tone="dark" size={26} />
           </Link>
 
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-brand-400 mb-3">
-            Start your journey
-          </p>
-
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
             Stop carrying this alone.
           </h1>
 
           <p className="text-ink-300 text-sm leading-relaxed mb-10 max-w-sm">
-            Owners have plenty of people who need answers from them and almost nobody to ask. Solomon reads your real numbers, remembers what you decided and why, and argues the hard calls both ways.
+            Owners have plenty of people who need answers from them and almost nobody to ask. Solomon, your advisor, reads your real numbers, remembers what you decided and why, and argues the hard calls both ways.
           </p>
 
           <div className="space-y-3 max-w-sm">
