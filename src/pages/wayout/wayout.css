@@ -407,6 +407,10 @@
   color: var(--ink);
   font-size: 20px;
   cursor: pointer;
+  /* ⚠️ On the first screen this is a link, not a button, and a link is inline:
+     the arrow sat in the top left corner of an empty circle. */
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none; line-height: 1; padding: 0;
 }
 
 /* ── Inputs ─────────────────────────────────────────────────────────────── */

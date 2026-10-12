@@ -256,7 +256,7 @@ export default function Enter() {
   }
 
   return (
-    <WayoutShell title={mode === 'new' ? 'Create your account' : 'Sign in'}>
+    <WayoutShell wide title={mode === 'new' ? 'Create your account' : 'Sign in'}>
       <div className="wayout__spread">
         <div className="wayout__col">
           {/* ⚠️ The copy follows where they were HEADED. Someone bounced here on
@@ -378,9 +378,9 @@ export default function Enter() {
               <button type="button" className="wayout__linkbtn" onClick={sendLink} disabled={busy}>
                 Email me a sign-in link instead
               </button>
-              {' · '}Can’t remember it?{' '}
+              <br />
               <button type="button" className="wayout__linkbtn" onClick={sendReset} disabled={busy}>
-                Email me a reset link
+                Forgot your password? Email me a reset link
               </button>
             </p>
           )}
@@ -406,7 +406,7 @@ export default function Enter() {
             </button>
           </p>
 
-          <p className="wayout__fine">
+          <p className="wayout__fine" style={{ textAlign: 'left', marginBottom: 28 }}>
             {WAYOUT_NAME_TITLE} keeps what you write to itself. Nobody else sees it.
           </p>
         </div>

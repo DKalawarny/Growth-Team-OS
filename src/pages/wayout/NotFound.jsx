@@ -11,13 +11,13 @@ import { WAYOUT_BASE, WAYOUT_HOME } from '../../lib/wayout/brand'
  */
 export default function WayoutNotFound({ what = 'page' }) {
   return (
-    <WayoutShell title="Not found" home>
+    <WayoutShell wide title="Not found" home>
       <p className="wayout__q">That {what} is not here.</p>
       <p className="wayout__lead">
         The link may be old or mistyped. Everything else is where it was.
       </p>
-      <Link className="wayout__btn" to={WAYOUT_HOME}>Go to the start</Link>
-      <p className="wayout__fine" style={{ marginTop: 14 }}>
+      <Link className="wayout__btn" style={{ width: 'auto', display: 'inline-block', alignSelf: 'flex-start', paddingInline: 44, textAlign: 'center' }} to={WAYOUT_HOME}>Go to the start</Link>
+      <p className="wayout__fine" style={{ marginTop: 14, textAlign: 'left' }}>
         Or read <Link to={`${WAYOUT_BASE}/stuck`}>the situations people get stuck in</Link>.
       </p>
     </WayoutShell>
