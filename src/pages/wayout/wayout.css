@@ -3424,3 +3424,48 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 .wayout__heroplan .wayout__herostarting + .wayout__stats { margin-top: 6px; }
 .wayout__credit { margin: 6px 0 0; color: var(--ink); font-size: 15px; line-height: 1.45; max-width: 46ch; }
 .wayout__carried { margin: 2px 0 8px; font-size: 13px; color: var(--green); font-weight: 600; }
+
+/* ── Sign in and create account ─────────────────────────────────────────────
+   ⭐ 11 Oct, Daniel: "this seems old style", then "its super boring". Two
+   things: the boxes you type in are outlined here, and the left half carries a
+   picture of the plan. */
+.wayout .wayout__enterform .wayout__input {
+  border: 2px solid #D5CEB8; border-radius: 14px; background: #fff;
+  padding: 13px 16px; margin-bottom: 4px;
+}
+.wayout .wayout__enterform .wayout__input:focus,
+.wayout .wayout__enterform .wayout__input:focus-visible {
+  border-color: var(--green); background: #fff; outline: none;
+  box-shadow: 0 0 0 4px rgba(47, 125, 79, .14);
+}
+.wayout__enterform .wayout__pwtoggle { right: 14px; bottom: 8px; }
+.wayout__enterform .wayout__label { display: block; margin: 18px 0 8px; }
+.wayout__enterform .wayout__label:first-child { margin-top: 0; }
+
+.wayout__entermap { display: none; }
+@media (min-width: 1040px) {
+  .wayout__entermap {
+    display: block; margin: 40px 0 16px; max-width: 470px; transform: rotate(-2deg);
+    filter: drop-shadow(0 22px 26px rgba(35, 48, 31, .2));
+  }
+  .wayout__entermap svg { display: block; width: 100%; height: auto; }
+  .wayout__mappaper { fill: #F7F1DF; stroke: #DDD5BD; stroke-width: 2; }
+  .wayout__mapland { fill: #DDE9D2; }
+  .wayout__mapwater { fill: #D5E6EC; }
+  .wayout__mapfold { fill: none; stroke: #E6DEC6; stroke-width: 2; }
+  .wayout__maproute {
+    fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1 12;
+  }
+  .wayout__maphere { fill: var(--sun); }
+  .wayout__mapherering { fill: rgba(255, 180, 58, .3); }
+  .wayout__mapstop circle { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+  .wayout__mapstop text { font: 800 18px Figtree, system-ui, sans-serif; fill: var(--ink); }
+  .wayout__mapstop.is-done circle { fill: var(--green); stroke: var(--green); }
+  .wayout__mapstop.is-done path {
+    fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .wayout__mapflagpole { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .wayout__mapflag { fill: var(--sun); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+  .wayout__maphand { font: 700 27px Caveat, ui-rounded, cursive; fill: var(--ink); }
+  .wayout__maphand--to { fill: var(--green); }
+}
