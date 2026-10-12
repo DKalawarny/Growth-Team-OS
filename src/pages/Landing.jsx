@@ -187,21 +187,9 @@ function HeroSection() {
           Solomon panel shows at the bottom of the screen on arrival and tells
           a visitor there is more to scroll to. Daniel rejected putting the
           panel beside the headline ("super busy"): one centred column. */}
-      <div className="relative max-w-5xl mx-auto px-6 pt-12 pb-20 text-center">
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-          <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-semibold px-4 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-            {/* ⚠️ ONE OFFER AT A TIME. This badge said "14-day free trial" while
-                the line under the CTA said "Free while in private pilot" — two
-                different offers, 60px apart. A trial only means something once
-                there is a price to trial against, and SHOW_PUBLIC_PRICE is
-                false, so during the pilot the honest word is simply "free".
-                Both now derive from the same flag; do not hardcode either. */}
-            {SHOW_PUBLIC_PRICE
-              ? `${TRIAL_DAYS}-day free trial. No credit card required`
-              : `${PILOT_PRICE_LINE}, no credit card required`}
-          </div>
-        </div>
+      <div className="relative max-w-5xl mx-auto px-6 pt-16 pb-20 text-center">
+        {/* 12 Oct: the "free while in private pilot, no credit card" pill sat
+            here. Daniel moved it to a small flag in the top bar (PublicHeader). */}
 
         {/* ⚠️ A second badge reading "For Christian business owners" used to sit
             beside the trial pill. It is gone, and NOT replaced — see below.
@@ -312,26 +300,16 @@ function HeroSection() {
             It is currently on NO public surface — the natural home is the
             conviction section, beside "Holds you to your margins", but that is
             approved copy and his call, not a silent edit. */}
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
+        <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-8">
           Owners have plenty of people who need answers from them and almost
           nobody to ask. Eliv8 OS exists to be somewhere to ask.
         </p>
 
-        {/* What he does, in the owner's language rather than in feature names. */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-7 max-w-4xl mx-auto">
-          {[
-            'Reads your books',
-            'Remembers your decisions',
-            'Argues both sides',
-            'Names what it cannot see',
-            'Never flatters you',
-          ].map(f => (
-            <span key={f} className="text-[13px] font-medium px-3 py-1 rounded-full bg-white/8 border border-white/10 text-white/70">
-              {f}
-            </span>
-          ))}
-        </div>
-
+        {/* 12 Oct, Daniel: the five tags that sat here ("Reads your books",
+            "Never flatters you"...) "can go, it kind of says below". The
+            Solomon panel under the buttons now shows all five happening. Older
+            notes above call them load-bearing for the headline: the panel has
+            that job now. */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
           {/* ⚠️ 10 Oct, Daniel: "the demo button gets kinda lost, it should be one
               of the big sells." It was a ghost button labelled "See it in action"
@@ -354,7 +332,7 @@ function HeroSection() {
         </div>
 
         <p className="text-white/60 text-sm">
-          The demo is the real app with a sample company in it. Click anything. No sign-up.
+          The demo is the real app, loaded with a sample company. You do not need an account to open it.
         </p>
         {/* 12 Oct: a second "no credit card, free in pilot" line sat here. The
             pill above the headline already says it. Once per eyeful. */}

@@ -26,9 +26,18 @@ export default function PublicHeader() {
             are why the logo still said "GrowthOS" for days after the rename —
             and this one slipped through the same way. Never restate the mark in
             markup; if it needs a new size or tone, add a prop. */}
-        <Link to="/" aria-label="Eliv8 OS, home">
-          <Wordmark tone="light" size={19} />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/" aria-label="Eliv8 OS, home">
+            <Wordmark tone="light" size={19} />
+          </Link>
+          {/* 12 Oct, Daniel: the "free while in private pilot" pill above the
+              landing headline "could just be in the banner, free while in
+              beta, as a flag type thing". His word is beta. No room at phone
+              width beside three links, so it shows from 640px up. */}
+          <span className="hidden sm:inline-block text-xs font-bold text-brand-800 bg-brand-100 border border-brand-200 rounded-md px-2 py-1 leading-none">
+            Free while in beta
+          </span>
+        </div>
         <nav className="flex items-center gap-4 text-sm">
           {/* ⚠️ 2 Sep — /answers was ORPHANED. Nineteen prerendered pages existed
               in the sitemap and NOTHING on the site linked to them: not the
