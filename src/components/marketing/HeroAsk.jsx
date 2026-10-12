@@ -153,8 +153,8 @@ export default function HeroAsk() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2">
-        <span className="text-sm text-white/50 w-full text-center lg:text-left">Tap a question to ask him:</span>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <span className="text-sm text-white/50 w-full text-center">Tap a question to ask him:</span>
         {EXCHANGES.map((e, i) => (
           <button
             key={e.chip}
