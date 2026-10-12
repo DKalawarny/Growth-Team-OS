@@ -24,30 +24,17 @@ describe('matchBooks', () => {
     expect(matchBooks('We need to hire before spring.')).toEqual([])   // one signal only
     expect(matchBooks('')).toEqual([])
   })
-  const FAITH_TITLES = new Set(REFERENCE_BOOKS.filter(b => b.faith).map(b => b.title))
   const overwork = 'He is working evenings and weekends, the hours keep climbing, he is close to burnout and his family barely sees him at home.'
 
-  it('does not hide a faith book: it comes up when the situation fits, labelled', () => {
+  it('treats every book the same: the ones on faith and work come up on their signals like the rest', () => {
     const got = matchBooks(overwork, { max: 10 })
-    const faith = got.filter(b => FAITH_TITLES.has(b.title))
-    expect(faith.length).toBe(1)                 // there, and only one: not pushed
-    expect(faith[0].faith).toBe(true)            // the page says what it is
-    expect(got.some(b => !b.faith)).toBe(true)   // alongside the others, not instead
+    expect(titles(got)).toContain('When Work and Family Collide')
+    expect(titles(got)).toContain('Win at Work and Succeed at Life')
+    for (const b of got) expect(Object.keys(b)).not.toContain('faith')   // no flag, so nothing can label or ration them
   })
-  it('lifts the one-at-a-time limit for an owner who has raised faith himself', () => {
-    const got = matchBooks(overwork, { max: 10, faithRaised: true }).filter(b => b.faith)
-    expect(got.length).toBeGreaterThan(1)
-  })
-  it('also lifts it when the page\'s own words raise it', () => {
-    const got = matchBooks(overwork + ' He says he prays about it and wants to steward the business well.', { max: 10 }).filter(b => b.faith)
-    expect(got.length).toBeGreaterThan(1)
-  })
-  it('a church for a client is not the owner raising his faith', () => {
-    const got = matchBooks(overwork + ' The Maple Street Church contract and the ministry centre both renew in March.', { max: 10 }).filter(b => b.faith)
-    expect(got.length).toBe(1)
-  })
-  it('the book on giving needs giving to be on the page, even then', () => {
-    expect(titles(matchBooks(overwork, { max: 20, faithRaised: true }))).not.toContain('The Treasure Principle')
+  it('the book on giving comes up only when giving is on the page', () => {
+    expect(titles(matchBooks(overwork, { max: 20 }))).not.toContain('The Treasure Principle')
+    expect(titles(matchBooks('He wants to be more deliberate about giving and has asked about tithing a share of profit.', { max: 5 }))).toContain('The Treasure Principle')
   })
   it('says why each book came up', () => {
     const [b] = matchBooks('The owner is the bottleneck. Nothing is written down and the crew cannot run a site without you.')
