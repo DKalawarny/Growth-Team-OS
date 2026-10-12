@@ -1,3 +1,4 @@
+import HeroAsk from '../components/marketing/HeroAsk'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
@@ -229,8 +230,13 @@ function HeroSection() {
         backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20,166,123,0.14) 0%, transparent 60%)',
       }} />
 
-      <div className="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+      {/* ⭐ 12 Oct: on a wide screen the hero is two columns, words on the left
+          and Solomon answering on the right, so the moving panel is on screen
+          the moment someone lands (Daniel: "bring it up so its in the screen
+          when you first land"). On a phone it stacks, centred, as before. */}
+      <div className="relative max-w-5xl lg:max-w-7xl mx-auto px-6 pt-20 pb-24 lg:pt-16 lg:pb-20 text-center lg:text-left lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:gap-14 lg:items-center">
+       <div>
+        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-8">
           <div className="inline-flex items-center gap-2 bg-white/8 border border-white/10 text-brand-400 text-xs font-semibold px-4 py-1.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             {/* ⚠️ ONE OFFER AT A TIME. This badge said "14-day free trial" while
@@ -327,7 +333,7 @@ function HeroSection() {
             can swap in without touching anything else:
               "An operating system that runs with integrity"  (softer)
               "Built to run with integrity in mind"           (closest to his) */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.08] mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.6rem] font-black text-white tracking-tight leading-[1.08] mb-6">
           The OS that runs<br />
           <span className="text-brand-400">on integrity.</span>
         </h1>
@@ -354,13 +360,13 @@ function HeroSection() {
             It is currently on NO public surface — the natural home is the
             conviction section, beside "Holds you to your margins", but that is
             approved copy and his call, not a silent edit. */}
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-6">
+        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-6">
           Owners have plenty of people who need answers from them and almost
           nobody to ask. Eliv8 OS exists to be somewhere to ask.
         </p>
 
         {/* What he does, in the owner's language rather than in feature names. */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-2xl mx-auto">
+        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-10 max-w-2xl mx-auto lg:mx-0">
           {[
             'Reads your books',
             'Remembers your decisions',
@@ -374,7 +380,7 @@ function HeroSection() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mb-8">
           {/* ⚠️ 10 Oct, Daniel: "the demo button gets kinda lost, it should be one
               of the big sells." It was a ghost button labelled "See it in action"
               beside the sign-up. The demo is the strongest thing on this page
@@ -403,6 +409,13 @@ function HeroSection() {
             ? `No credit card · ${TRIAL_DAYS} days free · Cancel anytime`
             : `No credit card · ${PILOT_PRICE_LINE} · Cancel anytime`}
         </p>
+       </div>
+
+        {/* The moving part: Solomon answering, with questions a visitor can tap.
+            Scripted and labelled as an example. See HeroAsk. */}
+        <div className="mt-14 lg:mt-0">
+          <HeroAsk />
+        </div>
       </div>
     </section>
   )
