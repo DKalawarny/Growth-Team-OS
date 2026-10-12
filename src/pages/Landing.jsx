@@ -295,8 +295,11 @@ function HeroSection() {
             conviction section, beside "Holds you to your margins", but that is
             approved copy and his call, not a silent edit. */}
         <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-8">
-          Owners have plenty of people who need answers from them and almost
-          nobody to ask. Eliv8 OS exists to be somewhere to ask.
+          {/* 12 Oct, Daniel picked this over "Owners have plenty of people who
+              need answers from them and almost nobody to ask. Eliv8 OS exists
+              to be somewhere to ask." after saying the page was not hitting
+              the difference: "the integrity, the people". */}
+          For owners who want the numbers right and the people treated right.
         </p>
 
         {/* 12 Oct, Daniel: the five tags that sat here ("Reads your books",
