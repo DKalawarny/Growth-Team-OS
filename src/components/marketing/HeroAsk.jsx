@@ -12,7 +12,8 @@ import { useEffect, useRef, useState } from 'react'
  *   - SCRIPTED, and labelled "Example". No AI call is made from the landing
  *     page, so it costs nothing and cannot say something we have not read.
  *   - The answers are Solomon's own, from live runs on 11 Oct, shortened. No
- *     figure appears that an owner did not give him.
+ *     figure appears that an owner did not give him, except in the "second
+ *     crew lead" exchange, where the figures stand for his connected books.
  *   - The whole text is always in the page (the unrevealed part is only
  *     invisible), so the box never changes size as it types, search engines
  *     and screen readers get all of it, and the prerender is not caught
@@ -32,6 +33,28 @@ const EXCHANGES = [
       'Ask what would keep your best three on through winter. Snow is the obvious one: same crew, same trucks, often the same streets. Lighting installs and winter cleanups can carry two or three people more.',
       'And talk to them in September, not November. People leave because they do not know if you are coming back for them.',
     ],
+  },
+  // ⚠️ Moved here 12 Oct from the "Meet Solomon" section further down, which
+  // had its own scripted chat until this panel made it redundant. Every line
+  // does a job, so do not trim it for length:
+  //   - real figures from connected books
+  //   - "are you expecting the work to hold the cost" (Daniel, 31 Aug): a
+  //     cushion is one-time money and a wage is not. This is the line that
+  //     stops a bad hire.
+  //   - he remembers what the owner said in March, and the standard applied
+  //     is the owner's own. Never put a value in his mouth the owner did not
+  //     say first.
+  //   - he names what he does NOT have (June payroll)
+  //   - `doc`: he does not describe a forecast, he produces one.
+  {
+    chip: 'A second crew lead',
+    q: 'Can I afford a second crew lead?',
+    a: [
+      'On the numbers, probably, though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that?',
+      "Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty.",
+      'Here is what it costs over thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200. It holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.',
+    ],
+    doc: 'Cash flow forecast \u00b7 saved to your Library',
   },
   {
     chip: 'A raise I cannot give',
@@ -146,6 +169,15 @@ export default function HeroAsk() {
                       })}
                     </p>
                   ))}
+                  {/* The document the answer came with. Shows once the answer is written. */}
+                  {item.doc && (
+                    <div className={`inline-flex items-center gap-2 rounded-lg border border-brand-400/30 bg-brand-400/10 px-3 py-1.5 transition-opacity duration-300 ${live && aShown >= total ? 'opacity-100' : 'opacity-0'}`}>
+                      <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-brand-400">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                      <span className="text-[13px] font-semibold text-brand-300">{item.doc}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )

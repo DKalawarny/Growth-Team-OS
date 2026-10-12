@@ -1,5 +1,5 @@
 import HeroAsk from '../components/marketing/HeroAsk'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../components/layout/PublicHeader'
@@ -73,53 +73,6 @@ const TOOLS = [
     name: 'Plan what you leave behind',
     outcome: 'What would have to be true for someone else to run this, and how far off that is today.',
   },
-]
-
-// ── Solomon chat preview ──────────────────────────────────────────────────────
-
-/**
- * ⭐ REWRITTEN 29 Aug. The old preview was written before two things changed,
- * and Daniel spotted that it no longer showed what the product does:
- *
- *   1. 24 Aug — Solomon RUNS THE TOOLS HIMSELF. He used to only be able to
- *      seed one. Now he produces the real artifact mid-conversation and it
- *      lands in the Library. The old script had him offering to write a script.
- *   2. 26 Aug — his VOICE was rewritten. Prose, not bulleted findings. Direct
- *      about the situation, never directive about the person. Says what he
- *      cannot see instead of filling the gap.
- *
- * ⚠️ Each line here is doing a specific job, so do not trim it for length:
- *   - real figures from connected books, not vibes
- *   - HE REMEMBERS WHAT THE OWNER SAID MONTHS AGO. This is the single hardest
- *     thing to copy and the clearest proof of the positioning — the standard
- *     being applied is the owner's own, not one imposed on him.
- *   - names the input he does NOT have, rather than inventing it
- *   - produces a document, which is the 24 Aug capability made visible
- *
- * ⭐ 31 Aug, DANIEL'S CATCH — the strongest line here and it was missing. The
- * old version answered "can I afford it" out of a $47k CUSHION, which is a
- * one-time number, while a lead is a RECURRING cost. Cushion buys a wage for a
- * few months; only work coming in buys it after that. His words: "are you
- * expecting more work to hold this cost". That question now leads the answer,
- * because it is the actual gate — the memory callback is the differentiator,
- * but this is the one that stops a bad hire.
- *
- * ⚠️ "That is your line, not one I would pick for you" came out to make room —
- * the bubble was already the tallest thing on the page. The non-directive rule
- * it demonstrated is still shown, by the answer ending on a fact rather than a
- * recommendation. Put it back if the bubble can afford it.
- *
- * ⚠️ The memory line is also how the conviction shows up WITHOUT preaching:
- * "you still knew everyone's name" is about how the business is run, and it is
- * quoted back as the owner's own words. Never put a value in Solomon's mouth
- * that the owner did not say first.
- */
-const CHAT_LINES = [
-  { role: 'user',      text: "Can I afford a second crew lead?" },
-  { role: 'assistant', text: "On the numbers, probably, though $47k is cushion, not work coming in. That carries a second lead about five months; are you expecting the work to hold the cost after that? Worth weighing against something you told me in March, too: you did not want to grow past the point where you still knew everyone's name. A second lead means a second crew, so eleven people becomes closer to twenty." },
-  { role: 'user',      text: "Show me what it costs." },
-  { role: 'assistant', text: "Thirteen weeks, with the hire starting week three. Week nine is the tight one at $6,200. It holds unless the Coleman invoice slips again. Your June payroll is not in yet, so that cushion is a May figure.",
-    artifact: 'Cash flow forecast \u00b7 saved to your Library' },
 ]
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -549,156 +502,76 @@ function ConvictionSection() {
   )
 }
 
+/**
+ * ⚠️ 12 Oct 2026: WORDS ONLY, ONE COLUMN. This section used to carry its own
+ * scripted chat on the right. Once the hero got a Solomon panel a visitor can
+ * tap (HeroAsk), Daniel saw it made this one redundant: two fake chats in a
+ * row, and the old one said "Live" and "Online" while being scripted. Its
+ * exchange ("Can I afford a second crew lead?") moved into HeroAsk. Do not put
+ * a second chat picture back here.
+ */
 function SolomonSection() {
-  const [visible, setVisible] = useState(0)
-
-  useEffect(() => {
-    if (visible >= CHAT_LINES.length) return
-    const t = setTimeout(() => setVisible(v => v + 1), visible === 0 ? 600 : 1400)
-    return () => clearTimeout(t)
-  }, [visible])
-
   return (
     <section className="bg-gray-950 py-20">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-          {/* Copy */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
-              Meet Solomon
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
-              Sharp about the business.<br />Clear about what it&rsquo;s for.
-            </h2>
-            {/* ⚠️ TWO NOTES FROM DANIEL, 29 Aug: "too wordy" and "you say HE too
-                much, it's not a he really."
-
-                The old version ran 55 words and used "he" FIVE times in one
-                paragraph. That is not warmth, it is insistence — the copy
-                pushing personhood harder than the product should claim. Solomon
-                keeps his name and the advisor framing; what goes is the pronoun
-                drumbeat. Verb-first sentences carry the same meaning and read
-                faster.
-
-                ⚠️ 30 Aug — DANIEL OVERRODE THE SECOND HALF OF THIS, KNOWINGLY.
-                The verb-first fix over-corrected: with no subject at all the
-                paragraph read like a telegram ("Reads your books. Remembers
-                what you decided.") and he called the wording weird. He was
-                shown a subject-anchored version that keeps zero pronouns and
-                chose the one that uses "it" three times instead, having been
-                told that was the tradeoff. So the live copy names Solomon once
-                up front and uses "it" after. DO NOT strip those back out.
-
-                What still holds from 29 Aug: no "he", and no five-pronoun
-                paragraph. The rule is now "one subject, then it" — not "no
-                subject at all". */}
-            <p className="text-white/60 leading-relaxed mb-6">
-              Solomon reads your books, your plan and your last six check-ins
-              before it answers anything, so the advice starts from your
-              numbers, not a template. It remembers what you decided in March and
-              why. On the calls that are hard to undo, it makes the case both
-              ways, tells you where it comes down, and tells you what it could
-              not see.
-            </p>
-            {/* The anti-prosperity line used to sit here as a refusal. It now
-                lives in ConvictionSection, stated as a promise — "he'll tell you
-                what it costs, and whether you can afford it" — which is the same
-                move the product's disclaimer rule makes everywhere else: state
-                the limit, never apologise for the product. */}
-            <ul className="space-y-3">
-              {[
-                // Tightened 29 Aug — same four claims, half the words. ⚠️ "gets
-                // smarter over time" was cut on purpose: it is AI-vendor
-                // boilerplate, it promises something we do not measure, and it
-                // is exactly the kind of sentence this product refuses to write.
-                'Reads your books, roadmap and check-ins daily',
-                'Flags the cash squeeze while you can still do something about it',
-                'Answers hiring, pricing, cash and strategy',
-                'Remembers every decision, and why you made it',
-              ].map((point, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-white/70">
-                  <span className="text-brand-400 font-bold mt-0.5 flex-shrink-0">✓</span>
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Chat preview */}
-          <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: '#161b22' }}>
-            {/* Chat header */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/8">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
-                <span className="text-sm">💡</span>
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">Solomon</p>
-                <p className="text-[11px] text-white/30">Your Advisor · Online</p>
-              </div>
-              <div className="ml-auto flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                <span className="text-xs text-green-400/70 font-medium">Live</span>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="p-5 space-y-4 min-h-[260px]">
-              {CHAT_LINES.slice(0, visible).map((line, i) => (
-                <div
-                  key={i}
-                  className={`flex ${line.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  style={{ animation: 'fadeInUp 0.3s ease both' }}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                      line.role === 'user'
-                        ? 'text-white rounded-br-sm'
-                        : 'text-white/85 rounded-bl-sm'
-                    }`}
-                    style={{
-                      background: line.role === 'user'
-                        ? 'linear-gradient(135deg,#0b6b4e,#14a67b)'
-                        : 'rgba(255,255,255,0.07)',
-                    }}
-                  >
-                    {line.text}
-                    {/* The artifact chip is the 24 Aug capability made visible:
-                        he does not describe a cash forecast, he produces one.
-                        Rendered inside the bubble so it reads as something the
-                        answer came with, not a separate advert. */}
-                    {line.artifact && (
-                      <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg border border-brand-400/30 bg-brand-400/10 px-2.5 py-1.5">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-brand-400">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-                        </svg>
-                        <span className="text-xs font-semibold text-brand-300">{line.artifact}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {visible < CHAT_LINES.length && (
-                <div className="flex justify-start">
-                  <div className="bg-white/7 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
-                    {[0,1,2].map(i => (
-                      <span key={i} className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="px-5 pb-5">
-              <div className="rounded-xl px-4 py-2.5 text-sm text-white/20 border border-white/8 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                <span>Reply to your advisor…</span>
-                <span className="text-xs">↵</span>
-              </div>
-            </div>
-          </div>
-
+      <div className="max-w-2xl mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+          Meet Solomon
         </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
+          Sharp about the business.<br />Clear about what it&rsquo;s for.
+        </h2>
+        {/* ⚠️ TWO NOTES FROM DANIEL, 29 Aug: "too wordy" and "you say HE too
+            much, it's not a he really."
+
+            The old version ran 55 words and used "he" FIVE times in one
+            paragraph. That is not warmth, it is insistence — the copy
+            pushing personhood harder than the product should claim. Solomon
+            keeps his name and the advisor framing; what goes is the pronoun
+            drumbeat. Verb-first sentences carry the same meaning and read
+            faster.
+
+            ⚠️ 30 Aug — DANIEL OVERRODE THE SECOND HALF OF THIS, KNOWINGLY.
+            The verb-first fix over-corrected: with no subject at all the
+            paragraph read like a telegram ("Reads your books. Remembers
+            what you decided.") and he called the wording weird. He was
+            shown a subject-anchored version that keeps zero pronouns and
+            chose the one that uses "it" three times instead, having been
+            told that was the tradeoff. So the live copy names Solomon once
+            up front and uses "it" after. DO NOT strip those back out.
+
+            What still holds from 29 Aug: no "he", and no five-pronoun
+            paragraph. The rule is now "one subject, then it" — not "no
+            subject at all". */}
+        <p className="text-white/70 text-[17px] leading-relaxed mb-8">
+          Solomon reads your books, your plan and your last six check-ins
+          before it answers anything, so the advice starts from your
+          numbers, not a template. It remembers what you decided in March and
+          why. On the calls that are hard to undo, it makes the case both
+          ways, tells you where it comes down, and tells you what it could
+          not see.
+        </p>
+        {/* The anti-prosperity line used to sit here as a refusal. It now
+            lives in ConvictionSection, stated as a promise — "he'll tell you
+            what it costs, and whether you can afford it" — which is the same
+            move the product's disclaimer rule makes everywhere else: state
+            the limit, never apologise for the product. */}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-left">
+          {[
+            // Tightened 29 Aug — same four claims, half the words. ⚠️ "gets
+            // smarter over time" was cut on purpose: it is AI-vendor
+            // boilerplate, it promises something we do not measure, and it
+            // is exactly the kind of sentence this product refuses to write.
+            'Reads your books, roadmap and check-ins daily',
+            'Flags the cash squeeze while you can still do something about it',
+            'Answers hiring, pricing, cash and strategy',
+            'Remembers every decision, and why you made it',
+          ].map((point, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-[15px] text-white/80">
+              <span className="text-brand-400 font-bold mt-0.5 flex-shrink-0">✓</span>
+              {point}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
