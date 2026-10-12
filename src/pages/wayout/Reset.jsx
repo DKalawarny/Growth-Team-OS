@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WayoutShell from './WayoutShell'
+import RouteMap from './RouteMap'
 import { supabase } from '../../lib/supabase'
 import { WAYOUT_BASE } from '../../lib/wayout/brand'
 
@@ -74,6 +75,7 @@ export default function Reset() {
             Then you’re straight back to where you were. Your answers haven’t
             gone anywhere.
           </p>
+          <RouteMap firstDone />
         </div>
 
         <div className="wayout__col">
@@ -82,7 +84,7 @@ export default function Reset() {
               Please open this page from the link in your email. If you typed the address yourself, go back to the email and tap the link.
             </p>
           ) : (
-            <form onSubmit={submit}>
+            <form className="wayout__enterform" onSubmit={submit}>
               <label className="wayout__label" htmlFor="wayout-newpw">New password</label>
               <div className="wayout__pw">
                 <input
