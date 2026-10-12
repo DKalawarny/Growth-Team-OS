@@ -3445,52 +3445,38 @@ html:has(.wayout), body:has(.wayout) { background: #F5F1E6; }
 .wayout__entermap { display: none; }
 @media (min-width: 1040px) {
   .wayout__entermap {
-    display: block; margin: 36px 0 44px; max-width: 560px; transform: rotate(-2.5deg);
-    filter: drop-shadow(0 30px 34px rgba(35, 48, 31, .28));
+    display: block; margin: 40px 0 44px; max-width: 470px; transform: rotate(-2deg);
+    filter: drop-shadow(0 22px 26px rgba(35, 48, 31, .2));
   }
-  .wayout__entermap svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .wayout__mappaper { fill: #fff; stroke: #E4DECB; stroke-width: 2; }
-  .wayout__mapland { fill: #CDE6BD; }
-  .wayout__mapwood { fill: #B2D9A0; }
-  .wayout__mapwater { fill: none; stroke: #7FC4E3; stroke-width: 38; stroke-linecap: round; }
-  .wayout__mapripple { fill: none; stroke: #C4E6F3; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 16 22; }
-  .wayout__maproad { fill: none; stroke: #FBF4DE; stroke-width: 10; stroke-linecap: round; }
-  .wayout__mappeak { fill: #5E9470; stroke: #3F7353; stroke-width: 2; stroke-linejoin: round; }
-  .wayout__mapsnow { fill: #fff; }
-  .wayout__maptree circle { fill: #3F9460; }
-  .wayout__maptree path { stroke: #6B4F2A; stroke-width: 3; stroke-linecap: round; }
-  .wayout__mapglow { fill: #FFE566; opacity: .75; }
-  .wayout__maproutecase { fill: none; stroke: #fff; stroke-width: 13; stroke-linecap: round; }
+  .wayout__entermap svg { display: block; width: 100%; height: auto; }
+  .wayout__mappaper { fill: #F7F1DF; stroke: #DDD5BD; stroke-width: 2; }
+  .wayout__mapland { fill: #DDE9D2; }
+  .wayout__mapwater { fill: #D5E6EC; }
+  .wayout__mapfold { fill: none; stroke: #E6DEC6; stroke-width: 2; }
   .wayout__maproute {
-    fill: none; stroke: #F2600C; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 14 12;
-    animation: wayoutMarch 1.4s linear infinite;
+    fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1 12;
+    animation: wayoutMarch 1.1s linear infinite;
   }
-  .wayout__maphere { fill: var(--sun); stroke: #fff; stroke-width: 4; }
+  .wayout__maphere { fill: var(--sun); }
   .wayout__mapherering {
     fill: rgba(255, 180, 58, .5); transform-box: fill-box; transform-origin: center;
     animation: wayoutPing 1.8s ease-out infinite;
   }
-  .wayout__mapstop circle { fill: #fff; stroke: var(--ink); stroke-width: 4; }
-  .wayout__mapstop text { font: 800 21px Figtree, system-ui, sans-serif; fill: var(--ink); }
-  .wayout__mapstop.is-done circle { fill: var(--green); stroke: #fff; }
+  .wayout__mapstop circle { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+  .wayout__mapstop text { font: 800 18px Figtree, system-ui, sans-serif; fill: var(--ink); }
+  .wayout__mapstop.is-done circle { fill: var(--green); stroke: var(--green); }
   .wayout__mapstop.is-done path {
-    fill: none; stroke: #fff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round;
+    fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
   }
-  .wayout__mapflagpole { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; }
+  .wayout__mapflagpole { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
   .wayout__mapflag {
-    fill: #F2600C; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round;
+    fill: var(--sun); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round;
     transform-box: fill-box; transform-origin: left center; animation: wayoutFlag 2.2s ease-in-out infinite;
   }
-  .wayout__mapcompass circle { fill: #fff; stroke: var(--ink); stroke-width: 3; }
-  .wayout__mapcompass path { fill: #F2600C; }
-  .wayout__mapcompass text { font: 800 13px Figtree, system-ui, sans-serif; fill: var(--ink); }
-  .wayout__maphand {
-    font: 700 30px Caveat, ui-rounded, cursive; fill: var(--ink);
-    paint-order: stroke; stroke: #fff; stroke-width: 6; stroke-linejoin: round;
-  }
+  .wayout__maphand { font: 700 27px Caveat, ui-rounded, cursive; fill: var(--ink); }
   .wayout__maphand--to { fill: var(--green); }
 }
-@keyframes wayoutMarch { to { stroke-dashoffset: -26; } }
+@keyframes wayoutMarch { to { stroke-dashoffset: -13; } }
 @keyframes wayoutPing { from { transform: scale(.6); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
 @keyframes wayoutFlag { 0%, 100% { transform: skewY(0); } 50% { transform: skewY(-7deg); } }
 @media (prefers-reduced-motion: reduce) {

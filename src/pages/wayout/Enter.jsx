@@ -287,52 +287,30 @@ export default function Enter() {
               ⚠️ Wide screens only. On a phone it would sit between the heading
               and the form, and the form is what they came for. */}
           <div className="wayout__entermap" aria-hidden="true">
-            <svg viewBox="0 0 520 440" role="presentation">
-              <defs>
-                <clipPath id="wayout-mapclip"><rect x="14" y="14" width="492" height="412" rx="18" /></clipPath>
-              </defs>
-              <rect x="2" y="2" width="516" height="436" rx="28" className="wayout__mappaper" />
-              <g clipPath="url(#wayout-mapclip)">
-                <rect x="14" y="14" width="492" height="412" className="wayout__mapland" />
-                <path className="wayout__mapwood" d="M20 60c50-50 150-40 170 10s-30 90-90 100-110-20-110-60 10-30 30-50z" />
-                <path className="wayout__mapwood" d="M330 300c50-30 150-20 170 30s-20 110-90 110-120-30-120-80 10-40 40-60z" />
-                <path className="wayout__mapwater" d="M-10 330C90 290 150 380 250 330S380 220 530 250" />
-                <path className="wayout__mapripple" d="M-10 330C90 290 150 380 250 330S380 220 530 250" />
-                <path className="wayout__maproad" d="M14 170C150 150 240 210 506 140M214 14C200 160 340 270 306 426" />
-                <path className="wayout__mappeak" d="M38 126l36-62 36 62zM90 126l28-46 28 46z" />
-                <path className="wayout__mapsnow" d="M65 80l9-16 9 16-9 7zM111 92l7-12 7 12-7 5z" />
-                {[[404, 318], [372, 344], [398, 380], [150, 60], [176, 84], [440, 190], [468, 214]].map(([x, y]) => (
-                  <g key={`${x}-${y}`} className="wayout__maptree">
-                    <path d={`M${x} ${y + 6}v12`} />
-                    <circle cx={x} cy={y} r="11" />
-                  </g>
-                ))}
-                <circle cx="446" cy="66" r="40" className="wayout__mapglow" />
-                <path className="wayout__maproutecase" d="M80 372C140 330 86 276 160 256S280 290 318 226 268 140 362 116 438 96 446 70" />
-                <path className="wayout__maproute" d="M80 372C140 330 86 276 160 256S280 290 318 226 268 140 362 116 438 96 446 70" />
-              </g>
-              <circle cx="80" cy="372" r="20" className="wayout__mapherering" />
-              <circle cx="80" cy="372" r="10" className="wayout__maphere" />
-              {[[160, 256], [318, 226], [362, 116]].map(([x, y], n) => {
+            <svg viewBox="0 0 460 400" role="presentation">
+              <rect x="6" y="6" width="448" height="388" rx="26" className="wayout__mappaper" />
+              <path className="wayout__mapland" d="M40 120c30-40 90-50 120-20s20 70-20 90-90 10-110-20 0-40 10-50z" />
+              <path className="wayout__mapland" d="M300 250c40-20 100-10 110 30s-30 70-70 70-70-20-70-50 10-40 30-50z" />
+              <path className="wayout__mapwater" d="M6 300c60-30 110 20 170 0s90-70 150-60 90-10 128-30v60c-40 20-70 30-120 20s-100 40-160 60-110-20-168-10z" />
+              <path className="wayout__mapfold" d="M156 6v388M306 6v388M6 136h448M6 266h448" />
+              <path className="wayout__maproute" d="M70 340C120 300 70 250 140 232S250 262 284 204 236 126 322 104 388 86 396 64" />
+              <circle cx="70" cy="340" r="15" className="wayout__mapherering" />
+              <circle cx="70" cy="340" r="7" className="wayout__maphere" />
+              {[[140, 232], [284, 204], [322, 104]].map(([x, y], n) => {
                 const done = mode === 'in' && !known && n === 0
                 return (
                   <g key={n} className={`wayout__mapstop${done ? ' is-done' : ''}`}>
-                    <circle cx={x} cy={y} r="22" />
+                    <circle cx={x} cy={y} r="19" />
                     {done
-                      ? <path d={`M${x - 9} ${y + 1}l7 7 12-14`} />
-                      : <text x={x} y={y + 7} textAnchor="middle">{n + 1}</text>}
+                      ? <path d={`M${x - 8} ${y + 1}l6 6 11-12`} />
+                      : <text x={x} y={y + 6} textAnchor="middle">{n + 1}</text>}
                   </g>
                 )
               })}
-              <path className="wayout__mapflagpole" d="M446 72V22" />
-              <path className="wayout__mapflag" d="M446 22l40 12-40 14z" />
-              <g className="wayout__mapcompass">
-                <circle cx="462" cy="384" r="24" />
-                <path d="M462 366l7 18-7 18-7-18z" />
-                <text x="462" y="356" textAnchor="middle">N</text>
-              </g>
-              <text className="wayout__maphand" x="112" y="404">You are here</text>
-              <text className="wayout__maphand wayout__maphand--to" x="424" y="48" textAnchor="end">Where you want to be</text>
+              <path className="wayout__mapflagpole" d="M396 66V26" />
+              <path className="wayout__mapflag" d="M396 26l30 9-30 10z" />
+              <text className="wayout__maphand" x="96" y="372">You are here</text>
+              <text className="wayout__maphand wayout__maphand--to" x="376" y="40" textAnchor="end">Where you want to be</text>
             </svg>
           </div>
         </div>
