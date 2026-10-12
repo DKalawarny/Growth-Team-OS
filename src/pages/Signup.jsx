@@ -28,7 +28,12 @@ export default function Signup() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!agreed) return
+    // 🔴 11 Oct 2026: the button used to sit greyed out with no reason given,
+    // and the box that unlocked it was BELOW it. Daniel, testing it himself:
+    // "nope still cant". The button now always works and says what is missing.
+    if (!email.trim()) return setError('Enter your email address.')
+    if (password.length < 8) return setError(`Your password needs at least 8 characters. It has ${password.length}.`)
+    if (!agreed) return setError('Tick the box above to accept the pilot agreement, then create your account.')
     setLoading(true)
     setError(null)
 
@@ -117,7 +122,7 @@ export default function Signup() {
             {SHOW_PUBLIC_PRICE ? `Two fields, then ${TRIAL_DAYS} days to decide.` : 'Two fields. Free while we are in private pilot.'}
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-widest text-ink-500 mb-2">
                 Email
@@ -155,8 +160,10 @@ export default function Signup() {
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
-              <p className="text-[11px] text-ink-400 mt-1.5">
-                Use at least 8 characters. Mix letters + numbers for extra strength.
+              <p className={`text-xs mt-1.5 ${password.length > 0 && password.length < 8 ? 'text-red-600 font-medium' : 'text-ink-500'}`}>
+                {password.length > 0 && password.length < 8
+                  ? `At least 8 characters. ${8 - password.length} more to go.`
+                  : 'At least 8 characters. Mixing letters and numbers makes it stronger.'}
               </p>
             </div>
 
@@ -170,6 +177,33 @@ export default function Signup() {
               </div>
             )}
 
+            {/* ⚠️ This replaced the sentence "By creating an account you agree
+                to our terms." — which linked to nothing, because no terms
+                existed. Asserting an agreement that cannot be produced is
+                worse than asking plainly, so now it is a real checkbox with a
+                real link and a recorded acceptance.
+
+                It is also no longer claiming the trial auto-converts. Nothing
+                is charged during the pilot and no card is collected, so that
+                sentence described a thing that could not happen. */}
+            <label className="flex items-start gap-3 cursor-pointer rounded-lg border border-ink-200 bg-white px-3.5 py-3">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={e => setAgreed(e.target.checked)}
+                className="mt-0.5 w-5 h-5 flex-shrink-0 accent-brand-600"
+              />
+              <span className="text-[13px] text-ink-700 leading-relaxed">
+                I accept the{' '}
+                <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold underline underline-offset-2">
+                  pilot agreement
+                </Link>
+                : Eliv8 OS is in private pilot, Solomon gives business
+                thinking rather than professional advice, and the decisions
+                stay mine.
+              </span>
+            </label>
+
             {!confirmSent && error && (
               <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                 {error}
@@ -180,39 +214,12 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
-              disabled={loading || !agreed}
               className="w-full bg-gold-gradient text-white rounded-lg px-4 py-3 text-sm font-bold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed glow-gold-sm hover:glow-gold transition-all duration-200"
             >
               {loading ? 'Creating your account…' : (SHOW_PUBLIC_PRICE ? 'Start my free trial →' : 'Create my account →')}
             </button>
             )}
 
-            {/* ⚠️ This replaced the sentence "By creating an account you agree
-                to our terms." — which linked to nothing, because no terms
-                existed. Asserting an agreement that cannot be produced is
-                worse than asking plainly, so now it is a real checkbox with a
-                real link and a recorded acceptance.
-
-                It is also no longer claiming the trial auto-converts. Nothing
-                is charged during the pilot and no card is collected, so that
-                sentence described a thing that could not happen. */}
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={agreed}
-                onChange={e => setAgreed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-600"
-              />
-              <span className="text-[11px] text-ink-400 leading-relaxed">
-                I accept the{' '}
-                <Link to="/terms" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-semibold underline underline-offset-2">
-                  pilot agreement
-                </Link>
-                : Eliv8 OS is in private pilot, Solomon gives business
-                thinking rather than professional advice, and the decisions
-                stay mine.
-              </span>
-            </label>
             <p className="text-[11px] text-ink-400 text-center leading-relaxed">
               Free while in pilot. No card, and nothing is charged.
             </p>
