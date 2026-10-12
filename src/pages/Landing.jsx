@@ -716,13 +716,23 @@ function DemoBand() {
           The demo is the full app with a sample landscaping company in it. You get your own private copy, so you can click and change anything. You do not need an account or a card.
           Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
         </p>
-        <Link
-          to="/demo"
-          className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-3"
-        >
-          <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-gray-950" />
-          Open the live demo
-        </Link>
+        {/* 12 Oct, Daniel: "should have the register here as well." Same pair,
+            same colours as the hero: demo in white, sign-up in green. */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            to="/demo"
+            className="px-10 py-4 rounded-xl bg-white hover:bg-gray-100 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-2.5"
+          >
+            <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-brand-600" />
+            Open the live demo
+          </Link>
+          <Link
+            to="/signup"
+            className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+          >
+            {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
+          </Link>
+        </div>
       </div>
     </section>
   )
