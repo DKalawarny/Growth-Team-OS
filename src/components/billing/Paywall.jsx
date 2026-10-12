@@ -157,7 +157,7 @@ function pickContent(status) {
     return {
       tone:         'neutral',
       title:        'You have hit this month\u2019s limit',
-      body:         'Nothing is charged during the pilot and nothing has ended. This is only the cap that stops runaway AI costs. Email support@eliv8os.com and we will raise it, usually the same day.',
+      body:         'Nothing is charged during the pilot and nothing has ended. This is only the monthly cap that stops runaway AI costs, and it resets next month. A plan with more room for heavier use is coming later. If you need it, tell us from the Help page.',
       primary:      'none',
       primaryLabel: null,
     }

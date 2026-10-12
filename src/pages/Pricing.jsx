@@ -110,6 +110,8 @@ const REPLACES = [
   { label: 'Project management tool',       low: 50,   high: 200  },
   { label: 'HR / check-in tool',            low: 30,   high: 150  },
 ]
+const REPLACES_LOW  = REPLACES.reduce((n, r) => n + r.low, 0)
+const REPLACES_HIGH = REPLACES.reduce((n, r) => n + r.high, 0)
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 
@@ -129,7 +131,12 @@ const FAQS = [
   },
   {
     q: 'What if I need more than 10 reports per tool?',
-    a: 'Just email us. We\'ll raise your cap the same day, no questions. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything, including Solomon, once it is reached. Both limits exist to stop runaway AI bills, not to slow you down, and we would rather raise them than have you hit one without warning.',
+    // 12 Oct, Daniel on the old answer ("Just email us. We'll raise your cap
+    // the same day, no questions"): "not true, we should have another tier I
+    // think for more use later." Nobody was raising caps by email, and the
+    // support address has no mailbox. Say what is true: the limit resets, and
+    // a bigger plan is coming. Do not name a price for it until there is one.
+    a: 'Right now the limit is 10 a month for each tool, and it resets every month. There is also a monthly ceiling on what your account can run up in AI costs, which starts at $10 and stops everything, including Solomon, once it is reached. Both limits are there to stop runaway AI bills. A plan with more room for heavier use is coming later. If you are hitting the limit, tell us from the Help page in the app, so we know who needs it.',
   },
   {
     q: 'Can I cancel anytime?',
@@ -401,29 +408,35 @@ export default function Pricing() {
           </div>
 
           <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-            {REPLACES.map((row, i) => {
-              const midpoint = Math.round((row.low + row.high) / 2)
-              return (
-                <div key={i} className={`flex items-center justify-between px-6 py-4 bg-white ${i < REPLACES.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-red-400 font-bold text-lg">✗</span>
-                    <span className="text-sm font-medium text-gray-700">{row.label}</span>
-                  </div>
-                  <span className="text-sm text-gray-400 font-medium tabular-nums">
-                    ${row.low.toLocaleString()}–${row.high.toLocaleString()}<span className="text-xs">/mo</span>
-                  </span>
+            {REPLACES.map((row, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-white border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <span className="text-red-400 font-bold text-lg">✗</span>
+                  <span className="text-[15px] font-medium text-gray-800">{row.label}</span>
                 </div>
-              )
-            })}
-            <div className="px-6 py-5 bg-gray-950 flex items-center justify-between">
+                <span className="text-[15px] text-gray-600 font-medium tabular-nums whitespace-nowrap">
+                  ${row.low.toLocaleString()} to ${row.high.toLocaleString()}<span className="text-xs">/mo</span>
+                </span>
+              </div>
+            ))}
+            {/* 12 Oct, Daniel: "we should have the total of all those added at
+                the bottom, then free right now." The total was a pale 12px
+                line under the Eliv8 price. It is its own row now, added up
+                from the rows above so it can never drift from them. */}
+            <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <span className="text-[15px] font-bold text-gray-900">Paid for separately</span>
+              <span className="text-base sm:text-lg font-black text-gray-900 tabular-nums whitespace-nowrap">
+                ${REPLACES_LOW.toLocaleString()} to ${REPLACES_HIGH.toLocaleString()}<span className="text-sm font-semibold">/mo</span>
+              </span>
+            </div>
+            <div className="px-4 sm:px-6 py-5 bg-gray-950 flex items-center justify-between gap-4">
               <div>
                 <Wordmark tone="dark" size={16} />
-                <p className="text-white/40 text-xs mt-0.5">Everything above, working from the same set of numbers</p>
+                <p className="text-white/70 text-[13px] mt-1">Everything above, working from the same set of numbers</p>
               </div>
-              <div className="text-right">
-                <p className="text-brand-400 font-black text-2xl">{SHOW_PUBLIC_PRICE ? <>${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></> : <span className="text-lg">Free in pilot</span>}</p>
-                <p className="text-white/30 text-xs mt-0.5">vs. $1,080 to $3,850/mo separately</p>
-              </div>
+              <p className="text-brand-400 font-black text-xl sm:text-2xl text-right flex-shrink-0">
+                {SHOW_PUBLIC_PRICE ? <>${PRICE_MONTHLY_USD}<span className="text-sm font-normal text-brand-400/60">/mo</span></> : 'Free right now'}
+              </p>
             </div>
           </div>
         </section>
