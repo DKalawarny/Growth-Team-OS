@@ -132,7 +132,3 @@ not a replacement for the tools below, it is the advisory layer they do not buil
 - [For demolition contractors](https://eliv8os.com/for/demolition)
 - [For landscaping contractors](https://eliv8os.com/for/landscaping)
 
-## Contact
-
-Email: support@eliv8os.com
-

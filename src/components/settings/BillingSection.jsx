@@ -233,9 +233,9 @@ function BillingBody({ status, subscription, busy, err, billing, onBillingChange
       />
       <Hint>
         Questions before you commit?{' '}
-        <a href="mailto:support@eliv8os.com" className="text-brand-600 hover:underline">
-          Email us
-        </a>.
+        <Link to="/help" className="text-brand-600 hover:underline">
+          Ask on the Help page
+        </Link>.
       </Hint>
       {err && <ErrorLine text={err} />}
     </>

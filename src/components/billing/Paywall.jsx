@@ -110,9 +110,9 @@ export default function Paywall() {
           </p>
           <p>
             Need help?{' '}
-            <a href="mailto:support@eliv8os.com" className="text-brand-600 hover:underline">
-              support@eliv8os.com
-            </a>
+            <Link to="/help" className="text-brand-600 hover:underline">
+              Ask on the Help page
+            </Link>
           </p>
         </div>
       </div>

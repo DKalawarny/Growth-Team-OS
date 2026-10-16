@@ -34,7 +34,7 @@ import Wordmark from '../components/brand/Wordmark'
  */
 
 const LANDING_META = buildPageMeta({
-  title:       "Eliv8 OS — an advisor for owners who care how it's run",
+  title:       "Eliv8 OS: an advisor for owners who care how it's run",
   description: `An advisor that reads your actual numbers, remembers what you decided and why, and argues the hard calls both ways. Currently free while in private pilot.`,
   path:        '/',
 })
@@ -444,6 +444,11 @@ function ConvictionSection() {
             Solomon watches your margins as closely as any CFO would. It also
             tells you what it cost to go back and fix that job for free, and
             whether your people will still want to work for you a year from now.
+          </p>
+          {/* 16 Oct, Daniel's own line, added at his yes. */}
+          <p>
+            It helps you build somewhere people want to work, and bring your
+            staff and your clients through it with you.
           </p>
           {/* ⚠️ "He/He'll" three times here until 31 Aug. The 29 Aug pronoun pass
               only ever touched the Solomon section; Daniel: "yes he is said lots

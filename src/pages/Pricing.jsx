@@ -477,12 +477,14 @@ export default function Pricing() {
               >
                 {SHOW_PUBLIC_PRICE ? 'Start free trial. No credit card' : 'Start free. No credit card'}
               </Link>
-              <a
-                href="mailto:support@eliv8os.com"
+              {/* 16 Oct, Daniel on the support inbox: "ideally we dont want
+                  people using it much". The demo answers most questions. */}
+              <Link
+                to="/demo"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 font-semibold text-sm transition-colors"
               >
-                Have a question? Email us
-              </a>
+                Open the live demo
+              </Link>
             </div>
             <p className="mt-6 text-white/20 text-xs">{SHOW_PUBLIC_PRICE ? `$${PRICE_MONTHLY_USD}/month after trial · Cancel anytime · No contracts` : 'Free while in private pilot · Cancel anytime · No contracts'}</p>
           </div>
@@ -491,7 +493,6 @@ export default function Pricing() {
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
         <footer className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-400">
           <span>© Eliv8 OS · An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
-          <a href="mailto:support@eliv8os.com" className="underline hover:text-gray-600">support@eliv8os.com</a>
         </footer>
 
       </main>
