@@ -286,6 +286,29 @@ export default function Landing() {
           ══════════════════════════════════════════════════════════════════════ */}
       <div className="wayout__pitch">
 
+        {/* ⭐ 17 OCT: THE VIDEO. Daniel's ad, first thing below the hero: the
+            whole app, one plan from tap to new version, in under a minute.
+            ⚠️ Luis is a sample person and the lead says so, same rule as the
+            hero cards. ⚠️ Never autoplay: the voice carries the explanation and
+            a muted loop would play it without the words. preload="none" keeps
+            11 MB off the first page load; the poster is the opening card. */}
+        <section>
+          <h2 className="wayout__pitchh">See one person’s plan, start to finish.</h2>
+          <p className="wayout__pitchlead">
+            Luis is an example. He works two jobs, is $300 short each month, and
+            wants to be home for supper. Under a minute, sound on.
+          </p>
+          <video
+            className="wayout__video"
+            src="/video/unstuck-map-plan.mp4"
+            poster="/video/unstuck-map-plan.jpg"
+            controls
+            preload="none"
+            playsInline
+            aria-label={`${WAYOUT_NAME}: one person’s plan, start to finish`}
+          />
+        </section>
+
         {/* ⭐⭐ THE PAGE SHOWED THE OUTPUT AND NEVER THE PROCESS. Two finished
             plans sit in the hero, beautifully, and nothing told anybody how one
             comes to exist — the first mention that questions are involved was

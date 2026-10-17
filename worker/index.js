@@ -88,10 +88,39 @@ export default {
       res = path === '/' ? await asset('/index.html') : ((await find(path)) ?? (await asset('/index.html')))
     }
 
-    const out = new Response(res.body, res)
+    const out = await withRange(request, res)
     for (const [k, v] of Object.entries(SECURITY)) out.headers.set(k, v)
     return out
   },
+}
+
+// 🔴 Safari on iPhone will not play a video unless the server answers "give me
+// bytes X to Y" with exactly those bytes (206). The asset store answered with
+// the whole file (17 Oct, checked locally), so the landing video would sit dead
+// on every iPhone. Videos only: everything else streams as before.
+async function withRange(request, res) {
+  const range = request.headers.get('Range')
+  const type = res.headers.get('Content-Type') || ''
+  if (res.status !== 200 || !range || !type.startsWith('video/')) {
+    const out = new Response(res.body, res)
+    if (type.startsWith('video/')) out.headers.set('Accept-Ranges', 'bytes')
+    return out
+  }
+  const buf = await res.arrayBuffer()
+  const size = buf.byteLength
+  const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim())
+  let start = m && m[1] !== '' ? Number(m[1]) : NaN
+  let end = m && m[2] !== '' ? Number(m[2]) : size - 1
+  if (m && m[1] === '' && m[2] !== '') { start = Math.max(0, size - Number(m[2])); end = size - 1 }
+  if (!m || Number.isNaN(start) || start >= size || start > end) {
+    return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}`, 'Accept-Ranges': 'bytes' } })
+  }
+  end = Math.min(end, size - 1)
+  const headers = new Headers(res.headers)
+  headers.set('Content-Range', `bytes ${start}-${end}/${size}`)
+  headers.set('Content-Length', String(end - start + 1))
+  headers.set('Accept-Ranges', 'bytes')
+  return new Response(request.method === 'HEAD' ? null : buf.slice(start, end + 1), { status: 206, headers })
 }
 
 // Unstuck Map used to live under eliv8os.com/wayout. Those links still exist.
