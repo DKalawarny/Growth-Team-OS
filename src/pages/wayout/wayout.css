@@ -1237,17 +1237,6 @@ div:first-child > .wayout__group { margin-top: 14px; }
   margin: 0 0 28px;
 }
 
-/* The landing video. The frame is the video's own shape so nothing jumps when
-   the poster gives way to the first frame. */
-.wayout__video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 18px;
-  background: #1f2a1c;
-  box-shadow: 0 18px 50px rgba(35, 48, 31, 0.22);
-}
-
 /* Three-up. Collapses rather than squeezing — a 3-col grid at phone width is
    how the notes on the plan board ended up 98px wide. */
 .wayout__three {
@@ -1450,8 +1439,11 @@ div:first-child > .wayout__group { margin-top: 14px; }
   .wayout__hero {
     /* ⚠️ minmax, not a fixed 460 — a fixed track plus a rotation pushed the
        card past the right edge and it was being cropped. */
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
-    gap: 72px;
+    /* ⚠️ 17 OCT: THE RIGHT TRACK IS A VIDEO NOW, NOT A 420px CARD. A 16:9
+       frame in a card-width column was a thumbnail; it takes the larger share
+       and the headline column keeps enough for "In order." on one line. */
+    grid-template-columns: minmax(340px, 0.82fr) minmax(0, 1.18fr);
+    gap: 64px;
     align-items: center;
     padding: 64px 64px;
   }
@@ -1500,70 +1492,37 @@ h1.wayout__heroline {
   padding: 34px 30px 30px;
   box-shadow: 0 60px 110px rgba(35, 48, 31, .26), 0 8px 24px rgba(35, 48, 31, .10);
 }
-/* ═══ TWO PLANS, STAGGERED ═════════════════════════════════════════════════
-   ⭐⭐ Daniel: "two examples, maybe one staggered over the other, and when the
-   cursor goes over it it brings the back one to the top." The effect sells the
-   point the copy is making — the plan is built from YOUR answers, and one
-   example quietly argues the product does one thing. */
-.wayout__heroplans { position: relative; }
-
-@media (min-width: 1000px) {
-  /* The tilt is the whole reason it reads as an object rather than a panel. */
-  /* Enough to read as an object, not enough to make the text look wonky. */
-  /* ⚠️ THE PADDING IS THE BACK CARD'S ROOM, not decoration — the wrapper sits
-     inside `overflow-x: clip`, so anything the offset pushes outside is simply
-     gone. Top and right, because that is where the second sheet sits.
-     ⚠️ And the wrapper is pulled the same amount to the right, so reserving that
-     room does not shrink the front card — which it did on the first attempt, and
-     the headline started wrapping mid-phrase. */
-  .wayout__heroplans { padding: 44px 48px 0 0; margin-right: -48px; }
-  .wayout__heroplan {
-    transition: transform .42s cubic-bezier(.22, 1, .36, 1), box-shadow .42s, opacity .3s;
-    will-change: transform;
-  }
-  .wayout__heroplan--front { transform: rotate(-3.5deg); position: relative; z-index: 2; }
-  /* ⚠️ The back card is POSITIONED OFF THE FRONT ONE, not laid under it — a
-     stack you cannot see the second card in is just a drop shadow. Up and to
-     the right, tilted the other way, so it reads as a second sheet. */
-  .wayout__heroplan--back {
-    position: absolute; inset: 0 0 auto auto; width: 100%;
-    /* ⚠️ FAR ENOUGH OUT TO READ AS A SECOND CARD. At 26px/-22px it looked like
-       a drop shadow with a corner, which is worse than one card: it says the
-       designer nudged something rather than that there are two plans. */
-    transform: rotate(3.2deg) translate(44px, -38px) scale(.955);
-    z-index: 1;
-    box-shadow: 0 40px 80px rgba(35, 48, 31, .18), 0 6px 18px rgba(35, 48, 31, .08);
-  }
-
-  /* Hover EITHER card and the back one takes the front. One rule, because the
-     swap has to happen wherever the cursor lands — hovering the exposed corner
-     of the back card and having nothing happen is worse than no effect at all. */
-  .wayout__heroplans:hover .wayout__heroplan--back,
-  .wayout__heroplans:focus-within .wayout__heroplan--back {
-    transform: rotate(-2.5deg) translate(0, 0) scale(1);
-    z-index: 3;
-    box-shadow: 0 60px 110px rgba(35, 48, 31, .26), 0 8px 24px rgba(35, 48, 31, .10);
-  }
-  .wayout__heroplans:hover .wayout__heroplan--front,
-  .wayout__heroplans:focus-within .wayout__heroplan--front {
-    transform: rotate(3.5deg) translate(42px, 34px) scale(.955);
-    z-index: 1;
-    box-shadow: 0 40px 80px rgba(35, 48, 31, .18), 0 6px 18px rgba(35, 48, 31, .08);
-  }
+/* ═══ THE TWO SAMPLE PLANS, SIDE BY SIDE ════════════════════════════════════
+   ⭐ 17 Oct: moved out of the hero into their own section (the video took the
+   hero). The staggered stack and hover swap were for a narrow column with no
+   room; with the full width, side by side IS the contrast, and nothing has to
+   be hovered to be read. Stacked on a phone. */
+.wayout__heroplans { display: grid; gap: 26px; align-items: start; }
+@media (min-width: 860px) {
+  .wayout__heroplans { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
 }
 
-/* 🔴 NO STACK BELOW 1000px. There is no cursor on a phone, so a card hidden
-   behind another is simply a card nobody will ever read. They become two
-   ordinary cards, one after the other — which is also how somebody scrolling
-   sees the contrast that is the whole reason there are two. */
-@media (max-width: 999px) {
-  .wayout__heroplans { display: grid; gap: 22px; }
-  .wayout__heroplan--back { position: static; width: auto; transform: none; }
+/* ═══ THE HERO VIDEO ═════════════════════════════════════════════════════════
+   Same material as the plan card it replaced: paper-dark frame, the long soft
+   shadow. The frame is the video's own shape so nothing jumps when the poster
+   gives way to the first frame. */
+.wayout__herovideo { margin: 0; }
+.wayout__herovideo video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 22px;
+  background: #1f2a1c;
+  box-shadow: 0 60px 110px rgba(35, 48, 31, .26), 0 8px 24px rgba(35, 48, 31, .10);
+}
+.wayout__herovideo figcaption {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--hero-soft);
+  margin: 16px 4px 0;
+  max-width: 60ch;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .wayout__heroplan { transition: none; }
-}
 .wayout__heroplan h2 { font-size: 27px; line-height: 1.06; margin: 0; }
 .wayout__heroplan .wayout__who { margin: 20px 0 6px; }
 .wayout__heroplan .wayout__stats { margin-top: 18px; }

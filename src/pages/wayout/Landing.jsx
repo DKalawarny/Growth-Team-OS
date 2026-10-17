@@ -198,78 +198,28 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* ⚠️ aria-hidden: these are an illustration of the deliverable, and a
-            screen reader working through two sample plans before reaching the
-            actual proposition would be worse than skipping them. The copy above
-            carries the meaning.
-
-            ⭐⭐ TWO, STAGGERED, AND THE BACK ONE COMES FORWARD ON HOVER. Daniel:
-            "we could have two examples maybe one staggered over the other and
-            when the cursor goes over it it brings the back one to the top."
-
-            🔴 THE REASON IS STRONGER THAN THE EFFECT: ONE EXAMPLE MAKES THE
-            PRODUCT LOOK LIKE IT DOES ONE THING. Marcus already has the money and
-            needs permission; Dee is $3,100 in a hole and needs the order. Their
-            headlines, their numbers and all six moves share nothing — which IS
-            the claim this page is making, and a single card quietly argues the
-            opposite. */}
-        <div className="wayout__heroplans" aria-hidden="true">
-          {HERO_PLANS.map((pl, i) => (
-            <div className={`wayout__heroplan wayout__heroplan--${i === 0 ? 'front' : 'back'}`} key={pl.who} tabIndex={-1}>
-              <div className="wayout__brand"><i />your plan</div>
-              <p className="wayout__who">{pl.who}</p>
-              {/* 🔴 NOT A HEADING. These were <h2>, which made "Four days a week
-                  by March" and "Out of the hole by June" the FIRST TWO SECTION
-                  HEADINGS on the page — an invented person's plan sitting above
-                  every real section in the document outline. aria-hidden keeps
-                  it from a screen reader; it does not keep it out of the outline
-                  a crawler builds. It is a picture of the product, so it is a
-                  div that happens to be big. */}
-              <div className="wayout__heroplanline">
-                {pl.headline} <mark>{pl.mark}</mark>
-              </div>
-
-              {/* ⭐ 9 Oct: mirrors the real plan, where the first thing under the
-                  headline is the next step, then the numbers as a starting line. */}
-              {(() => { const m = pl.moves.find(([, , now]) => now) ?? pl.moves[0]; return (
-                <p className="wayout__starthere"><b>Start here</b><span>{m[0]}<em>{m[1]}</em></span></p>
-              ) })()}
-              <p className="wayout__label wayout__herostarting">Where you’re starting</p>
-              <div className="wayout__stats">
-                {pl.stats.map(st => (
-                  <div className="wayout__stat" key={st[0]}>
-                    <span>{st[0]}</span><b>{st[1]}</b>
-                  </div>
-                ))}
-              </div>
-
-              <p className="wayout__label">Your three moves, in order</p>
-              {pl.moves.map(([title, when, now]) => (
-                <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
-                  <span className="wayout__chk">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 8.5l3 3 7-7" />
-                    </svg>
-                  </span>
-                  <span>
-                    <p>{title}</p>
-                    <small><b>{when}</b></small>
-                  </span>
-                </div>
-              ))}
-
-              {/* ⭐⭐ THE CUT LIST IS THE DIFFERENTIATOR AND IT BELONGS ON THE
-                  FRONT DOOR. Everything else adds to somebody's list; this is
-                  the one that takes things off it, with the reason. */}
-              <p className="wayout__herocut">
-                <b>Ideas we left out, and why</b>
-                {pl.cut.map(([what, why]) => (
-                  <span key={what}><s>{what}</s>: {why}</span>
-                ))}
-              </p>
-            </div>
-          ))}
-        </div>
+        {/* ⭐⭐ 17 OCT: THE VIDEO IS THE HERO'S PRODUCT NOW. Daniel: "maybe video
+            goes where cards are and cards go below." Same idea as the cards it
+            replaces (the product, not copy about it), but it shows the whole
+            thing working, tap to new version, in under a minute.
+            ⚠️ Never autoplay: the voice carries the explanation and a muted
+            loop would play it without the words. preload="none" keeps 11 MB off
+            the first page load; the poster is the opening card.
+            ⚠️ Luis is a sample person and the caption says so. */}
+        <figure className="wayout__herovideo">
+          <video
+            src="/video/unstuck-map-plan.mp4"
+            poster="/video/unstuck-map-plan.jpg"
+            controls
+            preload="none"
+            playsInline
+            aria-label={`${WAYOUT_NAME}: one person’s plan, start to finish`}
+          />
+          <figcaption>
+            Luis is an example. Two jobs, $300 short each month, wants to be home
+            for supper. Under a minute, sound on.
+          </figcaption>
+        </figure>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
@@ -285,29 +235,6 @@ export default function Landing() {
           arithmetic — and everything below earns the right to it.
           ══════════════════════════════════════════════════════════════════════ */}
       <div className="wayout__pitch">
-
-        {/* ⭐ 17 OCT: THE VIDEO. Daniel's ad, first thing below the hero: the
-            whole app, one plan from tap to new version, in under a minute.
-            ⚠️ Luis is a sample person and the lead says so, same rule as the
-            hero cards. ⚠️ Never autoplay: the voice carries the explanation and
-            a muted loop would play it without the words. preload="none" keeps
-            11 MB off the first page load; the poster is the opening card. */}
-        <section>
-          <h2 className="wayout__pitchh">See one person’s plan, start to finish.</h2>
-          <p className="wayout__pitchlead">
-            Luis is an example. He works two jobs, is $300 short each month, and
-            wants to be home for supper. Under a minute, sound on.
-          </p>
-          <video
-            className="wayout__video"
-            src="/video/unstuck-map-plan.mp4"
-            poster="/video/unstuck-map-plan.jpg"
-            controls
-            preload="none"
-            playsInline
-            aria-label={`${WAYOUT_NAME}: one person’s plan, start to finish`}
-          />
-        </section>
 
         {/* ⭐⭐ THE PAGE SHOWED THE OUTPUT AND NEVER THE PROCESS. Two finished
             plans sit in the hero, beautifully, and nothing told anybody how one
@@ -379,6 +306,79 @@ export default function Landing() {
                 updated.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ⭐⭐ 17 OCT: THE TWO SAMPLE PLANS MOVED HERE FROM THE HERO, where the
+            video now is. Right after "what happens when you press the button",
+            so the page reads: watch one, what you do, what you get back.
+            🔴 THE REASON THERE ARE TWO STILL HOLDS: ONE EXAMPLE MAKES THE PRODUCT
+            LOOK LIKE IT DOES ONE THING. Marcus already has the money and needs
+            permission; Dee is $3,100 in a hole and needs the order. Their
+            headlines, their numbers and all six moves share nothing, which IS
+            the claim this page is making.
+            ⚠️ No stack and no hover swap any more: side by side is the contrast,
+            and the lead says they are examples. Readable now, so no aria-hidden. */}
+        <section>
+          <h2 className="wayout__pitchh">Two people. Two plans that share nothing.</h2>
+          <p className="wayout__pitchlead">
+            Marcus and Dee are examples. Same questions, different lives, so a
+            different first move.
+          </p>
+          <div className="wayout__heroplans">
+            {HERO_PLANS.map(pl => (
+              <div className="wayout__heroplan" key={pl.who}>
+                <div className="wayout__brand"><i />your plan</div>
+                <p className="wayout__who">{pl.who}</p>
+                {/* 🔴 NOT A HEADING. These were <h2>, which made "Four days a week
+                    by March" and "Out of the hole by June" the FIRST TWO SECTION
+                    HEADINGS on the page — an invented person's plan sitting above
+                    every real section in the document outline. It is a picture of
+                    the product, so it is a div that happens to be big. */}
+                <div className="wayout__heroplanline">
+                  {pl.headline} <mark>{pl.mark}</mark>
+                </div>
+
+                {/* ⭐ 9 Oct: mirrors the real plan, where the first thing under the
+                    headline is the next step, then the numbers as a starting line. */}
+                {(() => { const m = pl.moves.find(([, , now]) => now) ?? pl.moves[0]; return (
+                  <p className="wayout__starthere"><b>Start here</b><span>{m[0]}<em>{m[1]}</em></span></p>
+                ) })()}
+                <p className="wayout__label wayout__herostarting">Where you’re starting</p>
+                <div className="wayout__stats">
+                  {pl.stats.map(st => (
+                    <div className="wayout__stat" key={st[0]}>
+                      <span>{st[0]}</span><b>{st[1]}</b>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="wayout__label">Your three moves, in order</p>
+                {pl.moves.map(([title, when, now]) => (
+                  <div className={`wayout__move${now ? ' wayout__move--now' : ''}`} key={title}>
+                    <span className="wayout__chk">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 8.5l3 3 7-7" />
+                      </svg>
+                    </span>
+                    <span>
+                      <p>{title}</p>
+                      <small><b>{when}</b></small>
+                    </span>
+                  </div>
+                ))}
+
+                {/* ⭐⭐ THE CUT LIST IS THE DIFFERENTIATOR AND IT BELONGS ON THE
+                    FRONT DOOR. Everything else adds to somebody's list; this is
+                    the one that takes things off it, with the reason. */}
+                <p className="wayout__herocut">
+                  <b>Ideas we left out, and why</b>
+                  {pl.cut.map(([what, why]) => (
+                    <span key={what}><s>{what}</s>: {why}</span>
+                  ))}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
