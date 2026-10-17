@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { captureSource } from '../../lib/wayout/source'
 import { Helmet } from 'react-helmet-async'
@@ -52,36 +52,73 @@ import './wayout.css'
  */
 const HERO_PLANS = [
   {
-    who: 'Marcus, 52. Two kids at home. Wanted more time.',
+    who: 'Marcus, 52. Two kids. Wants more time at home.',
     headline: 'Four days a week by March.',
     mark: 'You can already afford it.',
-    stats: [['Has to go out each month', '$4,100'], ['Your pay on four days', '$5,600']],
+    stats: [['Bills each month', '$4,100'], ['Pay on a four-day week', '$5,600']],
     moves: [
-      ['Add up what has to go out each month', 'One evening.', true],
-      ['Go over the number with Jen', 'Next week.', false],
-      ['Ask for the four-day week', 'March.', false],
+      ['Add up your monthly bills', 'One evening.', true],
+      ['Show the number to Jen', 'Next week.', false],
+      ['Ask your boss for a four-day week', 'March.', false],
     ],
     cut: [
-      ['A side business', 'you asked for time, not more work.'],
-      ['Selling the house', 'you do not need to.'],
+      ['A side business', 'you want time, not more work.'],
+      ['Selling the house', 'you don’t need to.'],
     ],
   },
   {
-    who: 'Dee, 38. Renting, two kids. Wanted more money.',
-    headline: 'Out of the hole by June,',
+    who: 'Dee, 38. Rents. Two kids. Wants more money.',
+    headline: 'Out of debt by June,',
     mark: 'without a second job.',
-    stats: [['Left at the end of the month', '$240'], ['What you owe', '$3,100']],
+    stats: [['Left over each month', '$240'], ['What you owe', '$3,100']],
     moves: [
-      ['Cancel the bills that renew on their own', 'This week.', true],
-      ['Pay off the $900 card before the $2,200 one', 'By March. It charges you more.', false],
-      ['Ask for a raise, with your numbers written down', 'April.', false],
+      ['Cancel the bills you don’t use', 'This week.', true],
+      ['Pay off the $900 card before the $2,200 one', 'By March. It costs you more.', false],
+      ['Ask for a raise, with your numbers on paper', 'April.', false],
     ],
     cut: [
-      ['A second job', 'the hours are not there, and childcare would eat the pay.'],
-      ['A loan to combine your debts', 'at your rate it costs more than it saves.'],
+      ['A second job', 'no time for it, and childcare would cost more than you’d make.'],
+      ['A loan to pay off your cards', 'it would cost you more than it saves.'],
     ],
   },
 ]
+
+/**
+ * The hero shows the poster with a play button; pressing it opens the video
+ * nearly full screen. 🔴 Why: the app inside the video is a 1280px-wide page,
+ * and at hero size its body text came out about 8px tall, which Daniel read as
+ * blur. Large, it is legible. Esc, the close button or a click outside closes.
+ */
+function HeroVideo() {
+  const [open, setOpen] = useState(false)
+  const closeRef = useRef(null)
+  useEffect(() => {
+    if (!open) return
+    const onKey = e => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
+  }, [open])
+  return (
+    <>
+      <button type="button" className="wayout__vidbtn" onClick={() => setOpen(true)} aria-label="Play the video">
+        <img src="/video/unstuck-map-plan.jpg" alt="" width="1280" height="720" />
+        <span className="wayout__vidplay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+        </span>
+      </button>
+      {open && (
+        <div className="wayout__vidmodal" role="dialog" aria-modal="true" aria-label={`${WAYOUT_NAME} video`} onClick={() => setOpen(false)}>
+          <button type="button" ref={closeRef} className="wayout__vidclose" onClick={() => setOpen(false)} aria-label="Close the video">×</button>
+          {/* autoPlay is fine here: it only ever starts from their own press. */}
+          <video src="/video/unstuck-map-plan.mp4" controls autoPlay playsInline onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+    </>
+  )
+}
 
 export default function Landing() {
   // ⭐ The landing is where most first visits arrive — record where from.
@@ -205,16 +242,12 @@ export default function Landing() {
             ⚠️ Never autoplay: the voice carries the explanation and a muted
             loop would play it without the words. preload="none" keeps 11 MB off
             the first page load; the poster is the opening card.
-            ⚠️ Luis is a sample person and the caption says so. */}
+            ⚠️ Luis is a sample person and the caption says so.
+            🔴 It PLAYS LARGE, not in the hero (17 Oct, Daniel: "looks a bit
+            blurry"). The file is sharp; in a ~800px hero box the app's text
+            inside it renders a few pixels tall. See HeroVideo. */}
         <figure className="wayout__herovideo">
-          <video
-            src="/video/unstuck-map-plan.mp4"
-            poster="/video/unstuck-map-plan.jpg"
-            controls
-            preload="none"
-            playsInline
-            aria-label={`${WAYOUT_NAME}: one person’s plan, start to finish`}
-          />
+          <HeroVideo />
           <figcaption>
             Luis is an example. Two jobs, $300 short each month, wants to be home
             for supper. Under a minute, sound on.
@@ -320,10 +353,10 @@ export default function Landing() {
             ⚠️ No stack and no hover swap any more: side by side is the contrast,
             and the lead says they are examples. Readable now, so no aria-hidden. */}
         <section>
-          <h2 className="wayout__pitchh">Two people. Two plans that share nothing.</h2>
+          <h2 className="wayout__pitchh">Two people. Two different plans.</h2>
           <p className="wayout__pitchlead">
-            Marcus and Dee are examples. Same questions, different lives, so a
-            different first move.
+            Marcus and Dee are examples. They answered the same questions and got
+            different plans.
           </p>
           <div className="wayout__heroplans">
             {HERO_PLANS.map(pl => (
@@ -344,7 +377,7 @@ export default function Landing() {
                 {(() => { const m = pl.moves.find(([, , now]) => now) ?? pl.moves[0]; return (
                   <p className="wayout__starthere"><b>Start here</b><span>{m[0]}<em>{m[1]}</em></span></p>
                 ) })()}
-                <p className="wayout__label wayout__herostarting">Where you’re starting</p>
+                <p className="wayout__label wayout__herostarting">Where you are now</p>
                 <div className="wayout__stats">
                   {pl.stats.map(st => (
                     <div className="wayout__stat" key={st[0]}>
@@ -372,7 +405,7 @@ export default function Landing() {
                     FRONT DOOR. Everything else adds to somebody's list; this is
                     the one that takes things off it, with the reason. */}
                 <p className="wayout__herocut">
-                  <b>Ideas we left out, and why</b>
+                  <b>What we left out</b>
                   {pl.cut.map(([what, why]) => (
                     <span key={what}><s>{what}</s>: {why}</span>
                   ))}
