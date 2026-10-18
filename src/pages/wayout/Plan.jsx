@@ -22,6 +22,7 @@ import CrisisHelp from './CrisisHelp'
 import { bridgeToEliv8 } from '../../lib/bridges'
 import Bridge from './Bridge'
 import Handoff from './Handoff'
+import ShareCard from './ShareCard'
 
 /**
  * The way out — S7, the reveal.
@@ -1754,6 +1755,9 @@ export function Map({
 
       {/* ⭐ After our own offer, never before it: an addition, not a switch. */}
       {showBridge && <Bridge {...bridgeToEliv8('plan')} onClose={shutBridge} />}
+
+      {/* ⭐ Their three moves, figures out, for a friend (ShareCard.jsx). */}
+      {!past && <ShareCard map={map} />}
 
       {/* ⭐ The shared summary with Eliv8 OS (Handoff.jsx). Their words only. */}
       {!past && <Handoff answers={answers} onTell={onSay} />}
