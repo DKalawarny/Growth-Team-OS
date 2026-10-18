@@ -279,7 +279,7 @@ export const SESSION_COLORS = [
   { bar: '#F59E0B', light: '#FEF3C7', text: '#92400e', label: 'amber' },   // brand gold
   { bar: '#0D9488', light: '#CCFBF1', text: '#134e4a', label: 'teal'  },
   { bar: '#3B82F6', light: '#DBEAFE', text: '#1e40af', label: 'blue'  },
-  { bar: '#22C55E', light: '#DCFCE7', text: '#14532d', label: 'green' },
+  { bar: '#0b6b4e', light: '#d6e9df', text: '#14532d', label: 'green' },
   { bar: '#F43F5E', light: '#FFE4E6', text: '#881337', label: 'rose'  },
   { bar: '#0EA5E9', light: '#E0F2FE', text: '#0c4a6e', label: 'sky'   },
 ]

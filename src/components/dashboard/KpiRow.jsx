@@ -103,8 +103,8 @@ function ProgressArc({ pct, size = 56 }) {
         />
         <defs>
           <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"   stopColor="#1cbe8c" />
-            <stop offset="100%" stopColor="#14a67b" />
+            <stop offset="0%"   stopColor="#2f8f6d" />
+            <stop offset="100%" stopColor="#0b6b4e" />
           </linearGradient>
         </defs>
       </svg>

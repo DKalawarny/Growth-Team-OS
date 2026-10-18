@@ -1153,7 +1153,7 @@ function Bubble({ role, content, artifacts, streaming = false, onSave, companyId
             className="absolute -bottom-5 right-1 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded"
             style={{
               opacity: (hovered || saved) ? 1 : 0,
-              color: saved ? '#4ade80' : 'rgba(13,20,19,0.35)',
+              color: saved ? '#2f8f6d' : 'rgba(13,20,19,0.35)',
               pointerEvents: hovered || saved ? 'auto' : 'none',
             }}
           >
@@ -1458,7 +1458,7 @@ const Composer = forwardRef(function Composer(
               className="rounded-xl p-2.5 min-h-[44px] flex items-center justify-center transition-colors disabled:opacity-30 flex-shrink-0"
               style={{
                 color:      dictating ? '#fff' : 'rgba(13,20,19,0.45)',
-                background: dictating ? '#14a67b' : 'rgba(13,20,19,0.04)',
+                background: dictating ? '#0b6b4e' : 'rgba(13,20,19,0.04)',
                 border:     '1px solid rgba(13,20,19,0.10)',
               }}
             >
@@ -1514,7 +1514,7 @@ const Composer = forwardRef(function Composer(
             disabled={disabled || (!value.trim() && !attachment)}
             aria-label="Send"
             className="rounded-xl px-4 py-2.5 text-sm font-bold text-ink-900 disabled:opacity-30 transition-opacity flex-shrink-0 min-h-[44px]"
-            style={{ background: '#14a67b' }}
+            style={{ background: '#0b6b4e' }}
           >
             Send
           </button>

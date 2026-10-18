@@ -662,7 +662,7 @@ export default function Trajectories() {
                   <div key={m.id} className="flex items-center gap-2 text-xs">
                     <span
                       className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white"
-                      style={{ background: m.completed ? '#10B981' : '#F59E0B' }}
+                      style={{ background: m.completed ? '#0b6b4e' : '#F59E0B' }}
                     >
                       {i + 1}
                     </span>

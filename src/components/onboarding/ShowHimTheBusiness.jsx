@@ -294,7 +294,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
                     aria-hidden={!done}
                     className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold"
                     style={{
-                      background: done ? '#14a67b' : 'transparent',
+                      background: done ? '#0b6b4e' : 'transparent',
                       color:      '#fff',
                     }}
                   >
@@ -321,7 +321,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
             onClick={() => inputRef.current?.click()}
             className="rounded-2xl border-2 border-dashed px-6 py-8 text-center cursor-pointer transition-colors"
             style={{
-              borderColor: dragging ? '#14a67b' : 'rgba(13,20,19,0.14)',
+              borderColor: dragging ? '#0b6b4e' : 'rgba(13,20,19,0.14)',
               background:  dragging ? 'rgba(20,166,123,0.05)' : '#fff',
             }}
           >
@@ -424,7 +424,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
               onClick={onDone}
               disabled={busy}
               className="rounded-xl px-5 py-2.5 text-sm font-bold text-white disabled:opacity-40 transition-opacity"
-              style={{ background: '#14a67b' }}
+              style={{ background: '#0b6b4e' }}
             >
               {anyDone ? 'Go to Solomon' : 'Skip for now'}
             </button>

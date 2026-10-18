@@ -3,6 +3,6 @@
        the corner radius is left square — a rounded rect inside iOS's mask
        reads as a smaller badge floating in a tile. -->
   <rect width="180" height="180" fill="#0D1413"/>
-  <circle cx="90" cy="72" r="27" fill="none" stroke="#14A67B" stroke-width="16.5"/>
-  <circle cx="90" cy="124.5" r="33.5" fill="none" stroke="#14A67B" stroke-width="16.5"/>
+  <circle cx="90" cy="72" r="27" fill="none" stroke="#0b6b4e" stroke-width="16.5"/>
+  <circle cx="90" cy="124.5" r="33.5" fill="none" stroke="#0b6b4e" stroke-width="16.5"/>
 </svg>

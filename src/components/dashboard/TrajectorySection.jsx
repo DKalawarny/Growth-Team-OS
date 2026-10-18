@@ -138,7 +138,7 @@ export default function TrajectorySection({ milestones = [] }) {
           </div>
           <h2 className="text-base font-black text-white leading-tight">
             {hasData
-              ? <>{fmtRev(currentRev)} → <span style={{ color: '#1CBE8C' }}>{fmtRev(targetRev)}</span> by {etaLabel(timelineMo)}</>
+              ? <>{fmtRev(currentRev)} → <span style={{ color: '#2f8f6d' }}>{fmtRev(targetRev)}</span> by {etaLabel(timelineMo)}</>
               : <>Set your revenue goal to see your projection.</>
             }
           </h2>
@@ -161,8 +161,8 @@ export default function TrajectorySection({ milestones = [] }) {
             <AreaChart data={curve} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="trajGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor="#1CBE8C" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#1CBE8C" stopOpacity={0.0} />
+                  <stop offset="0%"   stopColor="#2f8f6d" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#2f8f6d" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -177,11 +177,11 @@ export default function TrajectorySection({ milestones = [] }) {
               <Area
                 type="monotone"
                 dataKey="rev"
-                stroke="#1CBE8C"
+                stroke="#2f8f6d"
                 strokeWidth={2}
                 fill="url(#trajGrad)"
                 dot={false}
-                activeDot={{ r: 4, fill: '#1CBE8C', strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: '#2f8f6d', strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -224,7 +224,7 @@ export default function TrajectorySection({ milestones = [] }) {
           <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
             <div
               className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${planPct}%`, background: 'linear-gradient(90deg, #0b6b4e, #1cbe8c)' }}
+              style={{ width: `${planPct}%`, background: 'linear-gradient(90deg, #0b6b4e, #2f8f6d)' }}
             />
           </div>
         </div>
@@ -256,7 +256,7 @@ function StatCard({ label, value, sub, accent }) {
         {label}
       </div>
       <div className="text-base font-black tabular-nums leading-tight"
-        style={{ color: accent ? '#1CBE8C' : 'rgba(255,255,255,0.9)' }}>
+        style={{ color: accent ? '#2f8f6d' : 'rgba(255,255,255,0.9)' }}>
         {value}
       </div>
       {sub && (

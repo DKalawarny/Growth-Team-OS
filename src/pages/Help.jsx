@@ -288,7 +288,7 @@ export default function Help() {
 
 const ROADMAP_STATUS = [
   { color: '#f87171', label: 'Bottleneck',     desc: 'Blocking other milestones from starting' },
-  { color: '#4ade80', label: 'Done',           desc: 'Completed' },
+  { color: '#2f8f6d', label: 'Done',           desc: 'Completed' },
   { color: '#6366f1', label: 'In progress',    desc: 'Started, not yet finished' },
   { color: '#fbbf24', label: 'Behind',         desc: 'Past target date' },
   { color: '#d1d5db', label: 'Waiting',        desc: 'Waiting on a dependency to finish first' },
@@ -298,8 +298,8 @@ const ROADMAP_STATUS = [
 const ROADMAP_CATEGORIES = [
   { color: '#D97706', label: 'Foundation', desc: 'Legal, structure, basics' },
   { color: '#2563EB', label: 'Systems',    desc: 'Tools, processes, software' },
-  { color: '#0D9488', label: 'Team',       desc: 'Hiring, org chart, people' },
-  { color: '#16A34A', label: 'Revenue',    desc: 'Sales, marketing, growth' },
+  { color: '#7C3AED', label: 'Team',       desc: 'Hiring, org chart, people' },
+  { color: '#0b6b4e', label: 'Revenue',    desc: 'Sales, marketing, growth' },
   { color: '#E11D48', label: 'Exit',       desc: 'Long-term salability moves' },
   { color: '#EA580C', label: 'Trajectory', desc: 'Strategic direction' },
 ]
@@ -327,7 +327,7 @@ function RoadmapGuide() {
             <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full whitespace-nowrap">
               Danny
             </span>
-            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#0D9488' }} />
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#7C3AED' }} />
             <span className="text-ink-300 text-xs select-none w-4 text-center">▼</span>
           </div>
         </div>

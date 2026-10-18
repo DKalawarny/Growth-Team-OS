@@ -5,6 +5,6 @@
        so anything typeset here would silently fall back to Arial. Stroked
        loops also keep their counters at 16px, where a filled glyph fills in. -->
   <rect width="48" height="48" rx="11" fill="#0D1413"/>
-  <circle cx="24" cy="18.2" r="7.2" fill="none" stroke="#14A67B" stroke-width="4.4"/>
-  <circle cx="24" cy="32.2" r="8.9" fill="none" stroke="#14A67B" stroke-width="4.4"/>
+  <circle cx="24" cy="18.2" r="7.2" fill="none" stroke="#0b6b4e" stroke-width="4.4"/>
+  <circle cx="24" cy="32.2" r="8.9" fill="none" stroke="#0b6b4e" stroke-width="4.4"/>
 </svg>

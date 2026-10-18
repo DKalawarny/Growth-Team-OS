@@ -84,7 +84,7 @@ const TIMEFRAME_LABEL = {
 const CATEGORY_TONES = {
   foundation: 'bg-amber-50  text-amber-700  border-amber-200',
   systems:    'bg-blue-50   text-blue-700   border-blue-200',
-  team:       'bg-teal-50   text-teal-700   border-teal-200',
+  team:       'bg-violet-50 text-violet-700 border-violet-200',
   revenue:    'bg-green-50  text-green-700  border-green-200',
   exit:       'bg-rose-50   text-rose-700   border-rose-200',
   trajectory: 'bg-orange-50 text-orange-700 border-orange-200',
@@ -93,8 +93,8 @@ const CATEGORY_TONES = {
 const CATEGORY_BAR = {
   foundation: { base: '#FEF3C7', fill: '#D97706' },
   systems:    { base: '#DBEAFE', fill: '#2563EB' },
-  team:       { base: '#CCFBF1', fill: '#0D9488' },
-  revenue:    { base: '#DCFCE7', fill: '#16A34A' },
+  team:       { base: '#EDE9FE', fill: '#7C3AED' },   // was teal: read as a second green beside revenue
+  revenue:    { base: '#d6e9df', fill: '#0b6b4e' },
   exit:       { base: '#FFE4E6', fill: '#E11D48' },
   trajectory: { base: '#FFEDD5', fill: '#EA580C' },
   _default:   { base: '#F3F4F6', fill: '#4B5563' },
@@ -118,7 +118,7 @@ const CATEGORY_LABELS = {
 // truth — keep the two in sync if either changes.)
 const STATUS_BAR_COLORS = {
   bottleneck:  { color: '#f87171', label: 'Bottleneck',     desc: 'Blocking other milestones'   },
-  done:        { color: '#4ade80', label: 'Done',           desc: 'Completed'                    },
+  done:        { color: '#2f8f6d', label: 'Done',           desc: 'Completed'                    },
   inProgress:  { color: '#6366f1', label: 'In progress',    desc: 'Started, not finished yet'    },
   overdue:     { color: '#fbbf24', label: 'Behind',         desc: 'Past target date'             },
   blocked:     { color: '#d1d5db', label: 'Waiting',        desc: 'Waiting on a dependency'      },
@@ -2187,7 +2187,7 @@ function GanttRow({
 
   // Status accent colour for the label column left border
   const accentColor = isBottleneck    ? '#f87171'
-    : isDone                          ? '#4ade80'
+    : isDone                          ? '#2f8f6d'
     : status === 'in-progress'        ? '#6366f1'
     : status === 'overdue'            ? '#fbbf24'
     : status === 'blocked'            ? '#d1d5db'
@@ -2254,7 +2254,7 @@ function GanttRow({
             className="h-full transition-all duration-500 rounded-full"
             style={{
               width:           `${pct}%`,
-              backgroundColor: isDone ? '#4ade80' : colors.fill,
+              backgroundColor: isDone ? '#2f8f6d' : colors.fill,
             }}
           />
 
@@ -2408,7 +2408,7 @@ function MilestoneRow({
 
   // Status left-border accent
   const accentColor = isBottleneck      ? '#f87171'
-    : completed                         ? '#4ade80'
+    : completed                         ? '#2f8f6d'
     : status === 'in-progress'          ? '#6366f1'
     : status === 'overdue'              ? '#fbbf24'
     : status === 'blocked'              ? '#d1d5db'

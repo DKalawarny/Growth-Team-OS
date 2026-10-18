@@ -10,16 +10,21 @@
      The token NAMES are deliberately unchanged. Every `bg-brand-600` and
      `text-ink-900` across 22 pages inherits the new palette from here — a
      rename would have meant editing thousands of class strings for nothing. */
-  --color-brand-50:  #edfaf4;
-  --color-brand-100: #d2f3e6;
-  --color-brand-200: #a5e7cd;
-  --color-brand-300: #6fd4ae;
-  --color-brand-400: #35bb8e;   /* pops on dark surfaces */
-  --color-brand-500: #1cbe8c;
-  --color-brand-600: #14a67b;   /* primary brand */
-  --color-brand-700: #0f8763;   /* hover / pressed */
+  /* One green, Daniel 17 Oct: the deep forest #0b6b4e he picked off a
+     heading ("i like the image 3 green better") is now THE green. Every step
+     below is that same hue, lighter or darker; the old mint (#14a67b,
+     #1cbe8c) read as a different colour against the warm paper page.
+     800 is deliberately the same as 600: it is the exact colour he chose. */
+  --color-brand-50:  #eef5f1;
+  --color-brand-100: #d6e9df;
+  --color-brand-200: #aed3c1;
+  --color-brand-300: #6fb596;   /* text on dark surfaces */
+  --color-brand-400: #2f8f6d;   /* icons, and accents on dark surfaces */
+  --color-brand-500: #1d7f60;
+  --color-brand-600: #0b6b4e;   /* primary brand */
+  --color-brand-700: #095c43;   /* hover / pressed */
   --color-brand-800: #0b6b4e;
-  --color-brand-900: #08543e;
+  --color-brand-900: #074a36;
 
   /* ── Ink: cool near-black neutral ──────────────────────────────────────
      Was a navy scale. Now a cool neutral so the green is the only colour
@@ -122,7 +127,7 @@
   textarea:focus,
   select:focus {
     outline: none;
-    border-color: #14a67b;              /* brand-600 */
+    border-color: #0b6b4e;              /* brand-600 */
     box-shadow:
       0 0 0 4px rgba(20, 166, 123, 0.15),
       0 1px 2px rgba(13, 20, 19, 0.04);
@@ -153,7 +158,7 @@
   input[type="checkbox"],
   input[type="radio"] {
     width: auto;
-    accent-color: #14a67b;
+    accent-color: #0b6b4e;
   }
 }
 
@@ -175,11 +180,11 @@
      most dated thing in the old design. */
   .bg-gold-gradient {
     background-image: none;
-    background-color: #14a67b;
+    background-color: #0b6b4e;
   }
   .bg-gold-gradient:hover {
     background-image: none;
-    background-color: #0f8763;
+    background-color: #095c43;
   }
 
   /* Dark surface. Near-black and cool rather than navy. */
@@ -252,6 +257,12 @@
   --color-ink-100: #e3e1db;   /* card borders and dividers */
   --color-ink-200: #cac6bd;   /* input and button borders */
   --color-gray-200: #d5dadf;
+
+  /* Tailwind's own greens (success ticks, category pills, progress) were a
+     second and third green beside the brand. Same family now. */
+  --color-green-50: #eef5f1; --color-green-100: #d6e9df; --color-green-200: #aed3c1; --color-green-300: #6fb596; --color-green-400: #2f8f6d; --color-green-500: #1d7f60; --color-green-600: #0b6b4e; --color-green-700: #0b6b4e; --color-green-800: #095c43; --color-green-900: #074a36;
+  --color-emerald-50: #eef5f1; --color-emerald-100: #d6e9df; --color-emerald-200: #aed3c1; --color-emerald-300: #6fb596; --color-emerald-400: #2f8f6d; --color-emerald-500: #1d7f60; --color-emerald-600: #0b6b4e; --color-emerald-700: #0b6b4e; --color-emerald-800: #095c43; --color-emerald-900: #074a36;
+  --color-teal-50: #eef5f1; --color-teal-100: #d6e9df; --color-teal-200: #aed3c1; --color-teal-300: #6fb596; --color-teal-400: #2f8f6d; --color-teal-500: #1d7f60; --color-teal-600: #0b6b4e; --color-teal-700: #0b6b4e; --color-teal-800: #095c43; --color-teal-900: #074a36;
 
   /* The smallest named size. 12px → 13px. */
   --text-xs: 0.8125rem;

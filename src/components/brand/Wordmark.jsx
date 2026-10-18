@@ -4,7 +4,7 @@
  * Spec (Daniel, 27 Aug):
  *   Inter SemiBold 600, all caps, letter-spacing 0.035em
  *   letters  #F6F8F8 on dark, #0D1413 on light
- *   the 8    #14A67B — the only coloured character
+ *   the 8    #0B6B4E — the only coloured character (was #0b6b4e; one green, 17 Oct)
  *
  * ⭐ WHY ONLY THE 8 IS GREEN. The old mark split "Growth" | "OS" in two colours,
  * which made sense when those were two words. Carried onto "Eliv8 OS" the same
@@ -50,7 +50,7 @@ export default function Wordmark({ tone = 'light', size = 17, showOS = true, cla
         display:       'inline-block',
       }}
     >
-      ELIV<span style={{ color: '#14A67B' }}>8</span>{showOS ? ' OS' : ''}
+      ELIV<span style={{ color: '#0b6b4e' }}>8</span>{showOS ? ' OS' : ''}
     </span>
   )
 }
@@ -67,8 +67,8 @@ export function Mark({ size = 26, tone = 'dark', title = 'Eliv8 OS' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label={title}>
       <rect width="48" height="48" rx="11" fill={ground} />
-      <circle cx="24" cy="18.2" r="7.2" fill="none" stroke="#14A67B" strokeWidth="4.4" />
-      <circle cx="24" cy="32.2" r="8.9" fill="none" stroke="#14A67B" strokeWidth="4.4" />
+      <circle cx="24" cy="18.2" r="7.2" fill="none" stroke="#0b6b4e" strokeWidth="4.4" />
+      <circle cx="24" cy="32.2" r="8.9" fill="none" stroke="#0b6b4e" strokeWidth="4.4" />
     </svg>
   )
 }

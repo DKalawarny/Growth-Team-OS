@@ -331,7 +331,7 @@ export default function DashboardChat({ userId, companyId, firstName }) {
             onClick={handleSend}
             disabled={!input.trim() || sending || generatingOpen}
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white disabled:opacity-30 transition-opacity"
-            style={{ background: 'linear-gradient(135deg,#0b6b4e 0%,#0f8763 40%,#14a67b 100%)' }}
+            style={{ background: 'linear-gradient(135deg,#074a36 0%,#095c43 40%,#0b6b4e 100%)' }}
           >
             <SendIcon />
           </button>
@@ -359,7 +359,7 @@ function Bubble({ role, content }) {
             : 'text-white/85 rounded-[18px] rounded-bl-[4px]'
         }`}
         style={isUser
-          ? { background: 'linear-gradient(135deg,#0b6b4e 0%,#0f8763 40%,#14a67b 100%)' }
+          ? { background: 'linear-gradient(135deg,#074a36 0%,#095c43 40%,#0b6b4e 100%)' }
           : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }
         }
       >
