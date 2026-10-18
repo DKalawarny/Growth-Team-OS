@@ -44,7 +44,7 @@ the whole typographic identity gone — and it would look *fine* at a glance.
 
 ⭐ The wordmark here must stay in step with `src/components/brand/Wordmark.jsx`:
 Inter SemiBold 600, letter-spacing 0.035em, letters `#F6F8F8`, and the **8** is
-the only coloured character (`#14A67B`). The reason the 8 alone is green is
+the only coloured character (`#2F8F6D`). The reason the 8 alone is green is
 written up in that component — it is the character that carries the meaning.
 
 ⚠️ Unlike the app, this file cannot use the `Wordmark` component: the card is

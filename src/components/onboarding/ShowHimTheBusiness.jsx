@@ -237,7 +237,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
       <div className="hidden lg:flex lg:w-[42%] xl:w-[38%] bg-ink-gradient flex-col justify-center p-12 relative overflow-hidden">
         <div
           className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(20,166,123,0.14) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(11,107,78,0.14) 0%, transparent 70%)' }}
         />
         <div className="relative">
           <div className="flex items-center gap-2.5 mb-12">
@@ -279,8 +279,8 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
                   key={gap.id}
                   className="flex items-start gap-3 rounded-xl border px-4 py-3 transition-colors"
                   style={{
-                    background:  done ? 'rgba(20,166,123,0.06)' : '#fff',
-                    borderColor: done ? 'rgba(20,166,123,0.30)' : 'rgba(13,20,19,0.09)',
+                    background:  done ? 'rgba(11,107,78,0.06)' : '#fff',
+                    borderColor: done ? 'rgba(11,107,78,0.30)' : 'rgba(13,20,19,0.09)',
                   }}
                 >
                   {/* ⚠️ 31 Aug — this rendered an empty bordered circle on every
@@ -322,7 +322,7 @@ export default function ShowHimTheBusiness({ companyId, userId, revenue, onDone 
             className="rounded-2xl border-2 border-dashed px-6 py-8 text-center cursor-pointer transition-colors"
             style={{
               borderColor: dragging ? '#0b6b4e' : 'rgba(13,20,19,0.14)',
-              background:  dragging ? 'rgba(20,166,123,0.05)' : '#fff',
+              background:  dragging ? 'rgba(11,107,78,0.05)' : '#fff',
             }}
           >
             <p className="text-sm font-semibold text-ink-900">

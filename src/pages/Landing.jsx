@@ -174,7 +174,7 @@ function HeroSection() {
     <section className="bg-gray-950 text-white relative overflow-hidden">
       {/* Background texture */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20,166,123,0.14) 0%, transparent 60%)',
+        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(11,107,78,0.14) 0%, transparent 60%)',
       }} />
 
       {/* ⭐ 12 Oct: spacing here is deliberately tight so the top of the

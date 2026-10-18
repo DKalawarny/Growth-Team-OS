@@ -265,8 +265,8 @@ export default function UploadedTab({ onCountChange }) {
         <div
           className="mt-3 rounded-xl border px-4 py-3 text-[13px] leading-relaxed"
           style={{
-            background:  freshness.error ? 'rgba(239,68,68,0.06)' : 'rgba(20,166,123,0.06)',
-            borderColor: freshness.error ? 'rgba(239,68,68,0.25)' : 'rgba(20,166,123,0.25)',
+            background:  freshness.error ? 'rgba(239,68,68,0.06)' : 'rgba(11,107,78,0.06)',
+            borderColor: freshness.error ? 'rgba(239,68,68,0.25)' : 'rgba(11,107,78,0.25)',
             color:       freshness.error ? '#b91c1c' : '#0f7a5a',
           }}
         >

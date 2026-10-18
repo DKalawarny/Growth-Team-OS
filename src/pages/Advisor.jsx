@@ -661,7 +661,7 @@ export default function Advisor() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#F6F8F8' }}>
+    <div className="flex flex-col h-screen" style={{ background: 'var(--color-ink-50)' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} offRecord={offRecord} onToggleOffRecord={toggleOffRecord} />
       {offRecord && (
         <div className="px-4 sm:px-6 py-2.5 flex-shrink-0 text-center text-[12.5px] leading-relaxed" style={{ background: '#1F2A28', color: '#E8EEEC' }}>
@@ -916,7 +916,7 @@ function ToolActivity({ label }) {
       <div className="flex items-center gap-2 text-[12px]" style={{ color: 'rgba(13,20,19,0.40)' }}>
         <span className="flex gap-1" aria-hidden>
           {[0, 150, 300].map(d => (
-            <span key={d} className="w-1 h-1 rounded-full animate-bounce" style={{ background: 'rgba(20,166,123,0.65)', animationDelay: `${d}ms` }} />
+            <span key={d} className="w-1 h-1 rounded-full animate-bounce" style={{ background: 'rgba(11,107,78,0.65)', animationDelay: `${d}ms` }} />
           ))}
         </span>
         <span>{label}…</span>
@@ -1050,7 +1050,7 @@ function ArtifactChips({ artifacts }) {
           key={a.id ?? a.title}
           to={`/documents?tool=${encodeURIComponent(a.tool_id)}`}
           className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] font-medium transition-colors"
-          style={{ background: 'rgba(20,166,123,0.10)', border: '1px solid rgba(20,166,123,0.28)', color: '#0f7a5a' }}
+          style={{ background: 'rgba(11,107,78,0.10)', border: '1px solid rgba(11,107,78,0.28)', color: '#0f7a5a' }}
         >
           <svg viewBox="0 0 16 16" className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 2h8l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" /><path d="M11 2v4H5V2" />
@@ -1328,7 +1328,7 @@ function inlineRender(text) {
     if (m.index > last) parts.push(text.slice(last, m.index))
     if (m[2])      parts.push(<strong key={m.index} className="font-bold" style={{ color: '#0D1413' }}>{m[2]}</strong>)
     else if (m[3]) parts.push(<em key={m.index} className="italic">{m[3]}</em>)
-    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(13,20,19,0.06)', color: '#6fd4ae' }}>{m[4]}</code>)
+    else if (m[4]) parts.push(<code key={m.index} className="px-1 py-0.5 rounded text-[11px] font-mono" style={{ background: 'rgba(13,20,19,0.06)', color: '#0b6b4e' }}>{m[4]}</code>)
     last = m.index + m[0].length
   }
   if (last < text.length) parts.push(text.slice(last))

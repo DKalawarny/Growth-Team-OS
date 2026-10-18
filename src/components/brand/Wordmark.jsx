@@ -34,6 +34,9 @@ const FAMILY = "'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans
  */
 export default function Wordmark({ tone = 'light', size = 17, showOS = true, className = '' }) {
   const letters = tone === 'dark' ? '#F6F8F8' : '#0D1413'
+  // Same green, lighter step on dark: the deep #0b6b4e all but disappears on
+  // near-black (as the landing hero's text-brand-400 already accounts for).
+  const eight = tone === 'dark' ? '#2f8f6d' : '#0b6b4e'
   return (
     <span
       className={className}
@@ -50,7 +53,7 @@ export default function Wordmark({ tone = 'light', size = 17, showOS = true, cla
         display:       'inline-block',
       }}
     >
-      ELIV<span style={{ color: '#0b6b4e' }}>8</span>{showOS ? ' OS' : ''}
+      ELIV<span style={{ color: eight }}>8</span>{showOS ? ' OS' : ''}
     </span>
   )
 }
