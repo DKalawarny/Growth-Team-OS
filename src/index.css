@@ -38,9 +38,9 @@
   --color-ink-500: #47575a;
   --color-ink-400: #6b7b7d;
   --color-ink-300: #8a9a9c;
-  --color-ink-200: #c3cfd0;
-  --color-ink-100: #e3eaea;
-  --color-ink-50:  #f6f8f8;
+  --color-ink-200: #cac6bd;
+  --color-ink-100: #e3e1db;
+  --color-ink-50:  #f4f3ef;   /* warm paper, site-wide since 18 Oct (was #f6f8f8) */
 
   /* Instrument Sans for interface, Instrument Serif for Solomon's voice and
      for any number that matters. Loaded in index.html. Not Inter — Inter is
@@ -76,7 +76,7 @@
 
   body {
     margin: 0;
-    background-color: #f6f8f8;
+    background-color: #f4f3ef;
     color: #0d1413;
     font-family: var(--font-sans);
   }
@@ -111,7 +111,7 @@
     font-family: inherit;
     color: #0d1413;                     /* ink-900 */
     background-color: #ffffff;
-    border: 1px solid #c3cfd0;          /* ink-200 */
+    border: 1px solid #cac6bd;          /* ink-200 */
     border-radius: 0.625rem;
     transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
     box-shadow: 0 1px 2px rgba(13, 20, 19, 0.04);
@@ -144,7 +144,7 @@
   select:disabled {
     opacity: 0.55;
     cursor: not-allowed;
-    background-color: #f6f8f8;
+    background-color: #f4f3ef;
   }
 
   /* Invalid state — kicks in after a failed submit, not on every keystroke. */

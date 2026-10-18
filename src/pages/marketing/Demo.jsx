@@ -180,7 +180,7 @@ export default function Demo() {
           title="He answers the question underneath the question"
           blurb="The owner asks about growing. Solomon starts from what is actually strong, names the one thing that gates it, and ends by asking the question that decides it."
         >
-          <div className="rounded-2xl border border-gray-200 bg-[#F6F8F8] p-4 sm:p-5 flex flex-col gap-3">
+          <div className="rounded-2xl border border-gray-200 bg-ink-50 p-4 sm:p-5 flex flex-col gap-3">
             {CHAT.map((m, i) => (
               m.role === 'user' ? (
                 <div key={i} className="flex justify-end">
@@ -213,7 +213,7 @@ export default function Demo() {
           title="On the big calls, he argues it more than one way"
           blurb="This is the actual output, rendered by the same component the product uses. He gives every angle its own weakest point, says where he lands, and lists what he cannot see."
         >
-          <div className="rounded-2xl border border-gray-200 bg-[#F6F8F8] p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-ink-50 p-4 sm:p-6">
             <DecisionView result={DECISION} />
           </div>
         </Step>
