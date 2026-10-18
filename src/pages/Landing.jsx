@@ -348,12 +348,19 @@ function HeroSection() {
           For owners who want the numbers right and the people treated right.
         </p>
 
+        {/* ⭐ 18 Oct: the walkthrough video sits straight under the sub-line
+            (Daniel: "put it to the homepage", then: the buttons "should be
+            below the video"). Full width, never beside the headline. HeroAsk moved down into Meet Solomon. */}
+        <div className="mt-2">
+          <HeroVideo />
+        </div>
+
         {/* 12 Oct, Daniel: the five tags that sat here ("Reads your books",
             "Never flatters you"...) "can go, it kind of says below". The
             Solomon panel under the buttons now shows all five happening. Older
             notes above call them load-bearing for the headline: the panel has
             that job now. */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10 mb-5">
           {/* ⚠️ 10 Oct, Daniel: "the demo button gets kinda lost, it should be one
               of the big sells." It was a ghost button labelled "See it in action"
               beside the sign-up. The demo is the strongest thing on this page
@@ -379,13 +386,6 @@ function HeroSection() {
         </p>
         {/* 12 Oct: a second "no credit card, free in pilot" line sat here. The
             pill above the headline already says it. Once per eyeful. */}
-
-        {/* ⭐ 18 Oct: the walkthrough video took this slot (Daniel: "put it to
-            the homepage"). Full width, one column, never beside the headline.
-            HeroAsk, which sat here, moved down into Meet Solomon. */}
-        <div className="mt-10">
-          <HeroVideo />
-        </div>
       </div>
     </section>
   )
