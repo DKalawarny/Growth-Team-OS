@@ -1018,7 +1018,7 @@ function ListenButton({ text }) {
       onClick={toggle}
       title={state === 'device' ? 'Using your device voice. Solomon\u2019s own voice is unavailable' : 'Listen'}
       className="absolute -bottom-5 right-14 flex items-center gap-1 text-[10px] font-medium transition-opacity px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 focus:opacity-100"
-      style={{ color: state === 'idle' ? 'rgba(13,20,19,0.35)' : '#0f7a5a' }}
+      style={{ color: state === 'idle' ? 'rgba(13,20,19,0.35)' : '#0b6b4e' }}
     >
       {state === 'loading' ? 'Loading…'
      : state === 'playing' ? 'Stop'
@@ -1050,7 +1050,7 @@ function ArtifactChips({ artifacts }) {
           key={a.id ?? a.title}
           to={`/documents?tool=${encodeURIComponent(a.tool_id)}`}
           className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] font-medium transition-colors"
-          style={{ background: 'rgba(11,107,78,0.10)', border: '1px solid rgba(11,107,78,0.28)', color: '#0f7a5a' }}
+          style={{ background: 'rgba(11,107,78,0.10)', border: '1px solid rgba(11,107,78,0.28)', color: '#0b6b4e' }}
         >
           <svg viewBox="0 0 16 16" className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 2h8l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" /><path d="M11 2v4H5V2" />
