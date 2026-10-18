@@ -83,7 +83,7 @@ function UseCasesSection() {
       does: 'Solomon helps you find a fair price, one that does not overcharge the customer or shortchange you.' },
   ]
   return (
-    <section className="bg-gray-50 py-20 border-y border-gray-100">
+    <section className="bg-ink-50 py-20 border-y border-ink-100">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-10">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-600 mb-3">What you’d use it for</p>
@@ -121,6 +121,7 @@ export default function Landing() {
             the rendered page. */}
         <script type="application/ld+json">{jsonLd(organizationSchema())}</script>
         <script type="application/ld+json">{jsonLd(softwareApplicationSchema())}</script>
+        <script type="application/ld+json">{jsonLd(VIDEO_LD)}</script>
       </Helmet>
 
       <PublicHeader />
@@ -169,6 +170,51 @@ export default function Landing() {
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
 
+const VIDEO_SRC = '/video/eliv8-demo.mp4'
+const VIDEO_POSTER = '/video/eliv8-demo.jpg'
+
+// Google and AI assistants read this to know the page has a walkthrough video.
+const VIDEO_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: 'Eliv8 OS: a walk through the real app',
+  description: "The owner's screen and the foreman's phone: Solomon following up, answering from real numbers, building a cash forecast, the end-of-day crew log, and the roadmap.",
+  thumbnailUrl: `https://eliv8os.com${VIDEO_POSTER}`,
+  contentUrl: `https://eliv8os.com${VIDEO_SRC}`,
+  uploadDate: '2026-10-18',
+  duration: 'PT2M43S',
+}
+
+/**
+ * The walkthrough video (18 Oct 2026, built in ~/Desktop/eliv8-video).
+ * Nothing downloads until they press play: the file is 15 MB and most
+ * visitors never press it. No playsInline, on purpose: an iPhone then opens it
+ * full screen, where the app's text is readable; inline at phone width it is not.
+ */
+function HeroVideo() {
+  const [playing, setPlaying] = useState(false)
+  return (
+    <div className="relative rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] bg-black aspect-video">
+      {playing ? (
+        // autoPlay is fine: it only ever starts from their own press.
+        <video src={VIDEO_SRC} poster={VIDEO_POSTER} controls autoPlay className="w-full h-full" />
+      ) : (
+        <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0 w-full h-full" aria-label="Play the video, 2 minutes 43 seconds">
+          <img src={VIDEO_POSTER} alt="Solomon, the advisor in Eliv8 OS, answering an owner" width="1600" height="900" className="w-full h-full object-cover" />
+          <span className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-brand-600 group-hover:bg-brand-700 group-hover:scale-105 transition flex items-center justify-center shadow-2xl ring-4 ring-white/25">
+            <svg viewBox="0 0 24 24" className="w-7 h-7 sm:w-10 sm:h-10 text-white translate-x-0.5" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+          </span>
+          <span className="absolute left-0 right-0 bottom-0 px-5 sm:px-7 pb-4 sm:pb-6 flex items-end justify-end sm:justify-between gap-4 text-left">
+            <span className="hidden sm:inline text-white font-bold text-xl leading-snug">See the whole thing run, start to finish.</span>
+            <span className="shrink-0 text-white/85 text-sm font-semibold bg-black/40 rounded-full px-3 py-1">2:43</span>
+          </span>
+        </button>
+      )}
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <section className="bg-gray-950 text-white relative overflow-hidden">
@@ -181,7 +227,7 @@ function HeroSection() {
           Solomon panel shows at the bottom of the screen on arrival and tells
           a visitor there is more to scroll to. Daniel rejected putting the
           panel beside the headline ("super busy"): one centred column. */}
-      <div className="relative max-w-5xl mx-auto px-6 pt-16 pb-20 text-center">
+      <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
         {/* 12 Oct: the "free while in private pilot, no credit card" pill sat
             here. Daniel moved it to a small flag in the top bar (PublicHeader). */}
 
@@ -315,14 +361,14 @@ function HeroSection() {
               white on the dark hero, and says what it is. */}
           <Link
             to="/demo"
-            className="px-10 py-4 rounded-xl bg-white hover:bg-gray-100 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-2.5"
+            className="w-full sm:w-auto justify-center px-10 py-4 rounded-xl bg-white hover:bg-gray-100 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-2.5"
           >
             <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-brand-600" />
             Try the live demo
           </Link>
           <Link
             to="/signup"
-            className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+            className="w-full sm:w-auto text-center px-10 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-base transition-colors shadow-lg"
           >
             {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
           </Link>
@@ -334,10 +380,11 @@ function HeroSection() {
         {/* 12 Oct: a second "no credit card, free in pilot" line sat here. The
             pill above the headline already says it. Once per eyeful. */}
 
-        {/* The moving part: Solomon answering, with questions a visitor can tap.
-            Scripted and labelled as an example. See HeroAsk. */}
-        <div className="mt-9">
-          <HeroAsk />
+        {/* ⭐ 18 Oct: the walkthrough video took this slot (Daniel: "put it to
+            the homepage"). Full width, one column, never beside the headline.
+            HeroAsk, which sat here, moved down into Meet Solomon. */}
+        <div className="mt-10">
+          <HeroVideo />
         </div>
       </div>
     </section>
@@ -372,7 +419,7 @@ function HeroSection() {
  * Section order argument is at the top of this file. */
 function FollowsUpSection() {
   return (
-    <section className="bg-white py-20 border-b border-gray-100">
+    <section className="bg-white py-20 border-b border-ink-100">
       <div className="max-w-2xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
           It remembers what you said you&rsquo;d do.<br />
@@ -412,7 +459,7 @@ function FollowsUpSection() {
  */
 function ConvictionSection() {
   return (
-    <section className="bg-white py-24 border-b border-gray-100">
+    <section className="bg-white py-24 border-b border-ink-100">
       <div className="max-w-2xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
           Holds you to your margins.<br />
@@ -517,11 +564,18 @@ function SolomonSection() {
           numbers, not a template. It remembers what you decided in March and
           why. On the decisions that are hard to undo, it argues both sides, tells you which way it leans, and tells you what it could not see.
         </p>
-        {/* 12 Oct: four ticks sat here. Each one repeated something said
+      </div>
+      {/* The moving part: Solomon answering, with questions a visitor can tap.
+          Scripted and labelled as an example. See HeroAsk. Moved here from the
+          hero on 18 Oct when the video took that slot; it is the only chat
+          picture on the page, so the 12 Oct rule above this function still holds. */}
+      <div className="max-w-6xl mx-auto px-6 mt-10">
+        <HeroAsk />
+      </div>
+      {/* 12 Oct: four ticks sat here. Each one repeated something said
             in full elsewhere on the page (reads your books, cash squeeze,
             hiring and pricing, remembers decisions). Daniel: "still some
             redundancies". */}
-      </div>
     </section>
   )
 }
@@ -540,12 +594,12 @@ function SolomonSection() {
  */
 function WhatHeKnowsSection() {
   return (
-    <section className="bg-gray-50 py-20 border-y border-gray-100">
+    <section className="bg-ink-50 py-20 border-y border-ink-100">
       <div className="max-w-4xl mx-auto px-6">
 
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            He answers from your business, not a template.
+            Solomon answers from your business, not a template.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
             Connect your books and add the files that matter. After that, every answer is about <em>your</em> numbers, your people and your decisions.
@@ -598,7 +652,7 @@ function PriceSection() {
   const [annual, setAnnual] = useState(false)
 
   return (
-    <section className="bg-gray-50 py-20">
+    <section className="bg-ink-50 py-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           {SHOW_PUBLIC_PRICE
@@ -693,7 +747,7 @@ function PriceSection() {
 
           <Link
             to="/signup"
-            className="inline-block px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors"
+            className="inline-block px-10 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-base transition-colors"
           >
             {SHOW_PUBLIC_PRICE ? `Start ${TRIAL_DAYS}-day free trial` : 'Start free'}
           </Link>
@@ -722,7 +776,7 @@ function DemoBand() {
         </h2>
         <p className="text-white/70 text-[17px] leading-relaxed mb-8">
           The demo is the full app with a sample landscaping company in it. You get your own private copy, so you can click and change anything. You do not need an account or a card.
-          Solomon&rsquo;s answers in the demo are saved examples. In your own account he answers from your business.
+          Solomon&rsquo;s answers in the demo are saved examples. In your own account it answers from your business.
         </p>
         {/* 12 Oct, Daniel: "should have the register here as well." Same pair,
             same colours as the hero: demo in white, sign-up in green. */}
@@ -736,7 +790,7 @@ function DemoBand() {
           </Link>
           <Link
             to="/signup"
-            className="px-10 py-4 rounded-xl bg-brand-500 hover:bg-brand-400 text-gray-950 font-black text-base transition-colors shadow-lg"
+            className="px-10 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-base transition-colors shadow-lg"
           >
             {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
           </Link>
@@ -749,12 +803,12 @@ function DemoBand() {
 
 function ClosingCTA() {
   return (
-    <section className="bg-brand-500 py-16">
+    <section className="bg-brand-600 py-16">
       <div className="max-w-3xl mx-auto px-6 text-center">
-        <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4">
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
           You don&rsquo;t have to decide the next one alone.
         </h2>
-        <p className="text-gray-950/70 mb-8 max-w-lg mx-auto">
+        <p className="text-white/85 mb-8 max-w-lg mx-auto">
           {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, and you do not need a card.`}{' '}
           Connect your books, tell Solomon what you are weighing, and see if it tells you something you did not already know. If it does not, you can leave and take your data with you.
         </p>
@@ -782,7 +836,7 @@ function ClosingCTA() {
 function PageFooter() {
   return (
     <footer className="bg-gray-950 border-t border-white/5 py-10">
-      <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/30">
+      <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/60">
         <div className="flex items-center gap-2">
           <Wordmark tone="dark" size={15} />
           {/* "run a certain way" was a euphemism doing the work a tagline
@@ -792,14 +846,14 @@ function PageFooter() {
           <span>· An advisor for owners who care how it&rsquo;s run, not only what it returns</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-          <Link to="/answers" className="hover:text-white/60 transition-colors">Answers</Link>
-          <Link to="/demo" className="hover:text-white/60 transition-colors">See it work</Link>
-          <Link to="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
-          <Link to="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
-          <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
-          <Link to="/security" className="hover:text-white/60 transition-colors">Security</Link>
-          <a href="mailto:support@eliv8os.com" className="hover:text-white/60 transition-colors">Contact</a>
-          <Link to="/login" className="hover:text-white/60 transition-colors">Log in</Link>
+          <Link to="/answers" className="hover:text-white transition-colors">Answers</Link>
+          <Link to="/demo" className="hover:text-white transition-colors">See it work</Link>
+          <Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+          <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+          <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          <Link to="/security" className="hover:text-white transition-colors">Security</Link>
+          <a href="mailto:support@eliv8os.com" className="hover:text-white transition-colors">Contact</a>
+          <Link to="/login" className="hover:text-white transition-colors">Log in</Link>
         </div>
       </div>
     </footer>
