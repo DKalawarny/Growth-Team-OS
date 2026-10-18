@@ -122,6 +122,17 @@ const ALLOWED_PROMPT_TYPES = [
 // message instead of relying on the database to reject.
 const MAX_COMMENT_LEN = 4000
 
+// A job is this person's if they own it OR are one of its assigned people.
+// ⚠️ Must match the 'load' query's .or(staff_member_id | assigned_staff_ids):
+// until 17 Oct every write checked only staff_member_id, so a co-assigned
+// crew member SAW a shared job but could not move it, tick it, comment on it
+// or log his day on it ("Saved 2 of 3 notes").
+type WoOwner = { staff_member_id: string | null; company_id: string; assigned_staff_ids?: string[] | null }
+function ownsWorkOrder(wo: WoOwner | null | undefined, staff: { id: string; company_id: string }): boolean {
+  if (!wo || wo.company_id !== staff.company_id) return false
+  return wo.staff_member_id === staff.id || (wo.assigned_staff_ids ?? []).includes(staff.id)
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return preflight()
 
@@ -399,7 +410,7 @@ Deno.serve(async (req) => {
         .from('work_orders')
         .update({ status: body.status })
         .eq('id', body.workOrderId)
-        .eq('staff_member_id', staff.id)
+        .or(`staff_member_id.eq.${staff.id},assigned_staff_ids.cs.{${staff.id}}`)
         .eq('company_id', staff.company_id)
         .select('id, status')
         .maybeSingle()
@@ -429,7 +440,7 @@ Deno.serve(async (req) => {
       // explicit check is easier to audit. The cost is one extra round-trip.
       const { data: itemRow, error: itemErr } = await admin
         .from('work_order_checklist_items')
-        .select('id, work_order_id, work_orders!inner(staff_member_id, company_id)')
+        .select('id, work_order_id, work_orders!inner(staff_member_id, company_id, assigned_staff_ids)')
         .eq('id', body.itemId)
         .maybeSingle()
 
@@ -440,8 +451,8 @@ Deno.serve(async (req) => {
       // Same generic not_found if the item is missing OR the parent WO
       // doesn't belong to this staff member / company. No info leak about
       // which guard tripped.
-      const parent = (itemRow as { work_orders?: { staff_member_id: string | null; company_id: string } } | null)?.work_orders
-      if (!itemRow || !parent || parent.staff_member_id !== staff.id || parent.company_id !== staff.company_id) {
+      const parent = (itemRow as { work_orders?: WoOwner } | null)?.work_orders
+      if (!itemRow || !ownsWorkOrder(parent, staff)) {
         return json({ error: 'not_found' }, 404)
       }
 
@@ -481,7 +492,7 @@ Deno.serve(async (req) => {
       // generic not_found so we don't leak which guard tripped.
       const { data: itemRow, error: itemErr } = await admin
         .from('work_order_checklist_items')
-        .select('id, work_order_id, work_orders!inner(staff_member_id, company_id)')
+        .select('id, work_order_id, work_orders!inner(staff_member_id, company_id, assigned_staff_ids)')
         .eq('id', body.itemId)
         .maybeSingle()
 
@@ -489,8 +500,8 @@ Deno.serve(async (req) => {
         console.error('[staff-portal] comment-target lookup failed', itemErr)
         return json({ error: 'lookup_failed' }, 500)
       }
-      const parent = (itemRow as { work_order_id?: string; work_orders?: { staff_member_id: string | null; company_id: string } } | null)?.work_orders
-      if (!itemRow || !parent || parent.staff_member_id !== staff.id || parent.company_id !== staff.company_id) {
+      const parent = (itemRow as { work_order_id?: string; work_orders?: WoOwner } | null)?.work_orders
+      if (!itemRow || !ownsWorkOrder(parent, staff)) {
         return json({ error: 'not_found' }, 404)
       }
 
@@ -623,11 +634,10 @@ Deno.serve(async (req) => {
       if (body.workOrderId) {
         const { data: wo } = await admin
           .from('work_orders')
-          .select('id, staff_member_id, company_id')
+          .select('id, staff_member_id, company_id, assigned_staff_ids')
           .eq('id', body.workOrderId)
           .maybeSingle()
-        const row = wo as { staff_member_id: string | null; company_id: string } | null
-        if (!row || row.company_id !== staff.company_id || row.staff_member_id !== staff.id) {
+        if (!ownsWorkOrder(wo as WoOwner | null, staff)) {
           return json({ error: 'not_found' }, 404)
         }
         workOrderId = body.workOrderId
@@ -635,14 +645,19 @@ Deno.serve(async (req) => {
 
       const today = new Date().toISOString().slice(0, 10)
 
-      const { data: existing } = await admin
+      // ⚠️ Was .is('work_order_id', id ? undefined : null): for a named job that
+      // filtered on "is undefined", never matched, and the re-submit INSERTED
+      // into the one-per-day unique index and failed instead of updating.
+      const existingQ = admin
         .from('daily_logs')
         .select('id')
         .eq('company_id', staff.company_id)
         .eq('staff_member_id', staff.id)
         .eq('log_date', today)
-        .is('work_order_id', workOrderId === null ? null : undefined)
-        .maybeSingle()
+      const { data: existing } = await (workOrderId === null
+        ? existingQ.is('work_order_id', null)
+        : existingQ.eq('work_order_id', workOrderId)
+      ).maybeSingle()
 
       const payload = {
         company_id:      staff.company_id,
