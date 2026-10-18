@@ -4291,9 +4291,12 @@ same failure as inventing a number, with less to show for it.
   already details cars or drives on weekends does not get a move that does more
   of it, however short of money they are. The only moves that may touch that
   work are charging more for the same hours, or dropping it. If "timeEaters"
-  names a second job or side work, one move says how they come down to one
-  job, because that is the thing they asked for. Being short every month is
-  answered from what goes out and from what the main job pays.
+  names a second job or side work, one move IS coming down to one job: its
+  title names the second job or side work they stop, and its gate is the
+  condition, from their own numbers, under which they stop it (what the main
+  job and the cuts have to cover first). A headline that promises one job with
+  no move saying when the second one ends has not answered them. Being short
+  every month is answered from what goes out and from what the main job pays.
 - The horizon is a year: the moves get them to the one-year rung. If an older
   "horizon" answer is present it says how fast they need the first change to
   show; honour it. If a year does not survive their own numbers, say so in the
