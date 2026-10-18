@@ -356,7 +356,7 @@ export default function StaffPortal() {
   const completed  = (work_orders ?? []).filter(w => w.status === 'done')
 
   return (
-    <div className="min-h-screen bg-ink-50 pb-24">
+    <div className="crew-shell min-h-screen bg-ink-50 pb-24">
 
       {/* Header — kept short. The crew's name + which company they're
           working for is all the orientation needed. */}

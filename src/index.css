@@ -232,6 +232,9 @@
    page: a look that is corrected in forty files drifts apart again; a look
    that is corrected in one place cannot.
 
+   `.crew-shell` is the crew's phone page (/staff/:token), which has no app
+   shell but is the same product: it missed the warm paper and the one green
+   on 17 Oct until it was named here.
    ⚠️ Scoped to `.app-shell` (AppLayoutChrome). The marketing site and Unstuck
    share these tokens and this file; neither is inside the shell, so neither
    changes. Do not move these to :root.
@@ -239,7 +242,7 @@
    an unlayered rule wins over a layered one whatever the specificity. That is
    what lets the font-size rules below beat `text-[11px]`.
    ──────────────────────────────────────────────────────────────────────────── */
-.app-shell {
+.app-shell, .crew-shell {
   /* Greys for text, each now at or above 4.5:1 on white. The NAMES are the
      same, so every existing `text-ink-400` simply reads darker. */
   --color-ink-300: #6a7a7c;   /* was #8a9a9c, 2.9:1  → 4.5:1 */
