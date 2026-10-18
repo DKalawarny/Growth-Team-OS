@@ -225,14 +225,12 @@ async function generate(jwt, answers) {
  * the ANSWERS and the OUTPUT together. Every single one is a bug that has
  * actually shipped.
  */
-const SECOND_JOB_ENDS = /second job|one job|side (?:work|job)|(?:extra|weekend|warehouse) shifts?|without the (?:second|side|weekend|warehouse|detail)/i
-
 function audit(map, answers) {
   const bad = []
   const text = JSON.stringify(map)
   const push = (t, m) => bad.push(`${t}: ${m}`)
 
-  mapProblems(map, answers).forEach(p => push('CONTRACT', p))
+  mapProblems(map, answers, { fresh: true }).forEach(p => push('CONTRACT', p))
   inventedFigures(map, answers).forEach(p => push('FIGURE', p))
   fieldNamesLeaked(map).forEach(n => push('JARGON', `"${n}" reached the page`))
 
@@ -258,10 +256,7 @@ function audit(map, answers) {
   // 17 Oct: Luis tapped "a second job" as what eats his time and his headline
   // said "one job, not two", yet one of two live plans never said when the
   // second job stops. Some move's title or gate has to name it.
-  if ((answers.timeEaters ?? []).some(t => t?.key === 'work-second')) {
-    const ends = (map.moves ?? []).some(m => SECOND_JOB_ENDS.test(`${m.title ?? ''} ${m.gate ?? ''}`))
-    if (!ends) push('ONE JOB', 'they named a second job eating their time; no move says when it stops')
-  }
+  // The check itself lives in mapProblems (fresh), reported above as CONTRACT.
 
   // Shipped 20 Sep: an assumption that carries a verdict about the person.
   ;(map.assumptions ?? []).forEach(a => {

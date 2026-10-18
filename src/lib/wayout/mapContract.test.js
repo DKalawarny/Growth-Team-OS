@@ -1112,3 +1112,47 @@ describe('the seen card counts every free-text answer as their words', () => {
     expect(enforceMapContract(m, { enough: 'about 6000' }).seen?.quote).toBeFalsy()
   })
 })
+
+describe('someone who asked for one job gets a move that ends the second (18 Oct)', () => {
+  const luis = { timeEaters: [{ key: 'work-long' }, { key: 'work-second' }] }
+  const moves = third => [
+    { order: 1, title: 'Find the money in the bills', gate: 'What goes out is under what comes in' },
+    { order: 2, title: 'Point every spare dollar at the card', gate: 'The card is going down' },
+    third,
+  ]
+  const plan = third => ({ headline: 'One job', stats: [{ label: 'x', value: 1 }], moves: moves(third) })
+  const flagged = (map, opts) => mapProblems(map, luis, opts).some(p => /second job/.test(p))
+
+  it('flags a fresh plan that never says when the second job stops', () => {
+    expect(flagged(plan({ order: 3, title: 'Ask for the raise', gate: 'You have had the conversation' }), { fresh: true })).toBe(true)
+  })
+
+  it('passes the plan that names it (a real 18 Oct generation)', () => {
+    expect(flagged(plan({ order: 3, title: 'Drop the second job, keep the detailing on your terms',
+      gate: 'The main job and the cuts cover the floor without the warehouse shifts' }), { fresh: true })).toBe(false)
+  })
+
+  it('never rewrites a plan saved before the rule existed', () => {
+    expect(flagged(plan({ order: 3, title: 'Ask for the raise', gate: 'You have had the conversation' }))).toBe(false)
+  })
+
+  it('asks nothing of someone who did not name a second job', () => {
+    expect(mapProblems(plan({ order: 3, title: 'Ask for the raise', gate: 'x' }), { timeEaters: [{ key: 'work-long' }] }, { fresh: true })
+      .some(p => /second job/.test(p))).toBe(false)
+  })
+})
+
+describe('a figure that is a distance from a quantity is not that quantity (18 Oct)', () => {
+  const his = { takeHome: 4100, mustPay: 4400 }
+  const flagged = detail => inventedFigures({ moves: [{ title: 'x', detail }] }, his).some(p => /stated as/.test(p))
+
+  it('leaves "your take-home is $300 short of what has to go out" alone', () => {
+    expect(flagged('Your take-home is $300 short of what has to go out.')).toBe(false)
+    expect(flagged('Your take-home is $300 less than what has to go out.')).toBe(false)
+  })
+
+  it('still flags a take-home stated wrongly', () => {
+    expect(flagged('Your take-home is $300.')).toBe(true)
+    expect(flagged('Your take-home is about $300 a month.')).toBe(true)
+  })
+})

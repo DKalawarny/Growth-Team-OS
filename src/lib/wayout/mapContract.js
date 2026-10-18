@@ -270,7 +270,18 @@ function proposesRelocation(move) {
  * says the plan came back wrong rather than showing three-quarters of one to
  * someone who has paid.
  */
-export function mapProblems(map, answers = {}) {
+/**
+ * ⭐ 18 Oct: somebody who tapped "a second job" as what eats their time asked
+ * for one job. Live plans named the second job's end only half the time, with
+ * the rule in the prompt. Exported so the audit uses this one, not its own.
+ */
+export const SECOND_JOB_ENDS = /second job|one job|side (?:work|job)|(?:extra|weekend|warehouse) shifts?|without the (?:second|side|weekend|warehouse|detail)/i
+
+/**
+ * `fresh` is true only for a plan just written. A rule added after a plan was
+ * saved must not rewrite that plan (and its ticks) the next time it is opened.
+ */
+export function mapProblems(map, answers = {}, { fresh = false } = {}) {
   const problems = []
   if (!map?.headline) problems.push('no headline')
 
@@ -294,6 +305,11 @@ export function mapProblems(map, answers = {}) {
     if (outdoor && !wantsSeasonal && looksColdClimate(answers)) {
       const hasPlan = Array.isArray(map.seasonPlan) && map.seasonPlan.length > 0
       if (!hasPlan) problems.push('outdoor first move in a cold climate with no off-season plan')
+    }
+
+    if (fresh && (answers?.timeEaters ?? []).some(t => t?.key === 'work-second')
+      && !map.moves.some(m => SECOND_JOB_ENDS.test(`${m?.title ?? ''} ${m?.gate ?? ''}`))) {
+      problems.push('they named a second job eating their time and asked for one job: one move must name the second job they stop, with a gate from their own numbers saying when')
     }
 
     // Constraints before dreams.
@@ -674,7 +690,9 @@ function statedAs(sentence, re) {
   const forms = [
     `\\b(?:have|has|had|with|got)\\s+(?:roughly\\s+|about\\s+|around\\s+|some\\s+)?${money}\\s+(?:in|of)\\s+(?:${q})`,
     `\\byour\\s+${money}\\s+(?:a month\\s+)?(?:${q})`,
-    `(?:${q})\\s+(?:of|is|are|sits at|comes to|totals?)\\s+(?:roughly\\s+|about\\s+|around\\s+)?${money}`,
+    // ⚠️ Not when the figure is a DISTANCE from the quantity: "your take-home
+    // is $300 short of what has to go out" (18 Oct, a correct plan rejected).
+    `(?:${q})\\s+(?:of|is|are|sits at|comes to|totals?)\\s+(?:roughly\\s+|about\\s+|around\\s+)?${money}(?![\\d,k])(?!\\s+(?:short|more|less|under|over|below|above|behind|shy)\\b)`,
     `(?:${q})\\s*[:—-]\\s*${money}`,
   ]
   return forms.some(f => new RegExp(f, 'i').test(sentence))

@@ -675,7 +675,7 @@ export async function generateMap(answers, onProgress = () => {}, moveNotes = nu
       clearTimeout(bell)
     }
 
-    problems = mapProblems(map, answers)
+    problems = mapProblems(map, answers, { fresh: true })
 
     // ⭐⭐ STYLE NEVER CAUSES A REWRITE. IT ONLY RIDES ONE THAT IS HAPPENING.
     //
