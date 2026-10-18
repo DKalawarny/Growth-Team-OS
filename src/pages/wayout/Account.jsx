@@ -27,13 +27,16 @@ export default function Account() {
     setBusy('download'); setErr('')
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      const [{ data: sessions, error: e1 }, { data: playbooks, error: e2 }] = await Promise.all([
+      const [{ data: sessions, error: e1 }, { data: playbooks, error: e2 }, { data: invites }, { data: invitedBy }] = await Promise.all([
         supabase.from('wayout_sessions').select('*').eq('user_id', user.id),
         supabase.from('wayout_playbooks').select('*').eq('user_id', user.id),
+        supabase.from('wayout_invites').select('label, code, opened, created_at').eq('user_id', user.id),
+        supabase.from('wayout_referrals').select('show_to_inviter, answered, created_at').eq('friend_id', user.id),
       ])
       if (e1 || e2) throw new Error((e1 || e2).message)
       const file = new Blob([JSON.stringify({
         exported_at: new Date().toISOString(), email: user.email, plans: sessions ?? [], walkthroughs: playbooks ?? [],
+        invite_links: invites ?? [], invited_by: invitedBy ?? [],
       }, null, 2)], { type: 'application/json' })
       const a = document.createElement('a')
       a.href = URL.createObjectURL(file)
@@ -89,7 +92,7 @@ export default function Account() {
 
       <section className="wayout__legalsec">
         <h2 className="wayout__situationh">Download a copy</h2>
-        <p className="wayout__lead">Your answers, every version of your plan, and your walkthroughs, in one file.</p>
+        <p className="wayout__lead">Your answers, every version of your plan, your walkthroughs and your invite links, in one file.</p>
         <button type="button" className="wayout__btn wayout__btn--quiet wayout__btnauto" onClick={download} disabled={Boolean(busy)}>
           {busy === 'download' ? 'Preparing…' : 'Download my data'}
         </button>
@@ -97,7 +100,7 @@ export default function Account() {
 
       <section className="wayout__legalsec">
         <h2 className="wayout__situationh">Delete everything</h2>
-        <p className="wayout__lead">Your plans, versions, notes and walkthroughs are deleted for good. This cannot be undone.</p>
+        <p className="wayout__lead">Your plans, versions, notes, walkthroughs and invite links are deleted for good. This cannot be undone.</p>
         <button type="button" className="wayout__btn wayout__btn--danger wayout__btnauto" onClick={() => setAsking(true)} disabled={Boolean(busy)}>
           {busy === 'delete' ? 'Deleting…' : 'Delete my account'}
         </button>

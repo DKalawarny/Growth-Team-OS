@@ -20,7 +20,7 @@ import { OPERATOR_LEGAL_NAME, OPERATOR_CONTACT, GOVERNING_PROVINCE, LIABILITY_CA
  * ⚠️ Every claim about data must match what the code does. If a vendor or a
  * data flow changes, this page changes in the same commit.
  */
-export const WAYOUT_LEGAL_UPDATED = '6 October 2026'
+export const WAYOUT_LEGAL_UPDATED = '18 October 2026'
 
 function Section({ title, children }) {
   return (
@@ -106,6 +106,8 @@ export function UnstuckPrivacy() {
             <li><b>What we write for you:</b> your plan, its versions, what you say under “Something changed?”, your notes and what you tick off.</li>
             <li><b>The free check:</b> your six taps are recorded without your name, to see which situations people arrive with.</li>
             <li><b>In your browser:</b> answers you give before you have an account are kept in your own browser until you make one, so nothing is lost.</li>
+            <li><b>If you invite people:</b> the links you make, any nickname you give a link (only you see it), and how many times each link was opened. We never ask for or keep your friends' email addresses or phone numbers.</li>
+            <li><b>If someone invited you:</b> which link brought you here, and your answer to whether they may see that you joined.</li>
             <li><b>How you found us:</b> on your first visit, the website, search or ad that brought you here (for example "google" or a campaign name), never who you are. It tells us which places actually help people, and it is never shared with advertisers.</li>
           </ul>
         </Section>
@@ -135,6 +137,7 @@ export function UnstuckPrivacy() {
 
         <Section title="Who can see it">
           <p>Only you, through your account. Your plan is never visible to an employer, a partner or anyone else. If you also run a business on Eliv8 OS, you can choose to share a few lines you write yourself with your own Eliv8 OS account. Only those lines go across, only when you press share, and only you can see them there. Nothing else is ever shared.</p>
+          <p>If you joined from someone's invite link, they can see that someone joined from it. They see your first name and whether you have made a plan only if you say yes, and you can change that any time. They never see your answers, your numbers or your plan.</p>
         </Section>
 
         <Section title="Your choices">

@@ -32,6 +32,11 @@ Deno.serve(async (req: Request) => {
     const { error: sErr } = await admin.from('wayout_sessions').delete().eq('user_id', userId)
     if (sErr) throw new Error(`plan delete failed: ${sErr.message}`)
     await admin.from('wayout_diagnostics').update({ user_id: null }).eq('user_id', userId)
+    // Invite links they made and the record of whose link brought them (migration
+    // 101). An Eliv8 owner keeps their login, so the cascade from auth.users does
+    // not reach these; delete them here.
+    await admin.from('wayout_invites').delete().eq('user_id', userId)
+    await admin.from('wayout_referrals').delete().eq('friend_id', userId)
 
     const { data: prof } = await admin.from('profiles').select('company_id').eq('id', userId).maybeSingle()
     const companyId = (prof as { company_id: string } | null)?.company_id ?? null
