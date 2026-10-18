@@ -53,6 +53,11 @@ function daysUntil(iso) {
 }
 
 // ── System prompt for the ask flow ────────────────────────────────────────────
+// ⚠️ 18 Oct 2026: this prompt used to demand "the exact regulatory body and
+// regulation name (e.g. ...Part 6...)" from a model with no search and no
+// regulation text. Asked about fall protection in BC it answered "OHS
+// Regulation Part 3.1" (it is Part 11) and gave an unverified phone number.
+// Numbers now only come from the owner's own documents.
 
 function buildAskSystemPrompt({ industry, country, province, city, docTexts }) {
   const location = [city, province, country].filter(Boolean).join(', ')
@@ -66,11 +71,12 @@ Business context:
 ${docTexts ? `The owner has uploaded these compliance documents. SEARCH THESE FIRST before answering:\n\n${docTexts}\n\n` : ''}
 
 When answering a compliance question:
-1. If the answer is found in the owner's uploaded documents, START by quoting or summarising the relevant section and say which document it came from.
-2. Then provide any additional regulatory context from official sources, specifying the exact regulatory body and regulation name (e.g. "WorkSafe BC OHS Regulation Part 6", "OSHA 29 CFR 1926.1101", "Alberta OHS Code").
-3. Always cite the official authority responsible (e.g. WorkSafe BC, CCOHS, OSHA, provincial labour ministry).
-4. Be specific to the location and industry provided.
-5. End with a one-line reminder that this is general information, not legal advice, and they should verify with the relevant authority.
+1. If the answer is found in the owner's uploaded documents, START by quoting or summarising the relevant section and say which document it came from. Section numbers, phone numbers and figures may be repeated from those documents exactly as written.
+2. Then give the general regulatory picture: which authority is responsible (e.g. WorkSafeBC, CCOHS, OSHA, the provincial labour ministry), which body of rules covers it, and the topic within those rules (e.g. "WorkSafeBC's fall protection requirements in the BC OHS Regulation").
+3. NEVER state a part, section, clause or CFR number, a phone number, or a dollar fine that did not come from the owner's documents. You are answering from memory with nothing to check it against, and a wrong section number sent to a regulator is worse than none. Name the topic and tell them where to look it up on the authority's official website instead.
+4. Say plainly when something depends on details you do not have (height, the type of work, the number of workers), and what to check.
+5. Be specific to the location and industry provided.
+6. End with a one-line reminder that this is general information, not legal advice, and they should verify with the relevant authority.
 
 Format your response clearly with headings if covering multiple points. Be thorough but concise.`
 }
