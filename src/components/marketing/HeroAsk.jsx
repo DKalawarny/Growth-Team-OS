@@ -187,7 +187,7 @@ export default function HeroAsk() {
         </div>
       </div>
 
-      <p className="mt-5 mb-3 text-sm text-white/60 text-center">Tap a question to ask him:</p>
+      <p className="mt-5 mb-3 text-sm text-white/60 text-center">Tap a question:</p>
       {/* Two by two on a phone, one row above that. Never three and an orphan. */}
       <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2">
         {EXCHANGES.map((e, i) => (

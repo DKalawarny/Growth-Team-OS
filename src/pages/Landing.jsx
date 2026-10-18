@@ -9,15 +9,15 @@ import {
   softwareApplicationSchema,
   jsonLd,
 } from '../lib/seo'
-import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, SHOW_PUBLIC_PRICE, PILOT_PRICE_LINE, PILOT_PRICE_BLURB, ANNUAL_SAVINGS_USD } from '../lib/pricing'
+import { PRICE_MONTHLY_USD, PRICE_ANNUAL_USD, ANNUAL_MONTHLY_EQUIV, PRICE_MONTHLY_CAD_EST, PRICE_ANNUAL_CAD_EST, TRIAL_DAYS, SHOW_PUBLIC_PRICE, ANNUAL_SAVINGS_USD } from '../lib/pricing'
 import Wordmark from '../components/brand/Wordmark'
 
 /**
  * / — public marketing landing page.
  *
  * Structured to convert service-business owners:
- *   Hero (with Solomon answering) → Conviction → Use cases → Meet Solomon +
- *   demo → What he knows → Follows up → Price → CTA
+ *   Hero (with the video) → Conviction → Use cases → Meet Solomon +
+ *   the ask panel → What he knows → Follows up → Price → CTA (18 Oct: video in the hero, DemoBand gone)
  *   ⭐ 12 Oct: Conviction moved to SECOND. See the note at <HeroSection/>.
  *
  * SEO posture (see src/lib/seo.js for the canonical config):
@@ -158,7 +158,6 @@ export default function Landing() {
       <ConvictionSection />
       <UseCasesSection />
       <SolomonSection />
-      <DemoBand />
       <WhatHeKnowsSection />
       <FollowsUpSection />
       <PriceSection />
@@ -382,7 +381,7 @@ function HeroSection() {
         </div>
 
         <p className="text-white/60 text-sm">
-          The demo is the real app, loaded with a sample company. You do not need an account to open it.
+          The demo is the real app with a sample company in it, your own private copy, no account needed. Solomon&rsquo;s answers there are saved examples.
         </p>
         {/* 12 Oct: a second "no credit card, free in pilot" line sat here. The
             pill above the headline already says it. Once per eyeful. */}
@@ -528,7 +527,7 @@ function ConvictionSection() {
  */
 function SolomonSection() {
   return (
-    <section className="bg-gray-950 pt-20 pb-10">
+    <section className="bg-gray-950 pt-20 pb-24">
       <div className="max-w-2xl mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
           Meet Solomon
@@ -559,10 +558,11 @@ function SolomonSection() {
             paragraph. The rule is now "one subject, then it" — not "no
             subject at all". */}
         <p className="text-white/70 text-[17px] leading-relaxed">
+          {/* 18 Oct: trimmed for repeats. "Not a template" is the heading two
+              sections down, remembering is its own section, and arguing both
+              sides is the first card under "What Solomon builds". */}
           Solomon reads your books, your plan and your last six check-ins
-          before it answers anything, so the advice starts from your
-          numbers, not a template. It remembers what you decided in March and
-          why. On the decisions that are hard to undo, it argues both sides, tells you which way it leans, and tells you what it could not see.
+          before it answers anything. Tap a question below and watch it work.
         </p>
       </div>
       {/* The moving part: Solomon answering, with questions a visitor can tap.
@@ -663,7 +663,7 @@ function PriceSection() {
           A coach or a mastermind group costs $500 to $2,500 a month, and most of them will tell you what you want to hear.{' '}
           {SHOW_PUBLIC_PRICE
             ? 'This is a fraction of that, and it reads your actual numbers before it says anything.'
-            : 'Solomon reads your real numbers before it says anything. The owners using it now are helping to set the price.'}
+            : 'Solomon tells you what it actually sees.'}
         </p>
 
         {/* Toggle — only meaningful when a price is published */}
@@ -708,7 +708,9 @@ function PriceSection() {
             <>
               {/* 12 Oct: the big PILOT_PRICE_LINE sat here, directly under a
                   heading saying the same thing. The heading says it once. */}
-              <p className="text-white/75 text-base max-w-md mx-auto mb-8">{PILOT_PRICE_BLURB}</p>
+              {/* 18 Oct: PILOT_PRICE_BLURB sat here and opened with "in private
+                  pilot and free to use", the heading straight above it again. */}
+              <p className="text-white/75 text-base max-w-md mx-auto mb-8">Everything is included. We will tell you well before we ever charge anything.</p>
             </>
           )}
 
@@ -717,7 +719,7 @@ function PriceSection() {
               this card. Names match the app as it is now (Tasks, Daily logs);
               the retired visibility tool is left out. Keep it to what an
               owner can actually find in the nav. */}
-          <div className="grid grid-cols-2 gap-3 text-sm text-left mb-10 max-w-md mx-auto">
+          <div className={`grid grid-cols-2 gap-3 text-sm text-left max-w-md mx-auto ${SHOW_PUBLIC_PRICE ? 'mb-10' : ''}`}>
             {[
               'Solomon AI advisor',
               'QuickBooks sync',
@@ -745,13 +747,17 @@ function PriceSection() {
             ))}
           </div>
 
+          {/* 18 Oct: while free, the button and "no card" line here repeated the
+              closing band directly below. They come back with a published price. */}
+          {SHOW_PUBLIC_PRICE && (<>
           <Link
             to="/signup"
             className="inline-block px-10 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-base transition-colors"
           >
-            {SHOW_PUBLIC_PRICE ? `Start ${TRIAL_DAYS}-day free trial` : 'Start free'}
+            {`Start ${TRIAL_DAYS}-day free trial`}
           </Link>
           <p className="mt-4 text-white/55 text-sm">No credit card required · Cancel anytime</p>
+          </>)}
         </div>
 
         <Link to="/pricing" className="text-sm text-gray-500 hover:text-gray-700 underline underline-offset-2">
@@ -763,42 +769,11 @@ function PriceSection() {
 }
 
 // ── The demo, mid-page ────────────────────────────────────────────────────────
-// A second, larger invitation for the reader who scrolled past the hero. By
-// here they have read what Solomon does; this is where they can go and see it.
-function DemoBand() {
-  // 12 Oct: centred, one column, so it reads as the end of "Meet Solomon"
-  // above it (same dark block) and not as a second, differently laid out one.
-  return (
-    <section className="bg-gray-950 pt-10 pb-20">
-      <div className="max-w-2xl mx-auto px-6 text-center border-t border-white/10 pt-14">
-        <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-4">
-          Don&rsquo;t take our word for it. Open it.
-        </h2>
-        <p className="text-white/70 text-[17px] leading-relaxed mb-8">
-          The demo is the full app with a sample landscaping company in it. You get your own private copy, so you can click and change anything. You do not need an account or a card.
-          Solomon&rsquo;s answers in the demo are saved examples. In your own account it answers from your business.
-        </p>
-        {/* 12 Oct, Daniel: "should have the register here as well." Same pair,
-            same colours as the hero: demo in white, sign-up in green. */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            to="/demo"
-            className="px-10 py-4 rounded-xl bg-white hover:bg-gray-100 text-gray-950 font-black text-base transition-colors shadow-lg inline-flex items-center gap-2.5"
-          >
-            <span aria-hidden className="inline-block w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-brand-600" />
-            Open the live demo
-          </Link>
-          <Link
-            to="/signup"
-            className="px-10 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-base transition-colors shadow-lg"
-          >
-            {SHOW_PUBLIC_PRICE ? `Start free for ${TRIAL_DAYS} days` : 'Start free'}
-          </Link>
-        </div>
-      </div>
-    </section>
-  )
-}
+// ⚠️ 18 Oct: DemoBand ("Don't take our word for it. Open it.") is gone. With the
+// video in the hero, the demo pitch said the same thing three times (hero, here,
+// closing band). Daniel: "there are some redundancies". Its one fact nothing else
+// said (your own copy; Solomon's answers there are saved examples) moved to the
+// line under the hero buttons.
 
 
 function ClosingCTA() {
@@ -809,7 +784,7 @@ function ClosingCTA() {
           You don&rsquo;t have to decide the next one alone.
         </h2>
         <p className="text-white/85 mb-8 max-w-lg mx-auto">
-          {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card.` : `${PILOT_PRICE_LINE}, and you do not need a card.`}{' '}
+          {SHOW_PUBLIC_PRICE ? `${TRIAL_DAYS} days free, no card. ` : ''}
           Connect your books, tell Solomon what you are weighing, and see if it tells you something you did not already know. If it does not, you can leave and take your data with you.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
