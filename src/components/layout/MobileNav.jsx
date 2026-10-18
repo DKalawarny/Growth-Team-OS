@@ -155,7 +155,7 @@ export default function MobileNav() {
   return (
     <>
       {/* ── Top bar ────────────────────────────────────────────────────────── */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#EDF1F1] border-b border-ink-100 flex-shrink-0 z-30">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-ink-100 flex-shrink-0 z-30">
         <div className="flex items-center gap-2">
           <Wordmark tone="light" size={18} />
         </div>
@@ -173,7 +173,7 @@ export default function MobileNav() {
       </header>
 
       {/* ── Bottom tab bar ─────────────────────────────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#EDF1F1] border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {tabsFor(role).map(tab => {
           const isActive = location.pathname === tab.to || (tab.to !== '/' && location.pathname.startsWith(tab.to))
           const showDot  = tab.to === '/advisor' && hasOpener && !isActive

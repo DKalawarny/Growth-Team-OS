@@ -204,7 +204,7 @@ export default function Sidebar() {
     : '?'
 
   return (
-    <aside className="hidden lg:flex w-60 shrink-0 bg-[#EDF1F1] flex-col h-screen sticky top-0 border-r border-ink-100">
+    <aside className="hidden lg:flex w-60 shrink-0 bg-white flex-col h-screen sticky top-0 border-r border-ink-100">
 
       {/* Logo */}
       <div className="px-5 pt-6 pb-5 border-b border-ink-100">

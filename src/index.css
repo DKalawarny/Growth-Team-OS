@@ -245,10 +245,12 @@
   --color-gray-500: #4b5563;  /* was #6b7280          → 7.6:1 */
 
   /* Edges and the page behind the cards. A white card on a near-white page
-     with a near-white border is what "flat" looked like. */
-  --color-ink-50:  #f0f4f3;   /* page background, was #f6f8f8 */
-  --color-ink-100: #d6dfdf;   /* card borders and dividers, was #e3eaea */
-  --color-ink-200: #b3c1c2;   /* input and button borders, was #c3cfd0 */
+     with a near-white border is what "flat" looked like. Warm paper, not the
+     old blue-green grey (#f0f4f3), which read murky and soft on screen; the
+     sidebar and Solomon panel are white on top of it. */
+  --color-ink-50:  #f4f3ef;   /* page background */
+  --color-ink-100: #e3e1db;   /* card borders and dividers */
+  --color-ink-200: #cac6bd;   /* input and button borders */
   --color-gray-200: #d5dadf;
 
   /* The smallest named size. 12px → 13px. */

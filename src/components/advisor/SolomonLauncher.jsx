@@ -68,7 +68,7 @@ export default function SolomonLauncher({ onPick, hasCashConcern = false, hasOpe
   const suggestedLabels = new Set(suggested.map(s => s.label))
 
   return (
-    <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-5 overflow-y-auto scrollbar-hide border-l border-ink-100 bg-[#EDF1F1] px-5 py-6">
+    <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-5 overflow-y-auto scrollbar-hide border-l border-ink-100 bg-white px-5 py-6">
 
       <div className="flex flex-col gap-1.5">
         <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-400">
