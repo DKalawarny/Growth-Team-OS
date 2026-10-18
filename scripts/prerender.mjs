@@ -34,7 +34,10 @@ import { unstuckHead, isUnstuckRoute, UNSTUCK_DESCRIPTION } from './lib/unstuckH
 const __dirname  = path.dirname(fileURLToPath(import.meta.url))
 const PROJECT    = path.resolve(__dirname, '..')
 const DIST       = path.join(PROJECT, 'dist')
-const PORT       = 4173 // vite preview default
+// ⚠️ Overridable because two builds at once (two sessions on one Mac) shared
+// 4173: the second found the port taken, prerendered against the FIRST one's
+// server, and died when that server was shut down (18 Oct 2026).
+const PORT       = Number(process.env.PRERENDER_PORT) || 4173 // vite preview default
 const HOST       = `http://127.0.0.1:${PORT}`
 
 // Keep this in sync with PUBLIC_PAGES in src/lib/seo.js.
