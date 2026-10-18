@@ -1,9 +1,8 @@
 # robots.txt — Unstuck Map (getunstuckmap.com)
 #
-# ⚠️ SERVED VIA A HOST REWRITE IN public/_redirects, because getunstuckmap.com
-# and eliv8os.com are the SAME Netlify site. There is only one /robots.txt path,
-# so the rule in _redirects swaps this file in for requests arriving on this
-# hostname. Editing public/robots.txt instead would change the wrong product's.
+# ⚠️ SERVED BY THE CLOUDFLARE WORKER (worker/index.js) for requests arriving on
+# getunstuckmap.com. One build serves both domains and there is only one
+# /robots.txt path, so editing public/robots.txt changes the wrong product's.
 #
 # Posture:
 #   The two public entry points are open. Everything past them needs a session,
@@ -25,6 +24,17 @@ Allow: /unstuckmap-og.png
 
 # 🔴 Everything below needs a session. A plan is the most personal thing this
 # product holds.
+# 18 Oct: the product moved to the root of this domain on 27 Sep and these
+# were never updated; the old /wayout/ lines are kept for links still out there.
+Disallow: /plan
+Disallow: /play/
+Disallow: /done
+Disallow: /chapter
+Disallow: /history
+Disallow: /invite
+Disallow: /account
+Disallow: /enter
+Disallow: /reset
 Disallow: /wayout/plan
 Disallow: /wayout/play/
 Disallow: /wayout/done

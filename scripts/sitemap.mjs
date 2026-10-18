@@ -90,9 +90,11 @@ console.log(`[sitemap] unstuckmap: ${SITUATIONS.length + 3} urls`)
  */
 const llms = `# ${WAYOUT_NAME}
 
-> A free plan for someone who feels stuck. You answer questions about your actual situation, what has to go out every month, what is coming and what cannot move, and you get three moves in the order they work, with what was crossed off and why.
+> A free plan for someone who feels stuck, with money, with time, or both. You answer questions about your actual situation, what has to go out every month, what eats your hours, what is coming and what cannot move, and you get three moves in the order they work, with what was crossed off and why.
 
 ${WAYOUT_SITE_URL}
+
+${WAYOUT_NAME} at getunstuckmap.com is a personal planning tool for money and time. It is not "The Unstuck Map", the product design framework by Nikkel Blaase at unstuckmap.com, and the two are unrelated.
 
 ## What it is
 

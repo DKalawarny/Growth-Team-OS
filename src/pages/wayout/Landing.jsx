@@ -121,33 +121,56 @@ function HeroVideo() {
   )
 }
 
+const HOME_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', '@id': `${WAYOUT_SITE_URL}/#website`, url: WAYOUT_SITE_URL, name: WAYOUT_NAME, description: WAYOUT_TAGLINE, inLanguage: 'en' },
+    {
+      '@type': 'WebApplication',
+      '@id': `${WAYOUT_SITE_URL}/#app`,
+      name: WAYOUT_NAME,
+      url: WAYOUT_SITE_URL,
+      applicationCategory: 'LifestyleApplication',
+      operatingSystem: 'Web',
+      isAccessibleForFree: true,
+      description: 'A free plan for someone who feels stuck, with money, with time, or both. Answer plain questions about your own situation and get three moves in the order they work.',
+      disambiguatingDescription: 'A personal planning tool for money and time. Not the product design framework called The Unstuck Map.',
+    },
+  ],
+}
+
 export default function Landing() {
   // ⭐ The landing is where most first visits arrive — record where from.
   useEffect(() => { captureSource(); captureInvite() }, [])
   return (
     <div className="wayout wayout--hero">
       <Helmet>
-        <title>{`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`}</title>
+        <title>{`${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`}</title>
         <meta name="description" content={WAYOUT_TAGLINE} />
         {/* ⭐⭐ Indexable as of 26 Sep — see the note in Diagnostic.jsx. This is
             the page that should rank: it says what the product is. */}
         {/* Same inherited-canonical problem as WayoutShell — this page does not
             use it, so it needs its own or it claims to be the Eliv8 homepage. */}
         <link rel="canonical" href={canonicalUrl('/')} />
+        {/* ⭐ 18 Oct: what the product IS, for search and assistants. The home
+            page had none. ⚠️ No price: the plan is free and the paid half is
+            not live. disambiguatingDescription because "The Unstuck Map" is
+            also an unrelated product design framework (unstuckmap.com). */}
+        <script type="application/ld+json">{JSON.stringify(HOME_LD)}</script>
         {/* ⚠️ Same reason as WayoutShell — index.html's Open Graph tags are
             Eliv8 OS's, and Helmet only manages what it declares. This page does
             not use WayoutShell, so it needs its own set or it inherits them. */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content={WAYOUT_NAME_TITLE} />
         <meta property="og:url" content={WAYOUT_SITE_URL} />
-        <meta property="og:title" content={`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta property="og:title" content={`${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
         <meta property="og:description" content={WAYOUT_TAGLINE} />
         <meta property="og:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={WAYOUT_SITE_URL} />
-        <meta name="twitter:title" content={`${WAYOUT_NAME_TITLE} — ${WAYOUT_TAGLINE}`} />
+        <meta name="twitter:title" content={`${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
         <meta name="twitter:description" content={WAYOUT_TAGLINE} />
         <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
