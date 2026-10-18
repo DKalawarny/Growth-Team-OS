@@ -267,7 +267,7 @@ export default function UploadedTab({ onCountChange }) {
           style={{
             background:  freshness.error ? 'rgba(239,68,68,0.06)' : 'rgba(11,107,78,0.06)',
             borderColor: freshness.error ? 'rgba(239,68,68,0.25)' : 'rgba(11,107,78,0.25)',
-            color:       freshness.error ? '#b91c1c' : '#0f7a5a',
+            color:       freshness.error ? '#b91c1c' : '#0b6b4e',
           }}
         >
           <p>{freshness.error ?? freshness.message}</p>
