@@ -686,7 +686,11 @@ function misnamedQuantity(text, answers) {
     NAMED_QUANTITIES.forEach(({ key, re }) => {
       const actual = Number(answers?.[key])
       if (!Number.isFinite(actual) || String(answers?.[key] ?? '').trim() === '') return
-      if (!statedAs(sentence, re)) return
+      // ⚠️ "The gap between what comes in and what has to go out is $300"
+      // states the GAP, not the must-pay. Caught by the audit on 17 Oct: a
+      // person $300 short got a correct map rejected for saying so. The
+      // between-clause is cut before asking whether a quantity was stated.
+      if (!statedAs(sentence.replace(/\b(?:gap|difference|shortfall)\s+between\b[^$]*/i, ''), re)) return
       const figures = figuresIn(sentence)
       if (!figures.length) return
       // ⚠️ One of the figures in the sentence has to BE it. A sentence may

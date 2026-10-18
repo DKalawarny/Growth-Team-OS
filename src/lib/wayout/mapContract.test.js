@@ -947,6 +947,13 @@ describe('only the forms that actually assert a value', () => {
     expect(flagged('Park the $600,000 in savings where it does not disappear.')).toBe(false)
     expect(flagged('That is $400 more than your must-pay.')).toBe(false)
     expect(flagged('At $9,000 a month your savings last a long time.')).toBe(false)
+    expect(flagged('The gap between what comes in and what has to go out is $300.')).toBe(false)
+    expect(flagged('The difference between your take-home and your must-pay is $400.')).toBe(false)
+  })
+
+  it('still flags a misstated quantity in a sentence that also names a gap', () => {
+    expect(flagged('Your must-pay is $300, and the gap between that and what comes in is $4,000.')).toBe(true)
+    expect(flagged('What has to go out is $300.')).toBe(true)
   })
 })
 
