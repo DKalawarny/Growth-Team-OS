@@ -24,7 +24,14 @@
  */
 
 /**
- * ⭐⭐ THE MODEL, SETTLED 21 SEP: THE MAP IS FREE, THE WALKTHROUGH IS $29/MONTH.
+ * ⭐⭐ THE MODEL, SETTLED 21 SEP: THE MAP IS FREE, THE WALKTHROUGH IS MONTHLY.
+ *
+ * ⭐ $19, NOT $29, DANIEL 17 OCT: "29 might be too much for what this is". The
+ * people this is for are short every month, and their own plan tells them to
+ * cut a $29 bill. One flat monthly price, asked once at the moment they want
+ * the next step, never a free taste followed by a second ask ("people buy in
+ * the moment"). Not $9 either: paying something real is part of seeing it
+ * through, and it has to carry the referral cut. See REFERRAL below.
  *
  * It was $39 once for the map, and two files each claimed to be the paid half —
  * Plan.jsx said "$39, once. Not a subscription." while Play.jsx said "THIS IS
@@ -36,7 +43,7 @@
  * costs the distribution as well as the conversion. Daniel: "getting someone to
  * try it out for free for feedback and REVIEW IS MORE IMPORTANT."
  *
- * ⚠️ WHY $29 AND NOT LESS, WHICH IS THE COUNTER-INTUITIVE PART. This product
+ * ⚠️ WHY NOT CHEAPER STILL, WHICH IS THE COUNTER-INTUITIVE PART. This product
  * FINISHES — three moves, two gates, out. Software priced cheap makes it back
  * on duration; a thing people complete cannot. Lifetime is four to six months,
  * so the monthly figure does all the work. "A small amount per week" optimises
@@ -48,21 +55,42 @@
  * ambushed. The short lifetime costs less than it looks, because it is short
  * either way.
  */
-export const WAYOUT_PRICE_CENTS = 2900
+export const WAYOUT_PRICE_CENTS = 1900
 export const WAYOUT_CURRENCY    = 'CAD'
 export const WAYOUT_PRICE_PERIOD = 'month'
 
 /** The human-readable figure. The only string anyone should print. */
-export const WAYOUT_PRICE_LABEL = '$29'
+export const WAYOUT_PRICE_LABEL = '$19'
 
 /** With the period attached — for anywhere a bare figure would read as one-off. */
-export const WAYOUT_PRICE_FULL = '$29 a month'
+export const WAYOUT_PRICE_FULL = '$19 a month'
 
 /**
  * ⚠️ Gate, not a preference. While this is false no checkout is started and no
  * price is presented as payable.
  */
 export const WAYOUT_PAYMENTS_LIVE = false
+
+/**
+ * ⭐⭐ REFERRAL, DANIEL 17 OCT. NOT BUILT: it waits for the company and for
+ * payments to be live. The rules are written here so the build cannot drift.
+ *
+ *   - ONE LEVEL. You earn from people you bring, never from people they bring.
+ *   - A share of every payment that actually goes through, for as long as the
+ *     friend keeps paying. No time limit and no limit on friends ("maybe we
+ *     get a salesman that just kills it"). No payment, no share: it stops the
+ *     moment they cancel. A refund or chargeback takes it back, so payouts
+ *     wait 30 days.
+ *   - Nothing to buy to earn. Making people pay in order to earn is a mark of a
+ *     pyramid scheme. Referring yourself is allowed: it is just paying twice.
+ *   - The share is worked out in the currency the friend PAID, and says which.
+ *     It is converted once, at payout, with the rate shown.
+ *   - Never sold as a way to make money, and never in anything the AI writes.
+ *     It is mentioned once they have seen progress, as a thank you for sharing.
+ *   - Paid through Stripe Connect, minimum payout $25. A lawyer reads the
+ *     final terms before launch.
+ */
+export const WAYOUT_REFERRAL_SHARE = 0.2
 
 /**
  * ⭐⭐ SAY THE PRICE EARLY, EVERY TIME. THE FEAR IS THE AMBUSH, NOT THE MONEY.

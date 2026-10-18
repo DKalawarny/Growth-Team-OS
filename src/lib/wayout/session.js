@@ -826,7 +826,7 @@ export const WAYOUT_MAX_ASKS = 12
  *
  * ⚠️ THE CONTEXT IS HEADLINES ONLY, AND THAT IS A COST DECISION AS MUCH AS A
  * DESIGN ONE. Sending every playbook on every turn would be the most expensive
- * request in the product, repeated all month, on a $29 subscription. It gets
+ * request in the product, repeated all month, on a $19 subscription. It gets
  * their answers, the move titles, what is ticked, and one line per earlier
  * chapter — which is what the job actually needs.
  *
