@@ -23,6 +23,7 @@ import { bridgeToEliv8 } from '../../lib/bridges'
 import Bridge from './Bridge'
 import Handoff from './Handoff'
 import ShareCard from './ShareCard'
+import InviteConsent from './InviteConsent'
 
 /**
  * The way out — S7, the reveal.
@@ -1758,6 +1759,7 @@ export function Map({
 
       {/* ⭐ Their three moves, figures out, for a friend (ShareCard.jsx). */}
       {!past && <ShareCard map={map} />}
+      {!past && <InviteConsent />}
 
       {/* ⭐ The shared summary with Eliv8 OS (Handoff.jsx). Their words only. */}
       {!past && <Handoff answers={answers} onTell={onSay} />}

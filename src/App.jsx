@@ -77,6 +77,7 @@ const WayoutPlay       = lazy(() => import('./pages/wayout/Play'))
 const WayoutDone       = lazy(() => import('./pages/wayout/Done'))
 const WayoutChapter    = lazy(() => import('./pages/wayout/Chapter'))
 const WayoutHistory    = lazy(() => import('./pages/wayout/History'))
+const WayoutInvite     = lazy(() => import('./pages/wayout/Invite'))
 const WayoutAccount    = lazy(() => import('./pages/wayout/Account'))
 const WayoutEnter      = lazy(() => import('./pages/wayout/Enter'))
 const WayoutReset      = lazy(() => import('./pages/wayout/Reset'))
@@ -441,6 +442,9 @@ export default function App() {
         <Route path="/chapter" element={<LazyRoute><RequireWayout><WayoutChapter /></RequireWayout></LazyRoute>} />
         <Route path="/wayout/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
         <Route path="/history" element={<LazyRoute><RequireWayout><WayoutHistory /></RequireWayout></LazyRoute>} />
+        {/* ⭐ People you invited (17 Oct). Migration 101; the friend decides if they are named. */}
+        <Route path="/wayout/invite" element={<LazyRoute><RequireWayout><WayoutInvite /></RequireWayout></LazyRoute>} />
+        <Route path="/invite" element={<LazyRoute><RequireWayout><WayoutInvite /></RequireWayout></LazyRoute>} />
         {/* ⭐ Your data — download or delete (3 Oct). /account is free on both hosts. */}
         <Route path="/wayout/account" element={<LazyRoute><RequireWayout><WayoutAccount /></RequireWayout></LazyRoute>} />
         <Route path="/account" element={<LazyRoute><RequireWayout><WayoutAccount /></RequireWayout></LazyRoute>} />

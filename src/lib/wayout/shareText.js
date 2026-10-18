@@ -27,13 +27,14 @@ export function withoutFigures(text) {
     .trim()
 }
 
-export function shareDraft(map) {
+/** `url` is their own invite link when they have one (invites.js), so the friend counts. */
+export function shareDraft(map, url = SHARE_URL) {
   const moves = (Array.isArray(map?.moves) ? map.moves : [])
     .map(m => withoutFigures(forReaders(m?.title)).replace(/[.\s]+$/, ''))
     .filter(Boolean)
     .slice(0, 3)
   const lines = [`I made my plan on ${WAYOUT_NAME}. My next three moves:`]
   moves.forEach((t, i) => lines.push(`${i + 1}. ${t}`))
-  lines.push('', `Yours is free: ${SHARE_URL}`)
+  lines.push('', `Yours is free: ${url}`)
   return lines.join('\n')
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { captureSource } from '../../lib/wayout/source'
+import { captureInvite } from '../../lib/wayout/invites'
 import { Helmet } from 'react-helmet-async'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_BASE, WAYOUT_SITE_URL, canonicalUrl } from '../../lib/wayout/brand'
 import { priceLine, WAYOUT_PRICE_FULL, WAYOUT_PAYMENTS_LIVE, walksWithYouLine } from '../../lib/wayout/pricing'
@@ -122,7 +123,7 @@ function HeroVideo() {
 
 export default function Landing() {
   // ⭐ The landing is where most first visits arrive — record where from.
-  useEffect(() => { captureSource() }, [])
+  useEffect(() => { captureSource(); captureInvite() }, [])
   return (
     <div className="wayout wayout--hero">
       <Helmet>

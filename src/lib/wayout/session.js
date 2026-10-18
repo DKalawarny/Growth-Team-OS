@@ -8,6 +8,7 @@ import { readReplyJson, soundsLikeCrisis } from './replyJson'
 import { loadDraft, clearDraft, stampDraft, draftBelongsToSomeoneElse, takeHandoff } from './draft'
 import { historyForPrompt, chapterAnswers } from './chapterHistory'
 import { readSource } from './source'
+import { claimInvite } from './invites'
 
 export { enforceMapContract, mapProblems } from './mapContract'
 
@@ -88,6 +89,9 @@ export async function loadOrCreateSession() {
   if (!user) throw new Error('wayout: not signed in')
 
   await ensureProfile(user)
+  // ⭐ Credit the friend's link, once. Never throws; the database refuses an
+  // account that existed before the link (migration 101).
+  await claimInvite()
 
   const { data: existing, error: readErr } = await supabase
     .from('wayout_sessions')

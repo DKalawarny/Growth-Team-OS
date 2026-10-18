@@ -6,6 +6,7 @@ import { clearDraft } from '../../lib/wayout/draft'
 import { OPERATOR_CONTACT } from '../../lib/terms'
 import { WAYOUT_NAME, WAYOUT_NAME_TITLE, WAYOUT_TAGLINE, WAYOUT_SITE_URL, WAYOUT_BASE, WAYOUT_HOME, canonicalUrl } from '../../lib/wayout/brand'
 import { captureSource } from '../../lib/wayout/source'
+import { captureInvite } from '../../lib/wayout/invites'
 import './wayout.css'
 
 /**
@@ -42,7 +43,7 @@ export default function WayoutShell({
   const [signedIn, setSignedIn] = useState(false)
   useUnstuckHead()
   // ⭐ First-visit source (utm tags + referring domain only) — see source.js.
-  useEffect(() => { captureSource() }, [])
+  useEffect(() => { captureSource(); captureInvite() }, [])
   useEffect(() => {
     let cancelled = false
     supabase.auth.getSession().then(({ data }) => {
@@ -256,6 +257,7 @@ function AccountMenu() {
           <p className="wayout__menuhead">Your plan</p>
           <Link to={`${WAYOUT_BASE}/plan`} onClick={close}>Your plan</Link>
           <Link to={`${WAYOUT_BASE}/history`} onClick={close}>Your progress</Link>
+          <Link to={`${WAYOUT_BASE}/invite`} onClick={close}>People you invited</Link>
           <Link to={`${WAYOUT_BASE}/plan#correct`} onClick={close}>Correct an answer</Link>
           <p className="wayout__menuhead">Help</p>
           <Link to={`${WAYOUT_BASE}/why`} onClick={close}>Why we built this</Link>
