@@ -8,7 +8,7 @@ import { mainInviteCode, inviteUrl } from '../../lib/wayout/invites'
  * published and nothing leaves until they press the button. See shareText.js.
  * ⚠️ No dashes; never "it" for the product; no talk of earning money here.
  */
-export default function ShareCard({ map }) {
+export default function ShareCard({ map, movesDone = 0 }) {
   const [text, setText] = useState(() => shareDraft(map))
   const [edited, setEdited] = useState(false)
 
@@ -38,7 +38,9 @@ export default function ShareCard({ map }) {
   if (!map?.moves?.length) return null
   return (
     <aside className="wayout__bridge wayout__r">
-      <span className="wayout__offerkick">Know someone who feels stuck too?</span>
+      {/* ⭐ The best moment to ask is right after something worked: a ticked
+          move is the closest thing this product has to proof. */}
+      <span className="wayout__offerkick">{movesDone > 0 ? 'You got a move done. Know someone stuck where you were?' : 'Know someone who feels stuck too?'}</span>
       <p>Send them your three moves. Only what is in this box goes, and none of your numbers are in it. Change anything you like first.</p>
       <textarea className="wayout__handoffbox" rows={7} value={text} maxLength={1200} onChange={e => { setEdited(true); setText(e.target.value) }} />
       <button type="button" className="wayout__again" disabled={text.trim().length < 3} onClick={send}>Send to someone</button>

@@ -1758,7 +1758,7 @@ export function Map({
       {showBridge && <Bridge {...bridgeToEliv8('plan')} onClose={shutBridge} />}
 
       {/* ⭐ Their three moves, figures out, for a friend (ShareCard.jsx). */}
-      {!past && <ShareCard map={map} />}
+      {!past && <ShareCard map={map} movesDone={ticked.size} />}
       {!past && <InviteConsent />}
 
       {/* ⭐ The shared summary with Eliv8 OS (Handoff.jsx). Their words only. */}
