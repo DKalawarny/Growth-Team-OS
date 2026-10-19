@@ -224,9 +224,9 @@ If you want to connect Eliv8 OS to an existing website, here are the natural tou
 
 ### 1. Sign-up / Login links
 The simplest integration — add CTA buttons on your existing site that link to:
-- `https://your-growthos-domain.com/signup` — start free trial
-- `https://your-growthos-domain.com/login` — existing users
-- `https://your-growthos-domain.com/pricing` — pricing page
+- `https://eliv8os.com/signup` — start free trial
+- `https://eliv8os.com/login` — existing users
+- `https://eliv8os.com/pricing` — pricing page
 
 ### 2. Embedded iframe (limited)
 Eliv8 OS is a React SPA that requires auth. Individual tool results can't easily be embedded without extracting them as standalone components. The most practical embed is a sign-up CTA iframe or a hosted widget.

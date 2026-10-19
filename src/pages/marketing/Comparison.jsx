@@ -47,7 +47,7 @@ const COMPETITORS = {
       'No hiring scorecards or org planning',
       'Steeper price for small teams',
     ],
-    growthOSWins: [
+    eliv8Wins: [
       'Solomon (AI advisor). Pulls your numbers and tells you what to do, not just what happened',
       'Hiring, org planning and succession. Knowify is operations-only',
       'Remembers your decisions and constraints across months, not just this session',
@@ -81,7 +81,7 @@ const COMPETITORS = {
       'No memory of what you decided, or why',
       'Higher tiers get pricey fast',
     ],
-    growthOSWins: [
+    eliv8Wins: [
       'AI advisor that knows your business. Jobber has no equivalent',
       'CFO dashboard, cash flow forecasting, hiring planner, strategic tools Jobber doesn\'t build',
       'Succession planning and written SOPs',
@@ -116,7 +116,7 @@ const COMPETITORS = {
       'No memory of your decisions across months',
       'Per-user fees and add-ons inflate the real price',
     ],
-    growthOSWins: [
+    eliv8Wins: [
       'Solomon, strategic advisor knowing your numbers and goals',
       'Cash flow forecasting and CFO dashboard',
       'Hiring, org chart, roadmap and succession planning',
@@ -150,7 +150,7 @@ const COMPETITORS = {
       'Sized for project managers, not owner-operators',
       'No advisory layer, and no memory of your decisions',
     ],
-    growthOSWins: [
+    eliv8Wins: [
       'Built for owner-operators, not project managers',
       'AI advisor that thinks about strategy, not just project tracking',
       'Far cheaper than the bookkeeper or fractional CFO it stands beside ($400–1,100/month)',
@@ -249,7 +249,7 @@ export default function Comparison() {
 
         {/* ── Where each one wins ─────────────────────────────────────────── */}
         <section className="grid md:grid-cols-2 gap-6 mb-16">
-          <ColumnCard tone="amber" title="Where Eliv8 OS wins" items={data.growthOSWins} />
+          <ColumnCard tone="amber" title="Where Eliv8 OS wins" items={data.eliv8Wins} />
           <ColumnCard tone="gray"  title={`Where ${data.name} wins`}  items={data.competitorWins} />
         </section>
 

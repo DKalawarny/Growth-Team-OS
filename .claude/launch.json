@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "growthos-dev",
+      "name": "eliv8os-dev",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["vite"],
       "port": 5173

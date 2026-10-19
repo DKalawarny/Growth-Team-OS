@@ -37,7 +37,7 @@
  *
  * Required env vars:
  *   RESEND_API_KEY   from resend.com dashboard
- *   RESEND_FROM      e.g. "Eliv8 OS <hello@growthos.app>" — verified domain
+ *   RESEND_FROM      e.g. "Eliv8 OS <hello@eliv8os.com>" — verified domain
  *                    For early testing, "onboarding@resend.dev" works without
  *                    domain verification but ONLY sends to your own address.
  *   APP_URL          used by templates for inline links

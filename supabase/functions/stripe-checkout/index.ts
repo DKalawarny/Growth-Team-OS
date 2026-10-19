@@ -28,7 +28,7 @@
  *   STRIPE_SECRET_KEY        sk_test_... or sk_live_...
  *   STRIPE_PRICE_ID_OWNER    price_... for the recurring Owner price
  *   APP_URL                  where to send the user back to (e.g.
- *                            https://growthos.com or http://localhost:5173)
+ *                            https://eliv8os.com or http://localhost:5173)
  */
 
 // deno-lint-ignore-file no-external-import

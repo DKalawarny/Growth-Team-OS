@@ -9,7 +9,7 @@
  *   see their work, upload a photo, mark it done.
  *
  *   So every assignment email contains a URL like:
- *     https://growthos.app/staff/{token}
+ *     https://eliv8os.com/staff/{token}
  *   The token is a signed JSON payload identifying { staff_id, company_id }.
  *   On every request we verify the signature, look up the staff_members row,
  *   confirm the company_id matches the token, and return the data.

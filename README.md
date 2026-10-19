@@ -99,7 +99,7 @@ Set all of these in **Supabase → Project Settings → Edge Functions → Secre
 | `STRIPE_WEBHOOK_SECRET` | `whsec_...` | Stripe → Developers → Webhooks → your endpoint → Signing secret |
 | `STRIPE_PRICE_ID_OWNER` | `price_...` | Stripe → Products → Eliv8 OS Owner → the **monthly** recurring price |
 | `STRIPE_PRICE_ID_OWNER_ANNUAL` | `price_...` | Stripe → Products → Eliv8 OS Owner → the **annual** recurring price (used when the user picks the yearly plan; checkout falls back to monthly if unset) |
-| `APP_URL` | `https://growthos.com` (prod) / `http://localhost:5173` (dev) | Where Stripe sends the user back to |
+| `APP_URL` | `https://eliv8os.com` (prod) / `http://localhost:5173` (dev) | Where Stripe sends the user back to |
 
 The `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local` are already used for all Edge Function calls — no extra browser env is needed.
 
