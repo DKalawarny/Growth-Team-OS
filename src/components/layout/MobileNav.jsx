@@ -173,7 +173,7 @@ export default function MobileNav() {
       </header>
 
       {/* ── Bottom tab bar ─────────────────────────────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="mobile-tabbar lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-ink-100 flex items-stretch" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {tabsFor(role).map(tab => {
           const isActive = location.pathname === tab.to || (tab.to !== '/' && location.pathname.startsWith(tab.to))
           const showDot  = tab.to === '/advisor' && hasOpener && !isActive

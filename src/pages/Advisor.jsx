@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -661,7 +661,7 @@ export default function Advisor() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: 'var(--color-ink-50)' }}>
+    <div className="flex flex-col h-full" style={{ background: 'var(--color-ink-50)' }}>
       <Header companyName={company?.name} spendInfo={spendInfo} offRecord={offRecord} onToggleOffRecord={toggleOffRecord} />
       {offRecord && (
         <div className="px-4 sm:px-6 py-2.5 flex-shrink-0 text-center text-[12.5px] leading-relaxed" style={{ background: '#1F2A28', color: '#E8EEEC' }}>
@@ -1380,6 +1380,22 @@ const Composer = forwardRef(function Composer(
   const [micError,  setMicError]  = useState(null)
   const canDictate = dictationSupported()
 
+  // The box grows with what is in it and shrinks back when it empties. This
+  // used to run on keystrokes only, so a sent message or a dictated one left
+  // the box at whatever height it last was.
+  const boxRef = useRef(null)
+  const setBox = useCallback(el => {
+    boxRef.current = el
+    if (typeof ref === 'function') ref(el)
+    else if (ref) ref.current = el
+  }, [ref])
+  useLayoutEffect(() => {
+    const el = boxRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+  }, [value])
+
   // Stop the microphone if the composer unmounts mid-sentence — otherwise the
   // browser keeps listening after the owner has navigated away, which is both
   // a bug and a bad look for an app asking to be trusted with the books.
@@ -1482,7 +1498,7 @@ const Composer = forwardRef(function Composer(
             </svg>
           </button>
           <textarea
-            ref={ref}
+            ref={setBox}
             rows={1}
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -1496,6 +1512,10 @@ const Composer = forwardRef(function Composer(
               if (file) { e.preventDefault(); onAttach(file) }
             }}
             placeholder="Message Solomon"
+            autoCapitalize="sentences"
+            autoCorrect="on"
+            spellCheck
+            enterKeyHint="enter"
             className="flex-1 rounded-xl px-4 py-2.5 text-base sm:text-sm resize-none focus:outline-none transition-colors disabled:opacity-50"
             style={{
               minHeight: '44px',
@@ -1503,10 +1523,6 @@ const Composer = forwardRef(function Composer(
               background: 'rgba(13,20,19,0.04)',
               border: '1px solid rgba(13,20,19,0.10)',
               color: '#0D1413',
-            }}
-            onInput={e => {
-              e.target.style.height = 'auto'
-              e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`
             }}
           />
           <button
@@ -1527,7 +1543,7 @@ const Composer = forwardRef(function Composer(
             always-on and deliberately dull: it is the constant backdrop, while
             prompts.js handles the sharp, contextual warning on the answers that
             actually carry money. */}
-        <p className="text-[10px] mt-2 text-center leading-relaxed" style={{ color: 'rgba(13,20,19,0.32)' }}>
+        <p className="kb-hide text-[10px] mt-2 text-center leading-relaxed" style={{ color: 'rgba(13,20,19,0.32)' }}>
           Solomon works from what you give him. Not professional advice, confirm anything costly.
           <span className="hidden sm:inline"> · Enter to send, Shift+Enter for a new line</span>
         </p>

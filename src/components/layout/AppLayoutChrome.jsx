@@ -6,6 +6,7 @@ import AdvisorBanner from './AdvisorBanner'
 import PreviewBanner from './PreviewBanner'
 import TrialBanner   from '../billing/TrialBanner'
 import DemoBanner    from './DemoBanner'
+import { installMobileKeyboard } from '../../lib/mobileKeyboard'
 
 /**
  * AppLayoutChrome — sidebar + mobile nav + banners + content slot.
@@ -42,6 +43,7 @@ export default function AppLayoutChrome({ children }) {
   // its own bug.
   const scrollRef = useRef(null)
   const { pathname } = useLocation()
+  useEffect(() => { installMobileKeyboard() }, [])
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   }, [pathname])
@@ -50,7 +52,7 @@ export default function AppLayoutChrome({ children }) {
     // `app-shell` scopes the readability overrides in index.css (darker greys,
     // larger small text, depth on cards and buttons) to the signed-in app. The
     // marketing pages, the crew page and Unstuck are outside it and unchanged.
-    <div className="app-shell flex h-screen overflow-hidden">
+    <div className="app-shell flex overflow-hidden" style={{ height: 'var(--app-h, 100dvh)' }}>
       {/* Desktop sidebar — hidden on mobile */}
       <Sidebar />
 
@@ -68,7 +70,11 @@ export default function AppLayoutChrome({ children }) {
           {/* TrialBanner self-hides unless the user is in the last 3 days
               of their trial with no paid sub. */}
           <TrialBanner />
-          <div className="flex-1 pb-16 lg:pb-0">
+          {/* ⚠️ Solomon is a chat: it fills exactly the space left and scrolls its
+              own messages, so its box must be pinned to that space (min-h-0).
+              Every other page grows with its content and scrolls <main>, and
+              min-h-0 there would let content run past the tab-bar padding. */}
+          <div className={`tabbar-pad flex-1 pb-16 lg:pb-0 ${pathname === '/advisor' ? 'min-h-0' : ''}`}>
             {/* pb-16 reserves space for the mobile bottom tab bar */}
             {children}
           </div>
