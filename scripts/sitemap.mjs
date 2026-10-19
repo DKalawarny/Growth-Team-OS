@@ -10,16 +10,54 @@
  * Runs before the build, so the file on disk is always what the routes say.
  */
 import { writeFileSync, readFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import { PUBLIC_PAGES, SITE_URL } from '../src/lib/seo.js'
 import { ANSWERS } from '../src/content/answers.js'
 import { SITUATIONS } from '../src/content/unstuckSituations.js'
 import { WAYOUT_SITE_URL, WAYOUT_NAME } from '../src/lib/wayout/brand.js'
 
-const today = new Date().toISOString().slice(0, 10)
+/**
+ * ⭐ LASTMOD IS THE DATE THE PAGE LAST CHANGED, NEVER THE BUILD DATE.
+ * It used to be today's date on every URL on every build, and a sitemap where
+ * everything changed today is one Google and Bing learn to ignore.
+ * - Answer and situation pages: their own `updated` field, the same date the
+ *   page publishes as dateModified, so the two can never disagree.
+ * - Other pages: the last commit that touched the files that render them.
+ * - Index pages: the newest of their own files and every page they list.
+ * ⚠️ When you edit an answer or situation, bump its `updated`.
+ * No git (a bare tarball) = no lastmod, which is allowed; a guessed date is not.
+ */
+function gitDate(files) {
+  try {
+    return execFileSync('git', ['log', '-1', '--format=%ad', '--date=short', '--', ...files], { encoding: 'utf8' }).trim() || null
+  } catch { return null }
+}
+const newest = dates => dates.filter(Boolean).sort().at(-1) || null
+const lastmod = d => d ? `\n    <lastmod>${d}</lastmod>` : ''
+
+const ANSWER_UPDATED = Object.fromEntries(ANSWERS.map(a => [a.slug, a.updated]))
+const ELIV8_FILES = {
+  '/':               ['src/pages/Landing.jsx'],
+  '/pricing':        ['src/pages/Pricing.jsx', 'src/lib/pricing.js'],
+  '/demo':           ['src/pages/marketing/Demo.jsx', 'src/pages/DemoEntry.jsx'],
+  '/about':          ['src/pages/marketing/About.jsx'],
+  '/security':       ['src/pages/marketing/Security.jsx'],
+  '/privacy':        ['src/pages/marketing/Privacy.jsx'],
+  '/terms':          ['src/pages/marketing/Terms.jsx'],
+  '/free-gbp-audit': ['src/pages/marketing/FreeGbpAudit.jsx'],
+  '/answers':        ['src/pages/marketing/Answers.jsx'],
+}
+function eliv8Lastmod(path) {
+  const slug = path.match(/^\/answers\/(.+)/)?.[1]
+  if (slug) return ANSWER_UPDATED[slug]
+  if (path.startsWith('/vs/'))  return gitDate(['src/pages/marketing/Comparison.jsx'])
+  if (path.startsWith('/for/')) return gitDate(['src/pages/marketing/TradePage.jsx'])
+  if (path === '/answers') return newest([gitDate(ELIV8_FILES[path]), ...Object.values(ANSWER_UPDATED)])
+  return ELIV8_FILES[path] ? gitDate(ELIV8_FILES[path]) : null
+}
 
 const urls = PUBLIC_PAGES.map(p => `  <url>
-    <loc>${SITE_URL}${p.path === '/' ? '/' : p.path}</loc>
-    <lastmod>${today}</lastmod>
+    <loc>${SITE_URL}${p.path === '/' ? '/' : p.path}</loc>${lastmod(eliv8Lastmod(p.path))}
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`).join('\n')
@@ -57,13 +95,13 @@ console.log(`[sitemap] ${PUBLIC_PAGES.length} urls`)
  * sitemap that disagrees with the canonical is a sitemap Google ignores.
  */
 const wayoutUrls = [
-  { path: '',                priority: '1.0', freq: 'monthly' },
-  { path: '/start',          priority: '0.9', freq: 'monthly' },
-  { path: '/stuck',          priority: '0.9', freq: 'weekly'  },
-  { path: '/why',            priority: '0.6', freq: 'yearly'  },
-  ...SITUATIONS.map(x => ({ path: `/stuck/${x.slug}`, priority: '0.8', freq: 'monthly' })),
+  { path: '',                priority: '1.0', freq: 'monthly', date: gitDate(['src/pages/wayout/Landing.jsx']) },
+  { path: '/start',          priority: '0.9', freq: 'monthly', date: gitDate(['src/pages/wayout/Diagnostic.jsx']) },
+  { path: '/stuck',          priority: '0.9', freq: 'weekly',  date: newest([gitDate(['src/pages/wayout/Situations.jsx']), ...SITUATIONS.map(x => x.updated)]) },
+  { path: '/why',            priority: '0.6', freq: 'yearly',  date: gitDate(['src/pages/wayout/Why.jsx']) },
+  ...SITUATIONS.map(x => ({ path: `/stuck/${x.slug}`, priority: '0.8', freq: 'monthly', date: x.updated })),
 ].map(u => `  <url>
-    <loc>${WAYOUT_SITE_URL}${u.path}</loc>
+    <loc>${WAYOUT_SITE_URL}${u.path}</loc>${lastmod(u.date)}
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('\n')
@@ -77,7 +115,7 @@ ${wayoutUrls}
 </urlset>
 `)
 
-console.log(`[sitemap] unstuckmap: ${SITUATIONS.length + 3} urls`)
+console.log(`[sitemap] unstuckmap: ${SITUATIONS.length + 4} urls`)
 
 /**
  * ⭐ llms-unstuckmap.txt — what ChatGPT, Claude and Perplexity read about

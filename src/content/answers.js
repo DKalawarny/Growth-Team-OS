@@ -37,7 +37,7 @@ export const ANSWERS = [
     slug: 'who-holds-a-business-owner-accountable',
     question: 'Who holds a business owner accountable?',
     category: 'The owner',
-    updated: '2026-09-03',
+    updated: '2026-10-06',
     answer:
       'Structurally, nobody. Employees are waiting on your decisions, your accountant reports what already happened, and your family is not going to audit your quarter. Most owners answer to no one, which is why things said with real intent in June are still undone in September. The fix is a standing arrangement, not more willpower.',
     body: [
@@ -60,7 +60,7 @@ export const ANSWERS = [
     slug: 'do-i-need-eos-traction-for-a-small-contracting-business',
     question: 'Do I need EOS or Traction to run a small contracting business?',
     category: 'Getting help',
-    updated: '2026-09-03',
+    updated: '2026-10-06',
     answer:
       'EOS works, and it is built for a company with a leadership team, several people with real ownership of areas, meeting weekly. If you are the owner, the estimator and the person answering the phone, you do not have the team the system assumes, and running it alone usually collapses into a spreadsheet nobody updates.',
     body: [
@@ -83,7 +83,7 @@ export const ANSWERS = [
     slug: 'should-i-drop-my-price-to-win-a-job',
     question: 'Should I drop my price to win a job?',
     category: 'Pricing',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Do the arithmetic before the decision. Eight points off a 22% margin does not leave you 14%. It depends entirely on how the job is costed, and a discount on top of stale material rates can put you below cost without it showing until invoicing. Look at what the job contains before you look at the price.',
     body: [
@@ -106,7 +106,7 @@ export const ANSWERS = [
     slug: 'can-i-afford-to-hire-someone',
     question: 'Can I afford to hire someone?',
     category: 'Hiring',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'The money in your account is a one-time number and a wage is a recurring cost. Cushion covers a salary for a few months; after that only work coming in covers it. So the real question is not whether you can afford the first three months. It is what is expected to hold the cost after that.',
     body: [
@@ -129,7 +129,7 @@ export const ANSWERS = [
     slug: 'why-is-my-margin-dropping-when-revenue-is-up',
     question: 'Why is my margin dropping when revenue is up?',
     category: 'Money',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Growing revenue with falling margin almost always means your prices are lagging your costs. Material rates move faster than quotes get updated, and every job priced from an old rate file quietly loses a little. Volume then multiplies the loss rather than covering it.',
     body: [
@@ -152,7 +152,7 @@ export const ANSWERS = [
     slug: 'why-do-good-people-keep-leaving',
     question: 'Why do good people keep leaving?',
     category: 'People',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'People rarely leave a small business over pay alone. The most common reason is not being set up to do the job. No schedule, no prep, turning up not knowing what the work is. A crew reads that as not being taken seriously, and it is the one cause an owner can see if he looks.',
     body: [
@@ -175,7 +175,7 @@ export const ANSWERS = [
     slug: 'how-do-i-get-out-of-the-day-to-day',
     question: 'How do I get out of the day-to-day?',
     category: 'The owner',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'The work has to leave your head before it can leave your hands. Most owners are the bottleneck because the jobs only exist as things they know: pricing logic, which customer needs what, how a job is really done. Written down, that work becomes transferable. Until then, delegating just moves the questions back to you.',
     body: [
@@ -198,7 +198,7 @@ export const ANSWERS = [
     slug: 'is-it-wrong-to-make-a-large-profit',
     question: 'Is it wrong to make a large profit?',
     category: 'Conviction',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Profit made by doing good work at an honest price is not something to apologise for. It is what lets you pay people properly, survive a bad quarter and keep your word when keeping it costs something. The question worth asking is not how much you made but how you made it, and what it cost the people involved.',
     body: [
@@ -221,7 +221,7 @@ export const ANSWERS = [
     slug: 'how-do-i-compete-when-others-cut-corners',
     question: 'How do I compete when competitors cut corners?',
     category: 'Conviction',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'You cannot win on price against someone who is not paying for what you pay for: proper labour, real materials, insurance, doing it once. So do not compete there. Compete where the corner-cutting eventually shows: on jobs where being wrong is expensive, and with customers who have been burned before.',
     body: [
@@ -244,7 +244,7 @@ export const ANSWERS = [
     slug: 'how-do-i-know-if-im-underpricing',
     question: 'How do I know if I am underpricing?',
     category: 'Pricing',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Two signs, and neither is winning too many jobs. You are busy and the money does not arrive. And you cannot say what a specific finished job actually cost you to deliver — because if you cannot, your price was set against a guess and has probably not moved since.',
     body: [
@@ -267,7 +267,7 @@ export const ANSWERS = [
     slug: 'should-i-tithe-from-the-business',
     question: 'Should I tithe from the business or personally?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Most owners give personally from what the business pays them, because that is where the money is actually theirs. Giving from the business itself means giving from money that may still owe tax, wages and suppliers. Neither is more spiritual than the other, but only one of them is unambiguously yours to give.',
     body: [
@@ -290,7 +290,7 @@ export const ANSWERS = [
     slug: 'is-my-struggling-business-a-sign',
     question: 'Is my business struggling because I have done something wrong?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'No. Faithful people run businesses that fail, and dishonest people run businesses that thrive, which is exactly why nobody should read a P&L as a spiritual report card. A hard quarter is usually a market, a customer, a price or a mistake. Those are findable. Guilt is not a diagnosis.',
     body: [
@@ -313,7 +313,7 @@ export const ANSWERS = [
     slug: 'should-i-only-hire-christians',
     question: 'Should I only hire Christians?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Hiring on shared faith rather than on whether someone can do the work tends to produce both a weaker team and a worse witness, and in most jurisdictions it is unlawful discrimination. The more useful question is whether someone who shares none of your convictions would still want to work for you in a year.',
     body: [
@@ -336,7 +336,7 @@ export const ANSWERS = [
     slug: 'is-it-wrong-to-take-on-debt',
     question: 'Is it wrong for a Christian business owner to take on debt?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Debt is not treated as sin, but it is treated seriously: the borrower ends up serving the lender, and that is a real loss of freedom rather than a metaphor. The question is not whether borrowing is permitted but whether this particular debt can be serviced when the optimistic case does not happen.',
     body: [
@@ -359,7 +359,7 @@ export const ANSWERS = [
     slug: 'how-do-i-share-my-faith-at-work',
     question: 'How do I live out my faith at work without pressuring people?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Mostly by how the place runs rather than by what is said. There is a real power imbalance between an owner and someone who needs the job, and anything that feels like a condition of employment stops being a conversation. Pay properly, tell the truth when it costs you, and answer honestly when asked.',
     body: [
@@ -382,7 +382,7 @@ export const ANSWERS = [
     slug: 'how-much-should-i-pay-myself',
     question: 'How much should I pay myself?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Enough that your household is not quietly subsidising the business. Owners routinely underpay themselves, call it sacrifice, and end up with a company that only appears profitable because its most expensive worker is free. That is not stewardship. It is a cost you have hidden from yourself.',
     body: [
@@ -405,7 +405,7 @@ export const ANSWERS = [
     slug: 'is-it-wrong-to-let-someone-go',
     question: 'Is it wrong to let someone go?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Keeping someone who cannot do the job is rarely kind. It is usually postponement, and the cost lands on the crew covering for them and on the person themselves, who stays in a role they are failing at. What matters is whether it was done honestly, with warning, and with the standard applied the same way for everyone.',
     body: [
@@ -428,7 +428,7 @@ export const ANSWERS = [
     slug: 'should-i-sell-the-business',
     question: 'How do I know whether to sell the business?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Separate two questions that usually get asked as one: whether the business could run without you, and whether you want it to. The first is a fact you can test. The second is yours, and no valuation answers it. Many owners discover they wanted the freedom rather than the sale.',
     body: [
@@ -451,7 +451,7 @@ export const ANSWERS = [
     slug: 'does-god-want-my-business-to-succeed',
     question: 'Does God want my business to succeed?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Nobody can tell you that, and anyone who does is guessing on your behalf. Faithful people run businesses that fail and dishonest people run businesses that thrive, so success is not evidence of approval and struggle is not evidence of the opposite. What you can control is how it is run.',
     body: [
@@ -474,7 +474,7 @@ export const ANSWERS = [
     slug: 'will-giving-more-grow-my-business',
     question: 'Will giving more make my business more profitable?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'It might not, and you should not give expecting it to. Generosity framed as an investment with a return is not generosity. It is a transaction with a longer settlement date. Give because you decided to, at a level that does not put wages or suppliers at risk, and let the return be nobody\'s expectation.',
     body: [
@@ -497,7 +497,7 @@ export const ANSWERS = [
     slug: 'is-it-a-lack-of-faith-to-plan',
     question: 'Is it a lack of faith to plan and forecast?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'No. Diligence and trust are not opposites, and "it will work out" is not a cash-flow plan. The tradition this question comes from is full of counting costs before building and storing grain before a famine. Planning is what makes it possible to keep your word later.',
     body: [
@@ -520,7 +520,7 @@ export const ANSWERS = [
     slug: 'what-if-one-customer-is-most-of-my-revenue',
     question: 'What if one customer is most of my revenue?',
     category: 'Money',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Anything over about a fifth from one customer is a risk worth naming, and over a third means they effectively set your prices, your schedule and your payment terms. You may not feel it while the relationship is good. You will feel all of it at once if they leave, merge, or change buyer.',
     body: [
@@ -543,7 +543,7 @@ export const ANSWERS = [
     slug: 'what-do-i-do-about-a-customer-who-will-not-pay',
     question: 'What do I do about a customer who will not pay?',
     category: 'Money',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Move earlier than feels comfortable. Most owners wait months, then act angrily, which is the worst order. A firm, unemotional sequence starting at day one past due collects far more than a furious call at ninety days, and by ninety days you are one creditor among several.',
     body: [
@@ -566,7 +566,7 @@ export const ANSWERS = [
     slug: 'should-i-take-on-a-job-thats-bigger-than-anything-ive-done',
     question: 'Should I take a job bigger than anything I have done?',
     category: 'Pricing',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'The risk is rarely the work. It is the cash. A job twice your usual size often means paying materials and wages for weeks before any money arrives, and businesses fail on big jobs they delivered perfectly. Work out the cash timing before you work out whether you can do it.',
     body: [
@@ -589,7 +589,7 @@ export const ANSWERS = [
     slug: 'how-do-i-stop-quoting-and-never-hearing-back',
     question: 'How do I stop quoting and never hearing back?',
     category: 'Pricing',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Usually the quote is doing too little. A number with no scope gives a customer nothing to compare except price, so they compare it against someone cheaper. Say what is included, what is not, and what happens if something is found, then follow up once, by phone.',
     body: [
@@ -612,7 +612,7 @@ export const ANSWERS = [
     slug: 'how-much-cash-should-i-keep-in-the-business',
     question: 'How much cash should I keep in the business?',
     category: 'Money',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Enough to cover fixed costs and payroll through your worst realistic month, commonly two to three months. And remember part of any balance is not yours: it holds the sales tax you collected and the deductions withheld from payroll, neither of which is spendable.',
     body: [
@@ -635,7 +635,7 @@ export const ANSWERS = [
     slug: 'should-i-promote-my-best-tech-to-foreman',
     question: 'Should I promote my best tech to foreman?',
     category: 'People',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Being excellent at the work and being able to run people are different skills, and promoting for the first while hoping for the second is how businesses lose a great tradesperson and gain a struggling supervisor. Ask whether they want it, and whether anyone has ever shown them how.',
     body: [
@@ -658,7 +658,7 @@ export const ANSWERS = [
     slug: 'how-do-i-take-a-holiday',
     question: 'How do I take a holiday without the business falling over?',
     category: 'The owner',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Not by working harder before you go. By finding out, in advance and on purpose, what only you can do, and handing each of those to someone with the standard written down. A week away is the cheapest test of owner dependence there is, and the findings are more useful than the rest.',
     body: [
@@ -681,7 +681,7 @@ export const ANSWERS = [
     slug: 'should-i-work-on-sundays',
     question: 'Should I work on Sundays?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'This is a conviction question and people who share your beliefs land in different places on it. What is worth separating: whether you are choosing to work, or whether the business is built so you have no choice. The second is the fixable part, and it is usually the real problem.',
     body: [
@@ -704,7 +704,7 @@ export const ANSWERS = [
     slug: 'is-ambition-wrong',
     question: 'Is it wrong to be ambitious about my business?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Wanting to build something that lasts, employs people well and outlives you is not a lesser motive. The question worth watching is not how much you want, but what you would be willing to do to get it, and whether "bigger" has quietly replaced any reason for being bigger.',
     body: [
@@ -727,7 +727,7 @@ export const ANSWERS = [
     slug: 'should-i-do-free-work-for-my-church',
     question: 'Should I do free work for my church or a charity?',
     category: 'Kingdom',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Give deliberately or charge properly. The trouble comes from the middle, where nobody said what it was. Decide in advance what you are donating, put it in writing as a quote at zero or reduced cost, and treat it with the same scheduling and standards as paid work.',
     body: [
@@ -750,7 +750,7 @@ export const ANSWERS = [
     slug: 'my-partner-and-i-disagree-about-the-business',
     question: 'What if my spouse and I disagree about the business?',
     category: 'The owner',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Usually you are not arguing about the thing you are arguing about. One of you is carrying a risk the other cannot see the size of. Put the actual numbers on the table, what it costs, what happens if it fails, and the conversation changes from a disagreement about attitude to a decision about facts.',
     body: [
@@ -773,7 +773,7 @@ export const ANSWERS = [
     slug: 'how-do-i-handle-a-customer-who-lies',
     question: 'What do I do about a customer who is dishonest?',
     category: 'Conviction',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Document, decide, and be willing to walk. Most owners tolerate it far too long because the invoice is large, and the cost compounds: disputed variations, scope that keeps moving, a final payment that never quite arrives. Being trustworthy does not oblige you to keep working for someone who is not.',
     body: [
@@ -796,7 +796,7 @@ export const ANSWERS = [
     slug: 'do-i-need-a-fractional-cfo',
     question: 'Do I need a fractional CFO?',
     category: 'Getting help',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Usually not until the decisions get big enough that being wrong is expensive: raising money, buying a business, a sale, or complex financing. Below that, most owners do not have a CFO-shaped problem. They have numbers they cannot see clearly and nobody to think out loud with, which is a different and cheaper thing to fix.',
     body: [
@@ -823,7 +823,7 @@ export const ANSWERS = [
     slug: 'fractional-cfo-vs-bookkeeper-vs-accountant',
     question: 'Bookkeeper, accountant, or CFO, which do I actually need?',
     category: 'Getting help',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'A bookkeeper records what happened. An accountant files it, advises on tax and structure, and signs things. A CFO decides what it means and what to do next. Nearly every small business needs the first two consistently. The third is usually needed occasionally, not permanently.',
     body: [
@@ -846,7 +846,7 @@ export const ANSWERS = [
     slug: 'can-software-replace-a-business-coach',
     question: 'Can software replace a business coach or advisor?',
     category: 'Getting help',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Not entirely, and anyone claiming otherwise is selling. What software can do that a coach cannot is read your actual numbers before it says anything, remember every decision you have made, and be there on the Tuesday you need it rather than the third Thursday of the month.',
     body: [
@@ -869,7 +869,7 @@ export const ANSWERS = [
     slug: 'outsourced-cfo-services-for-contractors',
     question: 'What are the options for outsourced financial help in the trades?',
     category: 'Getting help',
-    updated: '2026-09-02',
+    updated: '2026-10-06',
     answer:
       'Four broadly: a bookkeeper for the records, an accountant for filing and structure, a fractional or outsourced CFO for high-stakes decisions, and software that reads your books and helps you think day to day. Most owners need the first two, occasionally the third, and are missing the fourth entirely.',
     body: [
@@ -900,7 +900,7 @@ export const ANSWERS = [
     slug: 'my-first-year-in-business-what-should-i-focus-on',
     question: 'What should I focus on in my first year in business?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Three things, in this order: prices that leave a real margin, knowing your cash position every week, and keeping what is owed to the government separate from what is yours. Most first-year businesses that fail were busy, not idle. They were working at a price that could not carry them, and found out when the money ran short.',
     body: [
@@ -925,7 +925,7 @@ export const ANSWERS = [
     slug: 'how-do-i-grow-past-a-revenue-plateau',
     question: 'My business has been stuck at the same revenue for years. How do I grow past it?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'A plateau is usually a ceiling of capacity, not demand. The business has grown to the size one owner can personally hold together: every quote, every decision, every problem. Growing past it rarely means more marketing first; it means handing something you do every day to someone else, and pricing so that hand-off is affordable.',
     body: [
@@ -948,7 +948,7 @@ export const ANSWERS = [
     slug: 'how-do-i-stop-being-the-bottleneck',
     question: 'Everything waits on me. How do I stop being the bottleneck?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Decide which decisions others can make without you, write down the limits, and then let them make those decisions. Including the occasional one you would have made differently. A bottleneck is rarely about people being unable; it is that nothing tells them what they are allowed to decide.',
     body: [
@@ -971,7 +971,7 @@ export const ANSWERS = [
     slug: 'when-should-i-hire-a-manager',
     question: 'When should I hire a manager for my small business?',
     category: 'Hiring',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'When the cost of you managing is higher than the cost of a manager: usually once you are spending most of your week on scheduling, problems and people instead of the work only you can do. Make sure the margin can carry the salary before the benefits arrive, and define exactly what they decide without you.',
     body: [
@@ -994,7 +994,7 @@ export const ANSWERS = [
     slug: 'how-do-i-know-my-profit-per-job',
     question: 'How do I know which jobs actually make me money?',
     category: 'Money',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Compare each job’s price against everything it really cost: materials, every hour of labour including yours, travel, and a share of overhead. Most owners know the price and the materials and guess the rest. The jobs that look best by revenue are often not the ones that make the most per hour.',
     body: [
@@ -1017,7 +1017,7 @@ export const ANSWERS = [
     slug: 'how-do-i-plan-cash-flow-ahead',
     question: 'How do I plan my business cash flow ahead?',
     category: 'Money',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'List, week by week for the next thirteen weeks, the cash you expect in and the cash that has to go out, then see which week runs short. It is not an accounting report; it is a look ahead. Thirteen weeks is long enough to see a squeeze coming and short enough to be reasonably accurate.',
     body: [
@@ -1042,7 +1042,7 @@ export const ANSWERS = [
     slug: 'how-do-i-raise-my-prices-without-losing-customers',
     question: 'How do I raise my prices without losing my customers?',
     category: 'Pricing',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Raise them on new quotes first, give existing customers notice and a date, and say plainly why. Costs have gone up and you want to keep doing the work properly. You will likely lose a few price-sensitive customers. If the increase is right, the business usually ends up with fewer of the worst-paying jobs and more profit.',
     body: [
@@ -1065,7 +1065,7 @@ export const ANSWERS = [
     slug: 'how-do-i-systemize-my-small-business',
     question: 'How do I put systems in my business so it does not depend on me?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Start with the tasks that happen most often and go wrong most often, and write down how they are done: short, plain, in the order people actually do them. A system is just a written answer to a question that keeps being asked. Ten good ones change a business more than a hundred-page manual nobody reads.',
     body: [
@@ -1088,7 +1088,7 @@ export const ANSWERS = [
     slug: 'how-do-i-get-my-business-ready-to-sell',
     question: 'How do I get my business ready to sell one day?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Make it run without you, make the numbers clean and believable, and spread the revenue so no single customer or person holds it up. Buyers pay for a business that will keep earning after the owner leaves. The same changes that make it sellable usually make it better to own in the meantime.',
     body: [
@@ -1113,7 +1113,7 @@ export const ANSWERS = [
     slug: 'succession-planning-for-a-small-business',
     question: 'How do I plan who takes over my business?',
     category: 'The owner',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Name the person or the route, a family member, a key employee, a sale, and then start handing over real responsibility years before you step back, one area at a time. Succession is not a document; it is a long handover. The plan matters most if something happens to you unexpectedly, so write down the basics now.',
     body: [

@@ -44,7 +44,7 @@ export const SITUATIONS = [
     slug: 'inherited-house-credit-card-debt',
     question: 'What should I do with an inherited house if I still have credit card debt?',
     intro: 'An inherited house and expensive debt at the same time',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'The house feels like the decision. It isn’t. Clearing the cards is the only move here with a guaranteed return. Everything else is a bet, and you can’t judge a bet while you’re paying twenty-odd percent to think about it. Do that the day the money lands. Then take as long as you want on the rest.',
     body: [
@@ -77,7 +77,7 @@ export const SITUATIONS = [
     slug: 'stop-working-nights-sell-the-house',
     question: 'Can I stop working nights if I sell my house?',
     intro: 'Working nights, and wondering whether selling would end it',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Often yes, and by a bigger margin than people expect, because the number you have to replace is smaller than the one you earn. If selling removes a mortgage, property tax and utilities, those leave your monthly floor with it. Work out what has to go out after the house is gone, not what goes out now.',
     body: [
@@ -110,7 +110,7 @@ export const SITUATIONS = [
     slug: 'pay-off-the-truck-or-invest',
     question: 'Should I pay off my truck or invest the money?',
     intro: 'A lump of money, a loan, and no obvious right answer',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Most people compare the two rates and stop there. The bigger question is what killing the payment does to your floor: because a payment gone is a permanent cut to what you have to earn every month, and that outlives any return. Paying off a 4% loan is a certain 4%. Beating it means taking real risk.',
     body: [
@@ -143,7 +143,7 @@ export const SITUATIONS = [
     slug: 'nothing-left-at-the-end-of-the-month',
     question: 'I have nothing left at the end of the month. Where do I even start?',
     intro: 'Money in, money out, nothing spare',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'You probably don’t have a spending problem. You have a number nobody has ever made you work out: what actually has to go out each month, separate from what you choose to spend. Almost nobody knows theirs. Until you do, every plan is a guess, including the ones telling you to cut back.',
     body: [
@@ -176,7 +176,7 @@ export const SITUATIONS = [
     slug: 'no-retirement-savings-in-my-fifties',
     question: 'I am in my fifties with no retirement savings. Is it too late?',
     intro: 'Starting late, with less time than the advice assumes',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'No, but the lever changes. With fewer years, what you spend matters more than what you earn. A cost removed permanently does more than a return you might get. Lowering what you need each month, and knowing that number exactly, is worth more at this stage than any investment decision.',
     body: [
@@ -209,7 +209,7 @@ export const SITUATIONS = [
     slug: 'sell-the-house-to-pay-off-debt',
     question: 'Should I sell my house to pay off debt?',
     intro: 'Equity on one side, expensive debt on the other',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'The debt disappearing isn’t the test. Plenty of people clear it and are worse off by spring. What decides this is what your month looks like on the other side: whether the equity covers the debt and somewhere to live, and what your costs are once the house is gone. Work that out before you ring an agent.',
     body: [
@@ -242,7 +242,7 @@ export const SITUATIONS = [
     slug: 'want-to-leave-my-job-but-cannot-afford-to',
     question: 'I want to leave my job but can’t afford to. What actually has to change?',
     intro: 'Stuck in work you want out of',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Usually one number, not your whole situation. Work out what must go out each month, then what the new thing would have to produce to cover it. The gap is usually smaller than it feels, because people compare against their current salary rather than against what they actually need.',
     body: [
@@ -275,7 +275,7 @@ export const SITUATIONS = [
     slug: 'lump-sum-what-to-do-first',
     question: 'I am about to get a lump sum. What should I do with it first?',
     intro: 'A one-off amount, and a lot of opinions about it',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Do nothing with it for a few weeks. Money that arrives all at once attracts decisions, and the ones made in the first two weeks are the ones people regret. The only move that can’t be wrong is clearing the most expensive debt. It’s a guaranteed return, so it’s the safe thing to do while you think.',
     body: [
@@ -308,7 +308,7 @@ export const SITUATIONS = [
     slug: 'is-renting-out-a-room-worth-it',
     question: 'Is renting out a room actually worth it?',
     intro: 'Space you already have, and whether it changes anything',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'The money is usually real, so that isn’t the question. This is one of the very few moves that changes your month without capital, a customer or a new skill. What decides it is what you give up: your evenings, your kitchen, who is in the house when you get home. That’s a real cost, not a detail.',
     body: [
@@ -343,7 +343,7 @@ export const SITUATIONS = [
     slug: 'working-but-no-fixed-address',
     question: 'I am working but I have nowhere stable to live. How do I get out of this?',
     intro: 'A job, and no fixed address',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'The wall is usually the deposit, not the rent. Being without a stable address costs more per week than being housed, nightly rooms, eating without a kitchen, laundromats, storage, so the money that would become a deposit gets eaten by the cost of not having one. Attack the deposit directly, because that’s the actual obstacle.',
     body: [
@@ -378,7 +378,7 @@ export const SITUATIONS = [
     slug: 'twenty-six-and-feel-behind',
     question: 'I am in my twenties and feel behind everyone. Am I?',
     intro: 'No crisis, no direction, and everyone else seems further along',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Probably not, and the feeling usually comes from comparing against a highlight reel rather than a number. Work out what you actually need each month and what you have spare. Most people who feel behind at this age have more room than they think, and no destination, which is a different problem and a better one to have.',
     body: [
@@ -411,7 +411,7 @@ export const SITUATIONS = [
     slug: 'just-been-laid-off',
     question: 'I have just been laid off. What should I do first?',
     intro: 'Severance in hand, and no plan yet',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Work out how many months of what has to go out you can cover, before deciding anything else. That number is your actual runway, and it turns an open-ended panic into a deadline you can plan against. File for benefits in the same week. They often take time to start, and waiting costs you weeks at the end.',
     body: [
@@ -444,7 +444,7 @@ export const SITUATIONS = [
     slug: 'separated-and-the-money-does-not-work',
     question: 'We have separated and the money doesn’t work any more. Where do I start?',
     intro: 'One household became two, on the same income',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Work out what one household costs you now, on your own, before agreeing anything. Two homes on one income is arithmetic that rarely works unchanged, which is why the housing decision usually comes first and everything else follows it. Get your own number before any conversation about who pays what.',
     body: [
@@ -477,7 +477,7 @@ export const SITUATIONS = [
     slug: 'about-to-lose-my-housing',
     question: 'I think I am about to lose my housing. What can I actually do?',
     intro: 'Behind on rent, or the notice has arrived',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Talk to the landlord before the arrears grow, and find out what the actual timeline is where you live. It’s usually longer than it feels, and that time is the thing you can use. Emergency rent help exists in most places and isn’t widely advertised. Dialling 211 in Canada or the US reaches somebody who knows what’s available locally.',
     body: [
@@ -519,7 +519,7 @@ export const SITUATIONS = [
     slug: 'business-makes-money-but-i-never-do',
     question: 'My business makes money but I never seem to. What’s actually wrong?',
     intro: 'Turning over well, and nothing left at the end of it',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'Almost nobody in this position has a sales problem. You’re either underpriced, owed money, or paying yourself last, and from the bank balance all three look exactly the same. Which one it is decides what you do next, and you can work it out in an evening with a list of last month’s jobs.',
     body: [
@@ -557,7 +557,7 @@ export const SITUATIONS = [
     slug: 'we-earn-good-money-and-have-nothing',
     question: 'We earn good money and have nothing to show for it. How?',
     intro: 'Two incomes, and nothing left at the end of the month',
-    updated: '2026-09-27',
+    updated: '2026-10-05',
     answer:
       'This is almost never overspending in the way people mean it. What usually happened is that your fixed costs rose every time your income did, the house, the cars, the insurance, the school, so you’re running a bigger machine on the same margin. The number that tells the truth isn’t what you earn. It’s what you’d still owe if you both stopped tomorrow.',
     body: [
@@ -593,7 +593,7 @@ export const SITUATIONS = [
     slug: 'lost-my-job-what-happens-to-health-insurance',
     question: 'I lost my job. What happens to my health insurance?',
     intro: 'In the US, where coverage usually comes with the job',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'You have three routes and a deadline. You can keep your employer’s plan through COBRA, usually at the full cost; buy a plan on the Health Insurance Marketplace, where losing job-based coverage opens a special enrollment window; or get Medicaid if your income now qualifies. Compare all three this week. The cheapest is often not the one you are offered first.',
     body: [
@@ -624,7 +624,7 @@ export const SITUATIONS = [
     slug: 'should-i-cash-out-my-401k-after-losing-my-job',
     question: 'Should I cash out my 401(k) after losing my job?',
     intro: 'In the US, when the retirement money looks like the only cushion',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Usually not first. Cashing out before 59½ is generally taxed as income and usually carries an extra 10% tax, so a large part of it never reaches you. Work out your runway, use unemployment and savings, and treat the 401(k) as a last resort. Rolling it into an IRA keeps it growing until you decide.',
     body: [
@@ -653,7 +653,7 @@ export const SITUATIONS = [
     slug: 'how-do-i-file-for-unemployment',
     question: 'How do I file for unemployment, and what should I expect?',
     intro: 'In the US, where each state runs its own program',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'File with your state’s unemployment office in the first week, online if you can: benefits are based on when you file, and delays cost you weeks at the end. Expect to confirm your claim every week or two and show you are looking for work. How much and for how long depends on your state, so read its rules the day you file.',
     body: [
@@ -682,7 +682,7 @@ export const SITUATIONS = [
     slug: 'medical-bills-i-cannot-pay',
     question: 'I have medical bills I can’t pay. What do I do first?',
     intro: 'In the US, when the bill arrives after the care',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Don’t pay it on a credit card, and don’t ignore it. Ask for an itemized bill and check it, then ask the hospital for its financial assistance policy: nonprofit hospitals must have one, and many people qualify after the bill has already arrived. Most providers will also agree an interest-free payment plan if you ask.',
     body: [
@@ -711,7 +711,7 @@ export const SITUATIONS = [
     slug: 'credit-card-debt-which-to-pay-first',
     question: 'I have debt on several credit cards. Which do I pay first?',
     intro: 'More than one balance, and every payment feels like it disappears',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Pay the minimum on every card, then put everything extra on the one with the highest interest rate, that saves the most money. If you need a win to keep going, the smallest balance first is a fair alternative. Either way, stop adding to the cards while you pay them down, or the order does not matter.',
     body: [
@@ -745,7 +745,7 @@ export const SITUATIONS = [
     slug: 'should-i-consolidate-my-debt',
     question: 'Should I consolidate my debt, or just pay it off myself?',
     intro: 'Several debts, and one loan promising to make it simple',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Consolidation helps in one situation: when the new rate is genuinely lower, the fees are smaller than the interest you save, and the old cards stay paid off. It does not reduce what you owe. It changes who you owe and at what rate. If the real problem is that more goes out each month than comes in, fix that first or the cards fill up again.',
     body: [
@@ -774,7 +774,7 @@ export const SITUATIONS = [
     slug: 'debt-settlement-or-bankruptcy',
     question: 'Debt settlement or bankruptcy, which is right for me?',
     intro: 'When paying it back in full no longer looks possible',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Before either, find out whether a formal repayment plan through a nonprofit credit counsellor would work. It is often less damaging than both. Settlement and bankruptcy are both real options for some people, but they work differently in every country and carry lasting effects. Get one free or low-cost professional opinion before you sign anything with anyone.',
     body: [
@@ -803,7 +803,7 @@ export const SITUATIONS = [
     slug: 'behind-on-my-car-payments',
     question: 'I’m behind on my car payments. What do I do?',
     intro: 'A missed payment, and the car is how you get to work',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Call the lender before the next payment is due, not after. Lenders usually have options, moving a payment to the end of the loan, a short deferral, a new schedule, and they are far more flexible before a car is repossessed than after. If the car costs more than you can carry for the long term, selling it yourself is usually better than waiting.',
     body: [
@@ -830,7 +830,7 @@ export const SITUATIONS = [
     slug: 'moving-to-a-cheaper-city',
     question: 'Should I move somewhere cheaper to get ahead?',
     intro: 'Rent eats everything, and somewhere else looks easier',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'It works when the move lowers what goes out by more than it lowers what comes in. Cheaper housing helps only if the income comes with you: remote work, an in-demand trade, or a job lined up before you go. Count the full cost of moving and the first few months, not just the rent.',
     body: [
@@ -859,7 +859,7 @@ export const SITUATIONS = [
     slug: 'moving-back-home-to-save-money',
     question: 'Should I move back in with my parents to save money?',
     intro: 'Rent is the biggest bill, and home is an option',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'It can be one of the fastest ways to get ahead, if it has an end date and a target. Decide before you move what the money is for, how much you will put aside each month, and roughly when you will leave. Without that, the savings tend to disappear into everyday spending and the stay drifts on.',
     body: [
@@ -886,7 +886,7 @@ export const SITUATIONS = [
     slug: 'career-change-at-40',
     question: 'Is it too late to change careers at 40?',
     intro: 'Twenty years in, and the work no longer fits',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'No, but the money has to be planned, because the change usually comes with a pay dip before it recovers. Work out how long you can carry a lower income, then pick a path that fits inside that time. Use what you already know; the most realistic changes reuse your experience rather than starting from zero.',
     body: [
@@ -915,7 +915,7 @@ export const SITUATIONS = [
     slug: 'can-i-afford-to-go-part-time',
     question: 'Can I afford to go part-time?',
     intro: 'Less work, if the numbers allow it',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Work it out on what you would actually take home, not your hourly rate. Fewer hours often means less tax too, and some costs fall, childcare, commuting, so the gap can be smaller than it looks. Check what you would lose besides pay, such as benefits, health coverage or pension contributions, before you ask.',
     body: [
@@ -942,7 +942,7 @@ export const SITUATIONS = [
     slug: 'burned-out-and-cannot-afford-a-break',
     question: 'I’m burned out but I can’t afford to stop working. What do I do?',
     intro: 'Exhausted, and the bills still come',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Start by finding out what rest you can get without losing income: sick leave, unused holiday, a short leave or reduced hours. Then look at the month: even a small cut in what has to go out can buy room to work less. And if exhaustion is affecting your health, see a doctor; it is a health problem, not only a money one.',
     body: [
@@ -971,7 +971,7 @@ export const SITUATIONS = [
     slug: 'starting-over-financially-at-40',
     question: 'I’m 40 with nothing saved. How do I start over?',
     intro: 'Behind where you thought you would be',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Begin with the month, not the decades. Know what comes in and what has to go out, make a small gap between them, and point that gap at one thing at a time: a cushion first, then expensive debt, then retirement. Twenty-five working years is long enough for steady saving to add up to a great deal.',
     body: [
@@ -1000,7 +1000,7 @@ export const SITUATIONS = [
     slug: 'should-we-downsize-our-house',
     question: 'Should we downsize our house to free up money?',
     intro: 'More house than you need, and less money than you want',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Downsizing works when the smaller home costs clearly less each month and the move releases money you have a plan for. Count every cost of selling and buying, agents, legal fees, taxes, moving, and compare the month in each home. Decide what the freed money is for before you sell, or it tends to drift away.',
     body: [
@@ -1033,7 +1033,7 @@ export const SITUATIONS = [
     slug: 'should-i-quit-my-job-to-start-a-business',
     question: 'Should I quit my job to start a business?',
     intro: 'An idea that will not go away, and a paycheque that pays the bills',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Usually not first. Start it alongside the job until it has paying customers, and know how many months your savings cover what has to go out before you leave. The question is rarely whether the idea is good. It is whether you can carry the months before it pays, and that is a number you can work out.',
     body: [
@@ -1058,7 +1058,7 @@ export const SITUATIONS = [
     slug: 'how-to-start-a-business-while-working-full-time',
     question: 'How do I start a business while working full-time?',
     intro: 'Evenings and weekends, and a job that still needs you',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Pick the smallest version that can earn money, give it fixed hours each week, and protect the job while you build it. Most businesses started this way grow slowly at first, and that is fine. The job is what lets you take your time and get the price right.',
     body: [
@@ -1083,7 +1083,7 @@ export const SITUATIONS = [
     slug: 'my-business-is-taking-over-my-life',
     question: 'My business is taking over my life. What do I do?',
     intro: 'It pays the bills, and it has everything else too',
-    updated: '2026-10-03',
+    updated: '2026-10-05',
     answer:
       'Decide what you want the business to give your life, a certain income, certain hours, time with the people you love, and then judge every change against that. A business with no limit set will take all the time it is given. Getting your life back usually starts with one fixed boundary and one thing you stop doing yourself.',
     body: [
@@ -1106,7 +1106,7 @@ export const SITUATIONS = [
     slug: 'should-i-close-my-business',
     question: 'Should I close my business?',
     intro: 'Years of work, and you are not sure it is worth it any more',
-    updated: '2026-10-03',
+    updated: '2026-10-06',
     answer:
       'Look at three things honestly: whether it pays you a fair income for the hours, whether it can with changes you are willing to make, and what you want your life to look like next. Closing is a real option and not a failure. Decide it on numbers and on what you want, not in the worst week of the year.',
     body: [
@@ -1386,7 +1386,7 @@ export const SITUATIONS = [
     slug: 'working-two-jobs-and-never-see-my-kids',
     question: 'I work two jobs and never see my kids. How do I change that?',
     intro: 'Two jobs keep the bills paid and take every evening',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Work out exactly what the second job pays for. It is usually covering one gap, not the whole month. Once you know the size of that gap, you can look for a way to close it that costs fewer hours: a lower bill, a better paid first job, or work that fits around the kids.',
     body: [
@@ -1414,7 +1414,7 @@ export const SITUATIONS = [
     slug: 'i-work-too-much-and-miss-my-family',
     question: 'I work too much and miss my family. What can I do?',
     intro: 'The work keeps growing and home keeps getting less of you',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Start by finding out how many of your hours the money truly needs. Many people work for a number they have never written down. Once you know what has to go out each month, you can see which hours pay the bills and which are habit, fear or other people’s expectations, and cut from there.',
     body: [
@@ -1442,7 +1442,7 @@ export const SITUATIONS = [
     slug: 'how-to-work-less-and-still-pay-the-bills',
     question: 'How can I work less and still pay the bills?',
     intro: 'Wanting your time back without the month falling apart',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Lower the amount that has to go out each month, then raise what each hour of work pays. Those are the only two ways to need fewer hours for the same bills. Most people only try to earn more, but cutting one big monthly cost is often the faster way to get time back.',
     body: [
@@ -1468,7 +1468,7 @@ export const SITUATIONS = [
     slug: 'my-commute-is-eating-my-life',
     question: 'My commute is eating my life. Is it worth changing?',
     intro: 'Hours every day spent getting to and from work',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Often yes. Add up what the commute costs you each week in hours and money, then compare that to the cost of changing it: moving closer, working from home some days, or a job nearer to home. Many people find the commute costs more than the higher rent or lower pay they were avoiding.',
     body: [
@@ -1496,7 +1496,7 @@ export const SITUATIONS = [
     slug: 'how-to-make-extra-money-without-a-second-job',
     question: 'How can I make extra money without taking a second job?',
     intro: 'Wanting more income without giving up more evenings',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Start with what you already have: your current job, your skills, and things you own. A raise, extra paid work for people who already know you, renting out something that sits unused, or selling what you no longer need can all add money without a second boss and a fixed schedule.',
     body: [
@@ -1524,7 +1524,7 @@ export const SITUATIONS = [
     slug: 'how-to-ask-for-a-raise-when-you-are-scared',
     question: 'How do I ask for a raise when I am scared to?',
     intro: 'You think you have earned more, and the conversation feels impossible',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Ask for a meeting about your pay, bring two or three plain facts about what you do and what the job pays elsewhere, and name a number. You do not need to be confident. You need to be prepared. Most people are not punished for asking politely, and a no today still tells you something useful.',
     body: [
@@ -1552,7 +1552,7 @@ export const SITUATIONS = [
     slug: 'i-feel-like-i-am-drowning-in-bills',
     question: 'I feel like I am drowning in bills. What do I do first?',
     intro: 'Too many bills, not enough money, and no idea where to start',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Put every bill on one page: who it is to, how much, and when it is due. Then pay the ones that keep a roof over you, the lights on and you able to get to work, before anything else. Seeing it all in one place usually feels better than not looking, even when the total is large.',
     body: [
@@ -1580,7 +1580,7 @@ export const SITUATIONS = [
     slug: 'behind-on-bills-what-to-pay-first',
     question: 'I am behind on bills. What should I pay first?',
     intro: 'Not enough money to pay everything this month',
-    updated: '2026-10-17',
+    updated: '2026-10-18',
     answer:
       'Pay in this order: housing, utilities, food, and what you need to keep working, like your car or phone. Then loans where they can take the thing back, like a car loan, then everything else. Order bills by what happens if you miss them, not by who calls the most. Then call the rest and ask for a payment plan.',
     body: [
