@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import PublicHeader from '../../components/layout/PublicHeader'
 import { buildPageMeta, jsonLd, organizationSchema, CONTACT_EMAIL, ORG_NAME } from '../../lib/seo'
+import { OPERATOR_LEGAL_NAME } from '../../lib/terms'
 
 /**
  * /privacy — privacy policy.
@@ -19,7 +20,7 @@ const PRIVACY_META = buildPageMeta({
   path:        '/privacy',
 })
 
-const LAST_UPDATED = '2026-05-09'
+const LAST_UPDATED = '2026-10-18'
 
 export default function Privacy() {
   return (
@@ -46,7 +47,8 @@ export default function Privacy() {
 
         <p className="text-gray-700 leading-relaxed mb-12">
           {ORG_NAME} ("we", "us", "our") provides an AI business advisor and
-          related tools to business owners. This policy
+          related tools to business owners. It is operated by{' '}
+          {OPERATOR_LEGAL_NAME}, a British Columbia company. This policy
           explains what personal and business information we collect, how we
           use it, who we share it with, and your rights. We try to write it
           in plain English. If anything is unclear, email{' '}
