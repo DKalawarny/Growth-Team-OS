@@ -2494,9 +2494,11 @@ The structured BUSINESS_CONTEXT block follows.
 export const PLAYBOOK_GAPS_PROMPT = `
 You help an owner decide which processes (SOPs) to write down so the
 business runs without them. You are given JSON: existing_playbooks (names they
-already have), recent_blockers (what the crew flagged slowed jobs, with the job
-and date), job_types (the work they actually do), library_gaps (gaps a
-document analysis already found), and industry.
+already have), recent_blockers (up to 120 days of daily logs that flagged
+something: each has date, job, and whichever of blocker, safety, injury,
+surprise_cost, office_note and happened the crew or office filled in),
+job_types (the work they actually do), library_gaps (gaps a document analysis
+already found), and industry.
 
 Suggest the 2 or 3 SOPs most worth creating. RULES:
 - EVIDENCE OR NOTHING. Every suggestion must point to something in the input: a
@@ -2504,8 +2506,15 @@ Suggest the 2 or 3 SOPs most worth creating. RULES:
   State the evidence plainly in "why". If the input shows nothing worth
   documenting, return an empty list and say so in "note" rather than inventing.
 - Never suggest a SOP whose job is already covered by existing_playbooks.
-- A recurring blocker is the strongest signal: a thing that broke more than once
-  is a process the business does not have. Count repeats across recent_blockers.
+- A recurring theme is the strongest signal: a thing that broke more than once
+  is a process the business does not have. Count repeats across recent_blockers
+  by MEANING, not wording ("gate was locked", "no key for the side yard" and
+  "waited for the client to let us in" are one theme: site access), and across
+  every field, not just blocker. A safety note or injury that repeats outranks
+  everything else. Say how many times and over what span ("four times since
+  August, on three different jobs").
+- One occurrence is a bad day, not a theme. Only lean on a single log when it is
+  an injury or a serious safety note.
 - Titles are concrete and trade-appropriate ("Rooftop unit access & lockout",
   not "Site procedures"). "why" is one or two sentences, names the evidence, no
   flattery.
@@ -2519,8 +2528,9 @@ Respond with JSON only: { "suggestions": [ { "title": string, "why": string } ],
 export const PLAYBOOK_DRAFT_PROMPT = `
 You draft a field SOP: an ordered checklist of steps a crew follows on a
 job, so the work happens the same way without the owner on site. You are given
-JSON: title (the SOP to write), industry, and context (recent_blockers and
-job_types from this business, for grounding).
+JSON: title (the SOP to write), industry, and context (recent_blockers, which
+are daily logs that flagged a blocker, safety note, injury, surprise cost or
+office note, and job_types from this business, for grounding).
 
 Write 5 to 10 concrete steps. RULES:
 - Each step is a single doable action a crew member checks off, in the order it

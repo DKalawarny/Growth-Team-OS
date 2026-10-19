@@ -222,11 +222,10 @@ export default function SOPs() {
   // and the gaps the library analysis found, and names the SOPs worth
   // writing. Evidence-backed by design — see PLAYBOOK_GAPS_PROMPT.
   async function buildPlaybookContext() {
-    const ctx = await buildAdvisorContext(companyId, { userId: profile?.id }).catch(() => null)
-    const recent_blockers = (ctx?.daily_logs ?? [])
-      .filter(l => l.blockers)
-      .slice(0, 40)
-      .map(l => ({ text: l.blockers, job: l.job ?? null, date: l.date ?? null }))
+    const [ctx, recent_blockers] = await Promise.all([
+      buildAdvisorContext(companyId, { userId: profile?.id }).catch(() => null),
+      loadLogSignals().catch(() => []),
+    ])
     const job_types = [...new Set((ctx?.recent_work ?? []).map(w => w.title).filter(Boolean))].slice(0, 25)
     return {
       industry:           ctx?.business?.industry ?? null,
@@ -235,6 +234,42 @@ export default function SOPs() {
       job_types,
       library_gaps:       ctx?.library_intelligence?.gaps ?? [],
     }
+  }
+
+  // ⚠️ Its own query, not the advisor context's daily_logs: that one is the
+  // last 20 logs and blockers only, which is a week or two for a crew. A
+  // theme that comes back once a month never looked like a theme. Daniel,
+  // 19 Oct: "do daily logs loop into sops if its a reoccuring theme?"
+  // Reads 120 days and every field a log can flag a problem in; only logs
+  // that flagged something go in, so a quiet log costs nothing.
+  async function loadLogSignals() {
+    const since = new Date(Date.now() - 120 * 86400000).toISOString().slice(0, 10)
+    const { data: logs, error: err } = await supabase
+      .from('daily_logs')
+      .select('log_date, what_happened, blockers, safety_note, injury, unplanned_cost_note, pm_note, work_order_id')
+      .eq('company_id', companyId)
+      .gte('log_date', since)
+      .order('log_date', { ascending: false })
+      .limit(300)
+    if (err) throw err
+    const ids = [...new Set((logs ?? []).map(l => l.work_order_id).filter(Boolean))]
+    const { data: jobs } = ids.length
+      ? await supabase.from('work_orders').select('id, title').in('id', ids)
+      : { data: [] }
+    const clip = (s, n) => (s && String(s).trim() ? String(s).trim().slice(0, n) : null)
+    return (logs ?? [])
+      .map(l => ({
+        date:          l.log_date,
+        job:           (jobs ?? []).find(j => j.id === l.work_order_id)?.title ?? null,
+        blocker:       clip(l.blockers, 300),
+        safety:        clip(l.safety_note, 300),
+        injury:        l.injury ? true : null,
+        surprise_cost: clip(l.unplanned_cost_note, 200),
+        office_note:   clip(l.pm_note, 200),
+        happened:      clip(l.what_happened, 160),
+      }))
+      .filter(l => l.blocker || l.safety || l.injury || l.surprise_cost || l.office_note)
+      .slice(0, 150)
   }
 
   async function askSolomon() {
