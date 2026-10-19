@@ -40,7 +40,7 @@ moved to Cloudflare the same day.
 ## What this is
 
 **Eliv8 OS** — React + Vite SPA backed by Supabase
-(Postgres + Auth + Edge Functions). Repo: `github.com/DKalawarny/Growth-Team-OS`.
+(Postgres + Auth + Edge Functions). Repo: `github.com/DKalawarny/eliv8os` (renamed from Growth-Team-OS, 18 Oct).
 
 It's an AI business advisor ("Solomon" — Claude Opus/Sonnet/Haiku via a
 server-side Edge Function proxy) plus the tools to act on the advice: finances,

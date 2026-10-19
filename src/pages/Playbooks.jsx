@@ -599,19 +599,15 @@ export default function SOPs() {
                         <div key={i} className="p-3 border border-ink-150 rounded-lg bg-brand-50/30">
                           <p className="text-sm font-semibold text-ink-900">{sg.title}</p>
                           {sg.why && <p className="text-[11px] text-ink-600 mt-1 leading-snug">{sg.why}</p>}
-                          {isDemoCompany(company) ? (
-                            <p className="mt-2 text-[11px] text-ink-400 italic leading-snug">
-                              In your own account, Solomon writes the full SOP into your library.
-                            </p>
-                          ) : (
-                            <button
-                              onClick={() => draftWithSolomon(sg.title)}
-                              disabled={!!draftTitle}
-                              className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
-                            >
-                              {draftTitle === sg.title ? 'Drafting…' : 'Draft this with Solomon →'}
-                            </button>
-                          )}
+                          {/* The demo drafts too (canned steps in DEMO_SOP_SUGGESTIONS), now
+                              that each visitor has a private copy; Daniel, 19 Oct. */}
+                          <button
+                            onClick={() => draftWithSolomon(sg.title)}
+                            disabled={!!draftTitle}
+                            className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:opacity-50"
+                          >
+                            {draftTitle === sg.title ? 'Drafting…' : 'Draft this with Solomon →'}
+                          </button>
                         </div>
                       ))}
                     </div>
