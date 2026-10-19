@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { isDemoCompany } from '../../lib/demo'
 import {
   TERMS_VERSION,
   OPERATOR_LEGAL_NAME,
@@ -35,9 +36,15 @@ import {
  * would be a worse outcome than a delayed acceptance, and they will be asked
  * again on the next load. hasAcceptedCurrentTerms returns null (not false) on
  * error precisely so this distinction is available here.
+ *
+ * 🔴 NEVER SHOWN IN THE DEMO. A demo visitor is a stranger with no account,
+ * on a page that promises "no account needed". Each visit is a copy of the
+ * sample company, carrying the sample's acceptance row, so every TERMS_VERSION
+ * bump used to put a pilot agreement in front of every visitor until someone
+ * noticed (18 Oct 2026: it did, for hours, after the Sarlia Digital bump).
  */
 export default function TermsGate({ children }) {
-  const { session, profile } = useAuth()
+  const { session, profile, company } = useAuth()
   const userId = session?.user?.id ?? null
 
   // null = still checking, true = accepted (or unknown → fail open), false = must accept
@@ -77,7 +84,7 @@ export default function TermsGate({ children }) {
   }
 
   // Still checking, or nothing to do → render the app.
-  if (accepted !== false) return children
+  if (accepted !== false || isDemoCompany(company)) return children
 
   return (
     <>
