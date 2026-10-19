@@ -27,13 +27,13 @@
 import { supabase } from './supabase'
 
 /** Bump on any material change. Forces re-acceptance through TermsGate. */
-export const TERMS_VERSION = '2026-08-pilot-1'
+export const TERMS_VERSION = '2026-10-company-1'
 
 /**
- * ⚠️ Pre-incorporation. See the note above — this and TERMS_VERSION change
- * together, never separately.
+ * Sarlia Digital Inc. (BC1612519), incorporated 18 October 2026. Was Daniel
+ * personally before that; TERMS_VERSION was bumped in the same commit.
  */
-export const OPERATOR_LEGAL_NAME = 'Daniel Kalawarny'
+export const OPERATOR_LEGAL_NAME = 'Sarlia Digital Inc.'
 
 /** Where notices and questions go. */
 export const OPERATOR_CONTACT = 'support@eliv8os.com'

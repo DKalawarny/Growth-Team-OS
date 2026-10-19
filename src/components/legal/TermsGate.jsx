@@ -127,10 +127,8 @@ export default function TermsGate({ children }) {
           </div>
 
           <p className="text-[13px] text-ink-500 leading-relaxed mb-5">
-            The pilot is free and nothing will be charged to you during it. It is
-            currently run by {OPERATOR_LEGAL_NAME} while the company behind
-            Eliv8 OS is being incorporated, once that is done, you will be asked
-            to accept a version in the company&rsquo;s name.
+            The pilot is free and nothing will be charged to you during it.
+            Eliv8 OS is run by {OPERATOR_LEGAL_NAME}, a British Columbia company.
           </p>
 
           <label className="flex items-start gap-3 mb-5 cursor-pointer">

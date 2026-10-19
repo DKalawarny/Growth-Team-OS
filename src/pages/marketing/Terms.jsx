@@ -40,7 +40,7 @@ const TERMS_META = buildPageMeta({
 
 // Effective date is tied to the version, not to today, so the page cannot
 // silently claim to be newer than the terms actually are.
-const EFFECTIVE = '21 August 2026'
+const EFFECTIVE = '18 October 2026'
 
 export default function Terms() {
   return (
@@ -251,13 +251,6 @@ export default function Terms() {
             If we change this agreement materially, the version number changes and
             you will be asked to accept the new one next time you sign in. We keep
             a record of which version you accepted and when.
-          </p>
-          <p className="text-gray-600">
-            One change is already expected. Eliv8 OS is being run personally
-            during the pilot because the company behind it is not yet
-            incorporated. When it is, this agreement will be reissued in the
-            company&rsquo;s name and you will be asked to accept that version. We
-            are telling you now rather than swapping the name quietly later.
           </p>
         </Section>
 
