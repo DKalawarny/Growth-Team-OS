@@ -27,6 +27,28 @@
 
 import ToolDisclaimer from './ToolDisclaimer'
 
+/**
+ * ⚠️ 18 Oct 2026: the headline numbers are worked out from the 13 weeks, not
+ * taken from the model's own lowest_point / runway_weeks. Measured on the
+ * recording company: one forecast said "lowest it gets (week 11) $150,000"
+ * while its own week 12 was $142,000; another said week 10 $131,000 while
+ * week 13 was $93,000. The chart and table always showed the weeks, so the
+ * page contradicted itself. The model's note is kept only when it is about
+ * the week that really is lowest.
+ */
+export function deriveHeadline({ weeks = [], comfort_threshold = 0, lowest_point, runway_weeks }) {
+  const rows = weeks.filter(w => Number.isFinite(Number(w?.ending_balance)))
+  if (!rows.length) return { lowest: lowest_point, runway: runway_weeks }
+  const low = rows.reduce((m, w) => (Number(w.ending_balance) < Number(m.ending_balance) ? w : m))
+  const lowest = {
+    week: low.week,
+    balance: Number(low.ending_balance),
+    note: lowest_point && Number(lowest_point.week) === Number(low.week) ? lowest_point.note : undefined,
+  }
+  const tight = rows.find(w => Number(w.ending_balance) < Number(comfort_threshold || 0))
+  return { lowest, runway: tight ? Math.max(0, Number(tight.week) - 1) : 13 }
+}
+
 export default function CashFlowPlan({ data }) {
   if (!data || typeof data !== 'object') {
     return <p className="text-sm text-gray-500">No content saved.</p>
@@ -44,14 +66,16 @@ export default function CashFlowPlan({ data }) {
     actions = [],
   } = data
 
+  const { lowest, runway } = deriveHeadline({ weeks, comfort_threshold, lowest_point, runway_weeks })
+
   return (
     <div className="space-y-6">
       {/* Headline band */}
       <HeadlineBand
         startingBalance={starting_balance}
-        runwayWeeks={runway_weeks}
+        runwayWeeks={runway}
         comfortThreshold={comfort_threshold}
-        lowest={lowest_point}
+        lowest={lowest}
       />
 
       {summary && (
@@ -68,7 +92,7 @@ export default function CashFlowPlan({ data }) {
           <BalanceChart
             weeks={weeks}
             comfortThreshold={comfort_threshold}
-            lowest={lowest_point}
+            lowest={lowest}
           />
         </Section>
       )}
@@ -78,7 +102,7 @@ export default function CashFlowPlan({ data }) {
           <WeeksTable
             weeks={weeks}
             comfortThreshold={comfort_threshold}
-            lowestWeek={lowest_point?.week}
+            lowestWeek={lowest?.week}
           />
         </Section>
       )}
