@@ -1,0 +1,31 @@
+# Opens eliv8os.com, getunstuckmap.com and kinwove.com the way a stranger
+# would, every morning. The checks themselves are in scripts/morning-check.mjs.
+#
+# A failed run makes GitHub email the account that owns this workflow, so a
+# quiet inbox means everything works. Each run's page (Actions tab) shows the
+# full table of what was checked.
+#
+# Needs no secrets: it only reads public pages.
+
+name: Morning check
+
+on:
+  schedule:
+    # 13:30 UTC = 6:30 in Vancouver (5:30 in winter), before anyone is up.
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # The locked install, so the checker runs the same puppeteer (and its
+      # own Chrome) as the Mac. Cached, so about a minute.
+      - run: npm ci
+      - run: node scripts/morning-check.mjs
