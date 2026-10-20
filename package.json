@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/check-undefined.mjs && node scripts/sitemap.mjs && vite build && node scripts/prerender.mjs",
+    "build": "node scripts/check-undefined.mjs && node scripts/sitemap.mjs && node scripts/og-cards.mjs && vite build && node scripts/prerender.mjs",
     "check": "node scripts/check-undefined.mjs",
     "build:no-prerender": "vite build",
     "prerender": "node scripts/prerender.mjs",

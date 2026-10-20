@@ -96,6 +96,7 @@ function AnswerPage() {
     title:       `${a.question} — Eliv8 OS`,
     description: a.answer.slice(0, 300),
     path:        `/answers/${a.slug}`,
+    image:       `${SITE_URL}/og/answers/${a.slug}.png`,
   })
 
   // Article schema with a real dateModified. Engines weight freshness, and a

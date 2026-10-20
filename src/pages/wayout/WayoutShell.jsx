@@ -33,8 +33,13 @@ import './wayout.css'
  */
 export default function WayoutShell({
   children, count, title, noindex = true, wide = false, canonicalPath = '', signIn = false,
-  home = false,
+  home = false, share = null,
 }) {
+  // A page with its own link preview (a /stuck question) passes `share`:
+  // { path, description, image }. Everything else previews as the product.
+  const shareUrl   = share ? `${WAYOUT_SITE_URL}${share.path}` : WAYOUT_SITE_URL
+  const shareDesc  = share?.description ?? WAYOUT_TAGLINE
+  const shareImage = share?.image ?? `${WAYOUT_SITE_URL}/unstuckmap-og.png`
   /**
    * ⚠️ READ ONCE, NOT SUBSCRIBED. This is only deciding whether to draw a link,
    * so it does not need to follow every auth event — and `useAuth` is Eliv8's
@@ -81,17 +86,17 @@ export default function WayoutShell({
             rest of it. */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content={WAYOUT_NAME_TITLE} />
-        <meta property="og:url" content={WAYOUT_SITE_URL} />
+        <meta property="og:url" content={shareUrl} />
         <meta property="og:title" content={title ? `${title} · ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
-        <meta property="og:description" content={WAYOUT_TAGLINE} />
-        <meta property="og:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
+        <meta property="og:description" content={shareDesc} />
+        <meta property="og:image" content={shareImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={WAYOUT_SITE_URL} />
+        <meta name="twitter:url" content={shareUrl} />
         <meta name="twitter:title" content={title ? `${title} · ${WAYOUT_NAME_TITLE}` : `${WAYOUT_NAME_TITLE} · ${WAYOUT_TAGLINE}`} />
-        <meta name="twitter:description" content={WAYOUT_TAGLINE} />
-        <meta name="twitter:image" content={`${WAYOUT_SITE_URL}/unstuckmap-og.png`} />
+        <meta name="twitter:description" content={shareDesc} />
+        <meta name="twitter:image" content={shareImage} />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"

@@ -84,7 +84,8 @@ export function SituationPage() {
   }
 
   return (
-    <WayoutShell noindex={false} canonicalPath={`${WAYOUT_BASE}/stuck/${s.slug}`} wide title={s.question} home signIn>
+    <WayoutShell noindex={false} canonicalPath={`${WAYOUT_BASE}/stuck/${s.slug}`} wide title={s.question} home signIn
+      share={{ path: `/stuck/${s.slug}`, description: s.answer, image: `${WAYOUT_SITE_URL}/og/stuck/${s.slug}.png` }}>
       <Helmet>
         <meta name="description" content={s.answer} />
         <script type="application/ld+json">{json(article)}</script>
