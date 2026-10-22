@@ -10,6 +10,7 @@ import { supabase } from './supabase'
  *   syncQuickBooks()   — pulls fresh P&L + Balance Sheet for a period and
  *                        writes to financial_snapshots. Called by the Settings
  *                        page and the CFO Dashboard.
+ *   disconnectQuickBooks() — revokes at Intuit via qbo-disconnect.
  *   fetchIntegration() — reads the current connection status + last_synced_at.
  *                        Uses the anon client + RLS — safe for the browser.
  *   fetchLatestSnapshots() — recent snapshots for the company. Used by the
@@ -127,23 +128,18 @@ export async function fetchLatestSnapshots(companyId, { limit = 4 } = {}) {
 }
 
 /**
- * "Disconnect" is a client-side operation that flips the status on the
- * integration row. We don't actually revoke the token with Intuit (the user
- * can do that in their QBO account if they want). Flipping status means
- * qbo-sync refuses to run until they reconnect.
- *
- * Tokens are NOT deleted — kept so reconnect-and-re-sync can be a no-op for
- * the operator if they realise they disconnected in error. If they fully
- * reconnect via OAuth the secret row gets overwritten anyway.
+ * Disconnect: revokes our access at Intuit, drops the stored tokens and marks
+ * the connection off. Server-side in qbo-disconnect, because `integrations`
+ * is read-only to the browser; the old client-side UPDATE matched zero rows
+ * and silently did nothing (22 Oct). Snapshots already pulled stay.
  */
-export async function disconnectQuickBooks(companyId) {
-  if (!companyId) throw new Error('Missing companyId')
-  const { error } = await supabase
-    .from('integrations')
-    .update({ status: 'disconnected' })
-    .eq('company_id', companyId)
-    .eq('provider', 'quickbooks')
-  if (error) throw new Error(error.message)
+export async function disconnectQuickBooks() {
+  const { data, error } = await supabase.functions.invoke('qbo-disconnect', {
+    method: 'POST',
+  })
+  if (error) throw new Error(error.message || 'Disconnect failed')
+  if (data?.error) throw new Error(data.error)
+  return data
 }
 
 // -------- Display helpers --------

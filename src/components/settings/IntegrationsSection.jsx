@@ -134,7 +134,7 @@ export default function IntegrationsSection() {
     setDisc(true)
     setBanner(null)
     try {
-      await disconnectQuickBooks(companyId)
+      await disconnectQuickBooks()
       setIntegration(prev => prev ? { ...prev, status: 'disconnected' } : prev)
       setBanner({ tone: 'ok', text: 'Disconnected. Reconnect anytime from this page.' })
     } catch (err) {

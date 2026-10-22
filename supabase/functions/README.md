@@ -3,7 +3,7 @@
 Two integrations have their own setup stories:
 
 - **[QuickBooks integration](#quickbooks-integration--setup-runbook)** —
-  `qbo-oauth-start`, `qbo-oauth-callback`, `qbo-sync`. Powers the CFO
+  `qbo-oauth-start`, `qbo-oauth-callback`, `qbo-sync`, `qbo-disconnect`. Powers the CFO
   Dashboard and Cash-Flow tools with real P&L / Balance Sheet numbers.
 - **[Google Business Profile auto-fetch](#google-business-profile-auto-fetch--setup-runbook)** —
   `gbp-fetch`. Powers the GBP Optimizer tool — resolves the owner's business
@@ -97,6 +97,7 @@ where table_schema = 'public'
 supabase functions deploy qbo-oauth-start
 supabase functions deploy qbo-oauth-callback --no-verify-jwt
 supabase functions deploy qbo-sync
+supabase functions deploy qbo-disconnect
 ```
 
 **Important:** `qbo-oauth-callback` gets `--no-verify-jwt` because Intuit

@@ -163,6 +163,7 @@ In `supabase/functions/`. Deploy with `supabase functions deploy <name>`.
 | `gbp-fetch` | JWT | Google Business Profile scrape |
 | `qbo-oauth-{start,callback}` | JWT | QuickBooks OAuth |
 | `qbo-sync` | JWT | QuickBooks data pull |
+| `qbo-disconnect` | JWT | Revokes at Intuit + marks disconnected (browser cannot write `integrations`) |
 
 Secrets are set via `supabase secrets set` — **never paste secret values into
 chat**; use a separate terminal tab and verify with `supabase secrets list`

@@ -20,6 +20,7 @@
 // OAuth endpoints are shared between sandbox and production.
 const OAUTH_AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2'
 const OAUTH_TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer'
+const OAUTH_REVOKE_URL    = 'https://developer.api.intuit.com/v2/oauth2/tokens/revoke'
 
 // Scope for accounting data. Add 'openid profile email' later if we want the
 // authorising user's identity (we don't right now; we track our own user).
@@ -122,6 +123,26 @@ export async function refreshAccessToken(refreshToken: string): Promise<TokenRes
     throw new Error(`qbo token refresh failed: ${res.status} ${await res.text()}`)
   }
   return await res.json() as TokenResponse
+}
+
+/**
+ * Revoke a token at Intuit. Passing the refresh token ends the whole grant,
+ * access tokens included. Used by qbo-disconnect.
+ */
+export async function revokeToken(token: string): Promise<void> {
+  const { id, secret } = clientCreds()
+  const res = await fetch(OAUTH_REVOKE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Accept':        'application/json',
+      'Authorization': 'Basic ' + btoa(`${id}:${secret}`),
+    },
+    body: JSON.stringify({ token }),
+  })
+  if (!res.ok) {
+    throw new Error(`qbo revoke failed: ${res.status} ${await res.text()}`)
+  }
 }
 
 // ---- Reports ----
