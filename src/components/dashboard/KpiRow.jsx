@@ -206,7 +206,7 @@ function StreakDots({ daysSince }) {
 function CashTile({ latestPnl, qboStatus }) {
   if (qboStatus !== 'connected' || !latestPnl) {
     return (
-      <TileShell to="/settings" tone="muted">
+      <TileShell to="/settings/integrations" tone="muted">
         <TileLabel>Cash &amp; books</TileLabel>
         <p className="text-sm font-bold text-ink-900 leading-tight">
           Connect QuickBooks

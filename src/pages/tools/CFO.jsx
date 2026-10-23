@@ -788,7 +788,7 @@ function QBOBadge({ integration, snapshots, syncing, onSync }) {
   if (status !== 'connected') {
     return (
       <Link
-        to="/settings"
+        to="/settings/integrations"
         className="group flex items-start gap-4 rounded-xl border border-ink-100 bg-ink-50 hover:bg-ink-100 p-4 transition-colors"
       >
         <div className="w-9 h-9 rounded-lg bg-[#2CA01C] flex items-center justify-center text-white font-bold text-xs flex-shrink-0">qb</div>

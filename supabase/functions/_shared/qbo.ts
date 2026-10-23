@@ -215,6 +215,10 @@ function extractRows(node: Record<string, unknown>, depth: number, out: Normalis
     const nested  = row.Rows    as Record<string, unknown> | undefined
     const summary = row.Summary as { ColData?: Array<{ value?: string }> } | undefined
     const group   = (row.group ?? row.type) as string | undefined
+    // Section rows carry their name in Header.ColData, not ColData. Without
+    // this the heading fell back to `group` ("TotalAssets") or "Section", and
+    // Solomon read "Section" where QuickBooks says "Job Materials" (22 Oct).
+    const headerCols = (row.Header as { ColData?: Array<{ value?: string }> } | undefined)?.ColData
 
     // A leaf detail row: has ColData and no nested rows.
     if (colData && colData.length > 0 && (!nested || Object.keys(nested).length === 0)) {
@@ -226,7 +230,7 @@ function extractRows(node: Record<string, unknown>, depth: number, out: Normalis
 
     // A section (group) header: emit a label, then recurse into nested rows.
     if (nested && Object.keys(nested).length > 0) {
-      const header = colData?.[0]?.value ?? group ?? ''
+      const header = headerCols?.[0]?.value || colData?.[0]?.value || group || ''
       if (header) out.push({ label: header, amount: null, depth })
       extractRows(nested, depth + 1, out)
       // Summary row for the section (e.g., "Total Income").

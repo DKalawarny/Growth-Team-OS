@@ -428,7 +428,7 @@ export default function CashFlow() {
           <div className="space-y-4">
             {!qboConnected && !hasDocs && (
               <div className="flex gap-3">
-                <Link to="/settings?tab=integrations" className="flex-1 group flex items-start gap-3 rounded-2xl border border-brand-200 bg-brand-50 hover:bg-brand-100 p-4 transition-colors">
+                <Link to="/settings/integrations" className="flex-1 group flex items-start gap-3 rounded-2xl border border-brand-200 bg-brand-50 hover:bg-brand-100 p-4 transition-colors">
                   <span className="text-xl flex-shrink-0">🔗</span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-brand-900">Connect QuickBooks</p>

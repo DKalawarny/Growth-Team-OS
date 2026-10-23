@@ -22,7 +22,7 @@ export default function ForecastSources({ qboConnected, snapshotLabel, financial
       have: qboConnected,
       found: qboConnected ? `QuickBooks, ${snapshotLabel ?? 'latest period'}: profit and loss and balance sheet.` : null,
       missing: 'QuickBooks is not connected.',
-      how: <Link to="/settings?tab=integrations" className="font-semibold text-brand-700 hover:text-brand-800">Connect QuickBooks</Link>,
+      how: <Link to="/settings/integrations" className="font-semibold text-brand-700 hover:text-brand-800">Connect QuickBooks</Link>,
     },
     {
       title: 'Financial files you uploaded',
